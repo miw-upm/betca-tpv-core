@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketBasicDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,8 +21,7 @@ import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierReso
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.LAST;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.TicketResource.*;
 import static java.math.BigDecimal.ZERO;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @RestTestConfig
@@ -118,6 +118,18 @@ class TicketResourceIT {
                 .expectStatus().isOk()
                 .expectBody(byte[].class)
                 .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void testFindByIdLikeOrReferenceLikeOrUserMobileLike() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(TICKETS + ID_KEY, "81zZ4R_iu")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(TicketBasicDto.class)
+                .value(tickets -> assertEquals(tickets
+                        .stream().count(), 1));
     }
 
     @AfterEach
