@@ -13,6 +13,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,5 +75,9 @@ public class TicketService {
         } else {
             return Mono.empty();
         }
+    }
+
+    public Flux<Ticket> findByIdLikeOrReferenceLikeOrUserMobileLike(String id, String reference, String userMobile) {
+        return this.ticketPersistence.findByIdLikeOrReferenceLikeOrUserMobileLike(id, reference, userMobile);
     }
 }
