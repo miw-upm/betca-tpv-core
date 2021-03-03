@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import es.upm.miw.betca_tpv_core.domain.model.validations.ListNotEmpty;
 import es.upm.miw.betca_tpv_core.domain.model.validations.PositiveBigDecimal;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketBasicDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.BeanUtils;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -61,6 +63,13 @@ public class Ticket {
                 .filter(shopping -> ShoppingState.NOT_COMMITTED.equals(shopping.getState()))
                 .mapToInt(Shopping::getAmount)
                 .sum();
+    }
+
+    public TicketBasicDto toTicketBasicDto() {
+        TicketBasicDto ticketBasic = new TicketBasicDto();
+        BeanUtils.copyProperties(this, ticketBasic);
+        ticketBasic.setMobile(Integer.parseInt(this.user.getMobile()));
+        return ticketBasic;
     }
 
 }
