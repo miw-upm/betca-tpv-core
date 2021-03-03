@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class TicketBasicDto {
     private String id;
     private String reference;
-    private String mobile;
+    private int mobile;
 }

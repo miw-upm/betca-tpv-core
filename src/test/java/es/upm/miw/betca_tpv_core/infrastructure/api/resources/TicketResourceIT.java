@@ -132,6 +132,15 @@ class TicketResourceIT {
                         .stream().count(), 1));
     }
 
+    @Test
+    void testFindByIdLikeOrReferenceLikeOrUserMobileLikeUnauthorizedException() {
+        this.webTestClient
+                .get()
+                .uri(TICKETS + ID_KEY, "81zZ4R_iu")
+                .exchange()
+                .expectStatus().isUnauthorized();
+    }
+
     @AfterEach
     void closeCashier() {
         this.restClientTestService.loginAdmin(webTestClient)
