@@ -3,8 +3,10 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.services.TicketService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketBasicDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
@@ -14,6 +16,7 @@ import javax.validation.Valid;
 public class TicketResource {
     public static final String TICKETS = "/tickets";
 
+    public static final String SEARCH = "/search";
     public static final String ID_ID = "/{id}";
     public static final String RECEIPT = "/receipt";
 
@@ -32,6 +35,12 @@ public class TicketResource {
     @GetMapping(value = ID_ID + RECEIPT, produces = {"application/pdf", "application/json"})
     public Mono< byte[] > readReceipt(@PathVariable String id) {
         return this.ticketService.readReceipt(id);
+    }
+
+    @GetMapping(SEARCH)
+    public Flux<TicketBasicDto> findByIdLikeOrReferenceLikeOrUserMobileLike(@PathVariable String key) {
+        return this.ticketService.findByIdLikeOrReferenceLikeOrUserMobileLike(key, key, key)
+                .map(Ticket:: toTicketBasicDto);
     }
 
 }

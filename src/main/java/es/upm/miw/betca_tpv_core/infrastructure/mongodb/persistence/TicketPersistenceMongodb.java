@@ -48,4 +48,11 @@ public class TicketPersistenceMongodb implements TicketPersistence {
                 .map(TicketEntity::toTicket);
     }
 
+    @Override
+    public Flux<Ticket> findByIdLikeOrReferenceLikeOrUserMobileLike(String id, String reference, String userMobile) {
+        return this.ticketReactive.findByIdLikeOrReferenceLikeOrUserMobileLike(id, reference, userMobile)
+                .map(TicketEntity::toTicket);
+    }
+
+
 }
