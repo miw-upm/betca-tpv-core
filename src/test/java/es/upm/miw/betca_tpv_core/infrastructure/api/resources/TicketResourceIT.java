@@ -128,8 +128,8 @@ class TicketResourceIT {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBodyList(TicketBasicDto.class)
-                .value(tickets -> assertEquals(tickets
-                        .stream().count(), 1));
+                .value(tickets -> assertTrue(tickets
+                        .stream().anyMatch(ticket -> ticket.getReference().contains("81zZ4R_iu"))));
     }
 
     @Test
