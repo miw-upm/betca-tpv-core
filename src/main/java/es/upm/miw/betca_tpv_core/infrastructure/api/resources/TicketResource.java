@@ -40,7 +40,7 @@ public class TicketResource {
     @GetMapping(ID_KEY)
     public Flux<TicketBasicDto> findByIdLikeOrReferenceLikeOrUserMobileLike(@PathVariable String key) {
         return this.ticketService.findByIdLikeOrReferenceLikeOrUserMobileLike(key, key, key)
-                .map(Ticket:: toTicketBasicDto);
+                .map(TicketBasicDto::new);
     }
 
 }
