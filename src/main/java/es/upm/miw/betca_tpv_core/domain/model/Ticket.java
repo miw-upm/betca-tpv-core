@@ -65,11 +65,4 @@ public class Ticket {
                 .sum();
     }
 
-    public TicketBasicDto toTicketBasicDto() {
-        TicketBasicDto ticketBasic = new TicketBasicDto();
-        BeanUtils.copyProperties(this, ticketBasic);
-        ticketBasic.setMobile(Integer.parseInt(this.user.getMobile()));
-        return ticketBasic;
-    }
-
 }
