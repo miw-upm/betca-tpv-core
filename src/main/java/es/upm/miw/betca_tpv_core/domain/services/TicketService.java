@@ -77,7 +77,7 @@ public class TicketService {
         }
     }
 
-    public Flux<Ticket> findByIdLikeOrReferenceLikeOrUserMobileLike(String id, String reference, String userMobile) {
-        return this.ticketPersistence.findByIdLikeOrReferenceLikeOrUserMobileLike(id, reference, userMobile);
+    public Flux<Ticket> findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(String id, String reference, String userMobile) {
+        return this.ticketPersistence.findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(id, reference, userMobile);
     }
 }

@@ -121,7 +121,7 @@ class TicketResourceIT {
     }
 
     @Test
-    void testFindByIdLikeOrReferenceLikeOrUserMobileLike() {
+    void testFindByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(TICKETS + ID_KEY, "81zZ4R_iu")
@@ -133,7 +133,7 @@ class TicketResourceIT {
     }
 
     @Test
-    void testFindByIdLikeOrReferenceLikeOrUserMobileLikeUnauthorizedException() {
+    void testFindByIdLikeOrReferenceLikeOrUserMobileLikeNullSafeUnauthorizedException() {
         this.webTestClient
                 .get()
                 .uri(TICKETS + ID_KEY, "81zZ4R_iu")

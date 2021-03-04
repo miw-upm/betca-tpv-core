@@ -38,8 +38,8 @@ public class TicketResource {
     }
 
     @GetMapping(ID_KEY)
-    public Flux<TicketBasicDto> findByIdLikeOrReferenceLikeOrUserMobileLike(@PathVariable String key) {
-        return this.ticketService.findByIdLikeOrReferenceLikeOrUserMobileLike(key, key, key)
+    public Flux<TicketBasicDto> findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(@PathVariable String key) {
+        return this.ticketService.findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(key, key, key)
                 .map(TicketBasicDto::new);
     }
 

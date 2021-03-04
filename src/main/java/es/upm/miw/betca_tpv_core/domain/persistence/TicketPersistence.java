@@ -11,5 +11,5 @@ public interface TicketPersistence {
 
     Mono< Ticket > readById(String id);
 
-    Flux<Ticket> findByIdLikeOrReferenceLikeOrUserMobileLike(String id, String reference, String userMobile);
+    Flux<Ticket> findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(String id, String reference, String userMobile);
 }
