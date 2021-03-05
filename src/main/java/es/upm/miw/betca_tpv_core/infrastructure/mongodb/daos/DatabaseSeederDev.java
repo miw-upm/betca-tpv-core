@@ -24,17 +24,19 @@ public class DatabaseSeederDev {
     private ArticlesTreeDao articlesTreeDao;
     private TicketDao ticketDao;
     private CashierDao cashierDao;
+    private OfferDao offerDao;
 
     private DatabaseStarting databaseStarting;
 
     @Autowired
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
-                             TicketDao ticketDao, CashierDao cashierDao, DatabaseStarting databaseStarting) {
+                             TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, DatabaseStarting databaseStarting) {
         this.articleDao = articleDao;
         this.providerDao = providerDao;
         this.articlesTreeDao = articlesTreeDao;
         this.ticketDao = ticketDao;
         this.cashierDao = cashierDao;
+        this.offerDao = offerDao;
         this.databaseStarting = databaseStarting;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
@@ -51,6 +53,7 @@ public class DatabaseSeederDev {
 
         this.providerDao.deleteAll();
         this.cashierDao.deleteAll();
+        this.offerDao.deleteAll();
 
         LogManager.getLogger(this.getClass()).warn("------- Delete All -----------");
         this.databaseStarting.initialize();
@@ -171,6 +174,29 @@ public class DatabaseSeederDev {
         };
         this.ticketDao.saveAll(Arrays.asList(tickets));
         LogManager.getLogger(this.getClass()).warn("        ------- tickets");
+        LocalDateTime offerCreationDate = LocalDateTime.of(2021, Month.MARCH, 12, 10, 10);
+        LocalDateTime offerExpiryDate = LocalDateTime.of(2021, Month.JULY, 12, 10, 10);
+        OfferEntity[] offers = {
+                OfferEntity.builder().id("1lh67i968h3d7809l982376mn").reference("cmVmZXJlbmNlb2ZmZXIx")
+                        .description("this is offer 1").creationDate(offerCreationDate).expiryDate(offerExpiryDate)
+                        .discount(new BigDecimal("10")).articleEntityList(List.of(articles[0], articles[1], articles[2]))
+                        .build(),
+                OfferEntity.builder().id("2lh67i968h3d7809l982376mn").reference("cmVmZXJlbmNlb2ZmZXIy")
+                        .description("this is offer 2").creationDate(offerCreationDate).expiryDate(offerExpiryDate)
+                        .discount(new BigDecimal("20")).articleEntityList(List.of(articles[3]))
+                        .build(),
+                OfferEntity.builder().id("3lh67i968h3d7809l982376mn").reference("cmVmZXJlbmNlb2ZmZXIz")
+                        .description("this is offer 3").creationDate(offerCreationDate).expiryDate(offerExpiryDate)
+                        .discount(new BigDecimal("30")).articleEntityList(List.of(articles[0], articles[4]))
+                        .build(),
+                OfferEntity.builder().id("4lh67i968h3d7809l982376mn").reference("cmVmZXJlbmNlb2ZmZXI0")
+                        .description("this is offer 4").creationDate(offerCreationDate)
+                        .expiryDate(LocalDateTime.of(2021, Month.JANUARY, 12, 10, 10))
+                        .discount(new BigDecimal("40")).articleEntityList(List.of(articles[5], articles[6]))
+                        .build(),
+        };
+        this.offerDao.saveAll(List.of(offers));
+        LogManager.getLogger(this.getClass()).warn("        ------- offers");
     }
 
 }
