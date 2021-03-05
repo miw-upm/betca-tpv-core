@@ -16,7 +16,7 @@ import javax.validation.Valid;
 public class TicketResource {
     public static final String TICKETS = "/tickets";
 
-    public static final String ID_KEY = "/{key}";
+    public static final String SEARCH = "/search";
     public static final String ID_ID = "/{id}";
     public static final String RECEIPT = "/receipt";
 
@@ -37,9 +37,9 @@ public class TicketResource {
         return this.ticketService.readReceipt(id);
     }
 
-    @GetMapping(ID_KEY)
-    public Flux<TicketBasicDto> findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(@PathVariable String key) {
-        return this.ticketService.findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(key, key, key)
+    @GetMapping(SEARCH)
+    public Flux<TicketBasicDto> findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(@RequestParam(required = false) String key) {
+        return this.ticketService.findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(key)
                 .map(TicketBasicDto::new);
     }
 

@@ -17,8 +17,10 @@ import reactor.core.publisher.Mono;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleResource.SEARCH;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.CASHIERS;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.LAST;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ProviderResource.PROVIDERS;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.TicketResource.*;
 import static java.math.BigDecimal.ZERO;
 import static org.junit.jupiter.api.Assertions.*;
@@ -124,7 +126,10 @@ class TicketResourceIT {
     void testFindByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(TICKETS + ID_KEY, "81zZ4R_iu")
+                .uri(uriBuilder -> uriBuilder
+                        .path(TICKETS + SEARCH)
+                        .queryParam("key", "81zZ4R_iu")
+                        .build())
                 .exchange()
                 .expectStatus().isOk()
                 .expectBodyList(TicketBasicDto.class)
@@ -136,7 +141,10 @@ class TicketResourceIT {
     void testFindByIdLikeOrReferenceLikeOrUserMobileLikeNullSafeUnauthorizedException() {
         this.webTestClient
                 .get()
-                .uri(TICKETS + ID_KEY, "81zZ4R_iu")
+                .uri(uriBuilder -> uriBuilder
+                        .path(TICKETS + SEARCH)
+                        .queryParam("key", "")
+                        .build())
                 .exchange()
                 .expectStatus().isUnauthorized();
     }
