@@ -27,12 +27,14 @@ public class DatabaseSeederDev {
     private OfferDao offerDao;
     private StockAlarmDao stockAlarmDao;
     private CreditSaleDao creditSaleDao;
+    private CreditDao creditDao;
 
     private DatabaseStarting databaseStarting;
 
     @Autowired
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
-                             TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,CreditSaleDao creditSaleDao, DatabaseStarting databaseStarting) {
+                             TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,
+                             CreditSaleDao creditSaleDao, CreditDao creditDao, DatabaseStarting databaseStarting) {
 
         this.articleDao = articleDao;
         this.providerDao = providerDao;
@@ -41,6 +43,7 @@ public class DatabaseSeederDev {
         this.cashierDao = cashierDao;
         this.offerDao = offerDao;
         this.creditSaleDao = creditSaleDao;
+        this.creditDao = creditDao;
         this.databaseStarting = databaseStarting;
         this.stockAlarmDao = stockAlarmDao;
         this.deleteAllAndInitializeAndSeedDataBase();
@@ -59,6 +62,7 @@ public class DatabaseSeederDev {
         this.offerDao.deleteAll();
         this.stockAlarmDao.deleteAll();
         this.creditSaleDao.deleteAll();
+        this.creditDao.deleteAll();
 
         LogManager.getLogger(this.getClass()).warn("------- Delete All -----------");
         this.databaseStarting.initialize();
@@ -230,6 +234,19 @@ public class DatabaseSeederDev {
         };
         this.creditSaleDao.saveAll(List.of(creditSales));
         LogManager.getLogger(this.getClass()).warn("        ------- credit sales");
+
+        CreditEntity[] credits = {
+                CreditEntity.builder().id("1lh9fds68h3d7809l982sdg376mn").reference("sdgfsgfdg53")
+                        .userReference("53354324").creditSaleEntities(new CreditSaleEntity[]{creditSales[0], creditSales[1]})
+                        .build(),
+                CreditEntity.builder().id("5465ds68h3d7809l982sdg376mn").reference("456gfsgfdg53")
+                        .userReference("5666534324").creditSaleEntities(new CreditSaleEntity[]{creditSales[2]})
+                        .build(),
+                CreditEntity.builder().id("777885ds68h3d7809l982sdg376mn").reference("44366sgfdg53")
+                        .userReference("345436324").build(),
+        };
+        this.creditDao.saveAll(List.of(credits));
+        LogManager.getLogger(this.getClass()).warn("        ------- credits");
 
     }
 
