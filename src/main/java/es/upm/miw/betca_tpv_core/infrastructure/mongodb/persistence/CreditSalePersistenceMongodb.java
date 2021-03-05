@@ -5,7 +5,6 @@ import es.upm.miw.betca_tpv_core.domain.model.CreditSale;
 import es.upm.miw.betca_tpv_core.domain.persistence.CreditSalePersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.CreditSaleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.TicketReactive;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ArticleEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.CreditSaleEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -13,7 +12,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
-public class CreditSalePersistenceMongodb  implements CreditSalePersistence {
+public class CreditSalePersistenceMongodb implements CreditSalePersistence {
 
     private TicketReactive ticketReactive;
     private CreditSaleReactive creditSaleReactive;
