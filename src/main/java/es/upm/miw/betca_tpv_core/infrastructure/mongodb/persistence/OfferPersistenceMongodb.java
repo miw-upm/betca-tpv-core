@@ -6,13 +6,14 @@ import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.OfferReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.OfferEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
+@Repository
 public class OfferPersistenceMongodb implements OfferPersistence {
 
     private OfferReactive offerReactive;
     private ArticleReactive articleReactive;
-
 
     @Autowired
     public OfferPersistenceMongodb(OfferReactive offerReactive, ArticleReactive articleReactive) {
