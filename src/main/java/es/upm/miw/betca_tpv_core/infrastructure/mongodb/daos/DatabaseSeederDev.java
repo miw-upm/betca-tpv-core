@@ -26,18 +26,21 @@ public class DatabaseSeederDev {
     private CashierDao cashierDao;
     private OfferDao offerDao;
     private StockAlarmDao stockAlarmDao;
+    private CreditSaleDao creditSaleDao;
 
     private DatabaseStarting databaseStarting;
 
     @Autowired
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
-                             TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao, DatabaseStarting databaseStarting) {
+                             TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,CreditSaleDao creditSaleDao, DatabaseStarting databaseStarting) {
+
         this.articleDao = articleDao;
         this.providerDao = providerDao;
         this.articlesTreeDao = articlesTreeDao;
         this.ticketDao = ticketDao;
         this.cashierDao = cashierDao;
         this.offerDao = offerDao;
+        this.creditSaleDao = creditSaleDao;
         this.databaseStarting = databaseStarting;
         this.stockAlarmDao = stockAlarmDao;
         this.deleteAllAndInitializeAndSeedDataBase();
@@ -50,13 +53,12 @@ public class DatabaseSeederDev {
 
     private void deleteAllAndInitialize() {
         this.ticketDao.deleteAll();
-
         this.articleDao.deleteAll();
-
         this.providerDao.deleteAll();
         this.cashierDao.deleteAll();
         this.offerDao.deleteAll();
         this.stockAlarmDao.deleteAll();
+        this.creditSaleDao.deleteAll();
 
         LogManager.getLogger(this.getClass()).warn("------- Delete All -----------");
         this.databaseStarting.initialize();
@@ -217,6 +219,18 @@ public class DatabaseSeederDev {
 
         this.stockAlarmDao.saveAll(List.of(stocksAlarms));
         LogManager.getLogger(this.getClass()).warn("        ------- stockAlarms");
+
+        CreditSaleEntity[] creditSales = {
+                CreditSaleEntity.builder().id("1lh67i9fds68h3d7809l982376mn").ticketEntity(tickets[0]).
+                        payed(false).build(),
+                CreditSaleEntity.builder().id("145657i9fds68h3d7809l982376mn").ticketEntity(tickets[1]).
+                        payed(false).build(),
+                CreditSaleEntity.builder().id("1lh67i68h3d78dssd09l982376mn").ticketEntity(tickets[2]).
+                        payed(true).build(),
+        };
+        this.creditSaleDao.saveAll(List.of(creditSales));
+        LogManager.getLogger(this.getClass()).warn("        ------- credit sales");
+
     }
 
 
