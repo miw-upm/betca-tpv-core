@@ -30,7 +30,7 @@ public class Offer {
     @PositiveBigDecimal
     private BigDecimal discount;
     @ListNotEmpty
-    private List<Article> articleList;
+    private List<String> articleBarcodeList;
 
     public static Offer ofReferenceDescription(Offer offer) {
         return Offer.builder()
