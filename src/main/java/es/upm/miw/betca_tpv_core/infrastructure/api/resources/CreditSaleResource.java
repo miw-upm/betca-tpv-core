@@ -31,7 +31,7 @@ public class CreditSaleResource {
     }
 
     @GetMapping(SEARCH)
-    public Flux< CreditSale > findByUnfinished(@RequestParam(required = false) Boolean payed) {
+    public Flux< CreditSale > findByPayed(@RequestParam(required = true) Boolean payed) {
         return this.creditSaleService.findByPayed(payed);
     }
 }
