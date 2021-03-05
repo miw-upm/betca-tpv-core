@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
+import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
@@ -79,5 +80,9 @@ public class TicketService {
 
     public Flux<Ticket> findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(String key) {
         return this.ticketPersistence.findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(key);
+    }
+
+    public Mono<Ticket> findById(String id) {
+        return this.ticketPersistence.findById(id);
     }
 }

@@ -16,4 +16,6 @@ public interface TicketReactive extends ReactiveSortingRepository< TicketEntity,
     Flux<TicketEntity> findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(String id, String reference, String userMobile);
 
     Mono<TicketEntity> findByReference(String reference);
+
+    Mono<TicketEntity> findById(String id);
 }

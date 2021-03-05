@@ -1,9 +1,11 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
+import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.services.TicketService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketBasicDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketEditionDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -41,6 +43,12 @@ public class TicketResource {
     public Flux<TicketBasicDto> findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(@RequestParam(required = false) String key) {
         return this.ticketService.findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(key)
                 .map(TicketBasicDto::new);
+    }
+
+    @GetMapping(ID_ID)
+    public Mono<TicketEditionDto> findById(@PathVariable String id) {
+        return this.ticketService.findById(id)
+                .map(TicketEditionDto::new);
     }
 
 }

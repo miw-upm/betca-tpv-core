@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.domain.persistence;
 
+import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
@@ -12,4 +13,6 @@ public interface TicketPersistence {
     Mono< Ticket > readById(String id);
 
     Flux<Ticket> findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(String key);
+
+    Mono<Ticket> findById(String id);
 }
