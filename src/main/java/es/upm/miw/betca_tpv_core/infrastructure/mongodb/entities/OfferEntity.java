@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -45,6 +46,9 @@ public class OfferEntity {
     public Offer toOffer() {
         Offer offer = new Offer();
         BeanUtils.copyProperties(this, offer);
+        offer.setArticleBarcodeList(this.getArticleEntityList().stream()
+                .map(ArticleEntity::getBarcode)
+                .collect(Collectors.toList()));
         return offer;
     }
 }
