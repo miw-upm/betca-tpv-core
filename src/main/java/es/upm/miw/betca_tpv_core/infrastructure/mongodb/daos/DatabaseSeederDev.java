@@ -25,12 +25,13 @@ public class DatabaseSeederDev {
     private TicketDao ticketDao;
     private CashierDao cashierDao;
     private OfferDao offerDao;
+    private StockAlarmDao stockAlarmDao;
 
     private DatabaseStarting databaseStarting;
 
     @Autowired
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
-                             TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, DatabaseStarting databaseStarting) {
+                             TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao, DatabaseStarting databaseStarting) {
         this.articleDao = articleDao;
         this.providerDao = providerDao;
         this.articlesTreeDao = articlesTreeDao;
@@ -38,6 +39,7 @@ public class DatabaseSeederDev {
         this.cashierDao = cashierDao;
         this.offerDao = offerDao;
         this.databaseStarting = databaseStarting;
+        this.stockAlarmDao = stockAlarmDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -54,6 +56,7 @@ public class DatabaseSeederDev {
         this.providerDao.deleteAll();
         this.cashierDao.deleteAll();
         this.offerDao.deleteAll();
+        this.stockAlarmDao.deleteAll();
 
         LogManager.getLogger(this.getClass()).warn("------- Delete All -----------");
         this.databaseStarting.initialize();
@@ -197,7 +200,25 @@ public class DatabaseSeederDev {
         };
         this.offerDao.saveAll(List.of(offers));
         LogManager.getLogger(this.getClass()).warn("        ------- offers");
+
+
+        StockAlarmLineEntity stockAlarmLineEntity1 = StockAlarmLineEntity.builder().barcode(articles[1].getBarcode()).build();
+        StockAlarmLineEntity stockAlarmLineEntity2 = StockAlarmLineEntity.builder().barcode(articles[2].getBarcode()).warning(1).critical(2).build();
+        StockAlarmLineEntity stockAlarmLineEntity3 = StockAlarmLineEntity.builder().barcode(articles[3].getBarcode()).warning(2).build();
+        StockAlarmLineEntity stockAlarmLineEntity4 = StockAlarmLineEntity.builder().barcode(articles[4].getBarcode()).critical(3).build();
+        StockAlarmLineEntity stockAlarmLineEntity5 = StockAlarmLineEntity.builder().barcode(articles[5].getBarcode()).warning(5).critical(3).build();
+
+        StockAlarmEntity[] stocksAlarms = {
+                StockAlarmEntity.builder().name("alarm-pack-1").warning(5).critical(5).alarmLine(stockAlarmLineEntity1).alarmLine(stockAlarmLineEntity2).build(),
+                StockAlarmEntity.builder().name("alarm-pack-2").warning(99).critical(99).alarmLine(stockAlarmLineEntity1).alarmLine(stockAlarmLineEntity4).build(),
+                StockAlarmEntity.builder().name("alarm-pack-2").warning(55).critical(55).alarmLine(stockAlarmLineEntity3).alarmLine(stockAlarmLineEntity5).build()
+
+        };
+
+        this.stockAlarmDao.saveAll(List.of(stocksAlarms));
+        LogManager.getLogger(this.getClass()).warn("        ------- stockAlarms");
     }
+
 
 }
 
