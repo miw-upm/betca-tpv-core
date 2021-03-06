@@ -14,10 +14,9 @@ import reactor.core.publisher.Mono;
 public class StockAlarmResource {
     public static final String STOCK_ALARMS = "/stock-alarms";
 
-    public static final String NAME_ID = "/name";
+    public static final String NAME_ID = "/{name}";
     public static final String SEARCH = "/search";
     public static final String NAME = "/{name}";
-
 
     private StockAlarmService stockAlarmService;
 
@@ -28,7 +27,7 @@ public class StockAlarmResource {
 
     @PostMapping
     public Mono<StockAlarm> create(@RequestBody StockAlarm stockAlarm) {
-        return null;
+        return this.stockAlarmService.create(stockAlarm);
     }
 
     @PutMapping(NAME)

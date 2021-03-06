@@ -18,6 +18,10 @@ public class StockAlarmLineEntity {
     private Integer warning;
     private Integer critical;
 
+    public StockAlarmLineEntity(StockAlarmLine stockAlarmLine) {
+        BeanUtils.copyProperties(stockAlarmLine, this);
+    }
+
     public StockAlarmLine toStockAlarmLine() {
         StockAlarmLine stockAlarmLine = new StockAlarmLine();
         BeanUtils.copyProperties(this, stockAlarmLine);
