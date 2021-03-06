@@ -13,6 +13,8 @@ import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -37,5 +39,14 @@ public class Offer {
                 .reference(offer.getReference())
                 .description(offer.getDescription())
                 .build();
+    }
+
+    public void doDefault() {
+        if (Objects.isNull(reference)) {
+            this.reference = UUID.randomUUID().toString();
+        }
+        if (Objects.isNull(creationDate)) {
+            this.creationDate = LocalDateTime.now();
+        }
     }
 }

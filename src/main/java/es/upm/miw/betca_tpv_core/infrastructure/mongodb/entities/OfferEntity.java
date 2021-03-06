@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,9 +35,10 @@ public class OfferEntity {
     @DBRef(lazy = true)
     private List<ArticleEntity> articleEntityList;
 
-    public OfferEntity(Offer offer, List<ArticleEntity> articleEntityList) {
+    public OfferEntity(Offer offer) {
         BeanUtils.copyProperties(offer, this);
-        this.articleEntityList = articleEntityList;
+        //this.articleEntityList = articleEntityList;
+        this.articleEntityList = new ArrayList<>();
     }
 
     public void add(ArticleEntity articleEntity) {
