@@ -204,11 +204,11 @@ public class DatabaseSeederDev {
         LogManager.getLogger(this.getClass()).warn("        ------- offers");
 
 
-        StockAlarmLineEntity stockAlarmLineEntity1 = StockAlarmLineEntity.builder().barcode(articles[1].getBarcode()).build();
-        StockAlarmLineEntity stockAlarmLineEntity2 = StockAlarmLineEntity.builder().barcode(articles[2].getBarcode()).warning(1).critical(2).build();
-        StockAlarmLineEntity stockAlarmLineEntity3 = StockAlarmLineEntity.builder().barcode(articles[3].getBarcode()).warning(2).build();
-        StockAlarmLineEntity stockAlarmLineEntity4 = StockAlarmLineEntity.builder().barcode(articles[4].getBarcode()).critical(3).build();
-        StockAlarmLineEntity stockAlarmLineEntity5 = StockAlarmLineEntity.builder().barcode(articles[5].getBarcode()).warning(5).critical(3).build();
+        StockAlarmLineEntity stockAlarmLineEntity1 = StockAlarmLineEntity.builder().articleEntity(articles[1]).build();
+        StockAlarmLineEntity stockAlarmLineEntity2 = StockAlarmLineEntity.builder().articleEntity(articles[2]).warning(1).critical(2).build();
+        StockAlarmLineEntity stockAlarmLineEntity3 = StockAlarmLineEntity.builder().articleEntity(articles[3]).warning(2).build();
+        StockAlarmLineEntity stockAlarmLineEntity4 = StockAlarmLineEntity.builder().articleEntity(articles[4]).critical(3).build();
+        StockAlarmLineEntity stockAlarmLineEntity5 = StockAlarmLineEntity.builder().articleEntity(articles[5]).warning(5).critical(3).build();
 
         StockAlarmEntity[] stocksAlarms = {
                 StockAlarmEntity.builder().name("alarm-pack-1").warning(5).critical(5).alarmLine(stockAlarmLineEntity1).alarmLine(stockAlarmLineEntity2).build(),
