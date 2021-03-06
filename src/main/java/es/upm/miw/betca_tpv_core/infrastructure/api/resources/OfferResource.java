@@ -1,8 +1,8 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
-import es.upm.miw.betca_tpv_core.domain.model.Offer;
 import es.upm.miw.betca_tpv_core.domain.services.OfferService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.OfferListDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,10 +24,10 @@ public class OfferResource {
     }
 
     @GetMapping(SEARCH)
-    public Flux<Offer> findByReferenceAndDescriptionNullSafe(
+    public Flux<OfferListDto> findByReferenceAndDescriptionNullSafe(
             @RequestParam(required = false) String reference,
             @RequestParam(required = false) String description) {
         return this.offerService.findByReferenceAndDescriptionNullSafe(reference, description)
-                .map(Offer::ofReferenceDescription);
+                .map(OfferListDto::new);
     }
 }
