@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketBasicDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketEditionDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,10 +18,9 @@ import reactor.core.publisher.Mono;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleResource.SEARCH;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleResource.*;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.CASHIERS;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.LAST;
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ProviderResource.PROVIDERS;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.TicketResource.*;
 import static java.math.BigDecimal.ZERO;
 import static org.junit.jupiter.api.Assertions.*;
@@ -127,7 +127,7 @@ class TicketResourceIT {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .path(TICKETS + SEARCH)
+                        .path(TICKETS + TicketResource.SEARCH)
                         .queryParam("key", "81zZ4R_iu")
                         .build())
                 .exchange()
@@ -142,11 +142,34 @@ class TicketResourceIT {
         this.webTestClient
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .path(TICKETS + SEARCH)
+                        .path(TICKETS + TicketResource.SEARCH)
                         .queryParam("key", "")
                         .build())
                 .exchange()
                 .expectStatus().isUnauthorized();
+    }
+
+    @Test
+    void testFindById(){
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(TICKETS + ID_ID, "5fa45e863d6e834d642689ac")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(TicketEditionDto.class)
+                .value(Assertions::assertNotNull)
+                .value(ticket -> {
+                    assertEquals("5fa45e863d6e834d642689ac", ticket.getId());
+                });
+    }
+
+    @Test
+    void testFindByIdNotFoundException(){
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(TICKETS + ID_ID, "kk")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
     @AfterEach
