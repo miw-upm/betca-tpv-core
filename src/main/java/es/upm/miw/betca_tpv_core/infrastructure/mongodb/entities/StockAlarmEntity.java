@@ -7,7 +7,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -27,6 +29,21 @@ public class StockAlarmEntity {
 
     public StockAlarmEntity(StockAlarm stockAlarm) {
         BeanUtils.copyProperties(stockAlarm, this);
+        this.stockAlarmLineEntityList = new ArrayList<>();
+    }
+
+    public void add(StockAlarmLineEntity stockAlarmLineEntity) {
+        this.stockAlarmLineEntityList.add(stockAlarmLineEntity);
+    }
+
+    public StockAlarm toStockAlarm() {
+        StockAlarm stockAlarm = new StockAlarm();
+        BeanUtils.copyProperties(this, stockAlarm);
+        stockAlarm.setStockAlarmLineList(this.getStockAlarmLineEntityList().stream()
+                .map(StockAlarmLineEntity::toStockAlarmLine)
+                .collect(Collectors.toList())
+        );
+        return stockAlarm;
     }
 
 }
