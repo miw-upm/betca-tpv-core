@@ -22,7 +22,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Offer {
-    @NotBlank
     private String reference;
     private String description;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
