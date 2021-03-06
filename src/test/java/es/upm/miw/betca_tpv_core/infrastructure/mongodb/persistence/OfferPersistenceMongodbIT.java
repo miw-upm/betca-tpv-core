@@ -29,12 +29,12 @@ class OfferPersistenceMongodbIT {
     void testCreate() {
         StepVerifier
                 .create(this.offerPersistenceMongodb.create(
-                        Offer.builder().reference("123").description("create")
+                        Offer.builder().reference("abc").description("create")
                                 .expiryDate(LocalDateTime.of(2021, Month.MARCH, 31, 20, 20))
                                 .discount(new BigDecimal("50")).articleBarcodeList(List.of("8400000000017", "8400000000031"))
                                 .build()))
                 .expectNextMatches(offer -> {
-                    assertEquals("123", offer.getReference());
+                    assertEquals("abc", offer.getReference());
                     assertEquals(new BigDecimal("50"), offer.getDiscount());
                     assertTrue(offer.getArticleBarcodeList().contains("8400000000017"));
                     return true;
