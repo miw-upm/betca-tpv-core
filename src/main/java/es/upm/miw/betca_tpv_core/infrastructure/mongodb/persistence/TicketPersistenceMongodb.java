@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
+import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
@@ -51,6 +52,13 @@ public class TicketPersistenceMongodb implements TicketPersistence {
     @Override
     public Flux<Ticket> findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(String key) {
         return this.ticketReactive.findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(key, key, key)
+                .map(TicketEntity::toTicket);
+    }
+
+    @Override
+    public Mono<Ticket> findById(String id) {
+        return this.ticketReactive.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non existent ticket id: " + id)))
                 .map(TicketEntity::toTicket);
     }
 
