@@ -8,10 +8,13 @@ import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.CreditSaleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.TicketReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.CreditEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.CreditSaleEntity;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.TicketEntity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
+
+import java.util.Arrays;
 
 @Repository
 public class CreditPersistenceMongodb implements CreditPersistence {
@@ -28,7 +31,7 @@ public class CreditPersistenceMongodb implements CreditPersistence {
 
     @Override
     public Mono<Credit> create(Credit credit) {
-        return this.creditReactive.save(new CreditEntity(credit))
+        return this.creditReactive.save(new CreditEntity(credit, null))
                 .map(CreditEntity::toCredit);
     }
 
@@ -40,22 +43,19 @@ public class CreditPersistenceMongodb implements CreditPersistence {
 
     @Override
     public Mono<Credit> addCreditSale(Credit credit, CreditSale creditSale) {
-        Mono<CreditSaleEntity[]> creditSaleToAdd = this.creditSaleReactive.findByTicketEntity(
-                this.ticketReactive.findByReference(creditSale.getTicketReference()).block())
-                .map(CreditSaleEntity::toCreditSaleArray);
+        CreditSaleEntity[] creditSaleEntityAdded = this.creditSaleReactive.findByReference(creditSale.getReference()).block().toCreditSaleArray();
+
+        Mono<CreditSaleEntity[]> creditSaleEntityAdded2 = this.creditSaleReactive.findByReference(creditSale.getReference())
+                                                        .map(CreditSaleEntity::toCreditSaleArray);
         Mono<CreditEntity> creditEntityMono = this.creditReactive.findByUserReference(credit.getUserReference());
-        return creditEntityMono
-                .flatMap(creditEntity -> {
-                    BeanUtils.copyProperties(credit, creditEntity);
-                    return this.creditReactive.findByUserReference((credit.getUserReference()))
-                            .map(CreditEntity::getCreditSaleEntities)
-                            .mergeWith(creditSaleToAdd).next()
-                            .map(creditSaleEntities -> {
-                                creditEntity.setCreditSaleEntities(creditSaleEntities);
-                                return creditEntity;
-                            });
+        Mono<Credit> credit1 = creditEntityMono
+                .map(creditEntity -> {
+                    //TODO add the new creditSale
+                    return creditEntity;
                 })
                 .flatMap(this.creditReactive::save)
                 .map(CreditEntity::toCredit);
+        Credit credit2 = credit1.block();
+        return credit1;
     }
 }

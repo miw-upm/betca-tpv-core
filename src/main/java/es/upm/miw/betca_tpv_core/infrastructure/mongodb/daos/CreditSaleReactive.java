@@ -8,5 +8,5 @@ import reactor.core.publisher.Mono;
 
 public interface CreditSaleReactive extends ReactiveSortingRepository<CreditSaleEntity, String > {
     Flux<CreditSaleEntity> findByPayed(Boolean payed);
-    Mono<CreditSaleEntity> findByTicketEntity(TicketEntity ticketEntity);
+    Mono<CreditSaleEntity> findByReference(String reference);
 }

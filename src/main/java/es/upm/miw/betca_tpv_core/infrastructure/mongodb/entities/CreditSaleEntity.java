@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -20,6 +21,8 @@ import java.util.Objects;
 public class CreditSaleEntity {
     @Id
     private String id;
+    @Indexed(unique = true)
+    private String reference;
     private Boolean payed;
 
     @DBRef(lazy = true)

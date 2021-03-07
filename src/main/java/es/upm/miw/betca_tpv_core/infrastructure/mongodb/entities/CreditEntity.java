@@ -23,8 +23,9 @@ public class CreditEntity {
     private String userReference;
     private CreditSaleEntity[] creditSaleEntities;
 
-    public CreditEntity(Credit credit) {
+    public CreditEntity(Credit credit, CreditSaleEntity[] creditSaleEntities) {
         BeanUtils.copyProperties(credit, this);
+        this.creditSaleEntities = creditSaleEntities;
     }
 
     public Credit toCredit() {

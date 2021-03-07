@@ -225,11 +225,11 @@ public class DatabaseSeederDev {
         LogManager.getLogger(this.getClass()).warn("        ------- stockAlarms");
 
         CreditSaleEntity[] creditSales = {
-                CreditSaleEntity.builder().id("1lh67i9fds68h3d7809l982376mn").ticketEntity(tickets[0]).
+                CreditSaleEntity.builder().id("1lh67i9fds68h3d7809l982376mn").reference("dsfdsf54fds").ticketEntity(tickets[0]).
                         payed(false).build(),
-                CreditSaleEntity.builder().id("145657i9fds68h3d7809l982376mn").ticketEntity(tickets[1]).
+                CreditSaleEntity.builder().id("145657i9fds68h3d7809l982376mn").reference("hjf45jfdsffds").ticketEntity(tickets[1]).
                         payed(false).build(),
-                CreditSaleEntity.builder().id("1lh67i68h3d78dssd09l982376mn").ticketEntity(tickets[2]).
+                CreditSaleEntity.builder().id("1lh67i68h3d78dssd09l982376mn").reference("cbbn76bvdsffds").ticketEntity(tickets[2]).
                         payed(true).build(),
         };
         this.creditSaleDao.saveAll(List.of(creditSales));
