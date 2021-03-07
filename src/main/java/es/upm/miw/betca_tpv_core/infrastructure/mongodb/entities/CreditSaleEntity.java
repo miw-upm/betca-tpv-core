@@ -38,4 +38,14 @@ public class CreditSaleEntity {
         }
         return creditSale;
     }
+
+    public CreditSaleEntity[] toCreditSaleArray() {
+        CreditSaleEntity[] creditSaleEntityArray = new CreditSaleEntity[1];
+        creditSaleEntityArray[0] = new CreditSaleEntity();
+        BeanUtils.copyProperties(this, creditSaleEntityArray[0]);
+        if(Objects.nonNull(this.getTicketEntity())) {
+            creditSaleEntityArray[0].setTicketEntity((this.getTicketEntity()));
+        }
+        return creditSaleEntityArray;
+    }
 }
