@@ -1,19 +1,13 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
-import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.model.Credit;
 import es.upm.miw.betca_tpv_core.domain.model.CreditSale;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-
-import static java.math.BigDecimal.TEN;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
 public class CreditPersistenceMongodbIT {
@@ -52,7 +46,7 @@ public class CreditPersistenceMongodbIT {
                         CreditSale.builder().reference("dsfdsf54fds").ticketReference("WB9-e8xQT4ejb74r1vLrCw").payed(false).build()))
                 .expectNextMatches(credit -> {
                     assertEquals("sdgfsgfdg53", credit.getReference());
-                    //assertTrue(credit.getCreditSales()!=null); TODO
+                    assertNotNull(credit.getCreditSales());
                     return true;
                 })
                 .expectComplete()

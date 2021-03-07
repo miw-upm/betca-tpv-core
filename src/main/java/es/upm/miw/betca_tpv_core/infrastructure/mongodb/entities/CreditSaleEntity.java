@@ -42,12 +42,13 @@ public class CreditSaleEntity {
         return creditSale;
     }
 
-    public CreditSaleEntity[] toCreditSaleArray() {
-        CreditSaleEntity[] creditSaleEntityArray = new CreditSaleEntity[1];
-        creditSaleEntityArray[0] = new CreditSaleEntity();
-        BeanUtils.copyProperties(this, creditSaleEntityArray[0]);
+    public CreditSaleEntity[] toCreditSaleArray(CreditSaleEntity[] creditSaleOldEntities) {
+        CreditSaleEntity[] creditSaleEntityArray = new CreditSaleEntity[creditSaleOldEntities.length + 1];
+        System.arraycopy(creditSaleOldEntities, 0, creditSaleEntityArray, 0, creditSaleOldEntities.length);
+        creditSaleEntityArray[creditSaleEntityArray.length - 1] = new CreditSaleEntity();
+        BeanUtils.copyProperties(this, creditSaleEntityArray[creditSaleEntityArray.length - 1]);
         if(Objects.nonNull(this.getTicketEntity())) {
-            creditSaleEntityArray[0].setTicketEntity((this.getTicketEntity()));
+            creditSaleEntityArray[creditSaleEntityArray.length - 1].setTicketEntity((this.getTicketEntity()));
         }
         return creditSaleEntityArray;
     }
