@@ -25,4 +25,16 @@ public class TicketReactiveIT {
                 .thenCancel()
                 .verify();
     }
+
+    @Test
+    void testFindById(){
+        StepVerifier
+                .create(this.ticketReactive.findById("5fa45e863d6e834d642689ac"))
+                .expectNextMatches(ticket -> {
+                    assertEquals("5fa45e863d6e834d642689ac", ticket.getId());
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }
 }
