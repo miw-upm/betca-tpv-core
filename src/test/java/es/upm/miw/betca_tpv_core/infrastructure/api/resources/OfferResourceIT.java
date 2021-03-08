@@ -126,4 +126,13 @@ public class OfferResourceIT {
                     assertEquals(new BigDecimal("10"), offer.getDiscount());
                 });
     }
+
+    @Test
+    void testReadNotFoundReferenceException() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(OFFERS + REFERENCE, "not-a-reference")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
 }
