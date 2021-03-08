@@ -34,10 +34,16 @@ public class OfferResource {
                 .map(OfferListDto::new);
     }
 
+    @PostMapping(produces = {"application/json"})
+    public Mono<Offer> create(@Valid @RequestBody Offer newOffer) {
+        newOffer.doDefault();
+        System.out.println(newOffer);
+        return Mono.just(newOffer);
+    }
+
     /*@PostMapping(produces = {"application/json"})
-    public Mono<OfferCreationEditionDto> create(@Valid @RequestBody Offer offer) {
-        offer.doDefault();
-        return this.offerService.create(offer)
-                .map(OfferCreationEditionDto::new);
+    public Mono<Void> create(@Valid @RequestBody Offer newOffer) {
+        System.out.println(newOffer);
+        return Mono.empty();
     }*/
 }

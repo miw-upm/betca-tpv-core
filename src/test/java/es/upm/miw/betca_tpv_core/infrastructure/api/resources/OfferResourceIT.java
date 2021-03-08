@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.Offer;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.OfferCreationEditionDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
@@ -95,4 +97,20 @@ public class OfferResourceIT {
                 .exchange()
                 .expectStatus().isUnauthorized();
     }*/
+
+    @Test
+    void testCreateResource() {
+        OfferCreationEditionDto newOffer = new OfferCreationEditionDto(null,"222",
+                LocalDate.of(2021,9,15),new BigDecimal("66"),
+                new String[]{"8400000000031", "8400000000024"});
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(OFFERS)
+                .body(Mono.just(newOffer), OfferCreationEditionDto.class)
+                .exchange()
+                .expectStatus().isOk();
+
+
+    }
 }
