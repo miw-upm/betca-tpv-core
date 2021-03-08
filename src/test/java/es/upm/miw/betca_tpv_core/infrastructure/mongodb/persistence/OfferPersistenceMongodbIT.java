@@ -47,6 +47,19 @@ class OfferPersistenceMongodbIT {
                 .verify();
     }
 
+    @Test
+    void testCreateExistingReference() {
+        StepVerifier
+                .create(this.offerPersistenceMongodb.create(
+                        Offer.builder()
+                                .reference("cmVmZXJlbmNlb2ZmZXIy").description("reference already exists")
+                                .expiryDate(LocalDate.of(2021, Month.MARCH, 31))
+                                .discount(new BigDecimal("75"))
+                                .articleBarcodes(new String[]{"8400000000031", "8400000000024", "8400000000017"})
+                                .build()))
+                .expectError(ConflictException.class)
+                .verify();
+    }
 
 /*
 OfferCreationEditionDto newOffer = new OfferCreationEditionDto(null, "new offer",
