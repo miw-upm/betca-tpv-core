@@ -208,11 +208,11 @@ public class DatabaseSeederDev {
         LogManager.getLogger(this.getClass()).warn("        ------- offers");
 
 
-        StockAlarmLineEntity stockAlarmLineEntity1 = StockAlarmLineEntity.builder().barcode(articles[1].getBarcode()).build();
-        StockAlarmLineEntity stockAlarmLineEntity2 = StockAlarmLineEntity.builder().barcode(articles[2].getBarcode()).warning(1).critical(2).build();
-        StockAlarmLineEntity stockAlarmLineEntity3 = StockAlarmLineEntity.builder().barcode(articles[3].getBarcode()).warning(2).build();
-        StockAlarmLineEntity stockAlarmLineEntity4 = StockAlarmLineEntity.builder().barcode(articles[4].getBarcode()).critical(3).build();
-        StockAlarmLineEntity stockAlarmLineEntity5 = StockAlarmLineEntity.builder().barcode(articles[5].getBarcode()).warning(5).critical(3).build();
+        StockAlarmLineEntity stockAlarmLineEntity1 = StockAlarmLineEntity.builder().articleEntity(articles[1]).build();
+        StockAlarmLineEntity stockAlarmLineEntity2 = StockAlarmLineEntity.builder().articleEntity(articles[2]).warning(1).critical(2).build();
+        StockAlarmLineEntity stockAlarmLineEntity3 = StockAlarmLineEntity.builder().articleEntity(articles[3]).warning(2).build();
+        StockAlarmLineEntity stockAlarmLineEntity4 = StockAlarmLineEntity.builder().articleEntity(articles[4]).critical(3).build();
+        StockAlarmLineEntity stockAlarmLineEntity5 = StockAlarmLineEntity.builder().articleEntity(articles[5]).warning(5).critical(3).build();
 
         StockAlarmEntity[] stocksAlarms = {
                 StockAlarmEntity.builder().name("alarm-pack-1").warning(5).critical(5).alarmLine(stockAlarmLineEntity1).alarmLine(stockAlarmLineEntity2).build(),
@@ -225,11 +225,11 @@ public class DatabaseSeederDev {
         LogManager.getLogger(this.getClass()).warn("        ------- stockAlarms");
 
         CreditSaleEntity[] creditSales = {
-                CreditSaleEntity.builder().id("1lh67i9fds68h3d7809l982376mn").ticketEntity(tickets[0]).
+                CreditSaleEntity.builder().id("1lh67i9fds68h3d7809l982376mn").reference("dsfdsf54fds").ticketEntity(tickets[0]).
                         payed(false).build(),
-                CreditSaleEntity.builder().id("145657i9fds68h3d7809l982376mn").ticketEntity(tickets[1]).
+                CreditSaleEntity.builder().id("145657i9fds68h3d7809l982376mn").reference("hjf45jfdsffds").ticketEntity(tickets[1]).
                         payed(false).build(),
-                CreditSaleEntity.builder().id("1lh67i68h3d78dssd09l982376mn").ticketEntity(tickets[2]).
+                CreditSaleEntity.builder().id("1lh67i68h3d78dssd09l982376mn").reference("cbbn76bvdsffds").ticketEntity(tickets[2]).
                         payed(true).build(),
         };
         this.creditSaleDao.saveAll(List.of(creditSales));
@@ -237,13 +237,13 @@ public class DatabaseSeederDev {
 
         CreditEntity[] credits = {
                 CreditEntity.builder().id("1lh9fds68h3d7809l982sdg376mn").reference("sdgfsgfdg53")
-                        .userReference("53354324").creditSaleEntities(new CreditSaleEntity[]{creditSales[0], creditSales[1]})
+                        .userReference("53354324").creditSaleEntities(new CreditSaleEntity[]{creditSales[1], creditSales[2]})
                         .build(),
                 CreditEntity.builder().id("5465ds68h3d7809l982sdg376mn").reference("456gfsgfdg53")
                         .userReference("5666534324").creditSaleEntities(new CreditSaleEntity[]{creditSales[2]})
                         .build(),
                 CreditEntity.builder().id("777885ds68h3d7809l982sdg376mn").reference("44366sgfdg53")
-                        .userReference("345436324").build(),
+                        .userReference("345436324").creditSaleEntities(new CreditSaleEntity[]{}).build(),
         };
         this.creditDao.saveAll(List.of(credits));
         LogManager.getLogger(this.getClass()).warn("        ------- credits");
