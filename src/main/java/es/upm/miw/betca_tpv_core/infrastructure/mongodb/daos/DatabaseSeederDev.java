@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
@@ -183,8 +184,8 @@ public class DatabaseSeederDev {
         };
         this.ticketDao.saveAll(Arrays.asList(tickets));
         LogManager.getLogger(this.getClass()).warn("        ------- tickets");
-        LocalDateTime offerCreationDate = LocalDateTime.of(2021, Month.MARCH, 12, 10, 10);
-        LocalDateTime offerExpiryDate = LocalDateTime.of(2021, Month.JULY, 12, 10, 10);
+        LocalDate offerCreationDate = LocalDate.of(2021, Month.MARCH, 12);
+        LocalDate offerExpiryDate = LocalDate.of(2021, Month.JULY, 12);
         OfferEntity[] offers = {
                 OfferEntity.builder().id("1lh67i968h3d7809l982376mn").reference("cmVmZXJlbmNlb2ZmZXIx")
                         .description("this is offer 1").creationDate(offerCreationDate).expiryDate(offerExpiryDate)
@@ -200,7 +201,7 @@ public class DatabaseSeederDev {
                         .build(),
                 OfferEntity.builder().id("4lh67i968h3d7809l982376mn").reference("cmVmZXJlbmNlb2ZmZXI0")
                         .description("this is offer 4").creationDate(offerCreationDate)
-                        .expiryDate(LocalDateTime.of(2021, Month.JANUARY, 12, 10, 10))
+                        .expiryDate(LocalDate.of(2021, Month.JANUARY, 12))
                         .discount(new BigDecimal("40")).articleEntityList(List.of(articles[5], articles[6]))
                         .build(),
         };

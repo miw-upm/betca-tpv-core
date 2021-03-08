@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
+
 @Repository
 public class OfferPersistenceMongodb implements OfferPersistence {
 
@@ -33,17 +35,15 @@ public class OfferPersistenceMongodb implements OfferPersistence {
     @Override
     public Mono<Offer> create(Offer offer) {
         OfferEntity newOfferEnt = new OfferEntity(offer);
-        // this.assertReferenceNotExist(offer.getReference())
-        OfferEntity a = this.offerReactive.findByReference(offer.getReference()).block();
-        if (a != null) {
-            return Mono.error(new ConflictException("Offer Reference already exists : " + offer.getReference()));
-        } else {
-            return Flux.fromStream(offer.getArticleBarcodeList().stream())
-                    .flatMap(barcode -> this.articleReactive.findByBarcode(barcode)
-                            .switchIfEmpty(Mono.error(new NotFoundException("Article: " + barcode)))).doOnNext(newOfferEnt::add)
-                    .then(this.offerReactive.save(newOfferEnt))
-                    .map(OfferEntity::toOffer);
-        }
+
+        System.out.println(offer);
+        return Flux.fromStream(Arrays.stream(offer.getArticleBarcodes().clone()))
+                .flatMap(barcode -> this.articleReactive.findByBarcode(barcode)
+                        .switchIfEmpty(Mono.error(new NotFoundException("Article: " + barcode)))).doOnNext(newOfferEnt::add)
+                .then(this.assertReferenceNotExist(offer.getReference()))
+                .then(this.offerReactive.save(newOfferEnt))
+                .map(OfferEntity::toOffer);
+
     }
 
     public Mono<Void> assertReferenceNotExist(String reference) {
