@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.model.ShoppingState;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
@@ -40,6 +41,30 @@ class TicketPersistenceMongodbIT {
                     return true;
                 })
                 .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testFindByIdOrReferenceLikeOrUserMobileLike() {
+        StepVerifier
+                .create(this.ticketPersistenceMongodb.findByIdOrReferenceLikeOrUserMobileLikeNullSafe("5fa45e863d6e834d642689ac"))
+                .expectNextMatches(ticket -> {
+                    System.out.println(ticket);
+                    assertEquals("nUs81zZ4R_iuoq0_zCRm6A", ticket.getReference());
+                    assertEquals("5fa45e863d6e834d642689ac", ticket.getId());
+                    assertEquals("666666000", ticket.getUser().getMobile());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testFindByIdOrReferenceLikeOrUserMobileLikeNullSafe() {
+        StepVerifier
+                .create(this.ticketPersistenceMongodb.findByIdOrReferenceLikeOrUserMobileLikeNullSafe(""))
+                .assertNext(Assertions::assertNotNull)
+                .thenCancel()
                 .verify();
     }
 
