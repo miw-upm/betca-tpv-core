@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -20,6 +21,8 @@ import java.util.Objects;
 public class CreditSaleEntity {
     @Id
     private String id;
+    @Indexed(unique = true)
+    private String reference;
     private Boolean payed;
 
     @DBRef(lazy = true)
@@ -37,5 +40,16 @@ public class CreditSaleEntity {
             creditSale.setTicketReference(this.getTicketEntity().getReference());
         }
         return creditSale;
+    }
+
+    public CreditSaleEntity[] toCreditSaleArray(CreditSaleEntity[] creditSaleOldEntities) {
+        CreditSaleEntity[] creditSaleEntityArray = new CreditSaleEntity[creditSaleOldEntities.length + 1];
+        System.arraycopy(creditSaleOldEntities, 0, creditSaleEntityArray, 0, creditSaleOldEntities.length);
+        creditSaleEntityArray[creditSaleEntityArray.length - 1] = new CreditSaleEntity();
+        BeanUtils.copyProperties(this, creditSaleEntityArray[creditSaleEntityArray.length - 1]);
+        if(Objects.nonNull(this.getTicketEntity())) {
+            creditSaleEntityArray[creditSaleEntityArray.length - 1].setTicketEntity((this.getTicketEntity()));
+        }
+        return creditSaleEntityArray;
     }
 }

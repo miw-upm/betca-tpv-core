@@ -6,6 +6,7 @@ import es.upm.miw.betca_tpv_core.domain.persistence.CreditSalePersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.CreditSaleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.TicketReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.CreditSaleEntity;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.TicketEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
@@ -39,6 +40,12 @@ public class CreditSalePersistenceMongodb implements CreditSalePersistence {
     @Override
     public Flux<CreditSale> findByPayed(Boolean payed) {
         return this.creditSaleReactive.findByPayed(payed)
+                .map(CreditSaleEntity::toCreditSale);
+    }
+
+    @Override
+    public Mono<CreditSale> findByReference(String reference) {
+        return this.creditSaleReactive.findByReference(reference)
                 .map(CreditSaleEntity::toCreditSale);
     }
 }
