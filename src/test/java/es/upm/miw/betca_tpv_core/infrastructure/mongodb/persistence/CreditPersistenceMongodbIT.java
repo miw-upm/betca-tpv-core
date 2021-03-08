@@ -42,7 +42,7 @@ public class CreditPersistenceMongodbIT {
     @Test
     void testAddCreditSale() {
         StepVerifier
-                .create(this.creditPersistenceMongodb.addCreditSale(Credit.builder().userReference("53354324").build(),
+                .create(this.creditPersistenceMongodb.addCreditSale("53354324",
                         CreditSale.builder().reference("dsfdsf54fds").ticketReference("WB9-e8xQT4ejb74r1vLrCw").payed(false).build()))
                 .expectNextMatches(credit -> {
                     assertEquals("sdgfsgfdg53", credit.getReference());
@@ -56,7 +56,7 @@ public class CreditPersistenceMongodbIT {
     @Test
     void testAddCreditSaleWhenCreditSalesInCreditLineAreEmpty() {
         StepVerifier
-                .create(this.creditPersistenceMongodb.addCreditSale(Credit.builder().userReference("345436324").build(),
+                .create(this.creditPersistenceMongodb.addCreditSale("345436324",
                         CreditSale.builder().reference("dsfdsf54fds").ticketReference("WB9-e8xQT4ejb74r1vLrCw").payed(false).build()))
                 .expectNextMatches(credit -> {
                     assertEquals("44366sgfdg53", credit.getReference());
