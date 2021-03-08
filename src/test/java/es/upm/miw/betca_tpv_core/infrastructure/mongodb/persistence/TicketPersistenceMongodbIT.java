@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.model.ShoppingState;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
@@ -12,8 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
 class TicketPersistenceMongodbIT {
@@ -40,6 +40,14 @@ class TicketPersistenceMongodbIT {
                     return true;
                 })
                 .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testFindByIdNotFound() {
+        StepVerifier
+                .create(this.ticketPersistenceMongodb.findById("kk"))
+                .expectError(NotFoundException.class)
                 .verify();
     }
 
