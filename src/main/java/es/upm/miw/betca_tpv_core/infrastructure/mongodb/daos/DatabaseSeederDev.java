@@ -237,13 +237,13 @@ public class DatabaseSeederDev {
 
         CreditEntity[] credits = {
                 CreditEntity.builder().id("1lh9fds68h3d7809l982sdg376mn").reference("sdgfsgfdg53")
-                        .userReference("53354324").creditSaleEntities(new CreditSaleEntity[]{creditSales[1], creditSales[2]})
+                        .userReference("53354324").creditSaleEntities(List.of(creditSales[1], creditSales[2]))
                         .build(),
                 CreditEntity.builder().id("5465ds68h3d7809l982sdg376mn").reference("456gfsgfdg53")
-                        .userReference("5666534324").creditSaleEntities(new CreditSaleEntity[]{creditSales[2]})
+                        .userReference("5666534324").creditSaleEntities(List.of(creditSales[2]))
                         .build(),
                 CreditEntity.builder().id("777885ds68h3d7809l982sdg376mn").reference("44366sgfdg53")
-                        .userReference("345436324").creditSaleEntities(new CreditSaleEntity[]{}).build(),
+                        .userReference("345436324").creditSaleEntities(List.of()).build(),
         };
         this.creditDao.saveAll(List.of(credits));
         LogManager.getLogger(this.getClass()).warn("        ------- credits");
