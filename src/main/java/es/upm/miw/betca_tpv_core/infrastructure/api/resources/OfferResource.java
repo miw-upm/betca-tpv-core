@@ -37,13 +37,6 @@ public class OfferResource {
     @PostMapping(produces = {"application/json"})
     public Mono<Offer> create(@Valid @RequestBody Offer newOffer) {
         newOffer.doDefault();
-        System.out.println(newOffer);
-        return Mono.just(newOffer);
+        return this.offerService.create(newOffer);
     }
-
-    /*@PostMapping(produces = {"application/json"})
-    public Mono<Void> create(@Valid @RequestBody Offer newOffer) {
-        System.out.println(newOffer);
-        return Mono.empty();
-    }*/
 }

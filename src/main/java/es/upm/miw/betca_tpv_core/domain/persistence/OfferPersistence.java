@@ -9,5 +9,5 @@ import reactor.core.publisher.Mono;
 public interface OfferPersistence {
     Flux<Offer> findByReferenceAndDescriptionNullSafe(String reference, String description);
 
-    // Mono<Offer> create(Offer offer);
+    Mono<Offer> create(Offer offer);
 }
