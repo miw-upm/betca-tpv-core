@@ -16,7 +16,7 @@ import javax.validation.Valid;
 public class OfferResource {
 
     public static final String OFFERS = "/offers";
-    public static final String SEARCH = "/search";
+    public static final String SEARCH_OFFER = "/search";
     public static final String REFERENCE = "/{reference}";
 
     private OfferService offerService;
@@ -26,7 +26,7 @@ public class OfferResource {
         this.offerService = offerService;
     }
 
-    @GetMapping(SEARCH)
+    @GetMapping(SEARCH_OFFER)
     public Flux<OfferListDto> findByReferenceAndDescriptionNullSafe(
             @RequestParam(required = false) String reference,
             @RequestParam(required = false) String description) {

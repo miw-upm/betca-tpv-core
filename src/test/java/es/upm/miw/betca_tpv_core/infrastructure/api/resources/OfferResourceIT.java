@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
+import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.model.Offer;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.OfferCreationEditionDto;
@@ -12,7 +13,7 @@ import reactor.core.publisher.Mono;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleResource.SEARCH;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleResource.*;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.OfferResource.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,7 +32,7 @@ public class OfferResourceIT {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .path(OFFERS + SEARCH)
+                        .path(OFFERS + SEARCH_OFFER)
                         .queryParam("reference", "b2Z")
                         .queryParam("description", "2")
                         .build())
@@ -132,20 +133,43 @@ public class OfferResourceIT {
     }
 
     @Test
-    void testUpdate() {
-        Offer updatedOffer = new Offer(
-                "ref-offer-1",
-                "updated offer",
-                LocalDate.of(2020, 8, 5),
-                LocalDate.of(2021, 9, 15),
-                new BigDecimal("75"),
-                new String[]{"8400000000031", "8400000000024", "8400000000017"});
+    void testReadByReferenceAndUpdate() {
+        Offer updatedOffer = this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(OFFERS + REFERENCE, "cmVmZXJlbmNlb2ZmZXIx")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Offer.class)
+                .value(offer -> {
+                    assertEquals("cmVmZXJlbmNlb2ZmZXIx", offer.getReference());
+                    assertEquals("this is offer 1", offer.getDescription());
+                    assertEquals(offer.getArticleBarcodes().length, 3);
+                    assertEquals(new BigDecimal("10"), offer.getDiscount());
+                })
+                .returnResult()
+                .getResponseBody();
+        assertNotNull(updatedOffer);
+        String reference = updatedOffer.getReference();
+        updatedOffer.setDescription("updated description");
+        updatedOffer.setDiscount(new BigDecimal("40"));
+        updatedOffer.setArticleBarcodes(new String[]{"8400000000079", "8400000000024"});
 
-        this.restClientTestService.loginAdmin(webTestClient)
+        updatedOffer = this.restClientTestService.loginAdmin(webTestClient)
                 .put()
-                .uri(OFFERS + REFERENCE, "ref-offer-1")
+                .uri(OFFERS + REFERENCE, "cmVmZXJlbmNlb2ZmZXIx")
                 .body(Mono.just(updatedOffer), OfferCreationEditionDto.class)
                 .exchange()
-                .expectStatus().isOk();
+                .expectStatus().isOk()
+                .expectBody(Offer.class)
+                .value(Assertions::assertNotNull)
+                .value(returnOffer -> {
+                    assertEquals(reference, returnOffer.getReference());
+                    assertEquals("updated description", returnOffer.getDescription());
+                    assertEquals(new BigDecimal("40"), returnOffer.getDiscount());
+                    assertEquals(returnOffer.getArticleBarcodes().length, 2);
+                })
+                .returnResult()
+                .getResponseBody();
+        assertNotNull(updatedOffer);
     }
 }
