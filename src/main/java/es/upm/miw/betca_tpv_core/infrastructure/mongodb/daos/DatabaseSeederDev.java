@@ -243,7 +243,7 @@ public class DatabaseSeederDev {
                         .userReference("5666534324").creditSaleEntities(new CreditSaleEntity[]{creditSales[2]})
                         .build(),
                 CreditEntity.builder().id("777885ds68h3d7809l982sdg376mn").reference("44366sgfdg53")
-                        .userReference("345436324").build(),
+                        .userReference("345436324").creditSaleEntities(new CreditSaleEntity[]{}).build(),
         };
         this.creditDao.saveAll(List.of(credits));
         LogManager.getLogger(this.getClass()).warn("        ------- credits");

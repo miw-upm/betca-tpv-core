@@ -11,6 +11,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 @Data
@@ -26,9 +27,9 @@ public class CreditEntity {
     private String userReference;
     private CreditSaleEntity[] creditSaleEntities;
 
-    public CreditEntity(Credit credit, CreditSaleEntity[] creditSaleEntities) {
+    public CreditEntity(Credit credit) {
         BeanUtils.copyProperties(credit, this);
-        this.creditSaleEntities = creditSaleEntities;
+        this.creditSaleEntities = new CreditSaleEntity[]{};
     }
 
     public Credit toCredit() {

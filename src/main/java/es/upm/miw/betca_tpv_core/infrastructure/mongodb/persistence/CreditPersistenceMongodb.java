@@ -24,7 +24,7 @@ public class CreditPersistenceMongodb implements CreditPersistence {
 
     @Override
     public Mono<Credit> create(Credit credit) {
-        return this.creditReactive.save(new CreditEntity(credit, null))
+        return this.creditReactive.save(new CreditEntity(credit))
                 .map(CreditEntity::toCredit);
     }
 
@@ -40,14 +40,12 @@ public class CreditPersistenceMongodb implements CreditPersistence {
         CreditSaleEntity[] creditSaleEntitiesOld = creditEntityMono.map(CreditEntity::getCreditSaleEntities).block();
         CreditSaleEntity[] creditSaleEntityAdded = this.creditSaleReactive.findByReference(creditSale.getReference()).block().toCreditSaleArray(creditSaleEntitiesOld);
 
-        Mono<Credit> credit1 = creditEntityMono
+        return creditEntityMono
                 .map(creditEntity -> {
                     creditEntity.setCreditSaleEntities(creditSaleEntityAdded);
                     return creditEntity;
                 })
                 .flatMap(this.creditReactive::save)
                 .map(CreditEntity::toCredit);
-        Credit credit2 = credit1.block();
-        return credit1;
     }
 }
