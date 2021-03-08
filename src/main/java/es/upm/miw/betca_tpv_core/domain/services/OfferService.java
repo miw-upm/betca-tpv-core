@@ -21,10 +21,10 @@ public class OfferService {
         return this.offerPersistence.findByReferenceAndDescriptionNullSafe(reference, description);
     }
 
-    public Mono<Offer> create(Offer offer) {
+    /*public Mono<Offer> create(Offer offer) {
         //offer.setReference(UUIDBase64.URL.encode());
         //offer.setCreationDate(LocalDateTime.now());
         return this.offerPersistence.create(offer);
-    }
+    }*/
 }
 

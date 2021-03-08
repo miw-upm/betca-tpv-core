@@ -30,7 +30,7 @@ public class OfferPersistenceMongodb implements OfferPersistence {
                 .map(OfferEntity::toOffer);
     }
 
-    @Override
+    /*@Override
     public Mono<Offer> create(Offer offer) {
         OfferEntity newOfferEnt = new OfferEntity(offer);
         // this.assertReferenceNotExist(offer.getReference())
@@ -44,7 +44,7 @@ public class OfferPersistenceMongodb implements OfferPersistence {
                     .then(this.offerReactive.save(newOfferEnt))
                     .map(OfferEntity::toOffer);
         }
-    }
+    }*/
 
     public Mono<Void> assertReferenceNotExist(String reference) {
         return this.offerReactive.findByReference(reference)

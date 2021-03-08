@@ -43,7 +43,7 @@ public class OfferResourceIT {
                         .stream().anyMatch(offer -> offer.getDescription().toLowerCase().contains("this is offer 2"))));
     }
 
-    @Test
+    /*@Test
     void testCreate() {
         Offer newOffer = Offer.builder().reference("abdcef123456").description("new offer")
                 .expiryDate(LocalDateTime.of(2021, Month.MARCH, 31, 20, 20))
@@ -94,5 +94,5 @@ public class OfferResourceIT {
                 .body(Mono.just(offer), Offer.class)
                 .exchange()
                 .expectStatus().isUnauthorized();
-    }
+    }*/
 }

@@ -34,10 +34,10 @@ public class OfferResource {
                 .map(OfferListDto::new);
     }
 
-    @PostMapping(produces = {"application/json"})
+    /*@PostMapping(produces = {"application/json"})
     public Mono<OfferCreationEditionDto> create(@Valid @RequestBody Offer offer) {
         offer.doDefault();
         return this.offerService.create(offer)
                 .map(OfferCreationEditionDto::new);
-    }
+    }*/
 }
