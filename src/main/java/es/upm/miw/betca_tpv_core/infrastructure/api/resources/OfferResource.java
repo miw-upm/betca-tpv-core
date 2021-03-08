@@ -42,7 +42,13 @@ public class OfferResource {
 
     @GetMapping(REFERENCE)
     public Mono<Offer> read(@PathVariable String reference) {
-        System.out.println(">>>>>>>Offer reference: " + reference);
+        // System.out.println(">>>>>>>Offer reference: " + reference);
         return this.offerService.read(reference);
+    }
+
+    @PutMapping(REFERENCE)
+    public Mono<Offer> update(@PathVariable String reference, @Valid @RequestBody Offer updatedOffer) {
+        System.out.println(">>>>>>>Updated offer: " + updatedOffer);
+        return Mono.just(updatedOffer);
     }
 }

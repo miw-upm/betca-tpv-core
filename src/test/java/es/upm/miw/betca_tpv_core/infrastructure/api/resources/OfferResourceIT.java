@@ -1,7 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.Offer;
-import es.upm.miw.betca_tpv_core.domain.model.Provider;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.OfferCreationEditionDto;
 import org.junit.jupiter.api.Assertions;
@@ -12,10 +11,6 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.Arrays;
-import java.util.List;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleResource.SEARCH;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.OfferResource.*;
@@ -134,5 +129,23 @@ public class OfferResourceIT {
                 .uri(OFFERS + REFERENCE, "not-a-reference")
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testUpdate() {
+        Offer updatedOffer = new Offer(
+                "ref-offer-1",
+                "updated offer",
+                LocalDate.of(2020, 8, 5),
+                LocalDate.of(2021, 9, 15),
+                new BigDecimal("75"),
+                new String[]{"8400000000031", "8400000000024", "8400000000017"});
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(OFFERS + REFERENCE, "ref-offer-1")
+                .body(Mono.just(updatedOffer), OfferCreationEditionDto.class)
+                .exchange()
+                .expectStatus().isOk();
     }
 }
