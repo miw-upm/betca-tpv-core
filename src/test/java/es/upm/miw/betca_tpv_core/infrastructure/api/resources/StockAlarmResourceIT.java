@@ -9,8 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.StockAlarmResource.NAME;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.StockAlarmResource.STOCK_ALARMS;
+import static org.junit.jupiter.api.Assertions.*;
 
 @RestTestConfig
 class StockAlarmResourceIT {
@@ -27,7 +28,7 @@ class StockAlarmResourceIT {
 
         this.restClientTestService.loginAdmin(webTestClient)
                 .post()
-                .uri(StockAlarmResource.STOCK_ALARMS)
+                .uri(STOCK_ALARMS)
                 .body(Mono.just(stockAlarm), StockAlarm.class)
                 .exchange()
                 .expectStatus().isOk()
@@ -41,5 +42,21 @@ class StockAlarmResourceIT {
                             .filter(stockAlarmLine1 -> stockAlarmLine1.getBarcode().equals(stockAlarmLine.getBarcode()))
                     );
                 });
+    }
+
+    @Test
+    void testFindByNameLike() {
+        String nameAlarmFromSeederMultiple = "pack";
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(STOCK_ALARMS + NAME)
+                        .queryParam("name", nameAlarmFromSeederMultiple)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(StockAlarm.class)
+                .value(Assertions::assertNotNull)
+                .value(list -> assertEquals(2, list.size()));
     }
 }

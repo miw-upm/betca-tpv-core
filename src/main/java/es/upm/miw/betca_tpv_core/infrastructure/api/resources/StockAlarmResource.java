@@ -16,7 +16,7 @@ public class StockAlarmResource {
 
     public static final String NAME_ID = "/{name}";
     public static final String SEARCH = "/search";
-    public static final String NAME = "/{name}";
+    public static final String NAME = "/name";
 
     private StockAlarmService stockAlarmService;
 
@@ -36,9 +36,8 @@ public class StockAlarmResource {
     }
 
     @GetMapping(NAME)
-    public Flux<StockAlarm> find(@PathVariable String name) {
-        return null;
+    public Flux<StockAlarm> find(@RequestParam String name) {
+        return this.stockAlarmService.findByNameLike(name);
     }
-
 
 }

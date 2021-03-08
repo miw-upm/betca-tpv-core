@@ -47,4 +47,10 @@ public class StockAlarmPersistenceMongodb implements StockAlarmPersistence {
                 .map(StockAlarmEntity::toStockAlarm);
     }
 
+    @Override
+    public Flux<StockAlarm> findByNameLike(String name) {
+        return this.stockAlarmReactive.findByNameLike(name)
+                .map(StockAlarmEntity::toStockAlarm);
+    }
+
 }
