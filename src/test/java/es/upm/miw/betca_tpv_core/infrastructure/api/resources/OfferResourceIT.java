@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.Offer;
+import es.upm.miw.betca_tpv_core.domain.model.Provider;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.OfferCreationEditionDto;
 import org.junit.jupiter.api.Assertions;
@@ -108,5 +109,30 @@ public class OfferResourceIT {
                 .body(Mono.just(newOffer), OfferCreationEditionDto.class)
                 .exchange()
                 .expectStatus().isOk();
+    }
+
+    @Test
+    void testReadReference() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(OFFERS + REFERENCE, "cmVmZXJlbmNlb2ZmZXIx")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Offer.class)
+                .value(offer -> {
+                    assertEquals("cmVmZXJlbmNlb2ZmZXIx", offer.getReference());
+                    assertEquals("this is offer 1", offer.getDescription());
+                    assertEquals(offer.getArticleBarcodes().length, 3);
+                    assertEquals(new BigDecimal("10"), offer.getDiscount());
+                });
+    }
+
+    @Test
+    void testReadNotFoundReferenceException() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(OFFERS + REFERENCE, "not-a-reference")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 }

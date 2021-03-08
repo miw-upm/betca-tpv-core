@@ -52,4 +52,11 @@ public class OfferPersistenceMongodb implements OfferPersistence {
                         new ConflictException("Offer Reference already exists : " + reference)
                 ));
     }
+
+    @Override
+    public Mono<Offer> readByReference(String reference) {
+        return this.offerReactive.findByReference(reference)
+                .switchIfEmpty(Mono.error(new NotFoundException("Offer does not exist: " + reference)))
+                .map(OfferEntity::toOffer);
+    }
 }
