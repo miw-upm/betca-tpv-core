@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -24,10 +25,10 @@ import java.util.UUID;
 public class Offer {
     private String reference;
     private String description;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime creationDate;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime expiryDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate creationDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate expiryDate;
     @PositiveBigDecimal
     private BigDecimal discount;
     @ListNotEmpty
@@ -45,7 +46,7 @@ public class Offer {
             this.reference = UUID.randomUUID().toString();
         }
         if (Objects.isNull(creationDate)) {
-            this.creationDate = LocalDateTime.now();
+            this.creationDate = LocalDate.now();
         }
     }
 }

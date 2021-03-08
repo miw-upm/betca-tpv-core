@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,8 +19,8 @@ import java.util.List;
 public class OfferCreationEditionDto {
     private String reference;
     private String description;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime expiryDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate expiryDate;
     @PositiveBigDecimal
     private BigDecimal discount;
     @ListNotEmpty
