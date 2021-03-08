@@ -123,22 +123,22 @@ class TicketResourceIT {
     }
 
     @Test
-    void testFindByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe() {
+    void testFindByIdOrReferenceLikeOrUserMobileLikeNullSafe() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path(TICKETS + TicketResource.SEARCH)
-                        .queryParam("key", "81zZ4R_iu")
+                        .queryParam("key", "5fa45f6f3a61083cb241289c")
                         .build())
                 .exchange()
                 .expectStatus().isOk()
                 .expectBodyList(TicketBasicDto.class)
                 .value(tickets -> assertTrue(tickets
-                        .stream().anyMatch(ticket -> ticket.getReference().contains("81zZ4R_iu"))));
+                        .stream().anyMatch(ticket -> ticket.getId().equals("5fa45f6f3a61083cb241289c"))));
     }
 
     @Test
-    void testFindByIdLikeOrReferenceLikeOrUserMobileLikeNullSafeUnauthorizedException() {
+    void testFindByIdOrReferenceLikeOrUserMobileLikeNullSafeUnauthorizedException() {
         this.webTestClient
                 .get()
                 .uri(uriBuilder -> uriBuilder

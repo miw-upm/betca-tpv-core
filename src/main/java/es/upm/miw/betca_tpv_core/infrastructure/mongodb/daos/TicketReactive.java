@@ -9,11 +9,10 @@ import reactor.core.publisher.Mono;
 public interface TicketReactive extends ReactiveSortingRepository< TicketEntity, String > {
 
     @Query("{$or:[" // allow NULL: all elements
-            + "?#{ [0] == null ? {_id : {$ne:null}} : { id : {$regex:[0], $options: 'i'} } },"
-            + "?#{ [1] == null ? {_id : {$ne:null}} : { reference : {$regex:[1], $options: 'i'} } },"
-            + "?#{ [2] == null ? {_id : {$ne:null}} : { userMobile :{$regex:[2], $options: 'i'} }  }"
+            + "?#{ [0] == null ? {_id : {$ne:null}} : { reference : {$regex:[0], $options: 'i'} } },"
+            + "?#{ [1] == null ? {_id : {$ne:null}} : { userMobile :{$regex:[1], $options: 'i'} }  }"
             + "] }")
-    Flux<TicketEntity> findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(String id, String reference, String userMobile);
+    Flux<TicketEntity> findByReferenceLikeOrUserMobileLikeNullSafe(String reference, String userMobile);
 
     Mono<TicketEntity> findByReference(String reference);
 
