@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
@@ -183,8 +184,8 @@ public class DatabaseSeederDev {
         };
         this.ticketDao.saveAll(Arrays.asList(tickets));
         LogManager.getLogger(this.getClass()).warn("        ------- tickets");
-        LocalDateTime offerCreationDate = LocalDateTime.of(2021, Month.MARCH, 12, 10, 10);
-        LocalDateTime offerExpiryDate = LocalDateTime.of(2021, Month.JULY, 12, 10, 10);
+        LocalDate offerCreationDate = LocalDate.of(2021, Month.MARCH, 12);
+        LocalDate offerExpiryDate = LocalDate.of(2021, Month.JULY, 12);
         OfferEntity[] offers = {
                 OfferEntity.builder().id("1lh67i968h3d7809l982376mn").reference("cmVmZXJlbmNlb2ZmZXIx")
                         .description("this is offer 1").creationDate(offerCreationDate).expiryDate(offerExpiryDate)
@@ -200,7 +201,7 @@ public class DatabaseSeederDev {
                         .build(),
                 OfferEntity.builder().id("4lh67i968h3d7809l982376mn").reference("cmVmZXJlbmNlb2ZmZXI0")
                         .description("this is offer 4").creationDate(offerCreationDate)
-                        .expiryDate(LocalDateTime.of(2021, Month.JANUARY, 12, 10, 10))
+                        .expiryDate(LocalDate.of(2021, Month.JANUARY, 12))
                         .discount(new BigDecimal("40")).articleEntityList(List.of(articles[5], articles[6]))
                         .build(),
         };
@@ -225,11 +226,11 @@ public class DatabaseSeederDev {
         LogManager.getLogger(this.getClass()).warn("        ------- stockAlarms");
 
         CreditSaleEntity[] creditSales = {
-                CreditSaleEntity.builder().id("1lh67i9fds68h3d7809l982376mn").ticketEntity(tickets[0]).
+                CreditSaleEntity.builder().id("1lh67i9fds68h3d7809l982376mn").reference("dsfdsf54fds").ticketEntity(tickets[0]).
                         payed(false).build(),
-                CreditSaleEntity.builder().id("145657i9fds68h3d7809l982376mn").ticketEntity(tickets[1]).
+                CreditSaleEntity.builder().id("145657i9fds68h3d7809l982376mn").reference("hjf45jfdsffds").ticketEntity(tickets[1]).
                         payed(false).build(),
-                CreditSaleEntity.builder().id("1lh67i68h3d78dssd09l982376mn").ticketEntity(tickets[2]).
+                CreditSaleEntity.builder().id("1lh67i68h3d78dssd09l982376mn").reference("cbbn76bvdsffds").ticketEntity(tickets[2]).
                         payed(true).build(),
         };
         this.creditSaleDao.saveAll(List.of(creditSales));
@@ -237,13 +238,13 @@ public class DatabaseSeederDev {
 
         CreditEntity[] credits = {
                 CreditEntity.builder().id("1lh9fds68h3d7809l982sdg376mn").reference("sdgfsgfdg53")
-                        .userReference("53354324").creditSaleEntities(new CreditSaleEntity[]{creditSales[0], creditSales[1]})
+                        .userReference("53354324").creditSaleEntities(new CreditSaleEntity[]{creditSales[1], creditSales[2]})
                         .build(),
                 CreditEntity.builder().id("5465ds68h3d7809l982sdg376mn").reference("456gfsgfdg53")
                         .userReference("5666534324").creditSaleEntities(new CreditSaleEntity[]{creditSales[2]})
                         .build(),
                 CreditEntity.builder().id("777885ds68h3d7809l982sdg376mn").reference("44366sgfdg53")
-                        .userReference("345436324").build(),
+                        .userReference("345436324").creditSaleEntities(new CreditSaleEntity[]{}).build(),
         };
         this.creditDao.saveAll(List.of(credits));
         LogManager.getLogger(this.getClass()).warn("        ------- credits");

@@ -2,11 +2,14 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
 import es.upm.miw.betca_tpv_core.domain.model.Credit;
+import es.upm.miw.betca_tpv_core.domain.model.CreditSale;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
 public class CreditPersistenceMongodbIT {
@@ -32,6 +35,36 @@ public class CreditPersistenceMongodbIT {
                 .create(this.creditPersistenceMongodb.findByUserReference("53354324"))
                 .expectNextMatches(credit -> {
                     assertEquals("sdgfsgfdg53", credit.getReference());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testAddCreditSale() {
+        StepVerifier
+                .create(this.creditPersistenceMongodb.addCreditSale("53354324",
+                        CreditSale.builder().reference("dsfdsf54fds").ticketReference("WB9-e8xQT4ejb74r1vLrCw").payed(false).build()))
+                .expectNextMatches(credit -> {
+                    assertEquals("sdgfsgfdg53", credit.getReference());
+                    assertNotNull(credit.getCreditSales()); // cbbn76bvdsffds
+                    assertEquals(1, Arrays.stream(credit.getCreditSales()).filter(creditSale -> creditSale.getReference().equals("dsfdsf54fds")).toArray().length);
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testAddCreditSaleWhenCreditSalesInCreditLineAreEmpty() {
+        StepVerifier
+                .create(this.creditPersistenceMongodb.addCreditSale("345436324",
+                        CreditSale.builder().reference("dsfdsf54fds").ticketReference("WB9-e8xQT4ejb74r1vLrCw").payed(false).build()))
+                .expectNextMatches(credit -> {
+                    assertEquals("44366sgfdg53", credit.getReference());
+                    assertNotNull(credit.getCreditSales());
+                    assertEquals("dsfdsf54fds", Arrays.stream(credit.getCreditSales()).findFirst().get().getReference());
                     return true;
                 })
                 .expectComplete()

@@ -11,8 +11,9 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.Objects;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -20,22 +21,29 @@ import java.util.List;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Offer {
-    @NotBlank
     private String reference;
     private String description;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime creationDate;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime expiryDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate creationDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate expiryDate;
     @PositiveBigDecimal
     private BigDecimal discount;
-    @ListNotEmpty
-    private List<String> articleBarcodeList;
+    private String[] articleBarcodes;
 
     public static Offer ofReferenceDescription(Offer offer) {
         return Offer.builder()
                 .reference(offer.getReference())
                 .description(offer.getDescription())
                 .build();
+    }
+
+    public void doDefault() {
+        if (Objects.isNull(reference)) {
+            this.reference = UUID.randomUUID().toString();
+        }
+        if (Objects.isNull(creationDate)) {
+            this.creationDate = LocalDate.now();
+        }
     }
 }

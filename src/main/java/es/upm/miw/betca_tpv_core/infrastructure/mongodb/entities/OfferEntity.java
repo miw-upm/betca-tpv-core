@@ -12,7 +12,9 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,16 +29,16 @@ public class OfferEntity {
     @Indexed(unique = true)
     private String reference;
     private String description;
-    private LocalDateTime creationDate;
-    private LocalDateTime expiryDate;
+    private LocalDate creationDate;
+    private LocalDate expiryDate;
     private BigDecimal discount;
 
     @DBRef(lazy = true)
     private List<ArticleEntity> articleEntityList;
 
-    public OfferEntity(Offer offer, List<ArticleEntity> articleEntityList) {
+    public OfferEntity(Offer offer) {
         BeanUtils.copyProperties(offer, this);
-        this.articleEntityList = articleEntityList;
+        this.articleEntityList = new ArrayList<>();
     }
 
     public void add(ArticleEntity articleEntity) {
@@ -46,9 +48,10 @@ public class OfferEntity {
     public Offer toOffer() {
         Offer offer = new Offer();
         BeanUtils.copyProperties(this, offer);
-        offer.setArticleBarcodeList(this.getArticleEntityList().stream()
+        offer.setArticleBarcodes(this.getArticleEntityList().stream()
                 .map(ArticleEntity::getBarcode)
-                .collect(Collectors.toList()));
+                .toArray(String[]::new)
+        );
         return offer;
     }
 }

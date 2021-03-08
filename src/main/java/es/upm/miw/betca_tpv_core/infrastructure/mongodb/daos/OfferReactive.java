@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.OfferEntity;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveSortingRepository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface OfferReactive extends ReactiveSortingRepository<OfferEntity, String> {
 
@@ -13,4 +14,5 @@ public interface OfferReactive extends ReactiveSortingRepository<OfferEntity, St
             + "] }")
     Flux<OfferEntity> findByReferenceAndDescriptionNullSafe(String reference, String description);
 
+    Mono<OfferEntity> findByReference(String reference);
 }
