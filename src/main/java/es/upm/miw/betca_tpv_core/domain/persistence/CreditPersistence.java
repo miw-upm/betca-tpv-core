@@ -8,6 +8,6 @@ public interface CreditPersistence {
 
     Mono<Credit> create(Credit credit);
     Mono<Credit> findByUserReference(String userReference);
-    Mono<Credit> addCreditSale(Credit credit, CreditSale creditSale);
+    Mono<Credit> addCreditSale(String userRef, CreditSale creditSale);
 
 }
