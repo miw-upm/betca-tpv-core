@@ -50,8 +50,13 @@ public class TicketPersistenceMongodb implements TicketPersistence {
     }
 
     @Override
-    public Flux<Ticket> findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(String key) {
-        return this.ticketReactive.findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(key, key, key)
+    public Flux<Ticket> findByIdOrReferenceLikeOrUserMobileLikeNullSafe(String key) {
+        if (key == null) {
+            return this.ticketReactive.findAll()
+                    .map(TicketEntity::toTicket);
+        }
+        return this.ticketReactive.findById(key)
+                .mergeWith(this.ticketReactive.findByReferenceLikeOrUserMobileLikeNullSafe(key, key))
                 .map(TicketEntity::toTicket);
     }
 
