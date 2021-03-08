@@ -67,4 +67,18 @@ class OfferPersistenceMongodbIT {
                 .expectError(NotFoundException.class)
                 .verify();
     }
+
+    @Test
+    void testReadByReference() {
+        StepVerifier
+                .create(this.offerPersistenceMongodb.readByReference("cmVmZXJlbmNlb2ZmZXIy"))
+                .expectNextMatches(offer -> {
+                    assertEquals("cmVmZXJlbmNlb2ZmZXIy", offer.getReference());
+                    assertEquals("this is offer 2", offer.getDescription());
+                    assertNotNull(offer.getArticleBarcodes());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
 }
