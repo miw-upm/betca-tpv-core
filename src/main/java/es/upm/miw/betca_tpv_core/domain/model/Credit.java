@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -19,7 +20,7 @@ public class Credit {
     private String reference;
     @NotBlank
     private String userReference;
-    private CreditSale[] creditSales;
+    private List<CreditSale> creditSales;
 
     public void doDefault() {
         if (Objects.isNull(reference)) {

@@ -41,15 +41,4 @@ public class CreditSaleEntity {
         }
         return creditSale;
     }
-
-    public CreditSaleEntity[] toCreditSaleArray(CreditSaleEntity[] creditSaleOldEntities) {
-        CreditSaleEntity[] creditSaleEntityArray = new CreditSaleEntity[creditSaleOldEntities.length + 1];
-        System.arraycopy(creditSaleOldEntities, 0, creditSaleEntityArray, 0, creditSaleOldEntities.length);
-        creditSaleEntityArray[creditSaleEntityArray.length - 1] = new CreditSaleEntity();
-        BeanUtils.copyProperties(this, creditSaleEntityArray[creditSaleEntityArray.length - 1]);
-        if(Objects.nonNull(this.getTicketEntity())) {
-            creditSaleEntityArray[creditSaleEntityArray.length - 1].setTicketEntity((this.getTicketEntity()));
-        }
-        return creditSaleEntityArray;
-    }
 }

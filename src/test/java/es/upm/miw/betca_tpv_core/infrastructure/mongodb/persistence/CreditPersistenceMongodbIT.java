@@ -7,8 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
-import java.util.Arrays;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
@@ -48,8 +46,9 @@ public class CreditPersistenceMongodbIT {
                         CreditSale.builder().reference("dsfdsf54fds").ticketReference("WB9-e8xQT4ejb74r1vLrCw").payed(false).build()))
                 .expectNextMatches(credit -> {
                     assertEquals("sdgfsgfdg53", credit.getReference());
-                    assertNotNull(credit.getCreditSales()); // cbbn76bvdsffds
-                    assertEquals(1, Arrays.stream(credit.getCreditSales()).filter(creditSale -> creditSale.getReference().equals("dsfdsf54fds")).toArray().length);
+                    assertNotNull(credit.getCreditSales());
+                    assertEquals(3, credit.getCreditSales().size());
+                    assertEquals("dsfdsf54fds", credit.getCreditSales().get(2).getReference());
                     return true;
                 })
                 .expectComplete()
@@ -64,7 +63,8 @@ public class CreditPersistenceMongodbIT {
                 .expectNextMatches(credit -> {
                     assertEquals("44366sgfdg53", credit.getReference());
                     assertNotNull(credit.getCreditSales());
-                    assertEquals("dsfdsf54fds", Arrays.stream(credit.getCreditSales()).findFirst().get().getReference());
+                    assertEquals(1, credit.getCreditSales().size());
+                    assertEquals("dsfdsf54fds", credit.getCreditSales().get(0).getReference());
                     return true;
                 })
                 .expectComplete()
