@@ -35,8 +35,8 @@ public class CreditPersistenceMongodb implements CreditPersistence {
     }
 
     @Override
-    public Mono<Credit> addCreditSale(Credit credit, CreditSale creditSale) {
-        Mono<CreditEntity> creditEntityMono = this.creditReactive.findByUserReference(credit.getUserReference());
+    public Mono<Credit> addCreditSale(String userRef, CreditSale creditSale) {
+        Mono<CreditEntity> creditEntityMono = this.creditReactive.findByUserReference(userRef);
         CreditSaleEntity[] creditSaleEntitiesOld = creditEntityMono.map(CreditEntity::getCreditSaleEntities).block();
         CreditSaleEntity[] creditSaleEntityAdded = this.creditSaleReactive.findByReference(creditSale.getReference()).block().toCreditSaleArray(creditSaleEntitiesOld);
 
