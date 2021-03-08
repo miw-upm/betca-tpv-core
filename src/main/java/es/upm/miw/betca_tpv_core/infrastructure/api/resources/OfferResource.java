@@ -1,10 +1,8 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.Offer;
-import es.upm.miw.betca_tpv_core.domain.model.Provider;
 import es.upm.miw.betca_tpv_core.domain.services.OfferService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.OfferCreationEditionDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.OfferListDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -43,9 +41,8 @@ public class OfferResource {
     }
 
     @GetMapping(REFERENCE)
-    public Mono<Void> read(@PathVariable String reference) {
+    public Mono<Offer> read(@PathVariable String reference) {
         System.out.println(">>>>>>>Offer reference: " + reference);
-        return Mono.empty();
+        return this.offerService.read(reference);
     }
-
 }

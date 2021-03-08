@@ -10,4 +10,6 @@ public interface OfferPersistence {
     Flux<Offer> findByReferenceAndDescriptionNullSafe(String reference, String description);
 
     Mono<Offer> create(Offer offer);
+
+    Mono<Offer> readByReference(String reference);
 }
