@@ -12,7 +12,10 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.stream.Stream;
+
 @Repository
+
 public class StockAlarmPersistenceMongodb implements StockAlarmPersistence {
 
     private StockAlarmReactive stockAlarmReactive;
@@ -28,7 +31,9 @@ public class StockAlarmPersistenceMongodb implements StockAlarmPersistence {
     public Mono<StockAlarm> create(StockAlarm stockAlarm) {
 
         StockAlarmEntity stockAlarmEntity = new StockAlarmEntity(stockAlarm);
-        return Flux.fromStream(stockAlarm.getStockAlarmLineList().stream())
+
+        return Flux.fromStream(stockAlarm.getStockAlarmLines() == null ?
+                Stream.empty() : stockAlarm.getStockAlarmLines().stream())
                 .flatMap(stockAlarmLine -> {
                     StockAlarmLineEntity stockAlarmLineEntity = new StockAlarmLineEntity(stockAlarmLine);
                     return this.articleReactive.findByBarcode(stockAlarmLine.getBarcode())

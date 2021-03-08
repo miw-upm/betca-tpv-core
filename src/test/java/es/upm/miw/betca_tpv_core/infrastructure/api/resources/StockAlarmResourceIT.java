@@ -37,7 +37,7 @@ class StockAlarmResourceIT {
                     assertEquals("alarmTest1", stockAlarm1.getName());
                     assertEquals(5, stockAlarm1.getWarning());
                     assertEquals(3, stockAlarm1.getCritical());
-                    assertNotNull(stockAlarm1.getStockAlarmLineList().stream()
+                    assertNotNull(stockAlarm1.getStockAlarmLines().stream()
                             .filter(stockAlarmLine1 -> stockAlarmLine1.getBarcode().equals(stockAlarmLine.getBarcode()))
                     );
                 });
