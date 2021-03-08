@@ -78,8 +78,8 @@ public class TicketService {
         }
     }
 
-    public Flux<Ticket> findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(String key) {
-        return this.ticketPersistence.findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(key);
+    public Flux<Ticket> findByIdOrReferenceLikeOrUserMobileLikeNullSafe(String key) {
+        return this.ticketPersistence.findByIdOrReferenceLikeOrUserMobileLikeNullSafe(key);
     }
 
     public Mono<Ticket> findById(String id) {
