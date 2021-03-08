@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.Offer;
+import es.upm.miw.betca_tpv_core.domain.model.Provider;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.OfferCreationEditionDto;
 import org.junit.jupiter.api.Assertions;
@@ -109,4 +110,16 @@ public class OfferResourceIT {
                 .exchange()
                 .expectStatus().isOk();
     }
+
+    @Test
+    void testReadReference() {
+        String reference = "this-is-a-reference";
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(OFFERS + REFERENCE, reference)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Provider.class);
+    }
+
 }
