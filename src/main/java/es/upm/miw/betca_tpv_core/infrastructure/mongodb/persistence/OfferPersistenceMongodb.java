@@ -6,11 +6,15 @@ import es.upm.miw.betca_tpv_core.domain.model.Offer;
 import es.upm.miw.betca_tpv_core.domain.persistence.OfferPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.OfferReactive;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ArticleEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.OfferEntity;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Arrays;
 
 @Repository
 public class OfferPersistenceMongodb implements OfferPersistence {
@@ -33,17 +37,15 @@ public class OfferPersistenceMongodb implements OfferPersistence {
     @Override
     public Mono<Offer> create(Offer offer) {
         OfferEntity newOfferEnt = new OfferEntity(offer);
-        // this.assertReferenceNotExist(offer.getReference())
-        OfferEntity a = this.offerReactive.findByReference(offer.getReference()).block();
-        if (a != null) {
-            return Mono.error(new ConflictException("Offer Reference already exists : " + offer.getReference()));
-        } else {
-            return Flux.fromStream(offer.getArticleBarcodeList().stream())
-                    .flatMap(barcode -> this.articleReactive.findByBarcode(barcode)
-                            .switchIfEmpty(Mono.error(new NotFoundException("Article: " + barcode)))).doOnNext(newOfferEnt::add)
-                    .then(this.offerReactive.save(newOfferEnt))
-                    .map(OfferEntity::toOffer);
-        }
+
+        System.out.println(offer);
+        return Flux.fromStream(Arrays.stream(offer.getArticleBarcodes().clone()))
+                .flatMap(barcode -> this.articleReactive.findByBarcode(barcode)
+                        .switchIfEmpty(Mono.error(new NotFoundException("Article: " + barcode)))).doOnNext(newOfferEnt::add)
+                .then(this.assertReferenceNotExist(offer.getReference()))
+                .then(this.offerReactive.save(newOfferEnt))
+                .map(OfferEntity::toOffer);
+
     }
 
     public Mono<Void> assertReferenceNotExist(String reference) {
@@ -52,4 +54,31 @@ public class OfferPersistenceMongodb implements OfferPersistence {
                         new ConflictException("Offer Reference already exists : " + reference)
                 ));
     }
+
+    @Override
+    public Mono<Offer> readByReference(String reference) {
+        return this.offerReactive.findByReference(reference)
+                .switchIfEmpty(Mono.error(new NotFoundException("Offer does not exist: " + reference)))
+                .map(OfferEntity::toOffer);
+    }
+
+    @Override
+    public Mono<Offer> update(String reference, Offer updatedOffer) {
+        return this.offerReactive.findByReference(reference)
+                .switchIfEmpty(Mono.error(new NotFoundException("Offer does not exist: " + reference)))
+                .flatMap(offerEntity -> {
+                    System.out.println(">>>>>Before update: " + offerEntity.toOffer());
+                    BeanUtils.copyProperties(updatedOffer, offerEntity);
+                    offerEntity.getArticleEntityList().clear();
+                    Flux<ArticleEntity> articleEntityFlux = Flux.fromStream(Arrays.stream(updatedOffer.getArticleBarcodes().clone()))
+                            .flatMap(barcode -> this.articleReactive.findByBarcode(barcode)
+                                    .switchIfEmpty(Mono.error(new NotFoundException("Article: " + barcode))))
+                            .doOnNext(offerEntity::add);
+                    return articleEntityFlux
+                            .then(this.offerReactive.save(offerEntity));
+                })
+                .map(OfferEntity::toOffer);
+    }
 }
+
+

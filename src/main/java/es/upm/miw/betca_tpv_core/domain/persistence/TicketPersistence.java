@@ -12,7 +12,7 @@ public interface TicketPersistence {
 
     Mono< Ticket > readById(String id);
 
-    Flux<Ticket> findByIdLikeOrReferenceLikeOrUserMobileLikeNullSafe(String key);
+    Flux<Ticket> findByIdOrReferenceLikeOrUserMobileLikeNullSafe(String key);
 
     Mono<Ticket> findById(String id);
 }

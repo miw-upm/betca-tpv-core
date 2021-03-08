@@ -39,7 +39,7 @@ public class StockAlarmEntity {
     public StockAlarm toStockAlarm() {
         StockAlarm stockAlarm = new StockAlarm();
         BeanUtils.copyProperties(this, stockAlarm);
-        stockAlarm.setStockAlarmLineList(this.getStockAlarmLineEntityList().stream()
+        stockAlarm.setStockAlarmLines(this.getStockAlarmLineEntityList().stream()
                 .map(StockAlarmLineEntity::toStockAlarmLine)
                 .collect(Collectors.toList())
         );
