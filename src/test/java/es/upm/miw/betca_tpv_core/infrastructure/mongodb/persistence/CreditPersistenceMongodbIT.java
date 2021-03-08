@@ -52,4 +52,18 @@ public class CreditPersistenceMongodbIT {
                 .expectComplete()
                 .verify();
     }
+
+    @Test
+    void testAddCreditSaleWhenCreditSalesInCreditLineAreEmpty() {
+        StepVerifier
+                .create(this.creditPersistenceMongodb.addCreditSale(Credit.builder().userReference("345436324").build(),
+                        CreditSale.builder().reference("dsfdsf54fds").ticketReference("WB9-e8xQT4ejb74r1vLrCw").payed(false).build()))
+                .expectNextMatches(credit -> {
+                    assertEquals("44366sgfdg53", credit.getReference());
+                    assertNotNull(credit.getCreditSales());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
 }
