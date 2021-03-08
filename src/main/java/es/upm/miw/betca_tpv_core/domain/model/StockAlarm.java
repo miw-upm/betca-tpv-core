@@ -18,7 +18,5 @@ public class StockAlarm {
     private Integer warning;
     private Integer critical;
     @Singular("alarmLine")
-    private List<StockAlarmLine> stockAlarmLineList;
-
-
+    private List<StockAlarmLine> stockAlarmLines;
 }
