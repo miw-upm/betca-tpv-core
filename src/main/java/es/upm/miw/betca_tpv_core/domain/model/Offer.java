@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -31,8 +29,7 @@ public class Offer {
     private LocalDate expiryDate;
     @PositiveBigDecimal
     private BigDecimal discount;
-    @ListNotEmpty
-    private List<String> articleBarcodeList;
+    private String[] articleBarcodes;
 
     public static Offer ofReferenceDescription(Offer offer) {
         return Offer.builder()

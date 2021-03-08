@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -23,14 +22,14 @@ public class OfferCreationEditionDto {
     private LocalDate expiryDate;
     @PositiveBigDecimal
     private BigDecimal discount;
-    @ListNotEmpty
-    private List<String> articleBarcodeList;
+    private String[] articleBarcodes;
+
 
     public OfferCreationEditionDto(Offer offer) {
         this.reference = offer.getReference();
         this.description = offer.getDescription();
         this.expiryDate = offer.getExpiryDate();
         this.discount = offer.getDiscount();
-        this.articleBarcodeList = offer.getArticleBarcodeList();
+        this.articleBarcodes = offer.getArticleBarcodes();
     }
 }

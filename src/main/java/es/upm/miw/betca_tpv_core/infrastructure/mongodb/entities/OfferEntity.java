@@ -48,9 +48,10 @@ public class OfferEntity {
     public Offer toOffer() {
         Offer offer = new Offer();
         BeanUtils.copyProperties(this, offer);
-        offer.setArticleBarcodeList(this.getArticleEntityList().stream()
+        offer.setArticleBarcodes(this.getArticleEntityList().stream()
                 .map(ArticleEntity::getBarcode)
-                .collect(Collectors.toList()));
+                .toArray(String[]::new)
+        );
         return offer;
     }
 }
