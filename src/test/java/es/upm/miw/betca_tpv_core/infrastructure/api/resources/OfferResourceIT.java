@@ -113,13 +113,17 @@ public class OfferResourceIT {
 
     @Test
     void testReadReference() {
-        String reference = "this-is-a-reference";
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(OFFERS + REFERENCE, reference)
+                .uri(OFFERS + REFERENCE, "cmVmZXJlbmNlb2ZmZXIx")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(Provider.class);
+                .expectBody(Offer.class)
+                .value(offer -> {
+                    assertEquals("cmVmZXJlbmNlb2ZmZXIx", offer.getReference());
+                    assertEquals("this is offer 1", offer.getDescription());
+                    assertEquals(offer.getArticleBarcodes().length, 3);
+                    assertEquals(new BigDecimal("10"), offer.getDiscount());
+                });
     }
-
 }
