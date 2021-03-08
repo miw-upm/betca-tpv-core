@@ -69,21 +69,20 @@ public class OfferResourceIT {
                 }).returnResult().getResponseBody();
         assertNotNull(dbOffer);
     }
-/*
+
     @Test
     void testCreateNotFoundBarcodeException() {
-        Offer offer = Offer.builder().reference("123").description("not found offer")
-                .expiryDate(LocalDateTime.of(2021, Month.MARCH, 31, 20, 20))
-                .discount(new BigDecimal("50")).articleBarcodeList(List.of("kk", "8400000000024", "8400000000031"))
-                .build();
+        OfferCreationEditionDto newOffer = new OfferCreationEditionDto(null,"article not found",
+                LocalDate.of(2021,9,15),new BigDecimal("75"),
+                new String[]{"kk", "8400000000024", "8400000000017"});
         this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(OFFERS)
-                .body(Mono.just(offer), Offer.class)
+                .body(Mono.just(newOffer), OfferCreationEditionDto.class)
                 .exchange()
                 .expectStatus().isNotFound();
     }
-
+/*
     @Test
     void testCreateUnauthorizedException() {
         Offer offer = Offer.builder().reference("123").description("not found offer")
