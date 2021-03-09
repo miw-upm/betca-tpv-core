@@ -49,4 +49,11 @@ public class OfferResource {
     public Mono<Offer> update(@PathVariable String reference, @Valid @RequestBody Offer updatedOffer) {
         return this.offerService.update(reference, updatedOffer);
     }
+
+    @GetMapping(value = REFERENCE, produces = {"application/pdf", "application/json"})
+    public Mono<String> print(@PathVariable String reference) {
+        System.out.println(reference);
+        return Mono.just(reference);
+        // return this.offerService.print(reference);
+    }
 }
