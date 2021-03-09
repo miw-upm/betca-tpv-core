@@ -5,6 +5,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+
 @Repository
 public interface ArticlePersistence {
 
@@ -22,4 +24,6 @@ public interface ArticlePersistence {
     Mono< Article > readAndWriteStockByBarcodeAssured(String barcode, Integer stockIncrement);
 
     Flux< String > findByBarcodeAndNotDiscontinuedNullField(String barcode);
+
+    Flux< Article > findArticleByDateLessThan(LocalDateTime localDateTime);
 }

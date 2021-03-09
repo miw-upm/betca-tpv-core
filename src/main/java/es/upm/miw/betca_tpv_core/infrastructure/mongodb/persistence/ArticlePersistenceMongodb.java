@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+
 @Repository
 public class ArticlePersistenceMongodb implements ArticlePersistence {
 
@@ -111,4 +113,9 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
                 ));
     }
 
+    @Override
+    public Flux< Article > findArticleByDateLessThan(LocalDateTime localDateTime) {
+        return this.articleReactive.findArticleEntitiesByRegistrationDateAfter(localDateTime)
+                .map(ArticleEntity::toArticle);
+    }
 }
