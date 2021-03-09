@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.Credit;
 import es.upm.miw.betca_tpv_core.domain.model.CreditSale;
+import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.services.CreditService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class CreditResource {
     }
 
     @GetMapping(SEARCH_UNPAID)
-    public Mono<List<CreditSale>> findCreditSalesWithOnlyUnpaidTickets(@RequestParam() String userReference) {
+    public Mono<Ticket> findCreditSalesWithOnlyUnpaidTickets(@RequestParam() String userReference) {
         return this.creditService.findCreditSalesWithOnlyUnpaidTickets(userReference);
     }
 }
