@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Service
 public class CreditService {
 
@@ -29,8 +31,8 @@ public class CreditService {
         return this.creditPersistence.addCreditSale(userRef, creditSale);
     }
 
-    public Mono<Credit> findByUserReferenceWithOnlyUnpaidTickets(String userReference) {
-        return this.creditPersistence.findByUserReferenceWithOnlyUnpaidTickets(userReference);
+    public Mono<List<CreditSale>> findCreditSalesWithOnlyUnpaidTickets(String userReference) {
+        return this.creditPersistence.findCreditSalesWithOnlyUnpaidTickets(userReference);
     }
 
 }

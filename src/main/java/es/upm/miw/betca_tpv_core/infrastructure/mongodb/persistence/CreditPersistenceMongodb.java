@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 import java.util.stream.Collectors;
+import java.util.List;
 
 @Repository
 public class CreditPersistenceMongodb implements CreditPersistence {
@@ -60,13 +61,14 @@ public class CreditPersistenceMongodb implements CreditPersistence {
     }
 
     @Override
-    public Mono<Credit> findByUserReferenceWithOnlyUnpaidTickets(String userRef) {
+    public Mono<List<CreditSale>> findCreditSalesWithOnlyUnpaidTickets(String userRef) {
         Mono<CreditEntity> creditEntityMono = this.creditReactive.findByUserReference(userRef);
         return creditEntityMono
                 .map(creditEntity -> {
                     creditEntity.setCreditSaleEntities(creditEntity.getCreditSaleEntities().stream().filter(CreditSaleEntity -> !CreditSaleEntity.getPayed()).collect(Collectors.toList()));
                     return creditEntity;
                 })
-                .map(CreditEntity::toCredit);
+                .map(CreditEntity::toCredit)
+                .map(Credit::getCreditSales);
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Rest
 @RequestMapping(CreditResource.CREDIT)
@@ -47,7 +48,7 @@ public class CreditResource {
     }
 
     @GetMapping(SEARCH_UNPAID)
-    public Mono< Credit > findByUserReferenceWithOnlyUnpaidTickets(@RequestParam() String userReference) {
-        return this.creditService.findByUserReferenceWithOnlyUnpaidTickets(userReference);
+    public Mono<List<CreditSale>> findCreditSalesWithOnlyUnpaidTickets(@RequestParam() String userReference) {
+        return this.creditService.findCreditSalesWithOnlyUnpaidTickets(userReference);
     }
 }
