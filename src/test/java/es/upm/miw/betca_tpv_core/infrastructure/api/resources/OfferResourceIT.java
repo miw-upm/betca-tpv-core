@@ -1,6 +1,5 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
-import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.model.Offer;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.OfferCreationEditionDto;
@@ -195,6 +194,31 @@ public class OfferResourceIT {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(OFFERS + REFERENCE + PRINT, "ref-not-found")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+
+    @Test
+    void testDelete(){
+        Offer off = this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(OFFERS + REFERENCE, "cmVmZXJlbmNlb2ZmZXIx")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Offer.class)
+                .returnResult().getResponseBody();
+
+        System.out.println(">>>>>Before delete: " + off);
+        this.restClientTestService.loginAdmin(webTestClient)
+                .delete()
+                .uri(OFFERS + REFERENCE, "cmVmZXJlbmNlb2ZmZXIx")
+                .exchange()
+                .expectStatus().isOk();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(OFFERS + REFERENCE, "cmVmZXJlbmNlb2ZmZXIx")
                 .exchange()
                 .expectStatus().isNotFound();
     }
