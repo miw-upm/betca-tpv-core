@@ -30,14 +30,21 @@ public class StockAlarmResource {
         return this.stockAlarmService.create(stockAlarm);
     }
 
-    @PutMapping(NAME)
+    @PutMapping(NAME_ID)
     public Mono<StockAlarm> update(@PathVariable String name, @RequestBody StockAlarm stockAlarm) {
-        return null;
+        stockAlarm.doDefault();
+        return this.stockAlarmService.update(name, stockAlarm);
+    }
+
+    @GetMapping(NAME_ID)
+    public Mono<StockAlarm> read(@PathVariable String name) {
+        return this.stockAlarmService.read(name);
     }
 
     @GetMapping(NAME)
     public Flux<StockAlarm> find(@RequestParam String name) {
         return this.stockAlarmService.findByNameLike(name);
     }
+
 
 }

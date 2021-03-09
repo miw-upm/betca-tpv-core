@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.StockAlarmResource.NAME;
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.StockAlarmResource.STOCK_ALARMS;
-import static org.junit.jupiter.api.Assertions.*;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.StockAlarmResource.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @RestTestConfig
 class StockAlarmResourceIT {
@@ -58,5 +58,18 @@ class StockAlarmResourceIT {
                 .expectBodyList(StockAlarm.class)
                 .value(Assertions::assertNotNull)
                 .value(list -> assertEquals(2, list.size()));
+    }
+
+    @Test
+    void testFindByNameFound() {
+        String nameFromSeeder = "alarm-pac-2";
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(STOCK_ALARMS + NAME_ID, nameFromSeeder)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(StockAlarm.class)
+                .value(Assertions::assertNotNull)
+                .value(stockAlarm -> assertEquals(nameFromSeeder, stockAlarm.getName()));
     }
 }

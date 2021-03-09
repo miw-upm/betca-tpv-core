@@ -24,4 +24,12 @@ public class StockAlarmService {
     public Flux<StockAlarm> findByNameLike(String name) {
         return this.stockAlarmPersistence.findByNameLike(name);
     }
+
+    public Mono<StockAlarm> update(String name, StockAlarm stockAlarm) {
+        return this.stockAlarmPersistence.update(stockAlarm);
+    }
+
+    public Mono<StockAlarm> read(String name) {
+        return this.stockAlarmPersistence.readByName(name);
+    }
 }

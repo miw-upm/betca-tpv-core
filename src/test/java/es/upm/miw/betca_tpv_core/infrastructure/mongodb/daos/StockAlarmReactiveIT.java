@@ -19,11 +19,23 @@ class StockAlarmReactiveIT {
                 .create(this.stockAlarmReactive.findAll())
                 .thenConsumeWhile(stockAlarm -> {
                     assertNotNull(stockAlarm);
-                    System.out.println(stockAlarm);
                     return true;
                 })
                 .expectComplete()
                 .verify();
     }
 
+    @Test
+    void testFindByName() {
+        String nameFromSeeder = "alarm-pac-2";
+        StepVerifier
+                .create(this.stockAlarmReactive.findByName(nameFromSeeder))
+                .thenConsumeWhile(stockAlarm -> {
+                    assertNotNull(stockAlarm);
+                    System.out.println(stockAlarm);
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
 }

@@ -11,4 +11,8 @@ public interface StockAlarmPersistence {
     Mono<StockAlarm> create(StockAlarm stockAlarm);
 
     Flux<StockAlarm> findByNameLike(String name);
+
+    Mono<StockAlarm> update(StockAlarm stockAlarm);
+
+    Mono<StockAlarm> readByName(String name);
 }
