@@ -29,4 +29,8 @@ public class CreditService {
         return this.creditPersistence.addCreditSale(userRef, creditSale);
     }
 
+    public Mono<Credit> findByUserReferenceWithOnlyUnpaidTickets(String userReference) {
+        return this.creditPersistence.findByUserReferenceWithOnlyUnpaidTickets(userReference);
+    }
+
 }
