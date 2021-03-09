@@ -67,7 +67,7 @@ public class CreditResourceIT {
 
     @Test
     void testFindCreditSalesWithOnlyUnpaidTickets() {
-        /*this.restClientTestService.loginAdmin(webTestClient)
+        this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path(CREDIT + SEARCH_UNPAID)
@@ -75,11 +75,9 @@ public class CreditResourceIT {
                         .build())
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(List<CreditSale>.class)
+                .expectBody(List.class)
                 .value(Assertions::assertNotNull)
-                .value(credit -> assertEquals("sdgfsgfdg53", credit.getReference()))
-                .value(credit -> assertEquals(1, credit.getCreditSales().size()))
-                .value(credit -> assertEquals("hjf45jfdsffds", credit.getCreditSales().get(0).getReference()));*/
+                .value(creditSalesList -> assertEquals(1, creditSalesList.size()));
     }
 
 }
