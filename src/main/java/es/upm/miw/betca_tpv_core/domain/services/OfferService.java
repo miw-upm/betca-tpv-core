@@ -35,7 +35,7 @@ public class OfferService {
     }
 
     public Mono<byte[]> print(String reference) {
-        Mono<Offer> offer = this.offerPersistence.readByReference(reference);
-        return offer.map(new PdfOfferBuilder()::generateOffer);
+        return this.offerPersistence.readByReference(reference)
+                .map(new PdfOfferBuilder()::generateOffer);
     }
 }
