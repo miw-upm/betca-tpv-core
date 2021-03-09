@@ -18,6 +18,7 @@ public class OfferResource {
     public static final String OFFERS = "/offers";
     public static final String SEARCH_OFFER = "/search";
     public static final String REFERENCE = "/{reference}";
+    public static final String PRINT = "/print";
 
     private OfferService offerService;
 
@@ -48,5 +49,10 @@ public class OfferResource {
     @PutMapping(REFERENCE)
     public Mono<Offer> update(@PathVariable String reference, @Valid @RequestBody Offer updatedOffer) {
         return this.offerService.update(reference, updatedOffer);
+    }
+
+    @GetMapping(value = REFERENCE + PRINT, produces = {"application/pdf", "application/json"})
+    public Mono<byte[]> print(@PathVariable String reference) {
+        return this.offerService.print(reference);
     }
 }

@@ -13,7 +13,6 @@ import reactor.core.publisher.Mono;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleResource.*;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.OfferResource.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -65,6 +64,13 @@ public class OfferResourceIT {
                     assertNotNull(returnOffer.getArticleBarcodes());
                 }).returnResult().getResponseBody();
         assertNotNull(dbOffer);
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(OFFERS + REFERENCE + PRINT, dbOffer.getReference())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(byte[].class)
+                .value(Assertions::assertNotNull);
     }
 
     @Test
@@ -171,5 +177,25 @@ public class OfferResourceIT {
                 .returnResult()
                 .getResponseBody();
         assertNotNull(updatedOffer);
+    }
+
+    @Test
+    void testPrintOffer() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(OFFERS + REFERENCE + PRINT, "cmVmZXJlbmNlb2ZmZXIx")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(byte[].class)
+                .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void testPrintOfferNotFound() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(OFFERS + REFERENCE + PRINT, "ref-not-found")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 }

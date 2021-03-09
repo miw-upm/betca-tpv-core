@@ -34,4 +34,12 @@ class StockAlarmMongodbIT {
                 .expectComplete()
                 .verify();
     }
+
+    @Test
+    void testFindByNameExpectedError() {
+        StepVerifier
+                .create(this.stockAlarmPersistence.readByName("asdasdasdnotFound"))
+                .expectError()
+                .verify();
+    }
 }
