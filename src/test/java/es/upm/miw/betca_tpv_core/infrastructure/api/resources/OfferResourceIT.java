@@ -227,4 +227,22 @@ public class OfferResourceIT {
                 .exchange()
                 .expectStatus().isNotFound();
     }
+
+    @Test
+    void testDeleteNotFound() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .delete()
+                .uri(OFFERS + REFERENCE, "ref-not-found")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testDeleteUnauthorized() {
+        webTestClient
+                .delete()
+                .uri(OFFERS + REFERENCE, "cmVmZXJlbmNlb2ZmZXIx")
+                .exchange()
+                .expectStatus().isUnauthorized();
+    }
 }
