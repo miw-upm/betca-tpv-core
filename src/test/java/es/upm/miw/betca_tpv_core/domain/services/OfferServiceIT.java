@@ -12,7 +12,7 @@ public class OfferServiceIT {
     private OfferService offerService;
 
     @Test
-    void testPrint() {
+    void testPrintOffer() {
         StepVerifier
                 .create(this.offerService.print("cmVmZXJlbmNlb2ZmZXIx"))
                 .expectNextCount(1)
