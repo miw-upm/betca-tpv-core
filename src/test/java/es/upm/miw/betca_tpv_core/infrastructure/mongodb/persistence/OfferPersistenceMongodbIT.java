@@ -6,6 +6,7 @@ import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Offer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
@@ -134,8 +135,16 @@ class OfferPersistenceMongodbIT {
 
     @Test
     void testDelete() {
+        Mono<Void> offerToDelete = this.offerPersistenceMongodb.create(
+                Offer.builder().reference("offer-to-delete")
+                        .description("test delete persistence")
+                        .expiryDate(LocalDate.of(2021, Month.MARCH, 31))
+                        .discount(new BigDecimal("75"))
+                        .articleBarcodes(new String[]{"8400000000031", "8400000000024", "8400000000017"})
+                        .build())
+                .flatMap(offer -> this.offerPersistenceMongodb.delete(offer.getReference()));
         StepVerifier
-                .create(this.offerPersistenceMongodb.delete("cmVmZXJlbmNlb2ZmZXIy"))
+                .create(offerToDelete)
                 .expectComplete()
                 .verify();
     }
