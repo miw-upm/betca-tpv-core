@@ -51,9 +51,7 @@ public class OfferResource {
     }
 
     @GetMapping(value = REFERENCE, produces = {"application/pdf", "application/json"})
-    public Mono<String> print(@PathVariable String reference) {
-        System.out.println(reference);
-        return Mono.just(reference);
-        // return this.offerService.print(reference);
+    public Mono<byte[]> print(@PathVariable String reference) {
+        return this.offerService.print(reference);
     }
 }
