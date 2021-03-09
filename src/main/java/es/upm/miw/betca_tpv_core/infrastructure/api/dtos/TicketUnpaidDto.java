@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -14,11 +13,11 @@ import java.time.LocalDateTime;
 public class TicketUnpaidDto {
     private String reference;
     private BigDecimal amount;
-    private LocalDateTime creationDate;
+    private String creationDate;
 
     public TicketUnpaidDto(Ticket ticket) {
         this.reference = ticket.getReference();
         this.amount = ticket.total();
-        this.creationDate = ticket.getCreationDate();
+        this.creationDate = ticket.getCreationDate().toString();
     }
 }
