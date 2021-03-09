@@ -1,6 +1,5 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
-import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.model.Offer;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.OfferCreationEditionDto;
@@ -56,7 +55,6 @@ public class OfferResourceIT {
                 .expectBody(Offer.class)
                 .value(Assertions::assertNotNull)
                 .value(returnOffer -> {
-                    System.out.println(">>>>> Test:: returnOffer:" + returnOffer);
                     assertNotNull(returnOffer.getReference());
                     assertEquals("new offer", returnOffer.getDescription());
                     assertNotNull(returnOffer.getExpiryDate());
@@ -195,6 +193,37 @@ public class OfferResourceIT {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(OFFERS + REFERENCE + PRINT, "ref-not-found")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testDelete() {
+        OfferCreationEditionDto offerDelete = new OfferCreationEditionDto("refToDelete", "desToDelete",
+                LocalDate.of(2021, 9, 15), new BigDecimal("75"),
+                new String[]{"8400000000031", "8400000000024", "8400000000017"});
+
+        Offer dbOffer = this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(OFFERS)
+                .body(Mono.just(offerDelete), OfferCreationEditionDto.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Offer.class)
+                .value(Assertions::assertNotNull)
+                .returnResult().getResponseBody();
+        assertNotNull(dbOffer);
+        String refToDelete = dbOffer.getReference();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .delete()
+                .uri(OFFERS + REFERENCE, refToDelete)
+                .exchange()
+                .expectStatus().isOk();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(OFFERS + REFERENCE, refToDelete)
                 .exchange()
                 .expectStatus().isNotFound();
     }

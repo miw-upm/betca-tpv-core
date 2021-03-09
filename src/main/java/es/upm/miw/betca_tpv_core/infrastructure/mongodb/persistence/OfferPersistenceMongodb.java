@@ -38,7 +38,6 @@ public class OfferPersistenceMongodb implements OfferPersistence {
     public Mono<Offer> create(Offer offer) {
         OfferEntity newOfferEnt = new OfferEntity(offer);
 
-        System.out.println(offer);
         return Flux.fromStream(Arrays.stream(offer.getArticleBarcodes().clone()))
                 .flatMap(barcode -> this.articleReactive.findByBarcode(barcode)
                         .switchIfEmpty(Mono.error(new NotFoundException("Article: " + barcode)))).doOnNext(newOfferEnt::add)
@@ -78,6 +77,12 @@ public class OfferPersistenceMongodb implements OfferPersistence {
                 })
                 .map(OfferEntity::toOffer);
     }
+
+    @Override
+    public Mono<Void> delete(String reference) {
+        Mono<String> idDeleted = this.offerReactive.findByReference(reference)
+                .switchIfEmpty(Mono.error(new NotFoundException("Offer does not exist: " + reference)))
+                .map(OfferEntity::getId);
+        return this.offerReactive.deleteById(idDeleted);
+    }
 }
-
-

@@ -55,4 +55,10 @@ public class OfferResource {
     public Mono<byte[]> print(@PathVariable String reference) {
         return this.offerService.print(reference);
     }
+
+    @DeleteMapping(REFERENCE)
+    public Mono<Void>  delete(@PathVariable String reference) {
+        return this.offerService.delete(reference);
+    }
+
 }

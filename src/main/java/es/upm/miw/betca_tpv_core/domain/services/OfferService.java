@@ -38,4 +38,8 @@ public class OfferService {
         return this.offerPersistence.readByReference(reference)
                 .map(new PdfOfferBuilder()::generateOffer);
     }
+
+    public Mono<Void> delete(String reference) {
+        return this.offerPersistence.delete(reference);
+    }
 }
