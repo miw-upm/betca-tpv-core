@@ -12,9 +12,9 @@ import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.List;
 
@@ -65,7 +65,7 @@ public class CreditPersistenceMongodb implements CreditPersistence {
     }
 
     @Override
-    public Mono<Ticket> findCreditSalesWithOnlyUnpaidTickets(String userRef) {
+    public Mono<List<Ticket>> findUnpaidTicketsFromCreditLine(String userRef) {
         Mono<CreditEntity> creditEntityMono = this.creditReactive.findByUserReference(userRef);
         return creditEntityMono
                 .map(creditEntity -> {
@@ -73,8 +73,10 @@ public class CreditPersistenceMongodb implements CreditPersistence {
                     return creditEntity;
                 })
                 .map(CreditEntity::getCreditSaleEntities)
-                .map(creditSaleEntities -> creditSaleEntities.get(0).getTicketEntity()
-                )
-                .map(TicketEntity::toTicket);
+                .map(creditSaleEntity -> {
+                    List<Ticket> ticketList = new ArrayList<>();
+                    creditSaleEntity.forEach(creditSaleEntity1 -> ticketList.add(creditSaleEntity1.getTicketEntity().toTicket()));
+                    return ticketList;
+                });
     }
 }

@@ -49,7 +49,7 @@ public class CreditResource {
     }
 
     @GetMapping(SEARCH_UNPAID)
-    public Mono<Ticket> findCreditSalesWithOnlyUnpaidTickets(@RequestParam() String userReference) {
-        return this.creditService.findCreditSalesWithOnlyUnpaidTickets(userReference);
+    public Mono<List<Ticket>> findUnpaidTicketsFromCreditLine(@RequestParam() String userReference) {
+        return this.creditService.findUnpaidTicketsFromCreditLine(userReference);
     }
 }

@@ -66,7 +66,7 @@ public class CreditResourceIT {
     }
 
     @Test
-    void testFindCreditSalesWithOnlyUnpaidTickets() {
+    void testFindUnpaidTicketsFromCreditLine() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
