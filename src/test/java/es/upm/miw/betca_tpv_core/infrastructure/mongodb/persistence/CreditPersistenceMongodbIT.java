@@ -70,4 +70,18 @@ public class CreditPersistenceMongodbIT {
                 .expectComplete()
                 .verify();
     }
+
+    @Test
+    void testFindUnpaidTickets() {
+        StepVerifier
+                .create(this.creditPersistenceMongodb.findByUserReferenceWithOnlyUnpaidTickets("53354324"))
+                .expectNextMatches(credit -> {
+                    assertEquals("sdgfsgfdg53", credit.getReference());
+                    assertEquals(1, credit.getCreditSales().size());
+                    assertEquals("hjf45jfdsffds", credit.getCreditSales().get(0).getReference());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
 }
