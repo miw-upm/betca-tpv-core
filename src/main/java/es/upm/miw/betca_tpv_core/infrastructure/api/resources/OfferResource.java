@@ -3,7 +3,6 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 import es.upm.miw.betca_tpv_core.domain.model.Offer;
 import es.upm.miw.betca_tpv_core.domain.services.OfferService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.OfferCreationEditionDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.OfferListDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +16,8 @@ import javax.validation.Valid;
 public class OfferResource {
 
     public static final String OFFERS = "/offers";
-    public static final String SEARCH = "/search";
+    public static final String SEARCH_OFFER = "/search";
+    public static final String REFERENCE = "/{reference}";
 
     private OfferService offerService;
 
@@ -26,7 +26,7 @@ public class OfferResource {
         this.offerService = offerService;
     }
 
-    @GetMapping(SEARCH)
+    @GetMapping(SEARCH_OFFER)
     public Flux<OfferListDto> findByReferenceAndDescriptionNullSafe(
             @RequestParam(required = false) String reference,
             @RequestParam(required = false) String description) {
@@ -38,5 +38,15 @@ public class OfferResource {
     public Mono<Offer> create(@Valid @RequestBody Offer newOffer) {
         newOffer.doDefault();
         return this.offerService.create(newOffer);
+    }
+
+    @GetMapping(REFERENCE)
+    public Mono<Offer> read(@PathVariable String reference) {
+        return this.offerService.read(reference);
+    }
+
+    @PutMapping(REFERENCE)
+    public Mono<Offer> update(@PathVariable String reference, @Valid @RequestBody Offer updatedOffer) {
+        return this.offerService.update(reference, updatedOffer);
     }
 }

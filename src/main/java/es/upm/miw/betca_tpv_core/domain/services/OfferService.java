@@ -24,4 +24,12 @@ public class OfferService {
     public Mono<Offer> create(Offer offer) {
         return this.offerPersistence.create(offer);
     }
+
+    public Mono<Offer> read(String reference) {
+        return this.offerPersistence.readByReference(reference);
+    }
+
+    public Mono<Offer> update(String reference, Offer updatedOffer) {
+        return this.offerPersistence.update(reference, updatedOffer);
+    }
 }
