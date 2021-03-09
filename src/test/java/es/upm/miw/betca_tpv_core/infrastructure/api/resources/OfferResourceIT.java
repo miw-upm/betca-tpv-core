@@ -189,4 +189,13 @@ public class OfferResourceIT {
                 .expectBody(byte[].class)
                 .value(Assertions::assertNotNull);
     }
+
+    @Test
+    void testPrintOfferNotFound() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(OFFERS + REFERENCE + PRINT, "ref-not-found")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
 }
