@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
+import java.util.stream.Collectors;
+
 @Repository
 public class CreditPersistenceMongodb implements CreditPersistence {
     private CreditReactive creditReactive;
@@ -54,6 +56,17 @@ public class CreditPersistenceMongodb implements CreditPersistence {
                             });
                 })
                 .flatMap(this.creditReactive::save)
+                .map(CreditEntity::toCredit);
+    }
+
+    @Override
+    public Mono<Credit> findUnpaidTickets(String userRef) {
+        Mono<CreditEntity> creditEntityMono = this.creditReactive.findByUserReference(userRef);
+        return creditEntityMono
+                .map(creditEntity -> {
+                    creditEntity.setCreditSaleEntities(creditEntity.getCreditSaleEntities().stream().filter(CreditSaleEntity -> !CreditSaleEntity.getPayed()).collect(Collectors.toList()));
+                    return creditEntity;
+                })
                 .map(CreditEntity::toCredit);
     }
 }
