@@ -80,18 +80,10 @@ public class OfferPersistenceMongodb implements OfferPersistence {
     }
 
     @Override
-    public Mono<Void> delete(String reference){
-        System.out.println("Offer to persistence: " + reference);
-        Mono<String> aa = this.offerReactive.findByReference(reference)
+    public Mono<Void> delete(String reference) {
+        Mono<String> idDeleted = this.offerReactive.findByReference(reference)
                 .switchIfEmpty(Mono.error(new NotFoundException("Offer does not exist: " + reference)))
-                .map(offerEntity -> {
-                    String id = offerEntity.getId();
-                    System.out.println(">>>>>>Ref to delete: " + offerEntity.getReference());
-                    System.out.println(">>>>>>Id to delete: " + id);
-                    return id;
-                });
-        return this.offerReactive.deleteById(aa);
+                .map(OfferEntity::getId);
+        return this.offerReactive.deleteById(idDeleted);
     }
 }
-
-
