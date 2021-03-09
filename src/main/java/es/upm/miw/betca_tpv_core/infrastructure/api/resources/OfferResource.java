@@ -57,9 +57,8 @@ public class OfferResource {
     }
 
     @DeleteMapping(REFERENCE)
-    public Mono<Void> delete(@PathVariable String reference) {
-        System.out.println("Offer to delete: " + reference);
-        return Mono.empty();
+    public Mono<Void>  delete(@PathVariable String reference) {
+        return this.offerService.delete(reference);
     }
 
 }
