@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities;
 
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.model.User;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketUnpaidDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -55,6 +56,10 @@ public class TicketEntity {
             ticket.setUser(User.builder().mobile(this.getUserMobile()).build());
         }
         return ticket;
+    }
+
+    public TicketUnpaidDto toTicketUnpaidDto() {
+        return new TicketUnpaidDto(this.toTicket());
     }
 
 }

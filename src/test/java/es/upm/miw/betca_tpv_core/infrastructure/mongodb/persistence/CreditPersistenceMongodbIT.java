@@ -72,12 +72,12 @@ public class CreditPersistenceMongodbIT {
     }
 
     @Test
-    void testFindCreditSalesWithOnlyUnpaidTickets() {
+    void testFindUnpaidTicketsFromCreditLine() {
         StepVerifier
-                .create(this.creditPersistenceMongodb.findCreditSalesWithOnlyUnpaidTickets("53354324"))
-                .expectNextMatches(creditSaleList -> {
-                    assertEquals(1, creditSaleList.size());
-                    assertEquals("hjf45jfdsffds", creditSaleList.get(0).getReference());
+                .create(this.creditPersistenceMongodb.findUnpaidTicketsFromCreditLine("53354324"))
+                .expectNextMatches(ticketList -> {
+                    assertEquals(1, ticketList.size());
+                    assertEquals("lpiHOlsoS_WkkEyWeFNJtg", ticketList.get(0).getReference());
                     return true;
                 })
                 .expectComplete()

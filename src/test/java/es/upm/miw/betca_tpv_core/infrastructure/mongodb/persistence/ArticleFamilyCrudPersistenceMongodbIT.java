@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
 public class ArticleFamilyCrudPersistenceMongodbIT {
@@ -21,7 +20,7 @@ public class ArticleFamilyCrudPersistenceMongodbIT {
                 .expectNextMatches(articleFamilyDto -> {
                     assertEquals("zz-falda-T2",articleFamilyDto.getReference());
                     assertEquals("Zarzuela - Falda T2",articleFamilyDto.getDescription());
-                    assertNull(articleFamilyDto.getArticleFamilyCrudList());
+                    assertNotNull(articleFamilyDto.getArticleFamilyCrudList());
                     return true;
                 })
                 .expectComplete()
@@ -36,7 +35,6 @@ public class ArticleFamilyCrudPersistenceMongodbIT {
                     assertEquals(2,articleFamilyDto.getArticleFamilyCrudList().size());
                     assertEquals("zz-falda-T2",articleFamilyDto.getArticleFamilyCrudList().get(0).getReference());
                     assertEquals("zz-falda-T4",articleFamilyDto.getArticleFamilyCrudList().get(1).getReference());
-
                     return true;
                 })
                 .expectComplete()
