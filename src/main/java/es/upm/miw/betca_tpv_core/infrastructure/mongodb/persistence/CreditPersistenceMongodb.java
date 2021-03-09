@@ -1,12 +1,13 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Credit;
 import es.upm.miw.betca_tpv_core.domain.model.CreditSale;
 import es.upm.miw.betca_tpv_core.domain.persistence.CreditPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.CreditReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.CreditSaleReactive;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.CreditEntity;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.CreditSaleEntity;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
@@ -37,13 +38,20 @@ public class CreditPersistenceMongodb implements CreditPersistence {
     @Override
     public Mono<Credit> addCreditSale(String userRef, CreditSale creditSale) {
         Mono<CreditEntity> creditEntityMono = this.creditReactive.findByUserReference(userRef);
-        CreditSaleEntity[] creditSaleEntitiesOld = creditEntityMono.map(CreditEntity::getCreditSaleEntities).block();
-        CreditSaleEntity[] creditSaleEntityAdded = this.creditSaleReactive.findByReference(creditSale.getReference()).block().toCreditSaleArray(creditSaleEntitiesOld);
 
         return creditEntityMono
-                .map(creditEntity -> {
-                    creditEntity.setCreditSaleEntities(creditSaleEntityAdded);
-                    return creditEntity;
+                .switchIfEmpty(Mono
+                        .error(new NotFoundException("Non existent credit-line")))
+                .flatMap(creditEntity -> {
+                    BeanUtils.copyProperties(creditEntity, creditEntity);
+                    return this.creditSaleReactive.findByReference(creditSale.getReference())
+                            .switchIfEmpty(Mono.error(
+                                    new NotFoundException("Non existent credit-sale"))
+                            )
+                            .map(creditSaleEntity -> {
+                                creditEntity.getCreditSaleEntities().add(creditSaleEntity);
+                                return creditEntity;
+                            });
                 })
                 .flatMap(this.creditReactive::save)
                 .map(CreditEntity::toCredit);

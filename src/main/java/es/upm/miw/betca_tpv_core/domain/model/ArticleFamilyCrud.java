@@ -6,25 +6,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Credit {
+public class ArticleFamilyCrud {
     private String reference;
-    @NotBlank
-    private String userReference;
-    private List<CreditSale> creditSales;
-
-    public void doDefault() {
-        if (Objects.isNull(reference)) {
-            this.reference = UUID.randomUUID().toString();
-        }
-    }
+    private String description;
+    private TreeType treeType;
+    private List<ArticleFamilyCrud> articleFamilyCrudList;
 }
