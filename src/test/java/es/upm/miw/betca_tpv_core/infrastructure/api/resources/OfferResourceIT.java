@@ -64,6 +64,13 @@ public class OfferResourceIT {
                     assertNotNull(returnOffer.getArticleBarcodes());
                 }).returnResult().getResponseBody();
         assertNotNull(dbOffer);
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(OFFERS + REFERENCE + PRINT, dbOffer.getReference())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(byte[].class)
+                .value(Assertions::assertNotNull);
     }
 
     @Test
