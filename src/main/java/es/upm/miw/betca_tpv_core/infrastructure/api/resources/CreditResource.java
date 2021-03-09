@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_core.domain.model.CreditSale;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.services.CreditService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketUnpaidDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -49,7 +50,7 @@ public class CreditResource {
     }
 
     @GetMapping(SEARCH_UNPAID)
-    public Mono<List<Ticket>> findUnpaidTicketsFromCreditLine(@RequestParam() String userReference) {
+    public Mono<List<TicketUnpaidDto>> findUnpaidTicketsFromCreditLine(@RequestParam() String userReference) {
         return this.creditService.findUnpaidTicketsFromCreditLine(userReference);
     }
 }

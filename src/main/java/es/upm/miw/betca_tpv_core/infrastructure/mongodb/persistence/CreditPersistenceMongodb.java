@@ -3,8 +3,8 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Credit;
 import es.upm.miw.betca_tpv_core.domain.model.CreditSale;
-import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.persistence.CreditPersistence;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketUnpaidDto;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.CreditReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.CreditSaleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.TicketReactive;
@@ -65,7 +65,7 @@ public class CreditPersistenceMongodb implements CreditPersistence {
     }
 
     @Override
-    public Mono<List<Ticket>> findUnpaidTicketsFromCreditLine(String userRef) {
+    public Mono<List<TicketUnpaidDto>> findUnpaidTicketsFromCreditLine(String userRef) {
         Mono<CreditEntity> creditEntityMono = this.creditReactive.findByUserReference(userRef);
         return creditEntityMono
                 .map(creditEntity -> {
@@ -74,8 +74,8 @@ public class CreditPersistenceMongodb implements CreditPersistence {
                 })
                 .map(CreditEntity::getCreditSaleEntities)
                 .map(creditSaleEntity -> {
-                    List<Ticket> ticketList = new ArrayList<>();
-                    creditSaleEntity.forEach(creditSaleEntity1 -> ticketList.add(creditSaleEntity1.getTicketEntity().toTicket()));
+                    List<TicketUnpaidDto> ticketList = new ArrayList<>();
+                    creditSaleEntity.forEach(creditSaleEntity1 -> ticketList.add(creditSaleEntity1.getTicketEntity().toTicketUnpaidDto()));
                     return ticketList;
                 });
     }
