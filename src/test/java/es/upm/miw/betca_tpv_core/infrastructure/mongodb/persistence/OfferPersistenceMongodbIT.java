@@ -81,4 +81,54 @@ class OfferPersistenceMongodbIT {
                 .expectComplete()
                 .verify();
     }
+
+    @Test
+    void testUpdate() {
+        StepVerifier
+                .create(this.offerPersistenceMongodb.update("cmVmZXJlbmNlb2ZmZXIy",
+                        Offer.builder().reference("cmVmZXJlbmNlb2ZmZXIy")
+                                .description("test update persistence")
+                                .creationDate(LocalDate.of(2021, Month.FEBRUARY, 25))
+                                .expiryDate(LocalDate.of(2021, Month.MARCH, 31))
+                                .discount(new BigDecimal("30"))
+                                .articleBarcodes(new String[]{"8400000000048", "8400000000024", "8400000000017"})
+                                .build()))
+                .expectNextMatches(offer -> {
+                    assertEquals("test update persistence", offer.getDescription());
+                    assertEquals(new BigDecimal("30"), offer.getDiscount());
+                    assertNotNull(offer.getArticleBarcodes());
+                    return true;
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void testUpdateNotExistingReference() {
+        StepVerifier
+                .create(this.offerPersistenceMongodb.update("not-a-reference",
+                        Offer.builder().reference("not-a-reference")
+                                .description("test update not existing reference")
+                                .creationDate(LocalDate.of(2021, Month.FEBRUARY, 25))
+                                .expiryDate(LocalDate.of(2021, Month.MARCH, 31))
+                                .discount(new BigDecimal("30"))
+                                .articleBarcodes(new String[]{"8400000000048", "8400000000024", "8400000000017"})
+                                .build()))
+                .expectError(NotFoundException.class)
+                .verify();
+    }
+
+    @Test
+    void testUpdateNotExistingBarcode() {
+        StepVerifier
+                .create(this.offerPersistenceMongodb.update("cmVmZXJlbmNlb2ZmZXIy",
+                        Offer.builder().reference("cmVmZXJlbmNlb2ZmZXIy")
+                                .description("test update not existing barcode")
+                                .creationDate(LocalDate.of(2021, Month.FEBRUARY, 25))
+                                .expiryDate(LocalDate.of(2021, Month.MARCH, 31))
+                                .discount(new BigDecimal("30"))
+                                .articleBarcodes(new String[]{"kk", "8400000000024", "8400000000017"})
+                                .build()))
+                .expectError(NotFoundException.class)
+                .verify();
+    }
 }
