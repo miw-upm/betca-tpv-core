@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -19,4 +20,13 @@ public class StockAlarm {
     private Integer critical;
     @Singular("alarmLine")
     private List<StockAlarmLine> stockAlarmLines;
+
+    public void doDefault() {
+        if (Objects.isNull(warning)) {
+            this.warning = 5;
+        }
+        if (Objects.isNull(critical)) {
+            this.critical = 5;
+        }
+    }
 }

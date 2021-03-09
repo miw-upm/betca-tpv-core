@@ -5,7 +5,6 @@ import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.services.ArticleService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ArticleBarcodesDto;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ArticleNewDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +12,14 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
-import java.math.BigDecimal;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Rest
 @RequestMapping(ArticleResource.ARTICLES)
 public class ArticleResource {
     public static final String ARTICLES = "/articles";
     public static final String NEWS = "/news";
+    public static final String ARTICLE_DAYS = "/{days}";
     public static final String BARCODE_ID = "/{barcode}";
     public static final String SEARCH = "/search";
     public static final String UNFINISHED = "/unfinished";
@@ -73,11 +72,12 @@ public class ArticleResource {
         return this.articleService.findByUnfinished();
     }
 
-    @GetMapping(NEWS)
-    public Flux< ArticleNewDto > findArticleByDateLessThan(){
-        ArticleNewDto article1 = new ArticleNewDto("111111", "First Article from Spring", new BigDecimal(11));
-        ArticleNewDto article2 = new ArticleNewDto("222222", "Second Article from Spring", new BigDecimal(22));
-        return Flux.just(article1, article2);
+    @PreAuthorize("permitAll()")
+    @GetMapping(NEWS + ARTICLE_DAYS)
+    public Flux< Article > findArticleByDateLessThan(@PathVariable int days){
+        LocalDateTime localDateTime = LocalDateTime.now();
+        localDateTime = localDateTime.minusDays(days);
+        return this.articleService.findArticleByDateLessThan(localDateTime);
     }
 
 }

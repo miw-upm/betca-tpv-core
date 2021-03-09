@@ -3,19 +3,26 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Credit;
 import es.upm.miw.betca_tpv_core.domain.model.CreditSale;
+import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.persistence.CreditPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.CreditReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.CreditSaleReactive;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.TicketReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.List;
+
 @Repository
 public class CreditPersistenceMongodb implements CreditPersistence {
     private CreditReactive creditReactive;
     private CreditSaleReactive creditSaleReactive;
+    private TicketReactive ticketReactive;
 
     @Autowired
     public CreditPersistenceMongodb(CreditReactive creditReactive, CreditSaleReactive creditSaleReactive) {
@@ -55,5 +62,21 @@ public class CreditPersistenceMongodb implements CreditPersistence {
                 })
                 .flatMap(this.creditReactive::save)
                 .map(CreditEntity::toCredit);
+    }
+
+    @Override
+    public Mono<List<Ticket>> findUnpaidTicketsFromCreditLine(String userRef) {
+        Mono<CreditEntity> creditEntityMono = this.creditReactive.findByUserReference(userRef);
+        return creditEntityMono
+                .map(creditEntity -> {
+                    creditEntity.setCreditSaleEntities(creditEntity.getCreditSaleEntities().stream().filter(CreditSaleEntity -> !CreditSaleEntity.getPayed()).collect(Collectors.toList()));
+                    return creditEntity;
+                })
+                .map(CreditEntity::getCreditSaleEntities)
+                .map(creditSaleEntity -> {
+                    List<Ticket> ticketList = new ArrayList<>();
+                    creditSaleEntity.forEach(creditSaleEntity1 -> ticketList.add(creditSaleEntity1.getTicketEntity().toTicket()));
+                    return ticketList;
+                });
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleResource.*;
@@ -149,6 +150,20 @@ class ArticleResourceIT {
                 .value(Assertions::assertNotNull)
                 .value(articles -> assertTrue(articles.stream()
                         .anyMatch(article -> Objects.isNull(article.getProviderCompany()))));
+    }
+
+    @Test
+    void testFindArticleByDateLessThan() {
+        LocalDateTime testDate = LocalDateTime.now().minusDays(30);
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(ARTICLES + NEWS + "/30")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Article.class)
+                .value(Assertions::assertNotNull)
+                .value(articles -> assertTrue(articles.stream()
+                        .anyMatch(article -> article.getRegistrationDate().isAfter(testDate))));
     }
 
     @Test

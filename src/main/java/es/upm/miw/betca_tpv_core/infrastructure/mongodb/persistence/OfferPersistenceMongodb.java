@@ -67,7 +67,6 @@ public class OfferPersistenceMongodb implements OfferPersistence {
         return this.offerReactive.findByReference(reference)
                 .switchIfEmpty(Mono.error(new NotFoundException("Offer does not exist: " + reference)))
                 .flatMap(offerEntity -> {
-                    System.out.println(">>>>>Before update: " + offerEntity.toOffer());
                     BeanUtils.copyProperties(updatedOffer, offerEntity);
                     offerEntity.getArticleEntityList().clear();
                     Flux<ArticleEntity> articleEntityFlux = Flux.fromStream(Arrays.stream(updatedOffer.getArticleBarcodes().clone()))
