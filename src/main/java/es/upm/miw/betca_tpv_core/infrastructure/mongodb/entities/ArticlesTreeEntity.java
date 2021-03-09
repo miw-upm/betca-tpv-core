@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities;
 
 import es.upm.miw.betca_tpv_core.domain.model.TreeType;
+import es.upm.miw.betca_tpv_core.domain.model.ArticleFamilyCrud;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -29,6 +30,8 @@ public abstract class ArticlesTreeEntity {
     public abstract void add(ArticlesTreeEntity articlesTreeEntity);
 
     public abstract void remove(ArticlesTreeEntity articlesTreeEntity);
+
+    public abstract ArticleFamilyCrud toDto();
 
     public abstract List< ArticlesTreeEntity > contents();
 }
