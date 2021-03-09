@@ -9,6 +9,6 @@ public interface CreditPersistence {
     Mono<Credit> create(Credit credit);
     Mono<Credit> findByUserReference(String userReference);
     Mono<Credit> addCreditSale(String userRef, CreditSale creditSale);
-    Mono<Credit> findUnpaidTickets(String userRef);
+    Mono<Credit> findByUserReferenceWithOnlyUnpaidTickets(String userRef);
 
 }

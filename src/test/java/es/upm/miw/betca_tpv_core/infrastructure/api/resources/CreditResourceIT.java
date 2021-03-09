@@ -63,4 +63,21 @@ public class CreditResourceIT {
                 .expectStatus().isOk();
     }
 
+    @Test
+    void testFindByUserReferenceWithOnlyUnpaidTickets() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(CREDIT + SEARCH_UNPAID)
+                        .queryParam("userReference", "53354324")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Credit.class)
+                .value(Assertions::assertNotNull)
+                .value(credit -> assertEquals("sdgfsgfdg53", credit.getReference()))
+                .value(credit -> assertEquals(1, credit.getCreditSales().size()))
+                .value(credit -> assertEquals("hjf45jfdsffds", credit.getCreditSales().get(0).getReference()));
+    }
+
 }

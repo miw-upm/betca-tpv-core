@@ -60,7 +60,7 @@ public class CreditPersistenceMongodb implements CreditPersistence {
     }
 
     @Override
-    public Mono<Credit> findUnpaidTickets(String userRef) {
+    public Mono<Credit> findByUserReferenceWithOnlyUnpaidTickets(String userRef) {
         Mono<CreditEntity> creditEntityMono = this.creditReactive.findByUserReference(userRef);
         return creditEntityMono
                 .map(creditEntity -> {

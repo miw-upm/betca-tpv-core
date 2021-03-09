@@ -18,6 +18,8 @@ public class CreditResource {
 
     public static final String SEARCH = "/search";
 
+    public static final String SEARCH_UNPAID = "/searchUnpaid";
+
     public static final String USER_REF = "/{userRef}";
 
     private CreditService creditService;
@@ -42,5 +44,10 @@ public class CreditResource {
     public Mono<Credit> addCreditSale(@PathVariable String userRef, @Valid @RequestBody CreditSale creditSale) {
         creditSale.doDefault();
         return this.creditService.addCreditSale(userRef, creditSale);
+    }
+
+    @GetMapping(SEARCH_UNPAID)
+    public Mono< Credit > findByUserReferenceWithOnlyUnpaidTickets(@RequestParam() String userReference) {
+        return this.creditService.findByUserReferenceWithOnlyUnpaidTickets(userReference);
     }
 }

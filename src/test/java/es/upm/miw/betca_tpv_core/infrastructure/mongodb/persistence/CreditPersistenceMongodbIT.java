@@ -74,7 +74,7 @@ public class CreditPersistenceMongodbIT {
     @Test
     void testFindUnpaidTickets() {
         StepVerifier
-                .create(this.creditPersistenceMongodb.findUnpaidTickets("53354324"))
+                .create(this.creditPersistenceMongodb.findByUserReferenceWithOnlyUnpaidTickets("53354324"))
                 .expectNextMatches(credit -> {
                     assertEquals("sdgfsgfdg53", credit.getReference());
                     assertEquals(1, credit.getCreditSales().size());
