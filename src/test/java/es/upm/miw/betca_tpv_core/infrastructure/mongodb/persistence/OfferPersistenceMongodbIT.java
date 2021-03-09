@@ -131,4 +131,20 @@ class OfferPersistenceMongodbIT {
                 .expectError(NotFoundException.class)
                 .verify();
     }
+
+    @Test
+    void testDelete() {
+        StepVerifier
+                .create(this.offerPersistenceMongodb.delete("cmVmZXJlbmNlb2ZmZXIy"))
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testDeleteNotFound() {
+        StepVerifier
+                .create(this.offerPersistenceMongodb.delete("kk"))
+                .expectError(NotFoundException.class)
+                .verify();
+    }
 }
