@@ -43,7 +43,7 @@ public class OfferResourceIT {
 
     @Test
     void testCreate() {
-        OfferCreationEditionDto newOffer = new OfferCreationEditionDto(null, "new offer",
+        OfferCreationEditionDto newOffer = new OfferCreationEditionDto("new-ref", "new offer",
                 LocalDate.of(2021, 9, 15), new BigDecimal("75"),
                 new String[]{"8400000000031", "8400000000024", "8400000000017"});
         Offer dbOffer = this.restClientTestService.loginAdmin(webTestClient)
