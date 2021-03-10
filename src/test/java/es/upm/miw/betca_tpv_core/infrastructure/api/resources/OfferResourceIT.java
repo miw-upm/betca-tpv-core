@@ -2,7 +2,6 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.Offer;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.OfferCreationEditionDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,7 +146,7 @@ public class OfferResourceIT {
         updatedOffer = this.restClientTestService.loginAdmin(webTestClient)
                 .put()
                 .uri(OFFERS + REFERENCE, "cmVmZXJlbmNlb2ZmZXIx")
-                .body(Mono.just(updatedOffer), OfferCreationEditionDto.class)
+                .body(Mono.just(updatedOffer), Offer.class)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Offer.class)
@@ -185,14 +184,14 @@ public class OfferResourceIT {
 
     @Test
     void testDelete() {
-        OfferCreationEditionDto offerDelete = new OfferCreationEditionDto("refToDelete", "desToDelete",
+        Offer offerDelete = new Offer("refToDelete", "desToDelete", null,
                 LocalDate.of(2021, 9, 15), new BigDecimal("75"),
                 new String[]{"8400000000031", "8400000000024", "8400000000017"});
 
         Offer dbOffer = this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(OFFERS)
-                .body(Mono.just(offerDelete), OfferCreationEditionDto.class)
+                .body(Mono.just(offerDelete), Offer.class)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Offer.class)
