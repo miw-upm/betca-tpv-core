@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
 @TestConfig
-public class OfferServiceIT {
+class OfferServiceIT {
 
     @Autowired
     private OfferService offerService;

@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @RestTestConfig
-public class OfferResourceIT {
+class OfferResourceIT {
 
     @Autowired
     private WebTestClient webTestClient;
@@ -107,7 +107,7 @@ public class OfferResourceIT {
                 .value(offer -> {
                     assertEquals("cmVmZXJlbmNlb2ZmZXIx", offer.getReference());
                     assertEquals("this is offer 1", offer.getDescription());
-                    assertEquals(offer.getArticleBarcodes().length, 3);
+                    assertEquals(3, offer.getArticleBarcodes().length);
                     assertEquals(new BigDecimal("10"), offer.getDiscount());
                 });
     }
@@ -132,7 +132,7 @@ public class OfferResourceIT {
                 .value(offer -> {
                     assertEquals("cmVmZXJlbmNlb2ZmZXIx", offer.getReference());
                     assertEquals("this is offer 1", offer.getDescription());
-                    assertEquals(offer.getArticleBarcodes().length, 3);
+                    assertEquals(3, offer.getArticleBarcodes().length);
                     assertEquals(new BigDecimal("10"), offer.getDiscount());
                 })
                 .returnResult()
@@ -155,7 +155,7 @@ public class OfferResourceIT {
                     assertEquals(reference, returnOffer.getReference());
                     assertEquals("updated description", returnOffer.getDescription());
                     assertEquals(new BigDecimal("40"), returnOffer.getDiscount());
-                    assertEquals(returnOffer.getArticleBarcodes().length, 2);
+                    assertEquals(2, returnOffer.getArticleBarcodes().length);
                 })
                 .returnResult()
                 .getResponseBody();
