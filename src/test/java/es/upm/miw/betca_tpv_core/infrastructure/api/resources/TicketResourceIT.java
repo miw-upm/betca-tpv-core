@@ -172,6 +172,29 @@ class TicketResourceIT {
                 .expectStatus().isNotFound();
     }
 
+    @Test
+    void testFindByReference() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(TICKETS + REFERENCE_ID + REFERENCE, "nUs81zZ4R_iuoq0_zCRm6A")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(TicketEditionDto.class)
+                .value(Assertions::assertNotNull)
+                .value(ticket -> System.out.println(">>>>> ticket: " + ticket));
+
+    }
+
+    @Test
+    void testFindByReferenceNotFoundException() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(TICKETS + REFERENCE_ID + REFERENCE, "lel")
+                .exchange()
+                .expectStatus().isNotFound();
+
+    }
+
     @AfterEach
     void closeCashier() {
         this.restClientTestService.loginAdmin(webTestClient)

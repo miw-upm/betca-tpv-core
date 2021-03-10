@@ -85,4 +85,8 @@ public class TicketService {
     public Mono<Ticket> findById(String id) {
         return this.ticketPersistence.findById(id);
     }
+
+    public Mono<Ticket> findByReference(String reference) {
+        return this.ticketPersistence.findByReference(reference);
+    }
 }

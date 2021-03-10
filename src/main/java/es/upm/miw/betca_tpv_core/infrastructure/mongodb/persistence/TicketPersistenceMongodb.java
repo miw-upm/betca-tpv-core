@@ -67,5 +67,12 @@ public class TicketPersistenceMongodb implements TicketPersistence {
                 .map(TicketEntity::toTicket);
     }
 
+    @Override
+    public Mono<Ticket> findByReference(String reference) {
+        return this.ticketReactive.findByReference(reference)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non existent ticket reference: " + reference)))
+                .map(TicketEntity::toTicket);
+    }
+
 
 }
