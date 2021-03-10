@@ -43,13 +43,13 @@ public class OfferResourceIT {
 
     @Test
     void testCreate() {
-        OfferCreationEditionDto newOffer = new OfferCreationEditionDto("new-ref", "new offer",
+        Offer newOffer = new Offer(null, "new offer", null,
                 LocalDate.of(2021, 9, 15), new BigDecimal("75"),
                 new String[]{"8400000000031", "8400000000024", "8400000000017"});
         Offer dbOffer = this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(OFFERS)
-                .body(Mono.just(newOffer), OfferCreationEditionDto.class)
+                .body(Mono.just(newOffer), Offer.class)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Offer.class)
@@ -73,42 +73,28 @@ public class OfferResourceIT {
 
     @Test
     void testCreateNotFoundBarcodeException() {
-        OfferCreationEditionDto newOffer = new OfferCreationEditionDto(null, "article not found",
+        Offer newOffer = new Offer(null, "article not found", null,
                 LocalDate.of(2021, 9, 15), new BigDecimal("75"),
                 new String[]{"kk", "8400000000024", "8400000000017"});
         this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(OFFERS)
-                .body(Mono.just(newOffer), OfferCreationEditionDto.class)
+                .body(Mono.just(newOffer), Offer.class)
                 .exchange()
                 .expectStatus().isNotFound();
     }
 
     @Test
     void testCreateUnauthorizedException() {
-        OfferCreationEditionDto newOffer = new OfferCreationEditionDto(null, "article not found",
+        Offer newOffer = new Offer(null, "unauthorized exception", null,
                 LocalDate.of(2021, 9, 15), new BigDecimal("75"),
                 new String[]{"8400000000031", "8400000000024", "8400000000017"});
         webTestClient
                 .post()
                 .uri(OFFERS)
-                .body(Mono.just(newOffer), OfferCreationEditionDto.class)
+                .body(Mono.just(newOffer), Offer.class)
                 .exchange()
                 .expectStatus().isUnauthorized();
-    }
-
-    @Test
-    void testCreateResource() {
-        OfferCreationEditionDto newOffer = new OfferCreationEditionDto(null, "222",
-                LocalDate.of(2021, 9, 15), new BigDecimal("66"),
-                new String[]{"8400000000031", "8400000000024"});
-
-        this.restClientTestService.loginAdmin(webTestClient)
-                .post()
-                .uri(OFFERS)
-                .body(Mono.just(newOffer), OfferCreationEditionDto.class)
-                .exchange()
-                .expectStatus().isOk();
     }
 
     @Test
