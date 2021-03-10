@@ -14,6 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -88,5 +89,9 @@ public class TicketService {
 
     public Mono<Ticket> findByReference(String reference) {
         return this.ticketPersistence.findByReference(reference);
+    }
+
+    public Mono<Ticket> update(String id, List<Shopping> shoppingList) {
+        return this.ticketPersistence.update(id, shoppingList);
     }
 }

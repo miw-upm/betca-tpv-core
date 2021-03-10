@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Repository
 public interface TicketPersistence {
     Mono< Ticket > create(Ticket ticket);
@@ -17,4 +19,6 @@ public interface TicketPersistence {
     Mono<Ticket> findById(String id);
 
     Mono<Ticket> findByReference(String reference);
+
+    Mono<Ticket> update(String id, List<Shopping> shoppingList);
 }
