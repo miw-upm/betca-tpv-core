@@ -84,15 +84,20 @@ public class TicketPersistenceMongodb implements TicketPersistence {
                 .switchIfEmpty(Mono.error(new NotFoundException("Ticket does not exist: " + id)))
                 .flatMap(ticketEntity -> {
                     ticketEntity.getShoppingEntityList().clear();
-                    Flux.fromStream(shoppingList.stream())
-                            .map(shopping -> {
+                    return Flux.fromStream(shoppingList.stream())
+                            .flatMap(shopping -> {
                                 ShoppingEntity shoppingEntity = new ShoppingEntity(shopping);
-                                ticketEntity.add(shoppingEntity);
-                                return ticketEntity;
-                            });
-                    return this.ticketReactive.save(ticketEntity);
-                })
-                .map(TicketEntity::toTicket);
+                                return this.articleReactive.findByBarcode(shopping.getBarcode())
+                                        .switchIfEmpty(Mono.error(new NotFoundException("Article: " + shopping.getBarcode())))
+                                        .map(articleEntity -> {
+                                            shoppingEntity.setArticleEntity(articleEntity);
+                                            shoppingEntity.setDescription(articleEntity.getDescription());
+                                            return shoppingEntity;
+                                        });
+                            }).doOnNext(ticketEntity::add)
+                            .then(this.ticketReactive.save(ticketEntity))
+                            .map(TicketEntity::toTicket);
+                });
     }
 
 }
