@@ -63,7 +63,7 @@ public class OfferResourceIT {
         assertNotNull(dbOffer);
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(OFFERS + REFERENCE + PRINT, dbOffer.getReference())
+                .uri(OFFERS + REFERENCE + PRINT_PDF, dbOffer.getReference())
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(byte[].class)
@@ -166,7 +166,7 @@ public class OfferResourceIT {
     void testPrintOffer() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(OFFERS + REFERENCE + PRINT, "cmVmZXJlbmNlb2ZmZXIx")
+                .uri(OFFERS + REFERENCE + PRINT_PDF, "cmVmZXJlbmNlb2ZmZXIx")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(byte[].class)
@@ -177,7 +177,7 @@ public class OfferResourceIT {
     void testPrintOfferNotFound() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(OFFERS + REFERENCE + PRINT, "ref-not-found")
+                .uri(OFFERS + REFERENCE + PRINT_PDF, "ref-not-found")
                 .exchange()
                 .expectStatus().isNotFound();
     }
