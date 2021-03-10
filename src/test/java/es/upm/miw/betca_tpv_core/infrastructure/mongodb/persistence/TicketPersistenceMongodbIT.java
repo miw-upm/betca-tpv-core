@@ -100,17 +100,13 @@ class TicketPersistenceMongodbIT {
     void testUpdate() {
         Shopping shopping1 = Shopping.builder().barcode("8400000000017").description("Zarzuela - Falda T2")
                 .retailPrice(new BigDecimal(20)).amount(1).discount(BigDecimal.ZERO).state(ShoppingState.COMMITTED).build();
-        Shopping shopping2 = Shopping.builder().barcode("8400000000024").description("Zarzuela - Falda T4")
-                .retailPrice(new BigDecimal("27.8")).amount(3).discount(new BigDecimal("50")).state(ShoppingState.IN_STOCK).build();
         List<Shopping> shoppingList = new ArrayList<>();
         shoppingList.add(shopping1);
-        shoppingList.add(shopping2);
         StepVerifier
                 .create(this.ticketPersistenceMongodb.update("5fa45e863d6e834d642689ac", shoppingList))
                 .expectNextMatches(ticket -> {
                     assertNotNull(ticket.getShoppingList());
-                    assertEquals(2, ticket.getShoppingList().size());
-                    assertEquals(ShoppingState.IN_STOCK, ticket.getShoppingList().get(1).getState());
+                    assertEquals(1, ticket.getShoppingList().size());
                     return true;
                 })
                 .verifyComplete();
