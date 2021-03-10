@@ -26,10 +26,14 @@ public class StockAlarmService {
     }
 
     public Mono<StockAlarm> update(String name, StockAlarm stockAlarm) {
-        return this.stockAlarmPersistence.update(stockAlarm);
+        return this.stockAlarmPersistence.update(name, stockAlarm);
     }
 
     public Mono<StockAlarm> read(String name) {
         return this.stockAlarmPersistence.readByName(name);
+    }
+
+    public Mono<Void> delete(String name) {
+        return this.stockAlarmPersistence.delete(name);
     }
 }

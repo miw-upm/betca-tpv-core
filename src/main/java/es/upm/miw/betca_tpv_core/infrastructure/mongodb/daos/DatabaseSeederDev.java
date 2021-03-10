@@ -218,7 +218,8 @@ public class DatabaseSeederDev {
         StockAlarmEntity[] stocksAlarms = {
                 StockAlarmEntity.builder().name("alarm-pack-1").warning(5).critical(5).alarmLine(stockAlarmLineEntity1).alarmLine(stockAlarmLineEntity2).build(),
                 StockAlarmEntity.builder().name("alarm-pack-2").warning(99).critical(99).alarmLine(stockAlarmLineEntity1).alarmLine(stockAlarmLineEntity4).build(),
-                StockAlarmEntity.builder().name("alarm-pac-2").warning(55).critical(55).alarmLine(stockAlarmLineEntity3).alarmLine(stockAlarmLineEntity5).build()
+                StockAlarmEntity.builder().name("alarm-pac-2").warning(55).critical(55).alarmLine(stockAlarmLineEntity3).alarmLine(stockAlarmLineEntity5).build(),
+                StockAlarmEntity.builder().name("alarm-delete").warning(55).critical(55).alarmLine(stockAlarmLineEntity3).alarmLine(stockAlarmLineEntity5).build()
 
         };
 

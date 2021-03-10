@@ -46,5 +46,9 @@ public class StockAlarmResource {
         return this.stockAlarmService.findByNameLike(name);
     }
 
+    @DeleteMapping(NAME_ID)
+    public Mono<Void> delete(@PathVariable String name) {
+        return this.stockAlarmService.delete(name);
+    }
 
 }
