@@ -15,4 +15,6 @@ public interface StockAlarmPersistence {
     Mono<StockAlarm> update(String name, StockAlarm stockAlarm);
 
     Mono<StockAlarm> readByName(String name);
+
+    Mono<Void> delete(String name);
 }

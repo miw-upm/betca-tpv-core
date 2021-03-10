@@ -63,6 +63,13 @@ public class StockAlarmPersistenceMongodb implements StockAlarmPersistence {
                 .map(StockAlarmEntity::toStockAlarm);
     }
 
+    @Override
+    public Mono<Void> delete(String name) {
+        return this.stockAlarmReactive.findByName(name)
+                .switchIfEmpty(Mono.error(new NotFoundException("Not found stock-alarm name: " + name)))
+                .flatMap(stockAlarmEntity -> this.stockAlarmReactive.delete(stockAlarmEntity));
+    }
+
     private Mono<Void> updateAlarmLineList(StockAlarmEntity stockAlarmEntity, StockAlarm stockAlarm) {
         stockAlarmEntity.clearAlarms();
         return Flux.fromStream(stockAlarm.getStockAlarmLines() == null ?

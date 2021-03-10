@@ -32,4 +32,8 @@ public class StockAlarmService {
     public Mono<StockAlarm> read(String name) {
         return this.stockAlarmPersistence.readByName(name);
     }
+
+    public Mono<Void> delete(String name) {
+        return this.stockAlarmPersistence.delete(name);
+    }
 }
