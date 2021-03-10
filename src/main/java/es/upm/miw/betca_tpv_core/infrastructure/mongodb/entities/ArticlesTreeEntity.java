@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities;
 
+import es.upm.miw.betca_tpv_core.domain.model.ArticleFamilyView;
 import es.upm.miw.betca_tpv_core.domain.model.TreeType;
 import es.upm.miw.betca_tpv_core.domain.model.ArticleFamilyCrud;
 import lombok.Data;
@@ -32,6 +33,8 @@ public abstract class ArticlesTreeEntity {
     public abstract void remove(ArticlesTreeEntity articlesTreeEntity);
 
     public abstract ArticleFamilyCrud toDto();
+
+    public abstract ArticleFamilyView toArticleFamilyViewDto();
 
     public abstract List< ArticlesTreeEntity > contents();
 }
