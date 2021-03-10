@@ -15,4 +15,6 @@ public interface TicketPersistence {
     Flux<Ticket> findByIdOrReferenceLikeOrUserMobileLikeNullSafe(String key);
 
     Mono<Ticket> findById(String id);
+
+    Mono<Ticket> findByReference(String reference);
 }
