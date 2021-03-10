@@ -6,6 +6,8 @@ import org.springframework.data.repository.reactive.ReactiveSortingRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+
 public interface ArticleReactive extends ReactiveSortingRepository< ArticleEntity, String > {
     Mono< ArticleEntity > findByBarcode(String barcode);
 
@@ -26,4 +28,6 @@ public interface ArticleReactive extends ReactiveSortingRepository< ArticleEntit
             + "{discontinued : false}"
             + "] }")
     Flux< ArticleEntity > findByBarcodeLikeAndNotDiscontinuedNullSafe(String barcode);
+
+    Flux< ArticleEntity > findArticleEntitiesByRegistrationDateAfter(LocalDateTime localDateTime);
 }

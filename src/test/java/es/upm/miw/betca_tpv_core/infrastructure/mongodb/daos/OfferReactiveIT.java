@@ -8,7 +8,7 @@ import reactor.test.StepVerifier;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestConfig
-public class OfferReactiveIT {
+class OfferReactiveIT {
 
     @Autowired
     private OfferReactive offerReactive;

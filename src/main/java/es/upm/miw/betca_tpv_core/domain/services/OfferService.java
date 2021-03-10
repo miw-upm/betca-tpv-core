@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.model.Offer;
 import es.upm.miw.betca_tpv_core.domain.persistence.OfferPersistence;
+import es.upm.miw.betca_tpv_core.domain.services.utils.PdfOfferBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -31,5 +32,14 @@ public class OfferService {
 
     public Mono<Offer> update(String reference, Offer updatedOffer) {
         return this.offerPersistence.update(reference, updatedOffer);
+    }
+
+    public Mono<byte[]> print(String reference) {
+        return this.offerPersistence.readByReference(reference)
+                .map(new PdfOfferBuilder()::generateOffer);
+    }
+
+    public Mono<Void> delete(String reference) {
+        return this.offerPersistence.delete(reference);
     }
 }
