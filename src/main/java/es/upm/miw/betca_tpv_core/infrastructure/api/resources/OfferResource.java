@@ -44,7 +44,6 @@ public class OfferResource {
     @PreAuthorize("permitAll()")
     @GetMapping(REFERENCE)
     public Mono<Offer> read(@PathVariable String reference) {
-        System.out.println("Reference: " + reference);
         return this.offerService.read(reference);
     }
 
