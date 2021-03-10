@@ -12,7 +12,7 @@ public interface StockAlarmPersistence {
 
     Flux<StockAlarm> findByNameLike(String name);
 
-    Mono<StockAlarm> update(StockAlarm stockAlarm);
+    Mono<StockAlarm> update(String name, StockAlarm stockAlarm);
 
     Mono<StockAlarm> readByName(String name);
 }
