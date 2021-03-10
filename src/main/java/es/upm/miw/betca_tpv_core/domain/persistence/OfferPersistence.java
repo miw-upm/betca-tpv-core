@@ -14,4 +14,6 @@ public interface OfferPersistence {
     Mono<Offer> readByReference(String reference);
 
     Mono<Offer> update(String reference, Offer updatedOffer);
+
+    Mono<Void> delete(String reference);
 }

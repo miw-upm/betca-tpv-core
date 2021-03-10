@@ -47,4 +47,21 @@ public class StockAlarmPersistenceMongodb implements StockAlarmPersistence {
                 .map(StockAlarmEntity::toStockAlarm);
     }
 
+    @Override
+    public Flux<StockAlarm> findByNameLike(String name) {
+        return this.stockAlarmReactive.findByNameLike(name)
+                .map(StockAlarmEntity::toStockAlarm);
+    }
+
+    @Override
+    public Mono<StockAlarm> update(StockAlarm stockAlarm) {
+        return null;
+    }
+
+    @Override
+    public Mono<StockAlarm> readByName(String name) {
+        return this.stockAlarmReactive.findByName(name)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non existent stock-alarm name: " + name)))
+                .map(StockAlarmEntity::toStockAlarm);
+    }
 }

@@ -6,6 +6,7 @@ import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Offer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
@@ -79,6 +80,80 @@ class OfferPersistenceMongodbIT {
                     return true;
                 })
                 .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testUpdate() {
+        StepVerifier
+                .create(this.offerPersistenceMongodb.update("cmVmZXJlbmNlb2ZmZXIy",
+                        Offer.builder().reference("cmVmZXJlbmNlb2ZmZXIy")
+                                .description("test update persistence")
+                                .creationDate(LocalDate.of(2021, Month.FEBRUARY, 25))
+                                .expiryDate(LocalDate.of(2021, Month.MARCH, 31))
+                                .discount(new BigDecimal("30"))
+                                .articleBarcodes(new String[]{"8400000000048", "8400000000024", "8400000000017"})
+                                .build()))
+                .expectNextMatches(offer -> {
+                    assertEquals("test update persistence", offer.getDescription());
+                    assertEquals(new BigDecimal("30"), offer.getDiscount());
+                    assertNotNull(offer.getArticleBarcodes());
+                    return true;
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void testUpdateNotExistingReference() {
+        StepVerifier
+                .create(this.offerPersistenceMongodb.update("not-a-reference",
+                        Offer.builder().reference("not-a-reference")
+                                .description("test update not existing reference")
+                                .creationDate(LocalDate.of(2021, Month.FEBRUARY, 25))
+                                .expiryDate(LocalDate.of(2021, Month.MARCH, 31))
+                                .discount(new BigDecimal("30"))
+                                .articleBarcodes(new String[]{"8400000000048", "8400000000024", "8400000000017"})
+                                .build()))
+                .expectError(NotFoundException.class)
+                .verify();
+    }
+
+    @Test
+    void testUpdateNotExistingBarcode() {
+        StepVerifier
+                .create(this.offerPersistenceMongodb.update("cmVmZXJlbmNlb2ZmZXIy",
+                        Offer.builder().reference("cmVmZXJlbmNlb2ZmZXIy")
+                                .description("test update not existing barcode")
+                                .creationDate(LocalDate.of(2021, Month.FEBRUARY, 25))
+                                .expiryDate(LocalDate.of(2021, Month.MARCH, 31))
+                                .discount(new BigDecimal("30"))
+                                .articleBarcodes(new String[]{"kk", "8400000000024", "8400000000017"})
+                                .build()))
+                .expectError(NotFoundException.class)
+                .verify();
+    }
+
+    @Test
+    void testDelete() {
+        Mono<Void> offerToDelete = this.offerPersistenceMongodb.create(
+                Offer.builder().reference("offer-to-delete")
+                        .description("test delete persistence")
+                        .expiryDate(LocalDate.of(2021, Month.MARCH, 31))
+                        .discount(new BigDecimal("75"))
+                        .articleBarcodes(new String[]{"8400000000031", "8400000000024", "8400000000017"})
+                        .build())
+                .flatMap(offer -> this.offerPersistenceMongodb.delete(offer.getReference()));
+        StepVerifier
+                .create(offerToDelete)
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testDeleteNotFound() {
+        StepVerifier
+                .create(this.offerPersistenceMongodb.delete("kk"))
+                .expectError(NotFoundException.class)
                 .verify();
     }
 }

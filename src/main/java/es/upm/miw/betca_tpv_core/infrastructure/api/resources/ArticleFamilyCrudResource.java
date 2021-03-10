@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @Rest
-@RequestMapping(ArticleFamilyCrudResource.ARTICLES)
+@RequestMapping(ArticleFamilyCrudResource.ARTICLE_FAMILY_CRUD)
 public class ArticleFamilyCrudResource {
-    public static final String ARTICLES = "/article-family-crud";
+    public static final String ARTICLE_FAMILY_CRUD = "/article-family-crud";
     public static final String REFERENCE = "/{reference}";
 
     private ArticleFamilyCrudService articleFamilyCrudService;
@@ -25,28 +25,5 @@ public class ArticleFamilyCrudResource {
         return this.articleFamilyCrudService.read(reference);
     }
 
-    /*
-    @GetMapping(SEARCH)
-    public Flux< Article > findByBarcodeAndDescriptionAndReferenceAndStockLessThanAndDiscontinuedNullSafe(
-            @RequestParam(required = false) String barcode, @RequestParam(required = false) String description, @
-            RequestParam(required = false) String reference, @RequestParam(required = false) Integer stock,
-            @RequestParam(required = false) Boolean discontinued) {
-        return this.articleService.findByBarcodeAndDescriptionAndReferenceAndStockLessThanAndDiscontinuedNullSafe(
-                barcode, description, reference, stock, discontinued)
-                .map(Article::ofBarcodeDescriptionStock);
-    }
-
-    @GetMapping(BARCODE)
-    public Mono< ArticleBarcodesDto > findByBarcodeNullSafe(@RequestParam(required = false) String barcode) {
-        return this.articleService.findByBarcodeAndNotDiscontinuedNullSafe(barcode)
-                .collectList()
-                .map(ArticleBarcodesDto::new);
-    }
-
-    @GetMapping(UNFINISHED)
-    public Flux< Article > findByUnfinished() {
-        return this.articleService.findByUnfinished();
-    }
-*/
 }
 

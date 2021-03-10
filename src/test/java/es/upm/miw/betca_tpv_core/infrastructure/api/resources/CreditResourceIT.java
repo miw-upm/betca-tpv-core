@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CreditResource.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -61,6 +63,21 @@ public class CreditResourceIT {
                 .body(Mono.just(creditSale), CreditSale.class)
                 .exchange()
                 .expectStatus().isOk();
+    }
+
+    @Test
+    void testFindUnpaidTicketsFromCreditLine() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(CREDIT + SEARCH_UNPAID)
+                        .queryParam("userReference", "53354324")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(List.class)
+                .value(Assertions::assertNotNull)
+                .value(creditSalesList -> assertEquals(1, creditSalesList.size()));
     }
 
 }

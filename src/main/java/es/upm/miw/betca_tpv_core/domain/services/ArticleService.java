@@ -50,4 +50,8 @@ public class ArticleService {
     public Flux< String > findByBarcodeAndNotDiscontinuedNullSafe(String barcode) {
         return this.articlePersistence.findByBarcodeAndNotDiscontinuedNullField(barcode);
     }
+
+    public Flux < Article > findArticleByDateLessThan(LocalDateTime localDateTime){
+        return this.articlePersistence.findArticleByDateLessThan(localDateTime);
+    }
 }
