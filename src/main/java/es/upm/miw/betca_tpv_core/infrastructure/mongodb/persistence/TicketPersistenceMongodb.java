@@ -6,12 +6,16 @@ import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.TicketReactive;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ProviderEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ShoppingEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.TicketEntity;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Repository
 public class TicketPersistenceMongodb implements TicketPersistence {
@@ -74,5 +78,21 @@ public class TicketPersistenceMongodb implements TicketPersistence {
                 .map(TicketEntity::toTicket);
     }
 
+    @Override
+    public Mono<Ticket> update(String id, List<Shopping> shoppingList) {
+        return this.ticketReactive.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("Ticket does not exist: " + id)))
+                .flatMap(ticketEntity -> {
+                    ticketEntity.getShoppingEntityList().clear();
+                    Flux.fromStream(shoppingList.stream())
+                            .map(shopping -> {
+                                ShoppingEntity shoppingEntity = new ShoppingEntity(shopping);
+                                ticketEntity.add(shoppingEntity);
+                                return ticketEntity;
+                            });
+                    return this.ticketReactive.save(ticketEntity);
+                })
+                .map(TicketEntity::toTicket);
+    }
 
 }

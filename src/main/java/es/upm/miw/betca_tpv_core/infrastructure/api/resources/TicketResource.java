@@ -61,8 +61,9 @@ public class TicketResource {
     }
 
     @PutMapping(ID_ID)
-    public Mono<Void> update(@PathVariable String id, @Valid @RequestBody List<Shopping> shoppingList) {
-        return Mono.empty();
+    public Mono<TicketEditionDto> update(@PathVariable String id, @Valid @RequestBody List<Shopping> shoppingList) {
+        return this.ticketService.update(id, shoppingList)
+                .map(TicketEditionDto::new);
     }
 
 }
