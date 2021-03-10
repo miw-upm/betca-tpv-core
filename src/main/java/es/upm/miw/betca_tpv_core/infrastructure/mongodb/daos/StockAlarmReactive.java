@@ -10,4 +10,6 @@ public interface StockAlarmReactive extends ReactiveSortingRepository<StockAlarm
 
     Mono<StockAlarmEntity> findByName(String name);
 
+    Mono<Void> deleteByName(String name);
+
 }

@@ -65,9 +65,7 @@ public class StockAlarmPersistenceMongodb implements StockAlarmPersistence {
 
     @Override
     public Mono<Void> delete(String name) {
-        return this.stockAlarmReactive.findByName(name)
-                .switchIfEmpty(Mono.error(new NotFoundException("Not found stock-alarm name: " + name)))
-                .flatMap(stockAlarmEntity -> this.stockAlarmReactive.delete(stockAlarmEntity));
+        return this.stockAlarmReactive.deleteByName(name);
     }
 
     private Mono<Void> updateAlarmLineList(StockAlarmEntity stockAlarmEntity, StockAlarm stockAlarm) {

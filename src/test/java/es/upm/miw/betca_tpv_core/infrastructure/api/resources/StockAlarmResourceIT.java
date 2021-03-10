@@ -100,4 +100,28 @@ class StockAlarmResourceIT {
                         }
                 );
     }
+
+    @Test
+    void testDelete() {
+        String nameFromSeeder = "alarm-delete";
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .delete()
+                .uri(STOCK_ALARMS + NAME_ID, nameFromSeeder)
+                .exchange()
+                .expectStatus().isOk();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .delete()
+                .uri(STOCK_ALARMS + NAME_ID, nameFromSeeder + "asdsad")
+                .exchange()
+                .expectStatus().isOk();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(STOCK_ALARMS + NAME_ID, nameFromSeeder)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
 }
