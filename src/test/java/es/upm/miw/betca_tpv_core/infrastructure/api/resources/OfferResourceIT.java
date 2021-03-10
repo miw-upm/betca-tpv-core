@@ -2,7 +2,6 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.Offer;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.OfferCreationEditionDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,13 +42,13 @@ public class OfferResourceIT {
 
     @Test
     void testCreate() {
-        OfferCreationEditionDto newOffer = new OfferCreationEditionDto("new-ref", "new offer",
+        Offer newOffer = new Offer(null, "new offer", null,
                 LocalDate.of(2021, 9, 15), new BigDecimal("75"),
                 new String[]{"8400000000031", "8400000000024", "8400000000017"});
         Offer dbOffer = this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(OFFERS)
-                .body(Mono.just(newOffer), OfferCreationEditionDto.class)
+                .body(Mono.just(newOffer), Offer.class)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Offer.class)
@@ -64,7 +63,7 @@ public class OfferResourceIT {
         assertNotNull(dbOffer);
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(OFFERS + REFERENCE + PRINT, dbOffer.getReference())
+                .uri(OFFERS + REFERENCE + PRINT_PDF, dbOffer.getReference())
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(byte[].class)
@@ -73,42 +72,28 @@ public class OfferResourceIT {
 
     @Test
     void testCreateNotFoundBarcodeException() {
-        OfferCreationEditionDto newOffer = new OfferCreationEditionDto(null, "article not found",
+        Offer newOffer = new Offer(null, "article not found", null,
                 LocalDate.of(2021, 9, 15), new BigDecimal("75"),
                 new String[]{"kk", "8400000000024", "8400000000017"});
         this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(OFFERS)
-                .body(Mono.just(newOffer), OfferCreationEditionDto.class)
+                .body(Mono.just(newOffer), Offer.class)
                 .exchange()
                 .expectStatus().isNotFound();
     }
 
     @Test
     void testCreateUnauthorizedException() {
-        OfferCreationEditionDto newOffer = new OfferCreationEditionDto(null, "article not found",
+        Offer newOffer = new Offer(null, "unauthorized exception", null,
                 LocalDate.of(2021, 9, 15), new BigDecimal("75"),
                 new String[]{"8400000000031", "8400000000024", "8400000000017"});
         webTestClient
                 .post()
                 .uri(OFFERS)
-                .body(Mono.just(newOffer), OfferCreationEditionDto.class)
+                .body(Mono.just(newOffer), Offer.class)
                 .exchange()
                 .expectStatus().isUnauthorized();
-    }
-
-    @Test
-    void testCreateResource() {
-        OfferCreationEditionDto newOffer = new OfferCreationEditionDto(null, "222",
-                LocalDate.of(2021, 9, 15), new BigDecimal("66"),
-                new String[]{"8400000000031", "8400000000024"});
-
-        this.restClientTestService.loginAdmin(webTestClient)
-                .post()
-                .uri(OFFERS)
-                .body(Mono.just(newOffer), OfferCreationEditionDto.class)
-                .exchange()
-                .expectStatus().isOk();
     }
 
     @Test
@@ -161,7 +146,7 @@ public class OfferResourceIT {
         updatedOffer = this.restClientTestService.loginAdmin(webTestClient)
                 .put()
                 .uri(OFFERS + REFERENCE, "cmVmZXJlbmNlb2ZmZXIx")
-                .body(Mono.just(updatedOffer), OfferCreationEditionDto.class)
+                .body(Mono.just(updatedOffer), Offer.class)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Offer.class)
@@ -181,7 +166,7 @@ public class OfferResourceIT {
     void testPrintOffer() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(OFFERS + REFERENCE + PRINT, "cmVmZXJlbmNlb2ZmZXIx")
+                .uri(OFFERS + REFERENCE + PRINT_PDF, "cmVmZXJlbmNlb2ZmZXIx")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(byte[].class)
@@ -192,21 +177,21 @@ public class OfferResourceIT {
     void testPrintOfferNotFound() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(OFFERS + REFERENCE + PRINT, "ref-not-found")
+                .uri(OFFERS + REFERENCE + PRINT_PDF, "ref-not-found")
                 .exchange()
                 .expectStatus().isNotFound();
     }
 
     @Test
     void testDelete() {
-        OfferCreationEditionDto offerDelete = new OfferCreationEditionDto("refToDelete", "desToDelete",
+        Offer offerDelete = new Offer("refToDelete", "desToDelete", null,
                 LocalDate.of(2021, 9, 15), new BigDecimal("75"),
                 new String[]{"8400000000031", "8400000000024", "8400000000017"});
 
         Offer dbOffer = this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(OFFERS)
-                .body(Mono.just(offerDelete), OfferCreationEditionDto.class)
+                .body(Mono.just(offerDelete), Offer.class)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Offer.class)
