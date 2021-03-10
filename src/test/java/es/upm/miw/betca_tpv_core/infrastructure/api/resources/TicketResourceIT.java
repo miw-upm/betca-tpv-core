@@ -16,6 +16,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleResource.*;
@@ -173,6 +174,15 @@ class TicketResourceIT {
     }
 
     @Test
+    void testFindByIdUnauthorizedException() {
+        this.webTestClient
+                .get()
+                .uri(TICKETS + ID_ID, "kk")
+                .exchange()
+                .expectStatus().isUnauthorized();
+    }
+
+    @Test
     void testFindByReference() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
@@ -193,6 +203,44 @@ class TicketResourceIT {
                 .exchange()
                 .expectStatus().isNotFound();
 
+    }
+
+    @Test
+    void testFindByIdAndUpdate() {
+        TicketEditionDto ticket = this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(TICKETS + ID_ID, "5fa45e863d6e834d642689ac")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(TicketEditionDto.class)
+                .value(Assertions::assertNotNull)
+                .value(returnTicked -> {
+                    assertEquals("5fa45e863d6e834d642689ac", returnTicked.getId());
+                    assertEquals(1, returnTicked.getShoppingList().get(0).getAmount());
+                    assertEquals(ShoppingState.NOT_COMMITTED, returnTicked.getShoppingList().get(1).getState());
+                })
+                .returnResult()
+                .getResponseBody();
+        assertNotNull(ticket);
+        List<Shopping> shoppingList = ticket.getShoppingList();
+        shoppingList.get(0).setAmount(5);
+        shoppingList.get(1).setState(ShoppingState.IN_STOCK);
+        ticket = this.restClientTestService.loginAdmin(webTestClient)
+
+                .put()
+                .uri(TICKETS + ID_ID, "5fa45e863d6e834d642689ac")
+                .bodyValue(shoppingList)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(TicketEditionDto.class)
+                .value(Assertions::assertNotNull)
+                .value(returnTicket -> {
+                    assertEquals(5, returnTicket.getShoppingList().get(0).getAmount());
+                    assertEquals(ShoppingState.IN_STOCK, returnTicket.getShoppingList().get(1).getState());
+                })
+                .returnResult()
+                .getResponseBody();
+        assertNotNull(ticket);
     }
 
     @AfterEach
