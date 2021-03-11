@@ -31,4 +31,5 @@ public interface ArticleReactive extends ReactiveSortingRepository< ArticleEntit
 
     Flux< ArticleEntity > findArticleEntitiesByRegistrationDateAfter(LocalDateTime localDateTime);
 
+    Flux< ArticleEntity > findByStockLessThan(Integer stock);
 }
