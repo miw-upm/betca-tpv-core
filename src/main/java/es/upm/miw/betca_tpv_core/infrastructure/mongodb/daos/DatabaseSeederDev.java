@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos;
 
+import es.upm.miw.betca_tpv_core.domain.model.RgpdType;
 import es.upm.miw.betca_tpv_core.domain.model.ShoppingState;
 import es.upm.miw.betca_tpv_core.domain.model.Tax;
 import es.upm.miw.betca_tpv_core.domain.model.TreeType;
@@ -29,13 +30,14 @@ public class DatabaseSeederDev {
     private StockAlarmDao stockAlarmDao;
     private CreditSaleDao creditSaleDao;
     private CreditDao creditDao;
+    private RgpdDao rgpdDao;
 
     private DatabaseStarting databaseStarting;
 
     @Autowired
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
                              TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,
-                             CreditSaleDao creditSaleDao, CreditDao creditDao, DatabaseStarting databaseStarting) {
+                             CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao, DatabaseStarting databaseStarting) {
 
         this.articleDao = articleDao;
         this.providerDao = providerDao;
@@ -47,6 +49,7 @@ public class DatabaseSeederDev {
         this.creditDao = creditDao;
         this.databaseStarting = databaseStarting;
         this.stockAlarmDao = stockAlarmDao;
+        this.rgpdDao = rgpdDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -64,6 +67,7 @@ public class DatabaseSeederDev {
         this.stockAlarmDao.deleteAll();
         this.creditSaleDao.deleteAll();
         this.creditDao.deleteAll();
+        this.rgpdDao.deleteAll();
 
         LogManager.getLogger(this.getClass()).warn("------- Delete All -----------");
         this.databaseStarting.initialize();
@@ -249,6 +253,15 @@ public class DatabaseSeederDev {
         };
         this.creditDao.saveAll(List.of(credits));
         LogManager.getLogger(this.getClass()).warn("        ------- credits");
+
+        RgpdEntity[] rgpds = {
+                RgpdEntity.builder().id("1lh9dps68h3d7809l982sd452d8a")
+                        .userMobile("123456789")
+                        .rgpdType(RgpdType.ADVANCED)
+                        .build()
+        };
+        this.rgpdDao.saveAll(List.of(rgpds));
+        LogManager.getLogger(this.getClass()).warn("        ------- rgpds");
 
     }
 
