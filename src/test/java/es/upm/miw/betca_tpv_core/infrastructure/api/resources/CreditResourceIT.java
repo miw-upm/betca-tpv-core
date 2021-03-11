@@ -71,7 +71,7 @@ public class CreditResourceIT {
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path(CREDIT + SEARCH_UNPAID)
-                        .queryParam("userReference", "53354324")
+                        .queryParam("userReference", "5666534324")
                         .build())
                 .exchange()
                 .expectStatus().isOk()
