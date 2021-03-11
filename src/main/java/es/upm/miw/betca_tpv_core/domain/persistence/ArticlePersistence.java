@@ -25,7 +25,7 @@ public interface ArticlePersistence {
 
     Flux< String > findByBarcodeAndNotDiscontinuedNullField(String barcode);
 
-    Flux< Article > findArticleByDateLessThan(LocalDateTime localDateTime);
+    Flux< Article > findArticleEntitiesByRegistrationDateAfter(LocalDateTime localDateTime);
 
     Flux< Article > findByStockLessThan(Integer stock);
 
