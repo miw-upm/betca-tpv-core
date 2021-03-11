@@ -50,4 +50,16 @@ class ArticleReactiveIT {
                 .verify();
 
     }
+    @Test
+    void testFindByStockLessThan(){
+        StepVerifier
+                .create(this.articleReactive.findByStockLessThan(5))
+                .expectNextMatches(article -> {
+                    System.out.println("article: " + article);
+                    assertTrue(article.getStock().compareTo(5) < 0 ) ;
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }
 }

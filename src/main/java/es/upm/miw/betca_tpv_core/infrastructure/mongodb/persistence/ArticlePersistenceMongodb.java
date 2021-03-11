@@ -114,8 +114,14 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
     }
 
     @Override
-    public Flux< Article > findArticleByDateLessThan(LocalDateTime localDateTime) {
+    public Flux< Article > findArticleEntitiesByRegistrationDateAfter(LocalDateTime localDateTime) {
         return this.articleReactive.findArticleEntitiesByRegistrationDateAfter(localDateTime)
+                .map(ArticleEntity::toArticle);
+    }
+
+    @Override
+    public Flux<Article> findByStockLessThan(Integer stock) {
+        return this.articleReactive.findByStockLessThan(stock)
                 .map(ArticleEntity::toArticle);
     }
 }
