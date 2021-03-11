@@ -246,7 +246,7 @@ public class DatabaseSeederDev {
                         .userReference("53354324").creditSaleEntities(List.of(creditSales[1], creditSales[2]))
                         .build(),
                 CreditEntity.builder().id("5465ds68h3d7809l982sdg376mn").reference("456gfsgfdg53")
-                        .userReference("5666534324").creditSaleEntities(List.of(creditSales[2]))
+                        .userReference("5666534324").creditSaleEntities(List.of(creditSales[0]))
                         .build(),
                 CreditEntity.builder().id("777885ds68h3d7809l982sdg376mn").reference("44366sgfdg53")
                         .userReference("345436324").creditSaleEntities(List.of()).build(),
