@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StockAlarmLineEntity {
-    @DBRef
+    @DBRef(lazy = true)
     private ArticleEntity articleEntity;
     private Integer warning;
     private Integer critical;
