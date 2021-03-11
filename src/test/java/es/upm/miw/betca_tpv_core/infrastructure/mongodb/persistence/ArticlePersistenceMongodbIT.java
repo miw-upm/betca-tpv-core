@@ -75,4 +75,16 @@ class ArticlePersistenceMongodbIT {
                 })
                 .verifyComplete();
     }
+    @Test
+    void testFindByStockLessThan(){
+        StepVerifier
+                .create(this.articlePersistenceMongodb.findByStockLessThan(10))
+                .expectNextMatches(article ->{
+                    System.out.println("article: " + article);
+                    assertTrue(article.getStock().compareTo(10) < 0 ) ;
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }
 }
