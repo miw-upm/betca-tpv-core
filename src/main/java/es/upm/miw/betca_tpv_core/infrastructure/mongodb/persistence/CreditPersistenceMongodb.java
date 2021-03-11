@@ -103,9 +103,9 @@ public class CreditPersistenceMongodb implements CreditPersistence {
                         creditSaleEntity1.setPayed(true);
                         this.creditSaleReactive.save(creditSaleEntity1);
                     });
-                    this.creditReactive.save(creditEntity);
                     return creditEntity;
                 })
+                .flatMap(this.creditReactive::save)
                 .map(CreditEntity::toCredit);
     }
 
