@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities;
 
+import es.upm.miw.betca_tpv_core.domain.model.ArticleFamilyView;
 import es.upm.miw.betca_tpv_core.domain.model.TreeType;
 import es.upm.miw.betca_tpv_core.domain.model.ArticleFamilyCrud;
 import lombok.Data;
@@ -50,6 +51,13 @@ public class SingleArticleEntity extends ArticlesTreeEntity {
         ArticleFamilyCrud articleFamilyCrud = new ArticleFamilyCrud();
         BeanUtils.copyProperties(this, articleFamilyCrud);
         return articleFamilyCrud;
+    }
+
+    @Override
+    public ArticleFamilyView toArticleFamilyViewDto() {
+        ArticleFamilyView articleFamilyView = new ArticleFamilyView();
+        BeanUtils.copyProperties(this,articleFamilyView);
+        return articleFamilyView;
     }
 
 }

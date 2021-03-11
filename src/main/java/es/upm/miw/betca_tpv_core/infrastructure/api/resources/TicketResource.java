@@ -12,6 +12,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Rest
 @RequestMapping(TicketResource.TICKETS)
@@ -56,6 +57,12 @@ public class TicketResource {
     @GetMapping(REFERENCE_ID + REFERENCE)
     public Mono<TicketEditionDto> findByReference(@PathVariable String reference) {
         return this.ticketService.findByReference(reference)
+                .map(TicketEditionDto::new);
+    }
+
+    @PutMapping(ID_ID)
+    public Mono<TicketEditionDto> update(@PathVariable String id, @Valid @RequestBody List<Shopping> shoppingList) {
+        return this.ticketService.update(id, shoppingList)
                 .map(TicketEditionDto::new);
     }
 

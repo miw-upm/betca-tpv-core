@@ -84,4 +84,20 @@ public class CreditPersistenceMongodbIT {
                 .verify();
     }
 
+    @Test
+    void testPayUnpaidTicketsFromCreditLineByCard() {
+        StepVerifier
+                .create(this.creditPersistenceMongodb.payUnpaidTicketsFromCreditLine("53354324", "card"))
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testPayUnpaidTicketsFromCreditLineByCash() {
+        StepVerifier
+                .create(this.creditPersistenceMongodb.payUnpaidTicketsFromCreditLine("53354324", "cash"))
+                .expectComplete()
+                .verify();
+    }
+
 }
