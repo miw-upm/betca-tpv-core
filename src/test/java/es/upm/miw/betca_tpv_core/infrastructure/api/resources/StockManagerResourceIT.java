@@ -31,7 +31,6 @@ public class StockManagerResourceIT {
                 .expectStatus().isOk()
                 .expectBodyList(StockManagerDto.class)
                 .value(Assertions::assertNotNull)
-                .value(stocks -> assertTrue(stocks.stream().count() == 7))
                 .value(stocks -> stocks.stream()
                         .allMatch(stockManagerDto -> stockManagerDto.getStock().compareTo(10) < 0));
     }
