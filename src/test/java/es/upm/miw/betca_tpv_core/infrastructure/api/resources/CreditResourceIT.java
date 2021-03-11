@@ -82,13 +82,16 @@ public class CreditResourceIT {
 
     @Test
     void testPayUnpaidTicketsFromCreditLineByCash() {
-        String cashOrCard = "cash";
         this.restClientTestService.loginAdmin(webTestClient)
                 .put()
                 .uri(CREDIT + USER_REF + PAY + CASH_OR_CARD, "53354324", "cash")
-                .body(Mono.just(cashOrCard), String.class)
                 .exchange()
-                .expectStatus().isOk();
+                .expectStatus().isOk()
+                .expectBody(Credit.class)
+                .value(Assertions::assertNotNull)
+                .value(credit -> assertEquals(2, credit.getCreditSales().size()))
+                .value(credit -> assertEquals(true, credit.getCreditSales().get(0).getPayed()))
+                .value(credit -> assertEquals(true, credit.getCreditSales().get(1).getPayed()));
     }
 
     @Test
@@ -97,7 +100,12 @@ public class CreditResourceIT {
                 .put()
                 .uri(CREDIT + USER_REF + PAY + CASH_OR_CARD, "53354324", "card")
                 .exchange()
-                .expectStatus().isOk();
+                .expectStatus().isOk()
+                .expectBody(Credit.class)
+                .value(Assertions::assertNotNull)
+                .value(credit -> assertEquals(2, credit.getCreditSales().size()))
+                .value(credit -> assertEquals(true, credit.getCreditSales().get(0).getPayed()))
+                .value(credit -> assertEquals(true, credit.getCreditSales().get(1).getPayed()));
     }
 
 }
