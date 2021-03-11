@@ -87,7 +87,7 @@ public class ArticleResource {
     public Flux< Article > findArticleBySomething(){
         Article article = new Article();
         article.setBarcode("121212");
-        article.setDescription("Article from Spring");
+        article.setDescription("Article from Spring prueba");
         article.setRetailPrice(new BigDecimal(12));
         return Flux.just(article, article);
     }
