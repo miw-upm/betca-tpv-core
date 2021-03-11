@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.stream.Collectors;
 import java.util.List;
 
@@ -25,9 +27,10 @@ public class CreditPersistenceMongodb implements CreditPersistence {
     private TicketReactive ticketReactive;
 
     @Autowired
-    public CreditPersistenceMongodb(CreditReactive creditReactive, CreditSaleReactive creditSaleReactive) {
+    public CreditPersistenceMongodb(CreditReactive creditReactive, CreditSaleReactive creditSaleReactive, TicketReactive ticketReactive) {
         this.creditReactive = creditReactive;
         this.creditSaleReactive = creditSaleReactive;
+        this.ticketReactive = ticketReactive;
     }
 
     @Override
@@ -79,4 +82,35 @@ public class CreditPersistenceMongodb implements CreditPersistence {
                     return ticketList;
                 });
     }
+
+    @Override
+    public Mono<List<CreditSale>> payUnpaidTicketsFromCreditLine(String userRef, String cashOrCard) {
+        Mono<CreditEntity> creditEntityMono = this.creditReactive.findByUserReference(userRef);
+        return creditEntityMono
+                .map(creditEntity -> {
+                    creditEntity.setCreditSaleEntities(creditEntity.getCreditSaleEntities().stream().filter(CreditSaleEntity -> !CreditSaleEntity.getPayed()).collect(Collectors.toList()));
+                    return creditEntity;
+                })
+                .map(CreditEntity::getCreditSaleEntities)
+                .map(creditSaleEntity -> {
+                    List<CreditSale> creditSaleList = new ArrayList<>();
+                    creditSaleEntity.forEach(creditSaleEntity1 -> {
+                        if (cashOrCard.equalsIgnoreCase("card")) {
+                            creditSaleEntity1.getTicketEntity().setCard(creditSaleEntity1.getTicketEntity().toTicket().total());
+                            creditSaleEntity1.getTicketEntity().setCash(new BigDecimal(0));
+                        } else {
+                            creditSaleEntity1.getTicketEntity().setCash(creditSaleEntity1.getTicketEntity().toTicket().total());
+                            creditSaleEntity1.getTicketEntity().setCard(new BigDecimal(0));
+                        }
+                        Date date = new Date();
+                        creditSaleEntity1.getTicketEntity().setNote("Payed by credit-line (" + date.toString() + ")");
+                        this.ticketReactive.save(creditSaleEntity1.getTicketEntity());
+                        creditSaleEntity1.setPayed(true);
+                        this.creditSaleReactive.save(creditSaleEntity1);
+                        creditSaleList.add(creditSaleEntity1.toCreditSale());
+                    });
+                    return creditSaleList;
+                });
+    }
+
 }
