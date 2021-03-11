@@ -51,7 +51,7 @@ public class ArticleService {
         return this.articlePersistence.findByBarcodeAndNotDiscontinuedNullField(barcode);
     }
 
-    public Flux < Article > findArticleByDateLessThan(LocalDateTime localDateTime){
-        return this.articlePersistence.findArticleByDateLessThan(localDateTime);
+    public Flux < Article > findArticleEntitiesByRegistrationDateAfter(LocalDateTime localDateTime){
+        return this.articlePersistence.findArticleEntitiesByRegistrationDateAfter(localDateTime);
     }
 }

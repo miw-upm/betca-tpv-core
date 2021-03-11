@@ -29,12 +29,16 @@ public class CreditService {
         return this.creditPersistence.findByUserReference(userReference);
     }
 
-    public Mono<Credit> addCreditSale(String userRef, CreditSale creditSale) {
-        return this.creditPersistence.addCreditSale(userRef, creditSale);
+    public Mono<Credit> addCreditSale(String userReference, CreditSale creditSale) {
+        return this.creditPersistence.addCreditSale(userReference, creditSale);
     }
 
     public Mono<List<TicketUnpaidDto>> findUnpaidTicketsFromCreditLine(String userReference) {
         return this.creditPersistence.findUnpaidTicketsFromCreditLine(userReference);
+    }
+
+    public Mono<Void> payUnpaidTicketsFromCreditLine(String userReference, String cashOrCard) {
+        return this.creditPersistence.payUnpaidTicketsFromCreditLine(userReference, cashOrCard);
     }
 
 }

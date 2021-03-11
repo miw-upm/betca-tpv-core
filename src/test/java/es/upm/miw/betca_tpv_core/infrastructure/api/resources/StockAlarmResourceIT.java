@@ -72,4 +72,56 @@ class StockAlarmResourceIT {
                 .value(Assertions::assertNotNull)
                 .value(stockAlarm -> assertEquals(nameFromSeeder, stockAlarm.getName()));
     }
+
+    @Test
+    void testUpdateAlarm() {
+        String nameFromSeeder = "alarm-pac-2";
+        StockAlarmLine stockAlarmLine = StockAlarmLine.builder().barcode("8400000000017").warning(11).critical(22).build();
+        StockAlarm stockAlarm = StockAlarm.builder().name("alarm-pac-2").description("cambio").alarmLine(stockAlarmLine).warning(55).critical(33).build();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(STOCK_ALARMS + NAME_ID, nameFromSeeder)
+                .body(Mono.just(stockAlarm), StockAlarm.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(StockAlarm.class)
+                .value(Assertions::assertNotNull)
+                .value(stockAlarmReturned -> {
+                            assertEquals("cambio", stockAlarmReturned.getDescription());
+                            assertEquals(55, stockAlarmReturned.getWarning());
+                            assertEquals(33, stockAlarmReturned.getCritical());
+
+                            stockAlarmReturned.getStockAlarmLines()
+                                    .forEach(stockAlarmLine1 -> {
+                                        assertEquals(11, stockAlarmLine1.getWarning());
+                                        assertEquals(22, stockAlarmLine1.getCritical());
+                                    });
+                        }
+                );
+    }
+
+    @Test
+    void testDelete() {
+        String nameFromSeeder = "alarm-delete";
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .delete()
+                .uri(STOCK_ALARMS + NAME_ID, nameFromSeeder)
+                .exchange()
+                .expectStatus().isOk();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .delete()
+                .uri(STOCK_ALARMS + NAME_ID, nameFromSeeder + "asdsad")
+                .exchange()
+                .expectStatus().isOk();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(STOCK_ALARMS + NAME_ID, nameFromSeeder)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
 }

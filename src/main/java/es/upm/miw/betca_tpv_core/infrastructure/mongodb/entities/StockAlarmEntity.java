@@ -36,6 +36,10 @@ public class StockAlarmEntity {
         this.stockAlarmLineEntityList.add(stockAlarmLineEntity);
     }
 
+    public void clearAlarms() {
+        this.stockAlarmLineEntityList.clear();
+    }
+
     public StockAlarm toStockAlarm() {
         StockAlarm stockAlarm = new StockAlarm();
         BeanUtils.copyProperties(this, stockAlarm);
