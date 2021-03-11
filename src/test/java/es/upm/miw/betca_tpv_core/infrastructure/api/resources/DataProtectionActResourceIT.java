@@ -34,6 +34,16 @@ public class DataProtectionActResourceIT {
                 });
     }
 
-    //TODO Test read
+    @Test
+    void testReadNotFound() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(DataProtectionActResource.DATA_PROTECTION_ACT +
+                        DataProtectionActResource.MOBILE_ID, "999999999")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(RgpdUserDto.class)
+                .value(Assertions::assertNull);
+    }
 
 }
