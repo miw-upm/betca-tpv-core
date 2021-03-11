@@ -37,7 +37,7 @@ public class CreditService {
         return this.creditPersistence.findUnpaidTicketsFromCreditLine(userReference);
     }
 
-    public Mono<List<CreditSale>> payUnpaidTicketsFromCreditLine(String userReference, String cashOrCard) {
+    public Mono<Void> payUnpaidTicketsFromCreditLine(String userReference, String cashOrCard) {
         return this.creditPersistence.payUnpaidTicketsFromCreditLine(userReference, cashOrCard);
     }
 
