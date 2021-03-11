@@ -80,4 +80,32 @@ public class CreditResourceIT {
                 .value(creditSalesList -> assertEquals(1, creditSalesList.size()));
     }
 
+    @Test
+    void testPayUnpaidTicketsFromCreditLineByCash() {
+        String cashOrCard = "cash";
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(CREDIT + USER_REF + PAY, "53354324")
+                .body(Mono.just(cashOrCard), String.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(List.class)
+                .value(Assertions::assertNotNull)
+                .value(creditSalesList -> assertEquals(1, creditSalesList.size()));
+    }
+
+    @Test
+    void testPayUnpaidTicketsFromCreditLineByCard() {
+        String cashOrCard = "card";
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(CREDIT + USER_REF + PAY, "53354324")
+                .body(Mono.just(cashOrCard), String.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(List.class)
+                .value(Assertions::assertNotNull)
+                .value(creditSalesList -> assertEquals(1, creditSalesList.size()));
+    }
+
 }
