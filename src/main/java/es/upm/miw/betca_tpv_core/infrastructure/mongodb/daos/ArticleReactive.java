@@ -30,4 +30,5 @@ public interface ArticleReactive extends ReactiveSortingRepository< ArticleEntit
     Flux< ArticleEntity > findByBarcodeLikeAndNotDiscontinuedNullSafe(String barcode);
 
     Flux< ArticleEntity > findArticleEntitiesByRegistrationDateAfter(LocalDateTime localDateTime);
+
 }
