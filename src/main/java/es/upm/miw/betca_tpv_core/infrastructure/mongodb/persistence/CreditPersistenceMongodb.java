@@ -84,7 +84,7 @@ public class CreditPersistenceMongodb implements CreditPersistence {
     }
 
     @Override
-    public Mono<List<CreditSale>> payUnpaidTicketsFromCreditLine(String userRef, String cashOrCard) {
+    public Mono<Void> payUnpaidTicketsFromCreditLine(String userRef, String cashOrCard) {
         Mono<CreditEntity> creditEntityMono = this.creditReactive.findByUserReference(userRef);
         return creditEntityMono
                 .map(creditEntity -> {
@@ -93,7 +93,7 @@ public class CreditPersistenceMongodb implements CreditPersistence {
                 })
                 .map(CreditEntity::getCreditSaleEntities)
                 .map(creditSaleEntity -> {
-                    List<CreditSale> creditSaleList = new ArrayList<>();
+                    List<CreditSaleEntity> creditSaleList = new ArrayList<>();
                     creditSaleEntity.forEach(creditSaleEntity1 -> {
                         if (cashOrCard.equalsIgnoreCase("card")) {
                             creditSaleEntity1.getTicketEntity().setCard(creditSaleEntity1.getTicketEntity().toTicket().total());
@@ -107,10 +107,17 @@ public class CreditPersistenceMongodb implements CreditPersistence {
                         this.ticketReactive.save(creditSaleEntity1.getTicketEntity());
                         creditSaleEntity1.setPayed(true);
                         this.creditSaleReactive.save(creditSaleEntity1);
-                        creditSaleList.add(creditSaleEntity1.toCreditSale());
+                        creditSaleList.add(creditSaleEntity1);
                     });
-                    return creditSaleList;
-                });
+                    return  creditEntityMono.map(
+                            creditEntity -> {
+                                List<CreditSaleEntity> listPaidBefore = creditEntity.getCreditSaleEntities().stream().filter(CreditSaleEntity::getPayed).collect(Collectors.toList());
+                                listPaidBefore.addAll(creditSaleList);
+                                creditEntity.setCreditSaleEntities(listPaidBefore);
+                                this.creditReactive.save(creditEntity);
+                                return creditEntity;
+                            });
+                }).then();
     }
 
 }

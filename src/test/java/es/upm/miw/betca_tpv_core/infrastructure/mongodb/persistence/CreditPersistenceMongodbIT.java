@@ -88,11 +88,6 @@ public class CreditPersistenceMongodbIT {
     void testPayUnpaidTicketsFromCreditLineByCard() {
         StepVerifier
                 .create(this.creditPersistenceMongodb.payUnpaidTicketsFromCreditLine("53354324", "card"))
-                .expectNextMatches(creditSaleList -> {
-                    assertEquals(1, creditSaleList.size());
-                    assertEquals(true, creditSaleList.get(0).getPayed());
-                    return true;
-                })
                 .expectComplete()
                 .verify();
     }
@@ -101,11 +96,6 @@ public class CreditPersistenceMongodbIT {
     void testPayUnpaidTicketsFromCreditLineByCash() {
         StepVerifier
                 .create(this.creditPersistenceMongodb.payUnpaidTicketsFromCreditLine("53354324", "cash"))
-                .expectNextMatches(creditSaleList -> {
-                    assertEquals(1, creditSaleList.size());
-                    assertEquals(true, creditSaleList.get(0).getPayed());
-                    return true;
-                })
                 .expectComplete()
                 .verify();
     }
