@@ -85,7 +85,7 @@ public class CreditResourceIT {
         String cashOrCard = "cash";
         this.restClientTestService.loginAdmin(webTestClient)
                 .put()
-                .uri(CREDIT + USER_REF + PAY, "53354324")
+                .uri(CREDIT + USER_REF + PAY + CASH_OR_CARD, "53354324", "cash")
                 .body(Mono.just(cashOrCard), String.class)
                 .exchange()
                 .expectStatus().isOk()
@@ -96,11 +96,9 @@ public class CreditResourceIT {
 
     @Test
     void testPayUnpaidTicketsFromCreditLineByCard() {
-        String cashOrCard = "card";
         this.restClientTestService.loginAdmin(webTestClient)
                 .put()
-                .uri(CREDIT + USER_REF + PAY, "53354324")
-                .body(Mono.just(cashOrCard), String.class)
+                .uri(CREDIT + USER_REF + PAY + CASH_OR_CARD, "53354324", "card")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(List.class)
