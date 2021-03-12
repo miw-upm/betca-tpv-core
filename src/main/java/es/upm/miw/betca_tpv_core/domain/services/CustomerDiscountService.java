@@ -5,7 +5,6 @@ import es.upm.miw.betca_tpv_core.domain.persistence.CustomerDiscountPersistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 @Service
 public class CustomerDiscountService {
@@ -17,7 +16,7 @@ public class CustomerDiscountService {
         this.customerDiscountPersistence = customerDiscountPersistence;
     }
 
-    public Flux< CustomerDiscount > findByUserPhone(String userPhone) {
-        return this.customerDiscountPersistence.findByUserPhone(userPhone);
+    public Flux< CustomerDiscount > findByUser(String user) {
+        return this.customerDiscountPersistence.findByUser(user);
     }
 }

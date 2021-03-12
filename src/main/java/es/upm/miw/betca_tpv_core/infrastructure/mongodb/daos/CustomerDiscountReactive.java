@@ -5,5 +5,5 @@ import org.springframework.data.repository.reactive.ReactiveSortingRepository;
 import reactor.core.publisher.Flux;
 
 public interface CustomerDiscountReactive extends ReactiveSortingRepository< CustomerDiscountEntity, String > {
-    Flux< CustomerDiscountEntity > findByUserPhone(String userPhone);
+    Flux< CustomerDiscountEntity > findByUser(String user);
 }

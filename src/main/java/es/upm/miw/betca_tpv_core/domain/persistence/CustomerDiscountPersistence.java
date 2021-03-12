@@ -7,5 +7,5 @@ import reactor.core.publisher.Flux;
 @Repository
 public interface CustomerDiscountPersistence {
 
-    Flux< CustomerDiscount > findByUserPhone(String userPhone);
+    Flux< CustomerDiscount > findByUser(String user);
 }

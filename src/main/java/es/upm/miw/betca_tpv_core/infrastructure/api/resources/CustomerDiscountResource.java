@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 @Rest
 @RequestMapping(CustomerDiscountResource.CUSTOMERS_DISCOUNTS)
@@ -24,10 +23,9 @@ public class CustomerDiscountResource {
     }
 
     @GetMapping(SEARCH)
-    public Flux< CustomerDiscount > findByUserPhone(
-            @RequestParam(required = false) String userPhone
+    public Flux< CustomerDiscount > findByUser(
+            @RequestParam(required = false) String user
     ) {
-        return this.customerDiscountService.findByUserPhone(userPhone)
-                .map(CustomerDiscount::ofUserPhone);
+        return this.customerDiscountService.findByUser(user);
     }
 }

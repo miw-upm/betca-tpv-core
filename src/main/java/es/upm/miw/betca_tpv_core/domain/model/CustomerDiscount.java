@@ -23,11 +23,11 @@ public class CustomerDiscount {
     private Double discount;
     private Double minimumPurchase;
     @NotBlank
-    private String userPhone;
+    private String user;
 
-    public static CustomerDiscount ofUserPhone(CustomerDiscount customerDiscount) {
+    public static CustomerDiscount ofUser(CustomerDiscount customerDiscount) {
         return CustomerDiscount.builder()
-                .userPhone(customerDiscount.getUserPhone())
+                .user(customerDiscount.getUser())
                 .build();
     }
 }

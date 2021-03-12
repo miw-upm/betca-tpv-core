@@ -23,7 +23,7 @@ public class CustomerDiscountEntity {
     private LocalDateTime registrationDate;
     private Double discount;
     private Double minimumPurchase;
-    private String userPhone;
+    private String user;
 
     public CustomerDiscountEntity(CustomerDiscount customerDiscount) {
         BeanUtils.copyProperties(customerDiscount, this);

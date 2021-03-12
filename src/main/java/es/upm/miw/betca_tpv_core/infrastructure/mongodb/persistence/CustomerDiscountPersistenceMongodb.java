@@ -19,8 +19,8 @@ public class CustomerDiscountPersistenceMongodb implements CustomerDiscountPersi
     }
 
     @Override
-    public Flux<CustomerDiscount> findByUserPhone(String userPhone) {
-        return this.customerDiscountReactive.findByUserPhone(userPhone)
+    public Flux<CustomerDiscount> findByUser(String user) {
+        return this.customerDiscountReactive.findByUser(user)
                 .map(CustomerDiscountEntity::toCustomerDiscount);
     }
 }
