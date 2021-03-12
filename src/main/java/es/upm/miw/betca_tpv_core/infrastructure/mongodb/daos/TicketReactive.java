@@ -6,6 +6,8 @@ import org.springframework.data.repository.reactive.ReactiveSortingRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+
 public interface TicketReactive extends ReactiveSortingRepository< TicketEntity, String > {
 
     @Query("{$or:[" // allow NULL: all elements
@@ -17,4 +19,6 @@ public interface TicketReactive extends ReactiveSortingRepository< TicketEntity,
     Mono<TicketEntity> findByReference(String reference);
 
     Mono<TicketEntity> findById(String id);
+
+    Flux<TicketEntity> findTicketEntitiesByCreationDateAfter(LocalDateTime localDateTime);
 }

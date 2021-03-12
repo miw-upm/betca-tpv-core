@@ -19,6 +19,7 @@ public class ArticleFamilyView {
     private String reference;
     private String description;
     private TreeType treeType;
+    private String barcode;
     //@PositiveBigDecimal
     private BigDecimal retailPrice;
 }
