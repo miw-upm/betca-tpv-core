@@ -31,13 +31,15 @@ public class DatabaseSeederDev {
     private CreditSaleDao creditSaleDao;
     private CreditDao creditDao;
     private RgpdDao rgpdDao;
+    private CustomerDiscountDao customerDiscountDao;
 
     private DatabaseStarting databaseStarting;
 
     @Autowired
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
                              TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,
-                             CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao, DatabaseStarting databaseStarting) {
+                             CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao,
+                             CustomerDiscountDao customerDiscountDao, DatabaseStarting databaseStarting) {
 
         this.articleDao = articleDao;
         this.providerDao = providerDao;
@@ -50,6 +52,7 @@ public class DatabaseSeederDev {
         this.databaseStarting = databaseStarting;
         this.stockAlarmDao = stockAlarmDao;
         this.rgpdDao = rgpdDao;
+        this.customerDiscountDao = customerDiscountDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -68,6 +71,7 @@ public class DatabaseSeederDev {
         this.creditSaleDao.deleteAll();
         this.creditDao.deleteAll();
         this.rgpdDao.deleteAll();
+        this.customerDiscountDao.deleteAll();
 
         LogManager.getLogger(this.getClass()).warn("------- Delete All -----------");
         this.databaseStarting.initialize();
@@ -262,6 +266,15 @@ public class DatabaseSeederDev {
         };
         this.rgpdDao.saveAll(List.of(rgpds));
         LogManager.getLogger(this.getClass()).warn("        ------- rgpds");
+
+        CustomerDiscountEntity[] customersDiscounts = {
+                CustomerDiscountEntity.builder().id("1").note("discount1").registrationDate(LocalDateTime.now()).discount(30.0).minimumPurchase(50.0).user("66666666").build(),
+                CustomerDiscountEntity.builder().id("2").note("discount2").registrationDate(LocalDateTime.now()).discount(10.0).minimumPurchase(40.0).user("66666666").build(),
+                CustomerDiscountEntity.builder().id("3").note("discount3").registrationDate(LocalDateTime.now()).discount(25.5).minimumPurchase(35.0).user("66666666").build(),
+                CustomerDiscountEntity.builder().id("4").note("discount4").registrationDate(LocalDateTime.now()).discount(80.0).minimumPurchase(100.0).user("66666666").build(),
+        };
+        this.customerDiscountDao.saveAll(List.of(customersDiscounts));
+        LogManager.getLogger(this.getClass()).warn("        ------- customer discount");
 
     }
 
