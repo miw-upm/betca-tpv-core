@@ -22,10 +22,18 @@ public class CustomerDiscountResource {
         this.customerDiscountService = customerDiscountService;
     }
 
-    @GetMapping(SEARCH)
+/*    @GetMapping(SEARCH)
     public Flux< CustomerDiscount > findByUser(
             @RequestParam(required = false) String user
     ) {
         return this.customerDiscountService.findByUser(user);
+    }*/
+
+    @GetMapping(SEARCH)
+    public Flux< CustomerDiscount > findByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe(
+            @RequestParam(required = false) String note, @RequestParam(required = false) Double discount,
+            @RequestParam(required = false) Double minimumPurchase, @RequestParam(required = false) String user
+    ) {
+        return this.customerDiscountService.findByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe(note, discount, minimumPurchase, user);
     }
 }

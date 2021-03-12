@@ -7,5 +7,8 @@ import reactor.core.publisher.Flux;
 @Repository
 public interface CustomerDiscountPersistence {
 
-    Flux< CustomerDiscount > findByUser(String user);
+    Flux<CustomerDiscount> findByUser(String user);
+
+    Flux<CustomerDiscount> findByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe(
+            String note, Double discount, Double minimumPurchase, String user);
 }
