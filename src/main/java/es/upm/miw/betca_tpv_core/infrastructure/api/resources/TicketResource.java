@@ -69,15 +69,12 @@ public class TicketResource {
                 .map(TicketEditionDto::new);
     }
 
+    // TODO Improve this by receiving the token instead of mobile & use JwtService to obtain mobile phone. Use POST #93
     @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping(SEARCH + BOUGHT_ARTICLES)
     public Flux<ArticleNewDto> findAllBoughtArticlesByMobile(@RequestParam() String mobile) {
         return this.ticketService.findAllBoughtArticlesByMobile(mobile)
-                .map(ArticleNewDto::new)
-                .map(article -> {
-                    System.out.println(article);
-                    return article;
-                });
+                .map(ArticleNewDto::new);
     }
 
 }

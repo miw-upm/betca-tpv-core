@@ -189,6 +189,12 @@ public class DatabaseSeederDev {
                 new TicketEntity("5fa4608f4928694ef5980e4c", "WB9-e8xQT4ejb74r1vLrCw",
                         List.of(shoppingList[5]), date, new BigDecimal("20"),
                         new BigDecimal("5"), ZERO, "note", "666666005"),
+                new TicketEntity("5fa4603b7513a164chop77ac", "FGhfv521Rj6iKmzp5aERAA",
+                        List.of(shoppingList[1], shoppingList[5]), date, new BigDecimal("21.0"),
+                        ZERO, ZERO, "note", "66"),
+                new TicketEntity("5gfaw03b7513a164chop77ac", "AAhfv521Rj6iKmzp5aERAA",
+                        List.of(shoppingList[2], shoppingList[3], shoppingList[4]), date, new BigDecimal("25.0"),
+                        ZERO, ZERO, "note", "66"),
         };
         this.ticketDao.saveAll(Arrays.asList(tickets));
         LogManager.getLogger(this.getClass()).warn("        ------- tickets");

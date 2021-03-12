@@ -244,6 +244,19 @@ class TicketResourceIT {
     }
 
     @Test
+    void testFindAllBoughtArticlesByMobileUnauthorized() {
+        String mobile = "666666005";
+        this.webTestClient
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(TICKETS + TicketResource.SEARCH + BOUGHT_ARTICLES)
+                        .queryParam("mobile", mobile)
+                        .build())
+                .exchange()
+                .expectStatus().isUnauthorized();
+    }
+
+    @Test
     void testFindAllBoughtArticlesByMobile() {
         String mobile = "66";
         this.restClientTestService.loginCustomer(webTestClient)
@@ -256,7 +269,9 @@ class TicketResourceIT {
                 .expectStatus().isOk()
                 .expectBodyList(ArticleNewDto.class)
                 .value(Assertions::assertNotNull)
-                .value(article -> System.out.println(">>>>> article: " + article));
+                .value(articles -> assertTrue(articles.stream()
+                                        .anyMatch(article ->
+                                                article.getBarcode().equals("8400000000017"))));
     }
 
     @AfterEach
