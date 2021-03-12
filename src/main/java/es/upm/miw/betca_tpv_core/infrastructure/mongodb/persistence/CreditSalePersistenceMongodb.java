@@ -6,7 +6,6 @@ import es.upm.miw.betca_tpv_core.domain.persistence.CreditSalePersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.CreditSaleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.TicketReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.CreditSaleEntity;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.TicketEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
