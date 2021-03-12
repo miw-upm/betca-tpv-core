@@ -15,7 +15,7 @@ import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CreditResou
 import static org.junit.jupiter.api.Assertions.*;
 
 @RestTestConfig
-public class CreditResourceIT {
+class CreditResourceIT {
     @Autowired
     private WebTestClient webTestClient;
     @Autowired
