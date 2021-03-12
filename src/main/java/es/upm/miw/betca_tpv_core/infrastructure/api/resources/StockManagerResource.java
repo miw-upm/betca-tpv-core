@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_core.domain.services.StockManagerService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.StockManagerDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,8 +36,9 @@ public class StockManagerResource {
 
     @GetMapping(STOCK_SOLD)
     public Flux<StockManagerDto> searchSoldProducts(
-            @RequestParam(required = true) LocalDateTime initial,
-            @RequestParam(required = true) LocalDateTime end) {
+            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime initial,
+            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
+
         return this.stockManagerService.searchSoldProducts(initial, end)
                 .map(StockManagerDto::new);
     }

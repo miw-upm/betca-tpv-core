@@ -107,7 +107,7 @@ public class TicketPersistenceMongodb implements TicketPersistence {
     }
     @Override
     public Flux<Ticket> findByRangeRegistrationDate(LocalDateTime initial, LocalDateTime end) {
-        return this.ticketReactive.findByRangeRegistrationDate(initial,end)
+        return this.ticketReactive.findByCreationDateBetween(initial,end)
                 .map(TicketEntity::toTicket);
     }
 

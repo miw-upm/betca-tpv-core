@@ -22,6 +22,6 @@ public interface TicketReactive extends ReactiveSortingRepository<TicketEntity, 
 
     Flux<TicketEntity> findTicketEntitiesByCreationDateAfter(LocalDateTime localDateTime);
 
-    Flux<TicketEntity> findByRangeRegistrationDate(LocalDateTime inital, LocalDateTime end);
+    Flux<TicketEntity> findByCreationDateBetween(LocalDateTime inital, LocalDateTime end);
 
 }
