@@ -30,8 +30,13 @@ public class ArticleFamilyViewResourceIT {
                 .expectStatus().isOk()
                 .expectBodyList(ArticleFamilyView.class)
                 .value(Assertions::assertNotNull)
-                .value(articleFamilyViews ->
-                        assertEquals(articleFamilyViews.get(0).getReference(),"Zz") );
+                .value(articleFamilyViews -> {
+                    assertEquals(articleFamilyViews.get(0).getReference(), "Zz");
+                    assertEquals(articleFamilyViews.get(0).getDescription(), "Zarzuela");
+                    assertEquals(articleFamilyViews.get(2).getReference(), "ref-a3");
+                    assertEquals(articleFamilyViews.get(2).getDescription(), "descrip-a3");
+                });
+
     }
 
    /* @Test

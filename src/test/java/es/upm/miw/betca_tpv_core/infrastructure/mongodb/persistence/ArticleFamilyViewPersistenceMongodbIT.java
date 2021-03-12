@@ -19,22 +19,6 @@ public class ArticleFamilyViewPersistenceMongodbIT {
     @Autowired
     private ArticleFamilyViewPersistenceMongodb articleFamilyViewPersistenceMongodb;
 
-    /*@Test
-    void testReadByReference() {
-        StepVerifier
-                .create(this.articleFamilyViewPersistenceMongodb.readByReference("Zz"))
-                .expectNextMatches(articleFamilyView -> {
-                    assertEquals(articleFamilyView.getReference(),"Zz Falda");
-                    return true;
-                })
-                .expectNextMatches(articleFamilyView -> {
-                    assertEquals(articleFamilyView.getReference(),"Zz Polo");
-                    return true;
-                })
-                .verifyComplete();
-
-    }*/
-
     @Test
     void testReadByReference() {
         StepVerifier
@@ -43,8 +27,10 @@ public class ArticleFamilyViewPersistenceMongodbIT {
                 .thenConsumeWhile(x -> true)
                 .expectRecordedMatches(articleFamilyViews -> {
                             List<ArticleFamilyView> articleFamilyViewList = new ArrayList<>(articleFamilyViews);
-                            assertEquals(articleFamilyViewList.get(0).getReference(),"Zz");
-                            assertEquals(articleFamilyViewList.get(1).getReference(),"varios");
+                            assertEquals(articleFamilyViewList.get(0).getReference(), "Zz");
+                            assertEquals(articleFamilyViewList.get(0).getDescription(), "Zarzuela");
+                            assertEquals(articleFamilyViewList.get(2).getReference(), "ref-a3");
+                            assertEquals(articleFamilyViewList.get(2).getDescription(), "descrip-a3");
                             return true;
                         }
                 )

@@ -24,6 +24,12 @@ public class SingleArticleEntity extends ArticlesTreeEntity {
 
     public SingleArticleEntity(ArticleEntity articleEntity) {
         super(articleEntity.getReference(), TreeType.ARTICLE);
+        /*En el super si se pasa bien la referencia, pero cuando intentamos acceder
+        a algún atributo de this.articleEntity obtenemos que this.articleEntity
+        es null. Lo más raro es que esto en los test no sucede (ver test testReadByReference
+        de ArticleFamilyViewPersistenceMongodbIT y test testFindByReferenceThenReturnArticlesFamily
+        de ArticleFamilyViewResourceIT
+        */
         this.articleEntity = articleEntity;
     }
 
@@ -54,6 +60,11 @@ public class SingleArticleEntity extends ArticlesTreeEntity {
         return articleFamilyCrud;
     }
 
+    /*
+    Tal y como está en el método de abajo debería funcionar correctamente, pero
+    no se está asignando correctamente la entidad ArticleEntity en el constructor
+    de la hoja(SingleArticleEntity)
+     */
     @Override
     public ArticleFamilyView toArticleFamilyViewDto() {
         return ArticleFamilyView.builder()
