@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Article;
+import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ProviderReactive;
@@ -20,11 +21,13 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
 
     private ProviderReactive providerReactive;
     private ArticleReactive articleReactive;
+    private TicketPersistenceMongodb ticketPersistenceMongodb;
 
     @Autowired
-    public ArticlePersistenceMongodb(ProviderReactive providerReactive, ArticleReactive articleReactive) {
+    public ArticlePersistenceMongodb(ProviderReactive providerReactive, ArticleReactive articleReactive, TicketPersistenceMongodb ticketPersistenceMongodb) {
         this.providerReactive = providerReactive;
         this.articleReactive = articleReactive;
+        this.ticketPersistenceMongodb = ticketPersistenceMongodb;
     }
 
     @Override
@@ -123,5 +126,14 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
     public Flux<Article> findByStockLessThan(Integer stock) {
         return this.articleReactive.findByStockLessThan(stock)
                 .map(ArticleEntity::toArticle);
+    }
+
+    public Flux< Article > findMostArticleBySomething(){
+        LocalDateTime localDateTime = LocalDateTime.now().minusDays(7);
+        Flux<Ticket> tickets = this.ticketPersistenceMongodb.findTicketByRegistrationDateAfter(localDateTime);
+        //TODO A partir de la lista de tickets, recoger los articulos que más aparecen
+        //return this.articleReactive.findArticleEntitiesSortedByBarcode(tickets)
+         //       .map(ArticleEntity::toArticle);
+        return Flux.empty();
     }
 }

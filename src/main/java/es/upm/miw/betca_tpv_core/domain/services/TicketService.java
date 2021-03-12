@@ -94,4 +94,8 @@ public class TicketService {
     public Mono<Ticket> update(String id, List<Shopping> shoppingList) {
         return this.ticketPersistence.update(id, shoppingList);
     }
+
+    public Flux<Ticket> findTicketByRegistrationDateAfter(LocalDateTime localDateTime){
+        return this.ticketPersistence.findTicketByRegistrationDateAfter(localDateTime);
+    }
 }
