@@ -9,7 +9,7 @@ import reactor.test.StepVerifier;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
-public class CreditSalePersistenceMongodbIT {
+class CreditSalePersistenceMongodbIT {
 
     @Autowired
     private CreditSalePersistenceMongodb creditSalePersistenceMongodb;

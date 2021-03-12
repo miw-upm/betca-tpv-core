@@ -2,7 +2,6 @@ package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.model.Credit;
 import es.upm.miw.betca_tpv_core.domain.model.CreditSale;
-import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.persistence.CreditPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketUnpaidDto;
 import org.springframework.beans.factory.annotation.Autowired;
