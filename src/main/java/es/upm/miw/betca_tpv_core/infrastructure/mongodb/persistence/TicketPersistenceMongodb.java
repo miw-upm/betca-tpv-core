@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -61,6 +62,11 @@ public class TicketPersistenceMongodb implements TicketPersistence {
         }
         return this.ticketReactive.findById(key)
                 .mergeWith(this.ticketReactive.findByReferenceLikeOrUserMobileLikeNullSafe(key, key))
+                .map(TicketEntity::toTicket);
+    }
+
+    public Flux<Ticket> findTicketByRegistrationDateAfter(LocalDateTime localDateTime){
+        return this.ticketReactive.findTicketEntitiesByCreationDateAfter(localDateTime)
                 .map(TicketEntity::toTicket);
     }
 

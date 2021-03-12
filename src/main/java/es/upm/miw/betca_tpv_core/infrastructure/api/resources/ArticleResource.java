@@ -84,12 +84,8 @@ public class ArticleResource {
 
     @PreAuthorize("permitAll()")
     @GetMapping(TOP5)
-    public Flux< Article > findArticleBySomething(){
-        Article article = new Article();
-        article.setBarcode("121212");
-        article.setDescription("Article from Spring prueba");
-        article.setRetailPrice(new BigDecimal(12));
-        return Flux.just(article, article);
+    public Flux< Article > findMostArticleBySomething(){
+        return this.articleService.findMostArticleBySomething();
     }
 
 }
