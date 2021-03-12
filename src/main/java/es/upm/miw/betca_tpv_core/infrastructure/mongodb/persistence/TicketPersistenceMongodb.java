@@ -105,5 +105,10 @@ public class TicketPersistenceMongodb implements TicketPersistence {
                             .map(TicketEntity::toTicket);
                 });
     }
+    @Override
+    public Flux<Ticket> findByRangeRegistrationDate(LocalDateTime initial, LocalDateTime end) {
+        return this.ticketReactive.findByRangeRegistrationDate(initial,end)
+                .map(TicketEntity::toTicket);
+    }
 
 }
