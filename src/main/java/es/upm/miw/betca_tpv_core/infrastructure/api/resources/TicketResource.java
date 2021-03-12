@@ -4,9 +4,11 @@ import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.services.TicketService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ArticleNewDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketBasicDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketEditionDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -24,6 +26,7 @@ public class TicketResource {
     public static final String REFERENCE_ID = "/{reference}";
     public static final String REFERENCE = "/reference";
     public static final String RECEIPT = "/receipt";
+    public static final String BOUGHT_ARTICLES = "/boughtArticles";
 
     private TicketService ticketService;
 
@@ -64,6 +67,17 @@ public class TicketResource {
     public Mono<TicketEditionDto> update(@PathVariable String id, @Valid @RequestBody List<Shopping> shoppingList) {
         return this.ticketService.update(id, shoppingList)
                 .map(TicketEditionDto::new);
+    }
+
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @GetMapping(SEARCH + BOUGHT_ARTICLES)
+    public Flux<ArticleNewDto> findAllBoughtArticlesByMobile(@RequestParam() String mobile) {
+        return this.ticketService.findAllBoughtArticlesByMobile(mobile)
+                .map(ArticleNewDto::new)
+                .map(article -> {
+                    System.out.println(article);
+                    return article;
+                });
     }
 
 }

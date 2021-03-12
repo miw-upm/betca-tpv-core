@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ArticleNewDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketBasicDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketEditionDto;
 import org.junit.jupiter.api.AfterEach;
@@ -16,7 +17,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleResource.*;
@@ -241,6 +241,22 @@ class TicketResourceIT {
                 .returnResult()
                 .getResponseBody();
         assertNotNull(ticket);
+    }
+
+    @Test
+    void testFindAllBoughtArticlesByMobile() {
+        String mobile = "66";
+        this.restClientTestService.loginCustomer(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(TICKETS + TicketResource.SEARCH + BOUGHT_ARTICLES)
+                        .queryParam("mobile", mobile)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(ArticleNewDto.class)
+                .value(Assertions::assertNotNull)
+                .value(article -> System.out.println(">>>>> article: " + article));
     }
 
     @AfterEach

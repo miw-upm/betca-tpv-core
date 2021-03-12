@@ -97,4 +97,11 @@ public class TicketService {
     public Flux<Ticket> findTicketByRegistrationDateAfter(LocalDateTime localDateTime){
         return this.ticketPersistence.findTicketByRegistrationDateAfter(localDateTime);
     }
+
+    public Flux<Shopping> findAllBoughtArticlesByMobile(String mobile) {
+        return this.findByIdOrReferenceLikeOrUserMobileLikeNullSafe(mobile) // Metodo no busca por el movil que quiero
+                .flatMap(ticket -> Flux.fromIterable(ticket.getShoppingList()))
+                .distinct(Shopping::getBarcode);
+    }
+
 }
