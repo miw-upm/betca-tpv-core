@@ -7,8 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,10 +16,12 @@ import java.util.List;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ArticleFamilyView {
+    @NotBlank
     private String reference;
+    @NotBlank
     private String description;
+    @NotBlank
     private TreeType treeType;
     private String barcode;
-    //@PositiveBigDecimal
     private BigDecimal retailPrice;
 }

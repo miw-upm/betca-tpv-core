@@ -11,7 +11,6 @@ import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleFami
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleFamilyViewResource.REFERENCE_ID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RestTestConfig
 public class ArticleFamilyViewResourceIT {
@@ -31,15 +30,6 @@ public class ArticleFamilyViewResourceIT {
                 .expectBodyList(ArticleFamilyView.class)
                 .value(Assertions::assertNotNull)
                 .value(articleFamilyViews ->
-                        assertEquals(articleFamilyViews.get(0).getReference(),"Zz") );
+                        assertEquals("Zz",articleFamilyViews.get(0).getReference()) );
     }
-
-   /* @Test
-    void testFindByNonExistentReferenceThenNotFound() {
-        this.restClientTestService.loginAdmin(webTestClient)
-                .get()
-                .uri(ARTICLE_FAMILY+REFERENCE_ID,"5")
-                .exchange()
-                .expectStatus().isNotFound();
-    }*/
 }
