@@ -58,12 +58,9 @@ public class SingleArticleEntity extends ArticlesTreeEntity {
     public ArticleFamilyView toArticleFamilyViewDto() {
         return ArticleFamilyView.builder()
                 .reference(this.getReference())
-                //.description("zz-falda-T2")
                 .description(this.getDescription())
                 .treeType(this.getTreeType())
-                //.barcode("8400000000017")
                 .barcode(this.articleEntity.getBarcode())
-                //.retailPrice(new BigDecimal(10))
                 .retailPrice(this.articleEntity.getRetailPrice())
                 .build();
     }
