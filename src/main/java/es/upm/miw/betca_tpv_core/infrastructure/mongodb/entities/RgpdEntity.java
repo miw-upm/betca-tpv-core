@@ -24,6 +24,12 @@ public class RgpdEntity {
     private RgpdType rgpdType;
     private byte[] agreement;
 
+    public RgpdEntity(Rgpd rgpd) {
+        this.userMobile = rgpd.getMobile();
+        this.rgpdType = rgpd.getRgpdType();
+        this.agreement = rgpd.getAgreement();
+    }
+
     public Rgpd toRgpd() {
         return new Rgpd(new User(this.userMobile), this.rgpdType, this.agreement);
     }
