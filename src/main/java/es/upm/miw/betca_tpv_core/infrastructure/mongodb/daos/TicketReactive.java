@@ -21,4 +21,6 @@ public interface TicketReactive extends ReactiveSortingRepository< TicketEntity,
     Mono<TicketEntity> findById(String id);
 
     Flux<TicketEntity> findTicketEntitiesByCreationDateAfter(LocalDateTime localDateTime);
+
+    Flux<TicketEntity> findByUserMobile(String userMobile);
 }

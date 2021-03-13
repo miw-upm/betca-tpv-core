@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.dtos;
 
+import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.model.validations.PositiveBigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,4 +18,11 @@ public class ArticleNewDto {
     private String description;
     @PositiveBigDecimal
     private BigDecimal retailPrice;
+
+    public ArticleNewDto(Shopping shopping) {
+        this.barcode = shopping.getBarcode();
+        this.description = shopping.getDescription();
+        this.retailPrice = shopping.getRetailPrice();
+    }
+
 }

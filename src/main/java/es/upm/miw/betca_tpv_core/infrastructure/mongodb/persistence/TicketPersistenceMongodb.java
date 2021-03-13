@@ -71,6 +71,12 @@ public class TicketPersistenceMongodb implements TicketPersistence {
     }
 
     @Override
+    public Flux<Ticket> findByUserMobile(String mobile) {
+        return this.ticketReactive.findByUserMobile(mobile)
+                .map(TicketEntity::toTicket);
+    }
+
+    @Override
     public Mono<Ticket> findById(String id) {
         return this.ticketReactive.findById(id)
                 .switchIfEmpty(Mono.error(new NotFoundException("Non existent ticket id: " + id)))
