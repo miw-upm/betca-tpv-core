@@ -1,6 +1,8 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
+import es.upm.miw.betca_tpv_core.domain.model.ArticleFamilyCrud;
+import es.upm.miw.betca_tpv_core.domain.model.TreeType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
@@ -39,6 +41,18 @@ public class ArticleFamilyCrudPersistenceMongodbIT {
                 })
                 .expectComplete()
                 .verify();
+    }
+
+    @Test
+    void createTest() {
+        StepVerifier
+                .create(this.familyArticleCrudPersistenceMongodb.createCompose(ArticleFamilyCrud.builder().reference("abcdefg").treeType(TreeType.SIZES).build(),"Zz"))
+                        .expectNextMatches(articleFamilyCrud -> {
+                            assertEquals("abcdefg",articleFamilyCrud.getReference());
+                            return true;
+                        })
+                        .expectComplete()
+                        .verify();
     }
 
 }
