@@ -9,4 +9,6 @@ public interface RgpdPersistence {
 
     Mono<Rgpd> readByMobile(String mobile);
 
+    Mono<Rgpd> create(Rgpd rgpd);
+
 }
