@@ -13,7 +13,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestConfig
-public class ArticleFamilyViewPersistenceMongodbIT {
+class ArticleFamilyViewPersistenceMongodbIT {
 
     @Autowired
     private ArticleFamilyViewPersistenceMongodb articleFamilyViewPersistenceMongodb;
