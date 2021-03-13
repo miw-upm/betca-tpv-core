@@ -10,7 +10,7 @@ import reactor.test.StepVerifier;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
-public class CreditPersistenceMongodbIT {
+class CreditPersistenceMongodbIT {
 
     @Autowired
     private CreditPersistenceMongodb creditPersistenceMongodb;
@@ -74,10 +74,10 @@ public class CreditPersistenceMongodbIT {
     @Test
     void testFindUnpaidTicketsFromCreditLine() {
         StepVerifier
-                .create(this.creditPersistenceMongodb.findUnpaidTicketsFromCreditLine("53354324"))
+                .create(this.creditPersistenceMongodb.findUnpaidTicketsFromCreditLine("5666534324"))
                 .expectNextMatches(ticketList -> {
                     assertEquals(1, ticketList.size());
-                    assertEquals("lpiHOlsoS_WkkEyWeFNJtg", ticketList.get(0).getReference());
+                    assertEquals("nUs81zZ4R_iuoq0_zCRm6A", ticketList.get(0).getReference());
                     return true;
                 })
                 .expectComplete()
@@ -88,6 +88,12 @@ public class CreditPersistenceMongodbIT {
     void testPayUnpaidTicketsFromCreditLineByCard() {
         StepVerifier
                 .create(this.creditPersistenceMongodb.payUnpaidTicketsFromCreditLine("53354324", "card"))
+                .expectNextMatches(credit -> {
+                    assertEquals(2, credit.getCreditSales().size());
+                    assertEquals(true, credit.getCreditSales().get(0).getPayed());
+                    assertEquals(true, credit.getCreditSales().get(1).getPayed());
+                    return true;
+                })
                 .expectComplete()
                 .verify();
     }
@@ -96,6 +102,12 @@ public class CreditPersistenceMongodbIT {
     void testPayUnpaidTicketsFromCreditLineByCash() {
         StepVerifier
                 .create(this.creditPersistenceMongodb.payUnpaidTicketsFromCreditLine("53354324", "cash"))
+                .expectNextMatches(credit -> {
+                    assertEquals(2, credit.getCreditSales().size());
+                    assertEquals(true, credit.getCreditSales().get(0).getPayed());
+                    assertEquals(true, credit.getCreditSales().get(1).getPayed());
+                    return true;
+                })
                 .expectComplete()
                 .verify();
     }

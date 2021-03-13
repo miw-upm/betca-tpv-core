@@ -58,7 +58,7 @@ public class CreditResource {
     }
 
     @PutMapping(USER_REF+PAY+CASH_OR_CARD)
-    public Mono<Void> payUnpaidTicketsFromCreditLine(@PathVariable String userRef, @PathVariable String cashOrCard) {
+    public Mono<Credit> payUnpaidTicketsFromCreditLine(@PathVariable String userRef, @PathVariable String cashOrCard) {
         return this.creditService.payUnpaidTicketsFromCreditLine(userRef, cashOrCard);
     }
 }
