@@ -34,12 +34,11 @@ public class ArticleFamilyCrudResource {
     }
 
     @PostMapping(produces = {"application/json"})
-    public Mono<ArticleFamilyCrud> create(@RequestBody ArticleFamilyCrud articleFamilyCrud) {
+    public Mono<ArticleFamilyCrud> create(@Valid @RequestBody ArticleFamilyCrud articleFamilyCrud) {
         articleFamilyCrud.doDefault();
-        if(articleFamilyCrud.getTreeType().equals(TreeType.ARTICLES) || articleFamilyCrud.getTreeType().equals(TreeType.SIZES)){
-            return this.articleFamilyCrudService.createCompose(articleFamilyCrud, articleFamilyCrud.getParentReference());
-        }
-        else return Mono.just(ArticleFamilyCrud.builder().reference("SINGLE").build());
+        if (articleFamilyCrud.getTreeType().equals(TreeType.ARTICLES) || articleFamilyCrud.getTreeType().equals(TreeType.SIZES)) {
+            return this.articleFamilyCrudService.createCompose(articleFamilyCrud);
+        } else return Mono.just(ArticleFamilyCrud.builder().reference("SINGLE").build());
     }
 
 }

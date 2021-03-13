@@ -26,11 +26,6 @@ public abstract class ArticlesTreeEntity {
         this.treeType = treeType;
     }
 
-    protected ArticlesTreeEntity(ArticleFamilyCrud articleFamilyCrud) {
-        this.reference = articleFamilyCrud.getReference();
-        this.treeType = articleFamilyCrud.getTreeType();
-    }
-
     public abstract String getDescription();
 
     public abstract void add(ArticlesTreeEntity articlesTreeEntity);
