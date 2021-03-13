@@ -22,7 +22,7 @@ public class ArticleFamilyCrudService {
     public Mono<Void> delete(String reference) {
         return this.articleFamilyCrudPersistence.deleteByReference(reference);
     }
-    public Mono<ArticleFamilyCrud> createCompose(ArticleFamilyCrud articleFamilyCrud, String parentReference) {
-        return this.articleFamilyCrudPersistence.createCompose(articleFamilyCrud,parentReference);
+    public Mono<ArticleFamilyCrud> createCompose(ArticleFamilyCrud articleFamilyCrud) {
+        return this.articleFamilyCrudPersistence.createCompose(articleFamilyCrud);
     }
 }
