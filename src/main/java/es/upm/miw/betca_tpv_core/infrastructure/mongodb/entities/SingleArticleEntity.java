@@ -49,7 +49,9 @@ public class SingleArticleEntity extends ArticlesTreeEntity {
     @Override
     public ArticleFamilyCrud toDto() {
         ArticleFamilyCrud articleFamilyCrud = new ArticleFamilyCrud();
-        BeanUtils.copyProperties(this, articleFamilyCrud);
+        articleFamilyCrud.setDescription(this.getDescription());
+        articleFamilyCrud.setTreeType(this.getTreeType());
+        articleFamilyCrud.setReference(this.getReference());
         return articleFamilyCrud;
     }
 
