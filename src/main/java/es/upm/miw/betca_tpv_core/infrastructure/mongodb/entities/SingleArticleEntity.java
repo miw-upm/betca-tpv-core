@@ -6,11 +6,9 @@ import es.upm.miw.betca_tpv_core.domain.model.ArticleFamilyCrud;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
