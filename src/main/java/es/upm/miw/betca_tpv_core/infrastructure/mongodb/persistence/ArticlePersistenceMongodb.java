@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Article;
+import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
@@ -15,6 +16,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Repository
 public class ArticlePersistenceMongodb implements ArticlePersistence {
@@ -131,9 +133,27 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
     public Flux< Article > findMostArticleBySomething(){
         LocalDateTime localDateTime = LocalDateTime.now().minusDays(7);
         Flux<Ticket> tickets = this.ticketPersistenceMongodb.findTicketByRegistrationDateAfter(localDateTime);
-        //TODO A partir de la lista de tickets, recoger los articulos que más aparecen
-        //return this.articleReactive.findArticleEntitiesSortedByBarcode(tickets)
-         //       .map(ArticleEntity::toArticle);
+        Flux<String> barcodes = this.findBarcodeByTicketEntities(tickets);
+/*        return tickets.flatMap(ticket -> ticket.getShoppingList().stream()
+                .map(Shopping::getBarcode)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet()
+                .stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+        );*/
         return Flux.empty();
+        //TODO A partir de la lista de barcode, recoger los articulos que más aparecen
+    }
+
+    public Flux<String> findBarcodeByTicketEntities (Flux<Ticket> tickets){
+        return tickets.flatMap(ticket -> Mono.just(ticket.getShoppingList()))
+                .flatMapIterable(shopping -> shopping)
+                .map(Shopping::getBarcode);
+    }
+
+    public Mono<Map<String, Long>> groupingBarcodesByMostRepeated(Flux<String> barcodes){
+            //TODO
+        return Mono.empty();
     }
 }
