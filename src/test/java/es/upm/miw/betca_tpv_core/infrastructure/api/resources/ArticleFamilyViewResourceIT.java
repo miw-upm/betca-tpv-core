@@ -2,7 +2,6 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.ArticleFamilyView;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence.ArticleFamilyViewPersistenceMongodbIT;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +12,10 @@ import java.util.List;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleFamilyViewResource.ARTICLE_FAMILY;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleFamilyViewResource.REFERENCE_ID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @RestTestConfig
-public class ArticleFamilyViewResourceIT {
+class ArticleFamilyViewResourceIT {
 
     @Autowired
     private WebTestClient webTestClient;
