@@ -12,7 +12,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Rest
@@ -84,8 +83,8 @@ public class ArticleResource {
 
     @PreAuthorize("permitAll()")
     @GetMapping(TOP5)
-    public Flux< Article > findMostArticleBySomething(){
-        return this.articleService.findMostArticleBySomething();
+    public Flux< Article > findTop5ArticleSalesLastWeek(){
+        return this.articleService.findTop5ArticleSalesLastWeek();
     }
 
 }

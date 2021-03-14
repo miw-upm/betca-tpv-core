@@ -29,5 +29,5 @@ public interface ArticlePersistence {
 
     Flux< Article > findByStockLessThan(Integer stock);
 
-    Flux< Article > findMostArticleBySomething();
+    Flux< Article > findTop5ArticleSalesLastWeek();
 }
