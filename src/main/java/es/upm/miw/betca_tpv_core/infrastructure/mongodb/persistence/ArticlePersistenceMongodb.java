@@ -132,24 +132,40 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
                 .map(ArticleEntity::toArticle);
     }
 
-    public Flux< Article > findMostArticleBySomething(){
+    public Flux< Article > findTop5ArticleSalesLastWeek(){
         LocalDateTime localDateTime = LocalDateTime.now().minusDays(7);
-        Flux<Ticket> tickets = this.ticketPersistenceMongodb.findTicketByRegistrationDateAfter(localDateTime);
-        Flux<String> barcodes = this.findBarcodeByTicketEntities(tickets);
-        // Mono<Map<String, Long>>
-        /*return barcodes.collect(Collectors.groupingBy(String::valueOf, Collectors.counting()))
-                .map(Map::entrySet)
-                .flatMap(sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())))
-                .limit(5)
-                .map(x -> x.getKey()));*/
-        //TODO A partir de la lista de barcode, recoger los articulos que más aparecen
-        return Flux.empty();
+        return this.findArticlesByBarcodes(
+                this.sortBarcodesByFrecuency(
+                    this.findBarcodeByTicketEntities(
+                        this.ticketPersistenceMongodb.findTicketByRegistrationDateAfter(localDateTime)
+                    )
+                )
+        );
     }
 
-    public Flux<String> findBarcodeByTicketEntities (Flux<Ticket> tickets){
+    private Flux<String> findBarcodeByTicketEntities (Flux<Ticket> tickets){
         return tickets.flatMap(ticket -> Mono.just(ticket.getShoppingList()))
                 .flatMapIterable(shopping -> shopping)
                 .map(Shopping::getBarcode);
+    }
+
+    private Flux<String> sortBarcodesByFrecuency(Flux<String> barcodes){
+        return Flux.empty();
+        //TODO It returns Mono<Map<String, Long>> and must returns Flux<String>
+//        return barcodes
+//                .distinct()
+//                .collect(Collectors.groupingBy(String::valueOf, Collectors.counting()))
+//                .doOnNext(map -> map.entrySet().stream()
+//                        .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+//                        .limit(5))
+//
+//                ;
+
+    }
+
+    private Flux< Article > findArticlesByBarcodes (Flux<String> barcodes){
+        return this.articleReactive.findArticleEntitiesByBarcode(barcodes)
+                .map(ArticleEntity::toArticle);
     }
     
 }
