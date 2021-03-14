@@ -16,7 +16,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 public class ArticlePersistenceMongodb implements ArticlePersistence {
@@ -134,16 +136,14 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
         LocalDateTime localDateTime = LocalDateTime.now().minusDays(7);
         Flux<Ticket> tickets = this.ticketPersistenceMongodb.findTicketByRegistrationDateAfter(localDateTime);
         Flux<String> barcodes = this.findBarcodeByTicketEntities(tickets);
-/*        return tickets.flatMap(ticket -> ticket.getShoppingList().stream()
-                .map(Shopping::getBarcode)
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-                .entrySet()
-                .stream()
-                .max(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey)
-        );*/
-        return Flux.empty();
+        // Mono<Map<String, Long>>
+        /*return barcodes.collect(Collectors.groupingBy(String::valueOf, Collectors.counting()))
+                .map(Map::entrySet)
+                .flatMap(sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())))
+                .limit(5)
+                .map(x -> x.getKey()));*/
         //TODO A partir de la lista de barcode, recoger los articulos que más aparecen
+        return Flux.empty();
     }
 
     public Flux<String> findBarcodeByTicketEntities (Flux<Ticket> tickets){
@@ -151,9 +151,5 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
                 .flatMapIterable(shopping -> shopping)
                 .map(Shopping::getBarcode);
     }
-
-    public Mono<Map<String, Long>> groupingBarcodesByMostRepeated(Flux<String> barcodes){
-            //TODO
-        return Mono.empty();
-    }
+    
 }
