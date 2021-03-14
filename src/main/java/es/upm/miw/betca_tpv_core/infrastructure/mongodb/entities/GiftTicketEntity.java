@@ -1,8 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities;
 
 import es.upm.miw.betca_tpv_core.domain.model.GiftTicket;
-import es.upm.miw.betca_tpv_core.domain.model.Ticket;
-import es.upm.miw.betca_tpv_core.domain.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,9 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.ArrayList;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -26,13 +22,17 @@ public class GiftTicketEntity {
     @DBRef
     private TicketEntity ticketEntity;
 
-    public GiftTicketEntity(GiftTicket giftTicket) {
+    public GiftTicketEntity(GiftTicket giftTicket, TicketEntity ticketEntity) {
         BeanUtils.copyProperties(giftTicket, this);
+        this.ticketEntity = ticketEntity;
     }
 
     public GiftTicket toGiftTicket() {
         GiftTicket giftTicket = new GiftTicket();
         BeanUtils.copyProperties(this, giftTicket);
+        if(Objects.nonNull(this.getTicketEntity())){
+            giftTicket.setTicketId(this.getTicketEntity().getId());
+        }
         return giftTicket;
     }
 
