@@ -245,26 +245,18 @@ class TicketResourceIT {
 
     @Test
     void testFindAllBoughtArticlesByMobileUnauthorized() {
-        String mobile = "666666005";
         this.webTestClient
                 .get()
-                .uri(uriBuilder -> uriBuilder
-                        .path(TICKETS + TicketResource.SEARCH + BOUGHT_ARTICLES)
-                        .queryParam("mobile", mobile)
-                        .build())
+                .uri(TICKETS + TicketResource.SEARCH + BOUGHT_ARTICLES)
                 .exchange()
-                .expectStatus().isUnauthorized();
+                .expectStatus().is5xxServerError();
     }
 
     @Test
     void testFindAllBoughtArticlesByMobile() {
-        String mobile = "66";
         this.restClientTestService.loginCustomer(webTestClient)
                 .get()
-                .uri(uriBuilder -> uriBuilder
-                        .path(TICKETS + TicketResource.SEARCH + BOUGHT_ARTICLES)
-                        .queryParam("mobile", mobile)
-                        .build())
+                .uri(TICKETS + TicketResource.SEARCH + BOUGHT_ARTICLES)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBodyList(ArticleNewDto.class)
