@@ -32,6 +32,7 @@ public class DatabaseSeederDev {
     private CreditDao creditDao;
     private RgpdDao rgpdDao;
     private CustomerDiscountDao customerDiscountDao;
+    private BudgetDao budgetDao;
 
     private DatabaseStarting databaseStarting;
 
@@ -39,7 +40,7 @@ public class DatabaseSeederDev {
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
                              TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,
                              CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao,
-                             CustomerDiscountDao customerDiscountDao, DatabaseStarting databaseStarting) {
+                             CustomerDiscountDao customerDiscountDao,BudgetDao budgetDao, DatabaseStarting databaseStarting) {
 
         this.articleDao = articleDao;
         this.providerDao = providerDao;
@@ -53,6 +54,7 @@ public class DatabaseSeederDev {
         this.stockAlarmDao = stockAlarmDao;
         this.rgpdDao = rgpdDao;
         this.customerDiscountDao = customerDiscountDao;
+        this.budgetDao=budgetDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -72,6 +74,7 @@ public class DatabaseSeederDev {
         this.creditDao.deleteAll();
         this.rgpdDao.deleteAll();
         this.customerDiscountDao.deleteAll();
+        this.budgetDao.deleteAll();
 
         LogManager.getLogger(this.getClass()).warn("------- Delete All -----------");
         this.databaseStarting.initialize();
@@ -282,7 +285,18 @@ public class DatabaseSeederDev {
         this.customerDiscountDao.saveAll(List.of(customersDiscounts));
         LogManager.getLogger(this.getClass()).warn("        ------- customer discount");
 
+        BudgetEntity[] budgets = {
+                new BudgetEntity("1", date, List.of(shoppingList[0], shoppingList[1])),
+                new BudgetEntity("2", date, List.of(shoppingList[2], shoppingList[3])),
+                new BudgetEntity("3", date, List.of(shoppingList[4], shoppingList[5])),
+
+
+        };
+        this.budgetDao.saveAll(Arrays.asList(budgets));
+        LogManager.getLogger(this.getClass()).warn("        ------- budgets");
+
     }
+
 
 
 }
