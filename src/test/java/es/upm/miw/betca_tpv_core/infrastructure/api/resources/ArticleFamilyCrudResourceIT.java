@@ -4,9 +4,7 @@ import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.model.ArticleFamilyCrud;
 import es.upm.miw.betca_tpv_core.domain.model.TreeType;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -16,6 +14,7 @@ import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleFami
 import static org.junit.jupiter.api.Assertions.*;
 
 @RestTestConfig
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ArticleFamilyCrudResourceIT {
 
     @Autowired
@@ -33,9 +32,9 @@ class ArticleFamilyCrudResourceIT {
                 .expectStatus().isOk()
                 .expectBody(ArticleFamilyCrud.class)
                 .value(articleFamilyCrud -> {
-                    assertEquals(articleFamilyCrud.getReference(), "zz-falda-T2");
-                    assertEquals(articleFamilyCrud.getDescription(), "Zarzuela - Falda T2");
-                    assertEquals(articleFamilyCrud.getTreeType(), TreeType.ARTICLE);
+                    assertEquals("zz-falda-T2", articleFamilyCrud.getReference());
+                    assertEquals("Zarzuela - Falda T2", articleFamilyCrud.getDescription());
+                    assertEquals(TreeType.ARTICLE, articleFamilyCrud.getTreeType());
                     assertNotNull(articleFamilyCrud.getArticleFamilyCrudList());
                     assertTrue(articleFamilyCrud.getArticleFamilyCrudList().isEmpty());
                 });
@@ -50,11 +49,11 @@ class ArticleFamilyCrudResourceIT {
                 .expectStatus().isOk()
                 .expectBody(ArticleFamilyCrud.class)
                 .value(articleFamilyCruds -> {
-                    assertEquals(articleFamilyCruds.getReference(), "Zz Falda");
-                    assertEquals(articleFamilyCruds.getTreeType(), TreeType.SIZES);
-                    assertEquals(articleFamilyCruds.getArticleFamilyCrudList().size(), 2);
-                    assertEquals(articleFamilyCruds.getArticleFamilyCrudList().get(0).getReference(), "zz-falda-T2");
-                    assertEquals(articleFamilyCruds.getArticleFamilyCrudList().get(1).getReference(), "zz-falda-T4");
+                    assertEquals("Zz Falda", articleFamilyCruds.getReference());
+                    assertEquals(TreeType.SIZES,articleFamilyCruds.getTreeType());
+                    assertEquals(2,articleFamilyCruds.getArticleFamilyCrudList().size());
+                    assertEquals("zz-falda-T2",articleFamilyCruds.getArticleFamilyCrudList().get(0).getReference());
+                    assertEquals("zz-falda-T4",articleFamilyCruds.getArticleFamilyCrudList().get(1).getReference());
 
                 });
     }
@@ -83,9 +82,7 @@ class ArticleFamilyCrudResourceIT {
                 .expectStatus().isOk()
                 .expectBody(ArticleFamilyCrud.class)
                 .value(Assertions::assertNotNull)
-                .value(returnArticleFamilyCrud -> {
-                    assertEquals("test-ref", articleFamilyCrud.getReference());
-                });
+                .value(returnArticleFamilyCrud -> assertEquals("test-ref", articleFamilyCrud.getReference()));
     }
 
     @Test

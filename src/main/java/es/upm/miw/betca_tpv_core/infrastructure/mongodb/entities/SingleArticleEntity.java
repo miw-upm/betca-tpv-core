@@ -23,6 +23,7 @@ public class SingleArticleEntity extends ArticlesTreeEntity {
     public SingleArticleEntity(ArticleEntity articleEntity) {
         super(articleEntity.getReference(), TreeType.ARTICLE);
         this.articleEntity = articleEntity;
+
     }
 
     @Override
