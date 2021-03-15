@@ -15,7 +15,6 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -94,4 +93,19 @@ public class TicketService {
     public Mono<Ticket> update(String id, List<Shopping> shoppingList) {
         return this.ticketPersistence.update(id, shoppingList);
     }
+
+    public Flux<Ticket> findTicketByRegistrationDateAfter(LocalDateTime localDateTime){
+        return this.ticketPersistence.findTicketByRegistrationDateAfter(localDateTime);
+    }
+
+    public Flux<Shopping> findAllBoughtArticlesByMobile(String mobile) {
+        return this.findByUserMobile(mobile)
+                .flatMap(ticket -> Flux.fromIterable(ticket.getShoppingList()))
+                .distinct(Shopping::getBarcode);
+    }
+
+    private Flux<Ticket> findByUserMobile(String mobile) {
+        return this.ticketPersistence.findByUserMobile(mobile);
+    }
+
 }

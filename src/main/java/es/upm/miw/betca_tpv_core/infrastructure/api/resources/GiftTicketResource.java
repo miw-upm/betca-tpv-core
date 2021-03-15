@@ -25,8 +25,7 @@ public class GiftTicketResource {
     }
 
     @PostMapping(produces = {"application/json"})
-    public Mono<Void> create(@Valid @RequestBody GiftTicket giftTicket) {
-        //return  Mono.empty();
+    public Mono<GiftTicket> create(@Valid @RequestBody GiftTicket giftTicket) {
         return this.giftTicketService.create(giftTicket);
     }
 }

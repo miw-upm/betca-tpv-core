@@ -21,4 +21,9 @@ public class User {
     private String email;
     private String dni;
     private String address;
+
+    public User(String mobile) {
+        this.mobile = mobile;
+    }
+
 }

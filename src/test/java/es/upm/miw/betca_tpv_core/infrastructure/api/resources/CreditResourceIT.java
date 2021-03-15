@@ -15,7 +15,7 @@ import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CreditResou
 import static org.junit.jupiter.api.Assertions.*;
 
 @RestTestConfig
-public class CreditResourceIT {
+class CreditResourceIT {
     @Autowired
     private WebTestClient webTestClient;
     @Autowired
@@ -71,13 +71,41 @@ public class CreditResourceIT {
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path(CREDIT + SEARCH_UNPAID)
-                        .queryParam("userReference", "53354324")
+                        .queryParam("userReference", "5666534324")
                         .build())
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(List.class)
                 .value(Assertions::assertNotNull)
                 .value(creditSalesList -> assertEquals(1, creditSalesList.size()));
+    }
+
+    @Test
+    void testPayUnpaidTicketsFromCreditLineByCash() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(CREDIT + USER_REF + PAY + CASH_OR_CARD, "53354324", "cash")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Credit.class)
+                .value(Assertions::assertNotNull)
+                .value(credit -> assertEquals(2, credit.getCreditSales().size()))
+                .value(credit -> assertEquals(true, credit.getCreditSales().get(0).getPayed()))
+                .value(credit -> assertEquals(true, credit.getCreditSales().get(1).getPayed()));
+    }
+
+    @Test
+    void testPayUnpaidTicketsFromCreditLineByCard() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(CREDIT + USER_REF + PAY + CASH_OR_CARD, "53354324", "card")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Credit.class)
+                .value(Assertions::assertNotNull)
+                .value(credit -> assertEquals(2, credit.getCreditSales().size()))
+                .value(credit -> assertEquals(true, credit.getCreditSales().get(0).getPayed()))
+                .value(credit -> assertEquals(true, credit.getCreditSales().get(1).getPayed()));
     }
 
 }

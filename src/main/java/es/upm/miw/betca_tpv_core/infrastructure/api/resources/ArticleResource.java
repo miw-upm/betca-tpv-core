@@ -20,6 +20,7 @@ public class ArticleResource {
     public static final String ARTICLES = "/articles";
     public static final String NEWS = "/news";
     public static final String ARTICLE_DAYS = "/{days}";
+    public static final String TOP5 = "/top5";
     public static final String BARCODE_ID = "/{barcode}";
     public static final String SEARCH = "/search";
     public static final String UNFINISHED = "/unfinished";
@@ -74,10 +75,16 @@ public class ArticleResource {
 
     @PreAuthorize("permitAll()")
     @GetMapping(NEWS + ARTICLE_DAYS)
-    public Flux< Article > findArticleByDateLessThan(@PathVariable int days){
+    public Flux< Article > findArticleEntitiesByRegistrationDateAfter(@PathVariable int days){
         LocalDateTime localDateTime = LocalDateTime.now();
         localDateTime = localDateTime.minusDays(days);
-        return this.articleService.findArticleByDateLessThan(localDateTime);
+        return this.articleService.findArticleEntitiesByRegistrationDateAfter(localDateTime);
+    }
+
+    @PreAuthorize("permitAll()")
+    @GetMapping(TOP5)
+    public Flux< Article > findTop5ArticleSalesLastWeek(){
+        return this.articleService.findTop5ArticleSalesLastWeek();
     }
 
 }

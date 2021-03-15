@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos;
 
+import es.upm.miw.betca_tpv_core.domain.model.RgpdType;
 import es.upm.miw.betca_tpv_core.domain.model.ShoppingState;
 import es.upm.miw.betca_tpv_core.domain.model.Tax;
 import es.upm.miw.betca_tpv_core.domain.model.TreeType;
@@ -29,13 +30,16 @@ public class DatabaseSeederDev {
     private StockAlarmDao stockAlarmDao;
     private CreditSaleDao creditSaleDao;
     private CreditDao creditDao;
+    private RgpdDao rgpdDao;
+    private CustomerDiscountDao customerDiscountDao;
 
     private DatabaseStarting databaseStarting;
 
     @Autowired
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
                              TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,
-                             CreditSaleDao creditSaleDao, CreditDao creditDao, DatabaseStarting databaseStarting) {
+                             CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao,
+                             CustomerDiscountDao customerDiscountDao, DatabaseStarting databaseStarting) {
 
         this.articleDao = articleDao;
         this.providerDao = providerDao;
@@ -47,6 +51,8 @@ public class DatabaseSeederDev {
         this.creditDao = creditDao;
         this.databaseStarting = databaseStarting;
         this.stockAlarmDao = stockAlarmDao;
+        this.rgpdDao = rgpdDao;
+        this.customerDiscountDao = customerDiscountDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -64,6 +70,8 @@ public class DatabaseSeederDev {
         this.stockAlarmDao.deleteAll();
         this.creditSaleDao.deleteAll();
         this.creditDao.deleteAll();
+        this.rgpdDao.deleteAll();
+        this.customerDiscountDao.deleteAll();
 
         LogManager.getLogger(this.getClass()).warn("------- Delete All -----------");
         this.databaseStarting.initialize();
@@ -181,6 +189,12 @@ public class DatabaseSeederDev {
                 new TicketEntity("5fa4608f4928694ef5980e4c", "WB9-e8xQT4ejb74r1vLrCw",
                         List.of(shoppingList[5]), date, new BigDecimal("20"),
                         new BigDecimal("5"), ZERO, "note", "666666005"),
+                new TicketEntity("5fa4603b7513a164chop77ac", "FGhfv521Rj6iKmzp5aERAA",
+                        List.of(shoppingList[1], shoppingList[5]), date, new BigDecimal("21.0"),
+                        ZERO, ZERO, "note", "66"),
+                new TicketEntity("5gfaw03b7513a164chop77ac", "AAhfv521Rj6iKmzp5aERAA",
+                        List.of(shoppingList[2], shoppingList[3], shoppingList[4]), date, new BigDecimal("25.0"),
+                        ZERO, ZERO, "note", "66"),
         };
         this.ticketDao.saveAll(Arrays.asList(tickets));
         LogManager.getLogger(this.getClass()).warn("        ------- tickets");
@@ -218,7 +232,8 @@ public class DatabaseSeederDev {
         StockAlarmEntity[] stocksAlarms = {
                 StockAlarmEntity.builder().name("alarm-pack-1").warning(5).critical(5).alarmLine(stockAlarmLineEntity1).alarmLine(stockAlarmLineEntity2).build(),
                 StockAlarmEntity.builder().name("alarm-pack-2").warning(99).critical(99).alarmLine(stockAlarmLineEntity1).alarmLine(stockAlarmLineEntity4).build(),
-                StockAlarmEntity.builder().name("alarm-pac-2").warning(55).critical(55).alarmLine(stockAlarmLineEntity3).alarmLine(stockAlarmLineEntity5).build()
+                StockAlarmEntity.builder().name("alarm-pac-2").warning(55).critical(55).alarmLine(stockAlarmLineEntity3).alarmLine(stockAlarmLineEntity5).build(),
+                StockAlarmEntity.builder().name("alarm-delete").warning(55).critical(55).alarmLine(stockAlarmLineEntity3).alarmLine(stockAlarmLineEntity5).build()
 
         };
 
@@ -241,13 +256,31 @@ public class DatabaseSeederDev {
                         .userReference("53354324").creditSaleEntities(List.of(creditSales[1], creditSales[2]))
                         .build(),
                 CreditEntity.builder().id("5465ds68h3d7809l982sdg376mn").reference("456gfsgfdg53")
-                        .userReference("5666534324").creditSaleEntities(List.of(creditSales[2]))
+                        .userReference("5666534324").creditSaleEntities(List.of(creditSales[0]))
                         .build(),
                 CreditEntity.builder().id("777885ds68h3d7809l982sdg376mn").reference("44366sgfdg53")
                         .userReference("345436324").creditSaleEntities(List.of()).build(),
         };
         this.creditDao.saveAll(List.of(credits));
         LogManager.getLogger(this.getClass()).warn("        ------- credits");
+
+        RgpdEntity[] rgpds = {
+                RgpdEntity.builder().id("1lh9dps68h3d7809l982sd452d8a")
+                        .userMobile("123456789")
+                        .rgpdType(RgpdType.ADVANCED)
+                        .build()
+        };
+        this.rgpdDao.saveAll(List.of(rgpds));
+        LogManager.getLogger(this.getClass()).warn("        ------- rgpds");
+
+        CustomerDiscountEntity[] customersDiscounts = {
+                CustomerDiscountEntity.builder().id("1").note("discount1").registrationDate(LocalDateTime.now()).discount(30.0).minimumPurchase(50.0).user("66666666").build(),
+                CustomerDiscountEntity.builder().id("2").note("discount2").registrationDate(LocalDateTime.now()).discount(10.0).minimumPurchase(40.0).user("66666666").build(),
+                CustomerDiscountEntity.builder().id("3").note("discount3").registrationDate(LocalDateTime.now()).discount(25.5).minimumPurchase(35.0).user("66666666").build(),
+                CustomerDiscountEntity.builder().id("4").note("discount4").registrationDate(LocalDateTime.now()).discount(80.0).minimumPurchase(100.0).user("66666666").build(),
+        };
+        this.customerDiscountDao.saveAll(List.of(customersDiscounts));
+        LogManager.getLogger(this.getClass()).warn("        ------- customer discount");
 
     }
 

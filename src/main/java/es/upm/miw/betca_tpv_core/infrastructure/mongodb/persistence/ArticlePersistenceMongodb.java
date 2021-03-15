@@ -3,6 +3,8 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Article;
+import es.upm.miw.betca_tpv_core.domain.model.Shopping;
+import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ProviderReactive;
@@ -14,17 +16,22 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 public class ArticlePersistenceMongodb implements ArticlePersistence {
 
     private ProviderReactive providerReactive;
     private ArticleReactive articleReactive;
+    private TicketPersistenceMongodb ticketPersistenceMongodb;
 
     @Autowired
-    public ArticlePersistenceMongodb(ProviderReactive providerReactive, ArticleReactive articleReactive) {
+    public ArticlePersistenceMongodb(ProviderReactive providerReactive, ArticleReactive articleReactive, TicketPersistenceMongodb ticketPersistenceMongodb) {
         this.providerReactive = providerReactive;
         this.articleReactive = articleReactive;
+        this.ticketPersistenceMongodb = ticketPersistenceMongodb;
     }
 
     @Override
@@ -114,8 +121,51 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
     }
 
     @Override
-    public Flux< Article > findArticleByDateLessThan(LocalDateTime localDateTime) {
+    public Flux< Article > findArticleEntitiesByRegistrationDateAfter(LocalDateTime localDateTime) {
         return this.articleReactive.findArticleEntitiesByRegistrationDateAfter(localDateTime)
                 .map(ArticleEntity::toArticle);
     }
+
+    @Override
+    public Flux<Article> findByStockLessThan(Integer stock) {
+        return this.articleReactive.findByStockLessThan(stock)
+                .map(ArticleEntity::toArticle);
+    }
+
+    public Flux< Article > findTop5ArticleSalesLastWeek(){
+        LocalDateTime localDateTime = LocalDateTime.now().minusDays(7);
+        return this.findArticlesByBarcodes(
+                this.sortBarcodesByFrecuency(
+                    this.findBarcodeByTicketEntities(
+                        this.ticketPersistenceMongodb.findTicketByRegistrationDateAfter(localDateTime)
+                    )
+                )
+        );
+    }
+
+    private Flux<String> findBarcodeByTicketEntities (Flux<Ticket> tickets){
+        return tickets.flatMap(ticket -> Mono.just(ticket.getShoppingList()))
+                .flatMapIterable(shopping -> shopping)
+                .map(Shopping::getBarcode);
+    }
+
+    private Flux<String> sortBarcodesByFrecuency(Flux<String> barcodes){
+        return Flux.empty();
+        //TODO It returns Mono<Map<String, Long>> and must returns Flux<String>
+//        return barcodes
+//                .distinct()
+//                .collect(Collectors.groupingBy(String::valueOf, Collectors.counting()))
+//                .doOnNext(map -> map.entrySet().stream()
+//                        .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+//                        .limit(5))
+//
+//                ;
+
+    }
+
+    private Flux< Article > findArticlesByBarcodes (Flux<String> barcodes){
+        return this.articleReactive.findArticleEntitiesByBarcode(barcodes)
+                .map(ArticleEntity::toArticle);
+    }
+    
 }

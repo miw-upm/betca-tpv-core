@@ -1,11 +1,11 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities;
 
+import es.upm.miw.betca_tpv_core.domain.model.ArticleFamilyView;
 import es.upm.miw.betca_tpv_core.domain.model.TreeType;
 import es.upm.miw.betca_tpv_core.domain.model.ArticleFamilyCrud;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -48,8 +48,21 @@ public class SingleArticleEntity extends ArticlesTreeEntity {
     @Override
     public ArticleFamilyCrud toDto() {
         ArticleFamilyCrud articleFamilyCrud = new ArticleFamilyCrud();
-        BeanUtils.copyProperties(this, articleFamilyCrud);
+        articleFamilyCrud.setDescription(this.getDescription());
+        articleFamilyCrud.setTreeType(this.getTreeType());
+        articleFamilyCrud.setReference(this.getReference());
         return articleFamilyCrud;
+    }
+
+    @Override
+    public ArticleFamilyView toArticleFamilyViewDto() {
+        return ArticleFamilyView.builder()
+                .reference(this.getReference())
+                .description(this.getDescription())
+                .treeType(this.getTreeType())
+                .barcode(this.articleEntity.getBarcode())
+                .retailPrice(this.articleEntity.getRetailPrice())
+                .build();
     }
 
 }

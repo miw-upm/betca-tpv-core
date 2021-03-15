@@ -1,18 +1,22 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.model.GiftTicket;
-import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
+import es.upm.miw.betca_tpv_core.domain.persistence.GiftTicketPersistence;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 
 @Service
 public class GiftTicketService {
-    private TicketPersistence ticketPersistence;
+    private GiftTicketPersistence giftTicketPersistence;
 
-    public Mono<Void> create(GiftTicket giftTicket) {
-        System.out.println(giftTicket.getTicketId());
-        System.out.println(giftTicket.getMessage());
-        return Mono.empty();
+    @Autowired
+    public GiftTicketService(GiftTicketPersistence giftTicketPersistence) {
+        this.giftTicketPersistence = giftTicketPersistence;
+    }
+
+    public Mono<GiftTicket> create(GiftTicket giftTicket) {
+        return giftTicketPersistence.create(giftTicket);
     }
 }

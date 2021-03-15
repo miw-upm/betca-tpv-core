@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -21,4 +22,10 @@ public interface TicketPersistence {
     Mono<Ticket> findByReference(String reference);
 
     Mono<Ticket> update(String id, List<Shopping> shoppingList);
+
+    Flux<Ticket> findTicketByRegistrationDateAfter(LocalDateTime localDateTime);
+
+    Flux<Ticket> findByUserMobile(String mobile);
+
+    Flux<Ticket> findByRangeRegistrationDate(LocalDateTime initial, LocalDateTime end);
 }

@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_core.domain.services.OfferService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.OfferListDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -18,7 +19,7 @@ public class OfferResource {
     public static final String OFFERS = "/offers";
     public static final String SEARCH_OFFER = "/search";
     public static final String REFERENCE = "/{reference}";
-    public static final String PRINT = "/print";
+    public static final String PRINT_PDF = "/print";
 
     private OfferService offerService;
 
@@ -41,6 +42,7 @@ public class OfferResource {
         return this.offerService.create(newOffer);
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping(REFERENCE)
     public Mono<Offer> read(@PathVariable String reference) {
         return this.offerService.read(reference);
@@ -51,7 +53,7 @@ public class OfferResource {
         return this.offerService.update(reference, updatedOffer);
     }
 
-    @GetMapping(value = REFERENCE + PRINT, produces = {"application/pdf", "application/json"})
+    @GetMapping(value = REFERENCE + PRINT_PDF, produces = {"application/pdf", "application/json"})
     public Mono<byte[]> print(@PathVariable String reference) {
         return this.offerService.print(reference);
     }
