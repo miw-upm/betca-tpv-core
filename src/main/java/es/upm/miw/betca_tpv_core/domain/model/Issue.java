@@ -6,9 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 @Data
@@ -17,17 +19,15 @@ import java.util.Objects;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Issue {
-    private Integer id;
+    private Integer number;
     @NotBlank
     private String title;
-    @NotBlank
     private String body;
-    @NotBlank
-    private String labels;
+    private IssueLabel[] labels;
     private String state;
-    private String assignees;
-    private String milestone;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private IssueAssignee assignee;
+    private IssueMilestone milestone;
+    //@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created_at;
 
     public static Issue ofTitleBodyLabels(Issue issue) {
