@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
+import java.time.LocalDateTime;
+import java.time.Month;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -55,6 +58,20 @@ public class TicketReactiveIT {
                 .create(this.ticketReactive.findById("5fa45e863d6e834d642689ac"))
                 .expectNextMatches(ticket -> {
                     assertEquals("5fa45e863d6e834d642689ac", ticket.getId());
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }
+    @Test
+    void testFindByCreationDateBetween(){
+        LocalDateTime dateIni = LocalDateTime.of(2019, Month.JANUARY, 01, 00, 00, 00);
+        LocalDateTime dateEnd = LocalDateTime.of(2019, Month.JANUARY, 15, 00, 00, 00);
+
+        StepVerifier
+                .create(this.ticketReactive.findByCreationDateBetween(dateIni,dateEnd))
+                .expectNextMatches(ticket -> {
+                    assertTrue(ticket.getCreationDate().isAfter(dateIni) && ticket.getCreationDate().isBefore(dateEnd));
                     return true;
                 })
                 .thenCancel()
