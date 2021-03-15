@@ -17,8 +17,11 @@ public class IssueService {
         this.gitHubService = gitHubService;
     }
 
-    public Flux<Issue> findByTitleAndBodyAndLabelsAndStateAndMilestoneAndAssigneeNullSafe(String title, String body, String labels, String state, String milestone, String assignee) {
-        return this.gitHubService.search(title, body, labels, state, milestone, assignee);
+    public Flux<Issue> findByTitleAndBodyAndLabelsAndStateAndMilestoneAndAssigneeNullSafe(
+            String title, String body, String labels, String state, String milestone, String assignee
+    ) {
+        return this.gitHubService.search(labels, state, milestone, assignee)
+                .filter(issue -> issue.getTitle().contains(title) || issue.getBody().contains(body));
     }
 
     public Mono<Issue> read(Integer id) {

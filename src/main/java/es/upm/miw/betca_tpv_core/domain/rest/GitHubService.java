@@ -10,6 +10,6 @@ public interface GitHubService {
 
     Mono<Issue> read(Integer id);
 
-    Flux<Issue> search(String title, String body, String labels, String state, String milestone, String assignee);
+    Flux<Issue> search(String labels, String state, String milestone, String assignee);
 
 }

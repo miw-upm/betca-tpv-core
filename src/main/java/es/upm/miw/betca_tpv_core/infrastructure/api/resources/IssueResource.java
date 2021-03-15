@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 import es.upm.miw.betca_tpv_core.domain.model.Issue;
 import es.upm.miw.betca_tpv_core.domain.services.IssueService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.IssueBasicDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -30,7 +31,7 @@ public class IssueResource {
     }
 
     @GetMapping(SEARCH)
-    public Flux<Issue> findByTitleAndBodyAndLabelsAndStateAndMilestoneAndAssigneeNullSafe(
+    public Flux<IssueBasicDto> findByTitleAndBodyAndLabelsAndStateAndMilestoneAndAssigneeNullSafe(
             @RequestParam(required = false) String title, @RequestParam(required = false) String body,
             @RequestParam(required = false) String labels, @RequestParam(required = false) String state,
             @RequestParam(required = false) String milestone, @RequestParam(required = false) String assignee
@@ -39,7 +40,7 @@ public class IssueResource {
                 title == null ? "" : title, body == null ? "" : body,
                 labels == null ? "" : labels, state == null ? "" : state,
                 milestone == null ? "" : milestone, assignee == null ? "" : assignee
-        ).map(Issue::ofTitleBodyLabels);
+        ).map(IssueBasicDto::new);
     }
 
     @PostMapping(produces = {"application/json"})

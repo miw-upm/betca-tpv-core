@@ -51,19 +51,19 @@ public class GitHubServiceRest implements GitHubService {
 
     // https://docs.github.com/en/rest/reference/issues#list-repository-issues
     @Override
-    public Flux<Issue> search(String title, String body, String labels, String state, String milestone, String assignee) {
+    public Flux<Issue> search(String labels, String state, String milestone, String assignee) {
         return this.webClientBuilder.build()
-                .mutate()
-                .defaultHeader("Authorization", "Basic " + gitHubOwner + ":" + gitHubAPIKey).build()
+                //.mutate()
+                //.defaultHeader("Authorization", "Basic " + gitHubOwner + ":" + gitHubAPIKey).build()
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .path(gitHubUri + "/repos/" + gitHubOwner + "/" + gitHubRepo + "/issues")
-                        .queryParam("title", title)
-                        .queryParam("body", body)
-                        .queryParam("labels", labels)
-                        .queryParam("state", state)
-                        .queryParam("milestone", milestone)
-                        .queryParam("assignee", assignee)
+                        .scheme("https")
+                        .host(gitHubUri)
+                        .path("/repos/" + gitHubOwner + "/" + gitHubRepo + "/issues")
+                        //.queryParam("labels", labels)
+                        //.queryParam("state", state)
+                        //.queryParam("milestone", milestone)
+                        //.queryParam("assignee", assignee)
                         .build())
                 .exchange()
                 .onErrorResume(exception ->

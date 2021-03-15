@@ -32,7 +32,7 @@ public class IssueResourceIT {
     @BeforeEach
     void mocks() {
         BDDMockito.given(
-                this.gitHubService.search(anyString(), anyString(), anyString(), anyString(), anyString(), anyString())
+                this.gitHubService.search(anyString(), anyString(), anyString(), anyString())
         ).willAnswer(arguments -> Flux.just(
                 Issue.builder()
                         .title("Found a bug")
