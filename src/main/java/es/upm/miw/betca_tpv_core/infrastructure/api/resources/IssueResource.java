@@ -15,7 +15,7 @@ import javax.validation.Valid;
 public class IssueResource {
     public static final String ISSUES = "/issues";
     public static final String SEARCH = "/search";
-    public static final String ID = "/{id}";
+    public static final String ISSUE_ID = "/{id}";
 
     private IssueService issueService;
 
@@ -24,7 +24,7 @@ public class IssueResource {
         this.issueService = issueService;
     }
 
-    @GetMapping(ID)
+    @GetMapping(ISSUE_ID)
     public Mono<Issue> read(@PathVariable Integer id) {
         return this.issueService.read(id);
     }
@@ -36,8 +36,10 @@ public class IssueResource {
             @RequestParam(required = false) String milestone, @RequestParam(required = false) String assignee
     ) {
         return this.issueService.findByTitleAndBodyAndLabelsAndStateAndMilestoneAndAssigneeNullSafe(
-                title, body, labels, state, milestone, assignee
-        );
+                title == null ? "" : title, body == null ? "" : body,
+                labels == null ? "" : labels, state == null ? "" : state,
+                milestone == null ? "" : milestone, assignee == null ? "" : assignee
+        ).map(Issue::ofTitleBodyLabels);
     }
 
     @PostMapping(produces = {"application/json"})

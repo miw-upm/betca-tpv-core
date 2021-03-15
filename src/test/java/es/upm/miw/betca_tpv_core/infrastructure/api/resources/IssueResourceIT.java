@@ -12,6 +12,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.IssueResource.ISSUES;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.IssueResource.SEARCH;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 
@@ -39,7 +40,7 @@ public class IssueResourceIT {
                         .assignees(arguments.getArgument(5))
                         .build(),
                 Issue.builder()
-                        .title(arguments.getArgument(0))
+                        .title("This is a test title.")
                         .body("This could be improved.")
                         .labels("enhancement")
                         .state("open")
@@ -54,16 +55,15 @@ public class IssueResourceIT {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(uriBuilder ->
-                        uriBuilder.path(ISSUES)
-                        .queryParam("title", "This is a test Title")
-                        .build()
+                        uriBuilder.path(ISSUES + SEARCH)
+                                .queryParam("body", "This could be improved.")
+                                .build()
                 )
                 .exchange()
                 .expectStatus().isOk()
                 .expectBodyList(Issue.class)
-                .hasSize(2)
                 .value(issues ->
-                        assertTrue(issues.stream().allMatch(issue -> issue.getTitle().contains("This is a test Title")))
+                        assertTrue(issues.stream().allMatch(issue -> issue.getBody().contains("This could be improved.")))
                 );
     }
 

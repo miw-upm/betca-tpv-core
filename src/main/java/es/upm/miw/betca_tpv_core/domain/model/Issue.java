@@ -30,6 +30,14 @@ public class Issue {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created_at;
 
+    public static Issue ofTitleBodyLabels(Issue issue) {
+        return Issue.builder()
+                .title(issue.getTitle())
+                .body(issue.getBody())
+                .labels(issue.getLabels())
+                .build();
+    }
+
     public void doDefault() {
         if (Objects.isNull(state)) {
             this.state = "open";
