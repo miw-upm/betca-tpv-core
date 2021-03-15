@@ -15,7 +15,7 @@ import javax.validation.Valid;
 public class IssueResource {
     public static final String ISSUES = "/issues";
     public static final String SEARCH = "/search";
-    public static final String ISSUE_ID = "/{id}";
+    public static final String ISSUE_NUMBER = "/{number}";
 
     private IssueService issueService;
 
@@ -24,9 +24,9 @@ public class IssueResource {
         this.issueService = issueService;
     }
 
-    @GetMapping(ISSUE_ID)
-    public Mono<Issue> read(@PathVariable Integer id) {
-        return this.issueService.read(id);
+    @GetMapping(ISSUE_NUMBER)
+    public Mono<Issue> read(@PathVariable Integer number) {
+        return this.issueService.read(number);
     }
 
     @GetMapping(SEARCH)
