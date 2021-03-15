@@ -7,5 +7,6 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface ArticleFamilyCrudPersistence {
     Mono<ArticleFamilyCrud> readByReference(String reference);
-
+    Mono<Void> deleteByReference(String reference);
+    Mono<ArticleFamilyCrud> createCompose(ArticleFamilyCrud articleFamilyCrud);
 }

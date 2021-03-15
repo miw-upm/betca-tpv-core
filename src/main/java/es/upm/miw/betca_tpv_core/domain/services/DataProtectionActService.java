@@ -20,4 +20,8 @@ public class DataProtectionActService {
         return this.rgpdPersistence.readByMobile(mobile);
     }
 
+    public Mono<Rgpd> create(Rgpd rgpd) {
+        return this.rgpdPersistence.create(rgpd);
+    }
+
 }

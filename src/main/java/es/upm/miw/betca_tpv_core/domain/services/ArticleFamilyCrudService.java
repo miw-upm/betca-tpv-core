@@ -19,4 +19,10 @@ public class ArticleFamilyCrudService {
         return this.articleFamilyCrudPersistence.readByReference(reference);
     }
 
+    public Mono<Void> delete(String reference) {
+        return this.articleFamilyCrudPersistence.deleteByReference(reference);
+    }
+    public Mono<ArticleFamilyCrud> createCompose(ArticleFamilyCrud articleFamilyCrud) {
+        return this.articleFamilyCrudPersistence.createCompose(articleFamilyCrud);
+    }
 }
