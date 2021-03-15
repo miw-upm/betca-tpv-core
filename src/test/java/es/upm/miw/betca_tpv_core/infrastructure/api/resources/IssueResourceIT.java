@@ -1,6 +1,9 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.Issue;
+import es.upm.miw.betca_tpv_core.domain.model.IssueAssignee;
+import es.upm.miw.betca_tpv_core.domain.model.IssueLabel;
+import es.upm.miw.betca_tpv_core.domain.model.IssueMilestone;
 import es.upm.miw.betca_tpv_core.domain.rest.GitHubService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,20 +35,20 @@ public class IssueResourceIT {
                 this.gitHubService.search(anyString(), anyString(), anyString(), anyString(), anyString(), anyString())
         ).willAnswer(arguments -> Flux.just(
                 Issue.builder()
-                        .title(arguments.getArgument(0))
-                        .body(arguments.getArgument(1))
-                        .labels(arguments.getArgument(2))
-                        .state(arguments.getArgument(3))
-                        .milestone(arguments.getArgument(4))
-                        .assignees(arguments.getArgument(5))
+                        .title("Found a bug")
+                        .body("I'm having a problem with this.")
+                        .labels(new IssueLabel[] { IssueLabel.builder().name("bug").build() })
+                        .state("open")
+                        .milestone(IssueMilestone.builder().title("v1.0").build())
+                        .assignee(IssueAssignee.builder().login("kazlunn").build())
                         .build(),
                 Issue.builder()
                         .title("This is a test title.")
                         .body("This could be improved.")
-                        .labels("enhancement")
+                        .labels(new IssueLabel[] { IssueLabel.builder().name("enhancement").build() })
                         .state("open")
-                        .milestone("v1.1")
-                        .assignees("octocat")
+                        .milestone(IssueMilestone.builder().title("v1.1").build())
+                        .assignee(IssueAssignee.builder().login("octocat").build())
                         .build()
         ));
     }
@@ -63,7 +66,7 @@ public class IssueResourceIT {
                 .expectStatus().isOk()
                 .expectBodyList(Issue.class)
                 .value(issues ->
-                        assertTrue(issues.stream().allMatch(issue -> issue.getBody().contains("This could be improved.")))
+                        assertTrue(issues.stream().anyMatch(issue -> issue.getBody().contains("This could be improved.")))
                 );
     }
 
