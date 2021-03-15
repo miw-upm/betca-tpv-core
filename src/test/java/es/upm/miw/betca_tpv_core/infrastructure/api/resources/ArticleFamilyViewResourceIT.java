@@ -7,14 +7,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.util.List;
+
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleFamilyViewResource.ARTICLE_FAMILY;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleFamilyViewResource.REFERENCE_ID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @RestTestConfig
-public class ArticleFamilyViewResourceIT {
+class ArticleFamilyViewResourceIT {
 
     @Autowired
     private WebTestClient webTestClient;
@@ -22,7 +23,7 @@ public class ArticleFamilyViewResourceIT {
     private RestClientTestService restClientTestService;
 
     @Test
-    void testFindByReferenceThenReturnArticlesFamily() {
+    void testGivenExistentReferenceWhenGetArticleFamilyViewThenReturn() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(ARTICLE_FAMILY+REFERENCE_ID,"undefined")
@@ -30,16 +31,37 @@ public class ArticleFamilyViewResourceIT {
                 .expectStatus().isOk()
                 .expectBodyList(ArticleFamilyView.class)
                 .value(Assertions::assertNotNull)
-                .value(articleFamilyViews ->
-                        assertEquals(articleFamilyViews.get(0).getReference(),"Zz") );
+                .value(articleFamilyViews ->{
+                        this.verifyContainsReferenceInList(articleFamilyViews,"Zz");
+                        this.verifyContainsDescriptionInList(articleFamilyViews,"Zarzuela");
+                        this.verifyContainsReferenceInList(articleFamilyViews,"varios");
+                        this.verifyContainsReferenceInList(articleFamilyViews,"ref-a3");
+                        this.verifyContainsDescriptionInList(articleFamilyViews,"descrip-a3");
+                });
     }
 
-   /* @Test
+    @Test
     void testFindByNonExistentReferenceThenNotFound() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(ARTICLE_FAMILY+REFERENCE_ID,"5")
+                .uri(ARTICLE_FAMILY+REFERENCE_ID,"ExampleNonExistentReference")
                 .exchange()
                 .expectStatus().isNotFound();
-    }*/
+    }
+
+    private void verifyContainsReferenceInList(List<ArticleFamilyView> articleFamilyViewList, String reference){
+        assertNotNull(articleFamilyViewList
+                .stream()
+                .filter(articleFamilyView -> articleFamilyView.getReference().equals(reference))
+                .findAny()
+                .orElse(null));
+    }
+
+    private void verifyContainsDescriptionInList(List<ArticleFamilyView> articleFamilyViewList,String description){
+        assertNotNull(articleFamilyViewList
+                .stream()
+                .filter(articleFamilyView -> articleFamilyView.getDescription().equals(description))
+                .findAny()
+                .orElse(null));
+    }
 }

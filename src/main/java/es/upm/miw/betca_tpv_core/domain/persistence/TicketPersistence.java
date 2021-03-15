@@ -25,5 +25,7 @@ public interface TicketPersistence {
 
     Flux<Ticket> findTicketByRegistrationDateAfter(LocalDateTime localDateTime);
 
+    Flux<Ticket> findByUserMobile(String mobile);
+
     Flux<Ticket> findByRangeRegistrationDate(LocalDateTime initial, LocalDateTime end);
 }

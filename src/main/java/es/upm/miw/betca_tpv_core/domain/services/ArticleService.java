@@ -55,7 +55,7 @@ public class ArticleService {
         return this.articlePersistence.findArticleEntitiesByRegistrationDateAfter(localDateTime);
     }
 
-    public Flux< Article > findMostArticleBySomething(){
-        return articlePersistence.findMostArticleBySomething();
+    public Flux< Article > findTop5ArticleSalesLastWeek(){
+        return articlePersistence.findTop5ArticleSalesLastWeek();
     }
 }

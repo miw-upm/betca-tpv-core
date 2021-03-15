@@ -9,7 +9,7 @@ import reactor.test.StepVerifier;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestConfig
-public class CreditReactiveIT {
+class CreditReactiveIT {
     @Autowired
     private CreditReactive creditReactive;
 
