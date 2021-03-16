@@ -39,7 +39,14 @@ public class BudgetPersistenceMongodb implements BudgetPersistence {
     }
 
     @Override
-    public Mono<Budget> readById(String id) {
+    public Mono<Budget> read(String id) {
+        return this.budgetReactive.findById(id)
+                .map(BudgetEntity::toBudget);
+    }
+
+
+    @Override
+    public Mono<Budget> findById(String id) {
         return this.budgetReactive.findById(id)
                 .switchIfEmpty(Mono.error(new NotFoundException("Budget id do not exist : " + id)))
                 .map(BudgetEntity::toBudget
