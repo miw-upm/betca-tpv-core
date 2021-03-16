@@ -1,5 +1,8 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
+import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.model.StockManager;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
@@ -8,7 +11,9 @@ import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
@@ -35,4 +40,33 @@ public class StockManagerService {
         return Flux.fromStream(shoppingStream
                 .map(shopping -> StockManager.ofShopping(shopping, dateCreation)));
     }
+
+    public Mono<StockManager> searchFutureStock(String barcode) {
+            return this.articlePersistence.readByBarcode(barcode)
+            .switchIfEmpty(Mono.error(new NotFoundException("Article : " + barcode)))
+            .map(article-> {
+                return futureStock(article, barcode);
+            }).flatMap(stockManagerMono -> stockManagerMono);
+
+    }
+    private Mono<StockManager> futureStock(Article article, String barcode){
+        // last week prevision
+        LocalDateTime ini = LocalDateTime.now().minusDays(7);
+        LocalDateTime end = LocalDateTime.now();
+        Mono<Integer> amountSold = this.ticketPersistence.findByRangeRegistrationDate(ini, end)
+                .map(ticket -> amountArticleSold(ticket.getShoppingList().stream(), barcode))
+                .reduce(0, (articleSold, articleSold2)->articleSold +articleSold2);
+
+        return amountSold.map(amount->StockManager.ofSoldStock(article,amount));
+
+
+    }
+    private int amountArticleSold(Stream<Shopping> shoppingStream, String barcode) {
+        return shoppingStream
+                .filter(shopping -> shopping.getBarcode().equals(barcode))
+                .map(shopping -> shopping.getAmount())
+                .reduce(0, (amount1, amount2) -> amount1+amount2);
+
+    }
+
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -20,6 +21,7 @@ public class StockManagerResource {
     public static final String STOCK_MANAGER = "/stock-manager";
     public static final String STOCK = "/stock";
     public static final String STOCK_SOLD = "/stock-sold";
+    public static final String STOCK_FUTURE = "/stock-future";
 
     private StockManagerService stockManagerService;
 
@@ -41,5 +43,11 @@ public class StockManagerResource {
 
         return this.stockManagerService.searchSoldProducts(initial, end)
                 .map(StockManagerDto::new);
+    }
+    @GetMapping(STOCK_FUTURE)
+    public Mono<StockManagerDto> searchFutureStock(@RequestParam(required = true) String barcode) {
+        return this.stockManagerService.searchFutureStock(barcode)
+                .map(StockManagerDto::new);
+
     }
 }
