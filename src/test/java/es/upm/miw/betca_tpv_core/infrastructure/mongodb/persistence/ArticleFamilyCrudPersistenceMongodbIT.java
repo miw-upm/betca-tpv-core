@@ -5,8 +5,11 @@ import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.ArticleFamilyCrud;
 import es.upm.miw.betca_tpv_core.domain.model.TreeType;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ArticleBarcodeWithParentReferenceDto;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
@@ -14,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestConfig
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ArticleFamilyCrudPersistenceMongodbIT {
 
     @Autowired
@@ -21,9 +25,36 @@ class ArticleFamilyCrudPersistenceMongodbIT {
 
     @Test
     @Order(1)
+    void testWhenAddArticleToParentReferenceThenReturnParentWithNewArticle() {
+        StepVerifier
+                .create(this.familyArticleCrudPersistenceMongodb.addArticleToArticleFamily(ArticleBarcodeWithParentReferenceDto.builder().barcode("8400000000017").parentReference("Zz Polo").build()))
+                .expectNextMatches(articleFamilyCrud -> {
+                    assertEquals("Zz Polo", articleFamilyCrud.getReference());
+                    assertNotNull(articleFamilyCrud.getArticleFamilyCrudList()
+                            .stream()
+                            .filter(articleFamily -> articleFamily.getReference().equals("zz-falda-T2"))
+                            .findAny()
+                            .orElse(null));
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    @Order(2)
+    void testWhenDeleteArticleToParentReferenceThenReturn() {
+        StepVerifier
+                .create(this.familyArticleCrudPersistenceMongodb.deleteSingleArticle(ArticleBarcodeWithParentReferenceDto.builder().barcode("8400000000017").parentReference("Zz Polo").build()))
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    @Order(3)
     void testGivenNewCompositeArticleFamilyWhenAddToParentReferenceThenReturnParentWithNewComposite() {
         StepVerifier
-                .create(this.familyArticleCrudPersistenceMongodb.createCompose(ArticleFamilyCrud.builder().reference("newCompose").treeType(TreeType.SIZES).parentReference("Zz").build()))
+                .create(this.familyArticleCrudPersistenceMongodb.createComposeArticleFamily(ArticleFamilyCrud.builder().reference("newCompose").treeType(TreeType.SIZES).parentReference("Zz").build()))
                 .expectNextMatches(articleFamilyCrud -> {
                     assertEquals("Zz", articleFamilyCrud.getReference());
                     assertNotNull(articleFamilyCrud.getArticleFamilyCrudList()
@@ -38,10 +69,10 @@ class ArticleFamilyCrudPersistenceMongodbIT {
     }
 
     @Test
-    @Order(2)
+    @Order(4)
     void testWhenDeleteArticleFamilyByReferenceThenReturn() {
         StepVerifier
-                .create(this.familyArticleCrudPersistenceMongodb.deleteByReference("newCompose"))
+                .create(this.familyArticleCrudPersistenceMongodb.deleteComposeArticleFamily("newCompose"))
                 .expectComplete()
                 .verify();
     }
@@ -77,7 +108,7 @@ class ArticleFamilyCrudPersistenceMongodbIT {
     @Test
     void testGivenNewCompositeArticleFamilyWithExistentReferenceWhenAddToParentReferenceThenReturnConflictMonoError() {
         StepVerifier
-                .create(this.familyArticleCrudPersistenceMongodb.createCompose(ArticleFamilyCrud.builder().reference("Zz").treeType(TreeType.SIZES).parentReference("Zz").build()))
+                .create(this.familyArticleCrudPersistenceMongodb.createComposeArticleFamily(ArticleFamilyCrud.builder().reference("Zz").treeType(TreeType.SIZES).parentReference("Zz").build()))
                 .expectErrorMatches(throwable -> throwable instanceof ConflictException &&
                         throwable.getMessage().equals("Conflict Exception. Article-Family reference already exists : Zz"))
                 .verify();
@@ -86,7 +117,7 @@ class ArticleFamilyCrudPersistenceMongodbIT {
     @Test
     void testGivenNewCompositeArticleFamilyWhenAddToNotExistentParentReferenceThenReturnNotFoundMonoError() {
         StepVerifier
-                .create(this.familyArticleCrudPersistenceMongodb.createCompose(ArticleFamilyCrud.builder().reference("reference").treeType(TreeType.SIZES).parentReference("notExistent").build()))
+                .create(this.familyArticleCrudPersistenceMongodb.createComposeArticleFamily(ArticleFamilyCrud.builder().reference("reference").treeType(TreeType.SIZES).parentReference("notExistent").build()))
                 .expectErrorMatches(throwable -> throwable instanceof NotFoundException &&
                         throwable.getMessage().equals("Not Found Exception. Non existent article-family with reference: notExistent"))
                 .verify();

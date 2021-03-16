@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @TestConfig
-public class ArticleFamilyCrudServiceIT {
+class ArticleFamilyCrudServiceIT {
     @Autowired
     private ArticleFamilyCrudService articleFamilyCrudService;
 
@@ -46,9 +46,9 @@ public class ArticleFamilyCrudServiceIT {
         StepVerifier
                 .create(this.articleFamilyCrudService.read("any"))
                 .expectNextMatches(articleLeaf -> {
-                    assertEquals(articleLeaf.getReference(), "mockReference");
-                    assertEquals(articleLeaf.getDescription(), "mockDescription");
-                    assertEquals(articleLeaf.getTreeType(), TreeType.ARTICLE);
+                    assertEquals("mockReference",articleLeaf.getReference());
+                    assertEquals("mockDescription",articleLeaf.getDescription());
+                    assertEquals(TreeType.ARTICLE,articleLeaf.getTreeType());
                     return true;
                 })
                 .thenCancel()
