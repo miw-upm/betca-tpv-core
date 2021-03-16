@@ -43,9 +43,9 @@ class BudgetPersistenceMongodbIT {
 
 
     @Test
-    void testReadByIdNotFound() {
+    void testFindByIdNotFound() {
         StepVerifier
-                .create(this.budgetPersistenceMongodb.readById("qwer"))
+                .create(this.budgetPersistenceMongodb.findById("qwer"))
                 .expectError(NotFoundException.class)
                 .verify();
     }
