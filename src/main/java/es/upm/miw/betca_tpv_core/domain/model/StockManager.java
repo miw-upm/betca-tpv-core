@@ -48,7 +48,8 @@ public class StockManager {
                 .dateStockEmpty(null)
                 .build();
     }
-    public static StockManager ofSoldStock(Article article, int sold ) {
+
+    public static StockManager ofSoldStock(Article article, int sold) {
         int rest = article.getStock() - sold;
         return StockManager.builder()
                 .barcode(article.getBarcode())

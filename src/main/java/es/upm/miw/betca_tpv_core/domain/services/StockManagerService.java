@@ -40,33 +40,27 @@ public class StockManagerService {
         return Flux.fromStream(shoppingStream
                 .map(shopping -> StockManager.ofShopping(shopping, dateCreation)));
     }
-
     public Mono<StockManager> searchFutureStock(String barcode) {
-            return this.articlePersistence.readByBarcode(barcode)
-            .switchIfEmpty(Mono.error(new NotFoundException("Article : " + barcode)))
-            .map(article-> {
-                return futureStock(article, barcode);
-            }).flatMap(stockManagerMono -> stockManagerMono);
-
+        return this.articlePersistence.readByBarcode(barcode)
+                .switchIfEmpty(Mono.error(new NotFoundException("Article : " + barcode)))
+                .map(article -> {
+                    return futureStock(article, barcode);
+                }).flatMap(stockManagerMono -> stockManagerMono);
     }
-    private Mono<StockManager> futureStock(Article article, String barcode){
+    private Mono<StockManager> futureStock(Article article, String barcode) {
         // last week prevision
         LocalDateTime ini = LocalDateTime.now().minusDays(7);
+        System.out.println(ini);
         LocalDateTime end = LocalDateTime.now();
-        Mono<Integer> amountSold = this.ticketPersistence.findByRangeRegistrationDate(ini, end)
+        Mono<Integer> amountSold = this.ticketPersistence.findByRangeRegistrationDate(ini,end)
                 .map(ticket -> amountArticleSold(ticket.getShoppingList().stream(), barcode))
-                .reduce(0, (articleSold, articleSold2)->articleSold +articleSold2);
-
-        return amountSold.map(amount->StockManager.ofSoldStock(article,amount));
-
-
+                .reduce(0, (articleSold, articleSold2) -> articleSold + articleSold2);
+        return amountSold.map(amount -> StockManager.ofSoldStock(article, amount));
     }
     private int amountArticleSold(Stream<Shopping> shoppingStream, String barcode) {
         return shoppingStream
                 .filter(shopping -> shopping.getBarcode().equals(barcode))
                 .map(shopping -> shopping.getAmount())
-                .reduce(0, (amount1, amount2) -> amount1+amount2);
-
+                .reduce(0, (amount1, amount2) -> amount1 + amount2);
     }
-
 }
