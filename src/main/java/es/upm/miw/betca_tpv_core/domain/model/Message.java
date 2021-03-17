@@ -22,14 +22,18 @@ public class Message {
     private String subject;
     @NotBlank
     private String text;
-    private User userFrom;
-    private User userTo;
+    private String userFrom;
+    private String userTo;
+    private Boolean isRead;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate creationDate;
 
     public void doDefault() {
         if (Objects.isNull(creationDate)) {
             this.creationDate = LocalDate.now();
+        }
+        if (Objects.isNull(isRead)) {
+            this.isRead = Boolean.FALSE;
         }
     }
 }

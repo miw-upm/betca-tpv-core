@@ -23,14 +23,13 @@ public class MessageEntity {
     private String id;
     private String subject;
     private String text;
-    @DBRef
-    private User userFrom;
-    @DBRef
-    private User userTo;
+    private String userFrom;
+    private String userTo;
+    private boolean isRead;
     private LocalDate creationDate;
 
-    public MessageEntity(Message article) {
-        BeanUtils.copyProperties(article, this);
+    public MessageEntity(Message message) {
+        BeanUtils.copyProperties(message, this);
     }
 
     public Message toMessage() {
