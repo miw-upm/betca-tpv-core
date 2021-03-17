@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.stream.Stream;
 
 @NoArgsConstructor
 @Builder
@@ -38,15 +37,27 @@ public class StockManager {
                 .dateStockEmpty(null)
                 .build();
     }
-    public static StockManager ofShopping(Shopping article, LocalDateTime dateCreation) {
 
+    public static StockManager ofShopping(Shopping article, LocalDateTime dateCreation) {
         return StockManager.builder()
-                            .barcode(article.getBarcode())
-                            .description(article.getDescription())
-                            .retailPrice(article.getRetailPrice())
-                            .stock(null)
-                            .dateSell(dateCreation)
-                            .dateStockEmpty(null)
-                            .build();
+                .barcode(article.getBarcode())
+                .description(article.getDescription())
+                .retailPrice(article.getRetailPrice())
+                .stock(null)
+                .dateSell(dateCreation)
+                .dateStockEmpty(null)
+                .build();
+    }
+
+    public static StockManager ofSoldStock(Article article, int sold) {
+        int rest = article.getStock() - sold;
+        return StockManager.builder()
+                .barcode(article.getBarcode())
+                .description(article.getDescription())
+                .retailPrice(article.getRetailPrice())
+                .stock(rest)
+                .dateSell(null)
+                .dateStockEmpty(null)
+                .build();
     }
 }

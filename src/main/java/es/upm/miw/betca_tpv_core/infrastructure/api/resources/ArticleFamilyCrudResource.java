@@ -1,9 +1,9 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.ArticleFamilyCrud;
-import es.upm.miw.betca_tpv_core.domain.model.TreeType;
 import es.upm.miw.betca_tpv_core.domain.services.ArticleFamilyCrudService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ArticleBarcodeWithParentReferenceDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -14,6 +14,7 @@ import javax.validation.Valid;
 @RequestMapping(ArticleFamilyCrudResource.ARTICLE_FAMILY_CRUD)
 public class ArticleFamilyCrudResource {
     public static final String ARTICLE_FAMILY_CRUD = "/article-family-crud";
+    public static final String SINGLE = "/single";
     public static final String REFERENCE = "/{reference}";
 
     private ArticleFamilyCrudService articleFamilyCrudService;
@@ -29,17 +30,27 @@ public class ArticleFamilyCrudResource {
     }
 
     @DeleteMapping(REFERENCE)
-    public Mono<Void> delete(@PathVariable String reference) {
-        return this.articleFamilyCrudService.delete(reference);
+    public Mono<Void> deleteComposeArticleFamily(@PathVariable String reference) {
+        return this.articleFamilyCrudService.deleteComposeArticleFamily(reference);
+    }
+
+    @DeleteMapping(value = SINGLE + REFERENCE)
+    public Mono<Void> deleteSingleArticle(@RequestBody ArticleBarcodeWithParentReferenceDto articleBarcodeWithParentReferenceDto) {
+        return this.articleFamilyCrudService.deleteSingleArticle(articleBarcodeWithParentReferenceDto);
     }
 
     @PostMapping(produces = {"application/json"})
-    public Mono<ArticleFamilyCrud> create(@Valid @RequestBody ArticleFamilyCrud articleFamilyCrud) {
+    public Mono<ArticleFamilyCrud> createComposeArticleFamily(@Valid @RequestBody ArticleFamilyCrud articleFamilyCrud) {
         articleFamilyCrud.doDefault();
-        if (articleFamilyCrud.getTreeType().equals(TreeType.ARTICLES) || articleFamilyCrud.getTreeType().equals(TreeType.SIZES)) {
-            return this.articleFamilyCrudService.createCompose(articleFamilyCrud);
-        } else return Mono.just(ArticleFamilyCrud.builder().reference("SINGLE").build());
+            return this.articleFamilyCrudService.createComposeArticleFamily(articleFamilyCrud);
     }
+
+    @PostMapping(value = SINGLE, produces = {"application/json"})
+    public Mono<ArticleFamilyCrud> addArticleToArticleFamily(@Valid @RequestBody ArticleBarcodeWithParentReferenceDto articleBarcodeWithParentReferenceDto) {
+        return this.articleFamilyCrudService.addArticleToArticleFamily(articleBarcodeWithParentReferenceDto);
+    }
+
+
 
 }
 

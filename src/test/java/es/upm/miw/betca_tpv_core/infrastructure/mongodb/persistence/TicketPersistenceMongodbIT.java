@@ -111,5 +111,20 @@ class TicketPersistenceMongodbIT {
                 })
                 .verifyComplete();
     }
+    @Test
+    void testFindByRangeRegistrationDate() {
+
+        LocalDateTime dateIni = LocalDateTime.of(2019, Month.JANUARY, 01, 00, 00, 00);
+        LocalDateTime dateEnd = LocalDateTime.of(2019, Month.JANUARY, 15, 00, 00, 00);
+
+        StepVerifier
+                .create(this.ticketPersistenceMongodb.findByRangeRegistrationDate(dateIni,dateEnd))
+                .expectNextMatches(ticket -> {
+                    assertTrue(ticket.getCreationDate().isAfter(dateIni) && ticket.getCreationDate().isBefore(dateEnd));
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }
 
 }

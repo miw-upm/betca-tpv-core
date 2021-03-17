@@ -5,5 +5,5 @@ import org.springframework.data.repository.reactive.ReactiveSortingRepository;
 import reactor.core.publisher.Mono;
 
 public interface BudgetReactive extends ReactiveSortingRepository<BudgetEntity, String > {
-    Mono<BudgetEntity> readById(String id);
+    Mono<BudgetEntity> findById(String id);
 }
