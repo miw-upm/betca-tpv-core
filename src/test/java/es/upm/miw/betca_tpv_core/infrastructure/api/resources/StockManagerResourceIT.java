@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
+import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.StockManagerDto;
 import org.junit.jupiter.api.Assertions;
@@ -53,5 +54,35 @@ public class StockManagerResourceIT {
           //      .value(Assertions::assertNotNull);
         //                 .value(stocks -> stocks.stream()
         //                        .allMatch(stockManagerDto -> stockManagerDto.getDateSell().isBefore(dateEnd) && stockManagerDto.getDateSell().isAfter(dateIni) ));
+    }
+    @Test
+    void testSearchFutureStock(){
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(StockManagerResource.STOCK_MANAGER + StockManagerResource.STOCK_FUTURE)
+                        .queryParam("barcode", "8400000000024")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(StockManagerDto.class)
+                .value(Assertions::assertNotNull)
+                .value(returnStockManager -> {
+                    assertEquals("8400000000024", returnStockManager.getBarcode());
+                    // assertEquals(2, returnStockManager.getStock());
+                    assertEquals("Zarzuela - Falda T4", returnStockManager.getDescription());
+                });
+
+    }
+    @Test
+    void testSearchFutureStockNotFound(){
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(StockManagerResource.STOCK_MANAGER + StockManagerResource.STOCK_FUTURE)
+                        .queryParam("barcode", "8400000000029")
+                        .build())
+                .exchange()
+                .expectStatus().isNotFound();
     }
 }

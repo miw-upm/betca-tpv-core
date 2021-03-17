@@ -48,4 +48,16 @@ public class StockManager {
                 .dateStockEmpty(null)
                 .build();
     }
+
+    public static StockManager ofSoldStock(Article article, int sold) {
+        int rest = article.getStock() - sold;
+        return StockManager.builder()
+                .barcode(article.getBarcode())
+                .description(article.getDescription())
+                .retailPrice(article.getRetailPrice())
+                .stock(rest)
+                .dateSell(null)
+                .dateStockEmpty(null)
+                .build();
+    }
 }
