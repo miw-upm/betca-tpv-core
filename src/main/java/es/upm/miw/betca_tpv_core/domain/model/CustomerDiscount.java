@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -18,7 +17,7 @@ public class CustomerDiscount {
     @NotBlank
     private String id;
     private String note;
-    private LocalDateTime registrationDate;
+    private String registrationDate;
     @NotBlank
     private Double discount;
     private Double minimumPurchase;
