@@ -94,4 +94,19 @@ class StockAlarmMongodbIT {
                 .expectComplete()
                 .verify();
     }
+
+    @Test
+    void testFindAllStockAlarmLinesWithoutNull() {
+        StepVerifier
+                .create(this.stockAlarmPersistence.findAllStockAlarmLinesWithoutNull())
+                .thenConsumeWhile(
+                        stockAlarmLine -> {
+                            assertTrue(stockAlarmLine.getWarning() > 0);
+                            assertTrue(stockAlarmLine.getCritical() > 0);
+                            return true;
+                        }
+                )
+                .expectComplete()
+                .verify();
+    }
 }
