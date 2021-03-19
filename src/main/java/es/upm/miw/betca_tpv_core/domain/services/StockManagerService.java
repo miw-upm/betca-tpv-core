@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
@@ -34,10 +35,10 @@ public class StockManagerService {
 
     public Flux<StockManager> searchSoldProducts(LocalDateTime initial, LocalDateTime end) {
         Flux<Ticket> tickets = this.ticketPersistence.findByRangeRegistrationDate(initial, end);
-        return Flux.concat(tickets.map(ticket -> articleOfShopping(ticket.getShoppingList().stream(), ticket.getCreationDate())));
+        return Flux.merge(tickets.map(ticket -> articleOfShopping(ticket.getShoppingList().stream(), ticket.getCreationDate().toLocalDate())));
     }
 
-    private Flux<StockManager> articleOfShopping(Stream<Shopping> shoppingStream, LocalDateTime dateCreation) {
+    private Flux<StockManager> articleOfShopping(Stream<Shopping> shoppingStream, LocalDate dateCreation) {
         return Flux.fromStream(shoppingStream
                 .map(shopping -> StockManager.ofShopping(shopping, dateCreation)));
     }
