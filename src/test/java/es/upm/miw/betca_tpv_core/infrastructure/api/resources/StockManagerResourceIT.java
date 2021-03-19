@@ -40,6 +40,7 @@ public class StockManagerResourceIT {
     void testSearchSoldProducts() {
         LocalDateTime dateIni = LocalDateTime.of(2019, Month.JANUARY, 01, 00, 00, 00);
         LocalDateTime dateEnd = LocalDateTime.of(2019, Month.JANUARY, 15, 00, 00, 00);
+
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -48,11 +49,14 @@ public class StockManagerResourceIT {
                         .queryParam("end", dateEnd)
                         .build())
                 .exchange()
-                .expectStatus().isOk();
-        //     .expectBodyList(StockManagerDto.class);
-        //      .value(Assertions::assertNotNull);
-        //                 .value(stocks -> stocks.stream()
-        //                        .allMatch(stockManagerDto -> stockManagerDto.getDateSell().isBefore(dateEnd) && stockManagerDto.getDateSell().isAfter(dateIni) ));
+                .expectStatus().isOk()
+             .expectBodyList(StockManagerDto.class)
+                .value(Assertions::assertNotNull)
+                         .value(stocks -> stocks.stream()
+                                .allMatch(stockManagerDto -> stockManagerDto.getDateSell().isBefore(dateEnd.toLocalDate())))
+                .value(stocks -> stocks.stream()
+                        .allMatch(stockManagerDto -> stockManagerDto.getDateSell().isAfter(dateIni.toLocalDate())));
+
     }
 
     @Test
