@@ -3,9 +3,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.dtos;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import es.upm.miw.betca_tpv_core.domain.model.StockManager;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
@@ -24,7 +22,7 @@ public class StockManagerDto {
     private LocalDateTime dateStockEmpty;
     private Integer stock;
 
-    public StockManagerDto(StockManager stockManager){
+    public StockManagerDto(StockManager stockManager) {
         this.barcode = stockManager.getBarcode();
         this.description = stockManager.getDescription();
         this.retailPrice = stockManager.getRetailPrice();

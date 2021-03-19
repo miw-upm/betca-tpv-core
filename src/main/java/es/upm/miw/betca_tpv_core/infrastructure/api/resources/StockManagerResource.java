@@ -1,6 +1,5 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
-import es.upm.miw.betca_tpv_core.domain.model.StockManager;
 import es.upm.miw.betca_tpv_core.domain.services.StockManagerService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.StockManagerDto;
@@ -13,7 +12,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Rest
 @RequestMapping(StockManagerResource.STOCK_MANAGER)
@@ -31,21 +29,21 @@ public class StockManagerResource {
     }
 
     @GetMapping(STOCK)
-    public Flux<StockManagerDto> searchProductsByStock(@RequestParam(required = true) Integer stock) {
+    public Flux<StockManagerDto> searchProductsByStock(@RequestParam() Integer stock) {
         return this.stockManagerService.searchProductsByStock(stock)
                 .map(StockManagerDto::new);
     }
 
     @GetMapping(STOCK_SOLD)
     public Flux<StockManagerDto> searchSoldProducts(
-            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime initial,
-            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
+            @RequestParam() @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime initial,
+            @RequestParam() @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
         return this.stockManagerService.searchSoldProducts(initial, end)
                 .map(StockManagerDto::new);
     }
 
     @GetMapping(STOCK_FUTURE)
-    public Mono<StockManagerDto> searchFutureStock(@RequestParam(required = true) String barcode) {
+    public Mono<StockManagerDto> searchFutureStock(@RequestParam() String barcode) {
         return this.stockManagerService.searchFutureStock(barcode)
                 .map(StockManagerDto::new);
 
