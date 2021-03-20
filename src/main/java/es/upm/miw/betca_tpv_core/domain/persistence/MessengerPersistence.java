@@ -13,8 +13,8 @@ public interface MessengerPersistence {
 
     Flux<Message> findByUserFromNullSafe(User userFrom);
 
-    Flux<Message> findByUserToNullSafe(User userFrom);
+    Flux<Message> findByUserToNullSafe(User userTo);
 
-    Flux<Message> findNotReadMessages(User userFrom);
+    Flux<Message> findNotReadMessages(User userTo);
 
 }

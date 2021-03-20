@@ -34,5 +34,4 @@ public class MessengerService {
         return this.messengerPersistence.findNotReadMessages(user);
     }
 
-
 }

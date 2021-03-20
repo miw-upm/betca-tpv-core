@@ -24,7 +24,7 @@ class MessengerResourceIT {
 
     @Test
     void testCreate() {
-        Message message = new Message("Subject", "Text message", "6", "6",
+        Message message = new Message("Subject", "Text message", "6", "6", false,
                 LocalDate.of(2021, 9, 15));
 
         Message createdMessage = this.restClientTestService.loginAdmin(webTestClient)

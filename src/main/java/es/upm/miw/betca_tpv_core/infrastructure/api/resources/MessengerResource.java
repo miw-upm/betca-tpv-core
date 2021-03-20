@@ -59,4 +59,5 @@ public class MessengerResource {
 
         return this.messengerService.checkNewMessages(new User(authenticatedUser));
     }
+
 }
