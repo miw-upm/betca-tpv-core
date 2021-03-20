@@ -287,10 +287,10 @@ public class DatabaseSeederDev {
         LogManager.getLogger(this.getClass()).warn("        ------- rgpds");
 
         CustomerDiscountEntity[] customersDiscounts = {
-                CustomerDiscountEntity.builder().id("1").note("discount1").registrationDate(LocalDateTime.now()).discount(30.0).minimumPurchase(50.0).user("66666666").build(),
-                CustomerDiscountEntity.builder().id("2").note("discount2").registrationDate(LocalDateTime.now()).discount(10.0).minimumPurchase(40.0).user("66666666").build(),
-                CustomerDiscountEntity.builder().id("3").note("discount3").registrationDate(LocalDateTime.now()).discount(25.5).minimumPurchase(35.0).user("66666666").build(),
-                CustomerDiscountEntity.builder().id("4").note("discount4").registrationDate(LocalDateTime.now()).discount(80.0).minimumPurchase(100.0).user("66666666").build(),
+                CustomerDiscountEntity.builder().id("1").note("discount1").registrationDate(LocalDateTime.now()).discount(30.0).minimumPurchase(50.0).user("66").build(),
+                CustomerDiscountEntity.builder().id("2").note("discount2").registrationDate(LocalDateTime.now()).discount(10.0).minimumPurchase(40.0).user("77").build(),
+                CustomerDiscountEntity.builder().id("3").note("discount3").registrationDate(LocalDateTime.now()).discount(25.5).minimumPurchase(35.0).user("88").build(),
+                CustomerDiscountEntity.builder().id("4").note("discount4").registrationDate(LocalDateTime.now()).discount(80.0).minimumPurchase(100.0).user("99").build(),
         };
         this.customerDiscountDao.saveAll(List.of(customersDiscounts));
         LogManager.getLogger(this.getClass()).warn("        ------- customer discount");
