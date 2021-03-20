@@ -7,6 +7,7 @@ import es.upm.miw.betca_tpv_core.domain.model.CashierState;
 import es.upm.miw.betca_tpv_core.domain.persistence.CashierPersistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
@@ -74,4 +75,11 @@ public class CashierService {
                 .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier));
     }
 
+    public Flux < Cashier > findCashierEntitiesByClosureDateBetween(LocalDateTime dateBegin, LocalDateTime dateEnd) {
+        return this.cashierPersistence.findCashierEntitiesByClosureDateBetween(dateBegin, dateEnd);
+    }
+
+    public Flux<Cashier> findAll() {
+        return this.cashierPersistence.findAll();
+    }
 }
