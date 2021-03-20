@@ -10,6 +10,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @NoArgsConstructor
@@ -32,6 +33,8 @@ public class CustomerDiscountEntity {
     public CustomerDiscount toCustomerDiscount() {
         CustomerDiscount customerDiscount = new CustomerDiscount();
         BeanUtils.copyProperties(this, customerDiscount);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        customerDiscount.setRegistrationDate(this.getRegistrationDate().format(formatter));
         return customerDiscount;
     }
 }

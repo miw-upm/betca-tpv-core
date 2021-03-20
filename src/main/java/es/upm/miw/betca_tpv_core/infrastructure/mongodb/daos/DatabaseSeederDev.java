@@ -225,16 +225,26 @@ public class DatabaseSeederDev {
         this.offerDao.saveAll(List.of(offers));
         LogManager.getLogger(this.getClass()).warn("        ------- offers");
 
+        ArticleEntity article1 = ArticleEntity.builder().barcode("stockAlamt00001").reference("zz-falda-T2").description("Zarzuela - Falda T2")
+                .retailPrice(new BigDecimal("20")).stock(10).providerEntity(providers[0])
+                .registrationDate(LocalDateTime.now()).discontinued(false).build();
 
-        StockAlarmLineEntity stockAlarmLineEntity1 = StockAlarmLineEntity.builder().articleEntity(articles[1]).build();
-        StockAlarmLineEntity stockAlarmLineEntity2 = StockAlarmLineEntity.builder().articleEntity(articles[2]).warning(1).critical(2).build();
+        ArticleEntity article2= ArticleEntity.builder().barcode("stockAlamt00002").reference("zz-falda-T2").description("Zarzuela - Falda T2")
+                .retailPrice(new BigDecimal("20")).stock(4).providerEntity(providers[0])
+                .registrationDate(LocalDateTime.now()).discontinued(false).build();
+
+        this.articleDao.save(article1);
+        this.articleDao.save(article2);
+
+        StockAlarmLineEntity stockAlarmLineEntity1 = StockAlarmLineEntity.builder().articleEntity(article1).build();
+        StockAlarmLineEntity stockAlarmLineEntity2 = StockAlarmLineEntity.builder().articleEntity(article2).warning(1).critical(2).build();
         StockAlarmLineEntity stockAlarmLineEntity3 = StockAlarmLineEntity.builder().articleEntity(articles[3]).warning(2).build();
         StockAlarmLineEntity stockAlarmLineEntity4 = StockAlarmLineEntity.builder().articleEntity(articles[4]).critical(3).build();
         StockAlarmLineEntity stockAlarmLineEntity5 = StockAlarmLineEntity.builder().articleEntity(articles[5]).warning(5).critical(3).build();
 
         StockAlarmEntity[] stocksAlarms = {
-                StockAlarmEntity.builder().name("alarm-pack-1").warning(5).critical(5).alarmLine(stockAlarmLineEntity1).alarmLine(stockAlarmLineEntity2).build(),
-                StockAlarmEntity.builder().name("alarm-pack-2").warning(99).critical(99).alarmLine(stockAlarmLineEntity1).alarmLine(stockAlarmLineEntity4).build(),
+                StockAlarmEntity.builder().name("alarm-pack-1").warning(11).critical(5).alarmLine(stockAlarmLineEntity1).alarmLine(stockAlarmLineEntity2).build(),
+                StockAlarmEntity.builder().name("alarm-pack-2").warning(20).critical(11).alarmLine(stockAlarmLineEntity1).alarmLine(stockAlarmLineEntity4).build(),
                 StockAlarmEntity.builder().name("alarm-pac-2").warning(55).critical(55).alarmLine(stockAlarmLineEntity3).alarmLine(stockAlarmLineEntity5).build(),
                 StockAlarmEntity.builder().name("alarm-delete").warning(55).critical(55).alarmLine(stockAlarmLineEntity3).alarmLine(stockAlarmLineEntity5).build()
 
