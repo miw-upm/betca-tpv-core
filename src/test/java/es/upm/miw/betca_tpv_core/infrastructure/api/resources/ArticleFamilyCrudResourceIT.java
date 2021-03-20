@@ -4,13 +4,13 @@ import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.model.ArticleFamilyCrud;
 import es.upm.miw.betca_tpv_core.domain.model.TreeType;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ArticleBarcodeWithParentReferenceDto;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleFamilyCrudResource.ARTICLE_FAMILY_CRUD;
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleFamilyCrudResource.REFERENCE;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleFamilyCrudResource.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @RestTestConfig
@@ -24,6 +24,7 @@ class ArticleFamilyCrudResourceIT {
     private RestClientTestService restClientTestService;
 
     @Test
+    @Order(1)
     void testGivenReferenceWhenIsArticleThenReturnArticle() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
@@ -41,6 +42,7 @@ class ArticleFamilyCrudResourceIT {
     }
 
     @Test
+    @Order(2)
     void testGivenReferenceWhenIsSizeThenReturnArticleFamilyTree() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
@@ -59,6 +61,7 @@ class ArticleFamilyCrudResourceIT {
     }
 
     @Test
+    @Order(3)
     void testGivenNewArticleFamilyWithExistentReferenceWhenPostThenConflictException() {
         ArticleFamilyCrud articleFamilyCrud = ArticleFamilyCrud.builder().reference("Zz").parentReference("Zz Falda").treeType(TreeType.SIZES).build();
         this.restClientTestService.loginAdmin(webTestClient)
@@ -71,7 +74,7 @@ class ArticleFamilyCrudResourceIT {
     }
 
     @Test
-    @Order(1)
+    @Order(4)
     void testGivenNewArticleFamilyWhenCreateThenIsOkAndReturnArticleFamily() {
         ArticleFamilyCrud articleFamilyCrud = ArticleFamilyCrud.builder().reference("test-ref").parentReference("Zz Falda").treeType(TreeType.SIZES).build();
         this.restClientTestService.loginAdmin(webTestClient)
@@ -86,7 +89,7 @@ class ArticleFamilyCrudResourceIT {
     }
 
     @Test
-    @Order(2)
+    @Order(5)
     void testGivenReferenceWhenDeleteThenIsOk() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .delete()
@@ -94,4 +97,30 @@ class ArticleFamilyCrudResourceIT {
                 .exchange()
                 .expectStatus().isOk();
     }
+
+    @Test
+    @Order(6)
+    void testGivenSingleArticleWhenAddThenIsOkAndReturnArticleFamily() {
+        ArticleBarcodeWithParentReferenceDto articleBarcodeWithParentReferenceDto = ArticleBarcodeWithParentReferenceDto.builder().barcode("8400000000079").parentReference("Zz Falda").build();
+        this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(ARTICLE_FAMILY_CRUD+SINGLE)
+                .body(Mono.just(articleBarcodeWithParentReferenceDto), ArticleFamilyCrud.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ArticleFamilyCrud.class)
+                .value(Assertions::assertNotNull)
+                .value(returnArticleFamilyCrud -> assertEquals("Zz Falda", returnArticleFamilyCrud.getReference()));
+    }
+
+    @Test
+    @Order(7)
+    void testGivenSingleArticleWithParentReferenceWhenDeleteThenIsOk() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .delete()
+                .uri(ARTICLE_FAMILY_CRUD + PARENT + REFERENCE + BARCODE,"Zz Falda","8400000000079")
+                .exchange()
+                .expectStatus().isOk();
+    }
+
 }
