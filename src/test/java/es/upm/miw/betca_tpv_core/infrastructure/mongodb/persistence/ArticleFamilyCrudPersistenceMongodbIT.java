@@ -6,73 +6,69 @@ import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.ArticleFamilyCrud;
 import es.upm.miw.betca_tpv_core.domain.model.TreeType;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ArticleBarcodeWithParentReferenceDto;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestConfig
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ArticleFamilyCrudPersistenceMongodbIT {
 
     @Autowired
     private FamilyArticleCrudPersistenceMongodb familyArticleCrudPersistenceMongodb;
 
     @Test
-    @Order(1)
     void testWhenAddArticleToParentReferenceThenReturnParentWithNewArticle() {
+        AtomicReference<String> idSingleArticle = new AtomicReference<>("");
         StepVerifier
                 .create(this.familyArticleCrudPersistenceMongodb.addArticleToArticleFamily(ArticleBarcodeWithParentReferenceDto.builder().barcode("8400000000017").parentReference("Zz Polo").build()))
                 .expectNextMatches(articleFamilyCrud -> {
                     assertEquals("Zz Polo", articleFamilyCrud.getReference());
-                    assertNotNull(articleFamilyCrud.getArticleFamilyCrudList()
-                            .stream()
-                            .filter(articleFamily -> articleFamily.getReference().equals("zz-falda-T2"))
-                            .findAny()
-                            .orElse(null));
+                    assertNotNull(getArticleByBarcode(articleFamilyCrud, "8400000000017"));
+                    idSingleArticle.set(getArticleByBarcode(articleFamilyCrud, "8400000000017").getId());
                     return true;
                 })
                 .expectComplete()
                 .verify();
-    }
 
-    @Test
-    @Order(2)
-    void testWhenDeleteArticleToParentReferenceThenReturn() {
         StepVerifier
-                .create(this.familyArticleCrudPersistenceMongodb.deleteSingleArticle(ArticleBarcodeWithParentReferenceDto.builder().barcode("8400000000017").parentReference("Zz Polo").build()))
+                .create(this.familyArticleCrudPersistenceMongodb.delete(idSingleArticle.get()))
                 .expectComplete()
                 .verify();
     }
 
+
     @Test
-    @Order(3)
     void testGivenNewCompositeArticleFamilyWhenAddToParentReferenceThenReturnParentWithNewComposite() {
+        AtomicReference<String> idComposeArticle = new AtomicReference<>("");
+
         StepVerifier
                 .create(this.familyArticleCrudPersistenceMongodb.createComposeArticleFamily(ArticleFamilyCrud.builder().reference("newCompose").treeType(TreeType.SIZES).parentReference("Zz").build()))
                 .expectNextMatches(articleFamilyCrud -> {
                     assertEquals("Zz", articleFamilyCrud.getReference());
-                    assertNotNull(articleFamilyCrud.getArticleFamilyCrudList()
-                            .stream()
-                            .filter(articleFamily -> articleFamily.getReference().equals("newCompose"))
-                            .findAny()
-                            .orElse(null));
+                    assertNotNull(getArticleByReference(articleFamilyCrud, "newCompose"));
+                    idComposeArticle.set(getArticleByReference(articleFamilyCrud, "newCompose").getId());
                     return true;
                 })
                 .expectComplete()
                 .verify();
-    }
 
-    @Test
-    @Order(4)
-    void testWhenDeleteArticleFamilyByReferenceThenReturn() {
         StepVerifier
-                .create(this.familyArticleCrudPersistenceMongodb.deleteComposeArticleFamily("newCompose"))
+                .create(this.familyArticleCrudPersistenceMongodb.editComposeArticleFamily(ArticleFamilyCrud.builder().id(idComposeArticle.get()).description("New Description").build()))
+                .expectNextMatches(articleFamilyCrud -> {
+                    assertEquals("newCompose", articleFamilyCrud.getReference());
+                    assertEquals("New Description", articleFamilyCrud.getDescription());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+
+        StepVerifier
+                .create(this.familyArticleCrudPersistenceMongodb.delete(idComposeArticle.get()))
                 .expectComplete()
                 .verify();
     }
@@ -92,12 +88,12 @@ class ArticleFamilyCrudPersistenceMongodbIT {
     }
 
     @Test
-    void readComposeArticleByReference(){
+    void readComposeArticleByReference() {
         StepVerifier
                 .create(this.familyArticleCrudPersistenceMongodb.readByReference("Zz Falda"))
                 .expectNextMatches(articleFamilyDto -> {
-                    assertEquals(2,articleFamilyDto.getArticleFamilyCrudList().size());
-                    assertEquals("zz-falda-T2",articleFamilyDto.getArticleFamilyCrudList().get(0).getReference());
+                    assertEquals(2, articleFamilyDto.getArticleFamilyCrudList().size());
+                    assertEquals("zz-falda-T2", articleFamilyDto.getArticleFamilyCrudList().get(0).getReference());
                     assertEquals("zz-falda-T4", articleFamilyDto.getArticleFamilyCrudList().get(1).getReference());
                     return true;
                 })
@@ -123,4 +119,19 @@ class ArticleFamilyCrudPersistenceMongodbIT {
                 .verify();
     }
 
+    private ArticleFamilyCrud getArticleByBarcode(ArticleFamilyCrud articleFamilyCrud, String barcode) {
+        return articleFamilyCrud.getArticleFamilyCrudList()
+                .stream()
+                .filter(articleFamily -> articleFamily.getBarcode().equals(barcode))
+                .findAny()
+                .orElse(null);
+    }
+
+    private ArticleFamilyCrud getArticleByReference(ArticleFamilyCrud articleFamilyCrud, String reference) {
+        return articleFamilyCrud.getArticleFamilyCrudList()
+                .stream()
+                .filter(articleFamily -> articleFamily.getReference().equals(reference))
+                .findAny()
+                .orElse(null);
+    }
 }
