@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
@@ -38,14 +37,10 @@ public class InvoiceService {
         }
     }
 
-    // search Ticket by Id
-    // Check if User is not null
-    // Create invoice
+
     protected Mono<Invoice> create(String idTicket) {
         Invoice invoice = Invoice.builder()
                 .number(UUIDBase64.URL.encode())
-                .taxValue(new BigDecimal(10))
-                .baseTax(new BigDecimal(10))
                 .creationDate(LocalDateTime.now())
                 .build();
 
