@@ -10,6 +10,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 
 @Rest
 @RequestMapping(IssueResource.ISSUES)
@@ -33,13 +34,16 @@ public class IssueResource {
     @GetMapping(SEARCH)
     public Flux<IssueBasicDto> findByTitleAndBodyAndLabelsAndStateAndMilestoneAndAssigneeNullSafe(
             @RequestParam(required = false) String title, @RequestParam(required = false) String body,
-            @RequestParam(required = false) String labels, @RequestParam(required = false) String state,
+            @Pattern(regexp = "bug|enhancement")
+            @RequestParam(required = false) String labels,
+            @Pattern(regexp = "all|open|closed")
+            @RequestParam(required = false) String state,
             @RequestParam(required = false) String milestone, @RequestParam(required = false) String assignee
     ) {
         return this.issueService.findByTitleAndBodyAndLabelsAndStateAndMilestoneAndAssigneeNullSafe(
-                title == null ? "" : title, body == null ? "" : body,
-                labels == null ? "" : labels, state == null ? "" : state,
-                milestone == null ? "" : milestone, assignee == null ? "" : assignee
+                title == null ? "" : title.toLowerCase(), body == null ? "" : body.toLowerCase(),
+                labels == null ? "" : labels, state == null ? "all" : state,
+                milestone == null ? "" : milestone, assignee == null ? "" : assignee.toLowerCase()
         ).map(IssueBasicDto::new);
     }
 
