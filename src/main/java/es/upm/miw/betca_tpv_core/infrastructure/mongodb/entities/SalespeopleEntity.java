@@ -35,10 +35,10 @@ public class SalespeopleEntity {
     @DBRef(lazy = true)
     private List<TicketEntity> ticketEntityList;
 
-    public SalespeopleEntity(Salespeople salespeople){
+    public SalespeopleEntity(Salespeople salespeople,List<ArticleEntity> articleEntityList,List<TicketEntity> ticketEntityList){
         BeanUtils.copyProperties(salespeople,this);
-        this.articleEntityList=new ArrayList<>();
-        this.ticketEntityList=new ArrayList<>();
+        this.articleEntityList=articleEntityList;
+        this.ticketEntityList=ticketEntityList;
     }
 
     public Salespeople toSalespeople(){
