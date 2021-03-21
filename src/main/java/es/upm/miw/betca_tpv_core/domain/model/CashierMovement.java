@@ -12,5 +12,5 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class CashierMovement {
     @NotNull
-    private BigDecimal deposit;
+    private BigDecimal amount;
 }
