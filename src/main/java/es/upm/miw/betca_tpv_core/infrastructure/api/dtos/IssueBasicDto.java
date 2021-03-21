@@ -22,8 +22,10 @@ public class IssueBasicDto {
         this.number = issue.getNumber();
         this.title = issue.getTitle();
         this.body = issue.getBody();
-        this.labels = Arrays.stream(issue.getLabels())
-                .map(IssueLabel::getName)
-                .collect(Collectors.joining(","));
+        if (issue.getLabels() != null) {
+            this.labels = Arrays.stream(issue.getLabels())
+                    .map(IssueLabel::getName)
+                    .collect(Collectors.joining(","));
+        }
     }
 }

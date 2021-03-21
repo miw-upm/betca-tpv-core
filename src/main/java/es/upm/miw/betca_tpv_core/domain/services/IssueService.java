@@ -20,8 +20,12 @@ public class IssueService {
     public Flux<Issue> findByTitleAndBodyAndLabelsAndStateAndMilestoneAndAssigneeNullSafe(
             String title, String body, String labels, String state, String milestone, String assignee
     ) {
-        return this.gitHubService.search(labels, state, milestone, assignee)
-                .filter(issue -> issue.getTitle().contains(title) || issue.getBody().contains(body));
+        return this.gitHubService.search(labels, state, assignee)
+                .filter(issue ->
+                        (title.equals("") || issue.getTitle().toLowerCase().contains(title))
+                        && (body.equals("") || issue.getBody().toLowerCase().contains(body))
+                        && (milestone.equals("") || issue.getMilestone().getTitle().toLowerCase().contains(milestone))
+                );
     }
 
     public Mono<Issue> read(Integer id) {

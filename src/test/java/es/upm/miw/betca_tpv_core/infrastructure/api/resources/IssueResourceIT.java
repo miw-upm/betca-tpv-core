@@ -32,12 +32,12 @@ public class IssueResourceIT {
     @BeforeEach
     void mocks() {
         BDDMockito.given(
-                this.gitHubService.search(anyString(), anyString(), anyString(), anyString())
+                this.gitHubService.search(anyString(), anyString(), anyString())
         ).willAnswer(arguments -> Flux.just(
                 Issue.builder()
                         .title("Found a bug")
                         .body("I'm having a problem with this.")
-                        .labels(new IssueLabel[] { IssueLabel.builder().name("bug").build() })
+                        .labels(new IssueLabel[]{IssueLabel.builder().name("bug").build()})
                         .state("open")
                         .milestone(IssueMilestone.builder().title("v1.0").build())
                         .assignee(IssueAssignee.builder().login("kazlunn").build())
@@ -45,7 +45,7 @@ public class IssueResourceIT {
                 Issue.builder()
                         .title("This is a test title.")
                         .body("This could be improved.")
-                        .labels(new IssueLabel[] { IssueLabel.builder().name("enhancement").build() })
+                        .labels(new IssueLabel[]{IssueLabel.builder().name("enhancement").build()})
                         .state("open")
                         .milestone(IssueMilestone.builder().title("v1.1").build())
                         .assignee(IssueAssignee.builder().login("octocat").build())
