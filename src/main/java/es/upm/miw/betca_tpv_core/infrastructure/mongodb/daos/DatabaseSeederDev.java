@@ -34,16 +34,15 @@ public class DatabaseSeederDev {
     private CustomerDiscountDao customerDiscountDao;
     private BudgetDao budgetDao;
     private MessengerDao messengerDao;
-
+    private SalespeopleDao salespeopleDao;
     private DatabaseStarting databaseStarting;
 
     @Autowired
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
                              TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,
                              CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao,
-                             CustomerDiscountDao customerDiscountDao,BudgetDao budgetDao, MessengerDao messengerDao,
-                             DatabaseStarting databaseStarting) {
-
+                             CustomerDiscountDao customerDiscountDao, BudgetDao budgetDao, MessengerDao messengerDao,
+                             SalespeopleDao salespeopleDao, DatabaseStarting databaseStarting) {
         this.articleDao = articleDao;
         this.providerDao = providerDao;
         this.articlesTreeDao = articlesTreeDao;
@@ -58,6 +57,7 @@ public class DatabaseSeederDev {
         this.customerDiscountDao = customerDiscountDao;
         this.budgetDao=budgetDao;
         this.messengerDao=messengerDao;
+        this.salespeopleDao=salespeopleDao;
 
         this.deleteAllAndInitializeAndSeedDataBase();
     }
@@ -80,6 +80,7 @@ public class DatabaseSeederDev {
         this.customerDiscountDao.deleteAll();
         this.budgetDao.deleteAll();
         this.messengerDao.deleteAll();
+        this.salespeopleDao.deleteAll();
 
         LogManager.getLogger(this.getClass()).warn("------- Delete All -----------");
         this.databaseStarting.initialize();
@@ -292,10 +293,10 @@ public class DatabaseSeederDev {
         LogManager.getLogger(this.getClass()).warn("        ------- rgpds");
 
         CustomerDiscountEntity[] customersDiscounts = {
-                CustomerDiscountEntity.builder().id("1").note("discount1").registrationDate(LocalDateTime.now()).discount(30.0).minimumPurchase(50.0).user("66666666").build(),
-                CustomerDiscountEntity.builder().id("2").note("discount2").registrationDate(LocalDateTime.now()).discount(10.0).minimumPurchase(40.0).user("66666666").build(),
-                CustomerDiscountEntity.builder().id("3").note("discount3").registrationDate(LocalDateTime.now()).discount(25.5).minimumPurchase(35.0).user("66666666").build(),
-                CustomerDiscountEntity.builder().id("4").note("discount4").registrationDate(LocalDateTime.now()).discount(80.0).minimumPurchase(100.0).user("66666666").build(),
+                CustomerDiscountEntity.builder().id("1").note("discount1").registrationDate(LocalDateTime.now()).discount(30.0).minimumPurchase(50.0).user("66").build(),
+                CustomerDiscountEntity.builder().id("2").note("discount2").registrationDate(LocalDateTime.now()).discount(10.0).minimumPurchase(40.0).user("77").build(),
+                CustomerDiscountEntity.builder().id("3").note("discount3").registrationDate(LocalDateTime.now()).discount(25.5).minimumPurchase(35.0).user("88").build(),
+                CustomerDiscountEntity.builder().id("4").note("discount4").registrationDate(LocalDateTime.now()).discount(80.0).minimumPurchase(100.0).user("99").build(),
         };
         this.customerDiscountDao.saveAll(List.of(customersDiscounts));
         LogManager.getLogger(this.getClass()).warn("        ------- customer discount");
@@ -318,6 +319,25 @@ public class DatabaseSeederDev {
         };
         this.messengerDao.saveAll(List.of(messageEntities));
         LogManager.getLogger(this.getClass()).warn("        ------- messages");
+
+        LocalDate salespeopleTime=LocalDate.of(2021,Month.APRIL,1);
+        LocalDate salespeopleTime2=LocalDate.of(2021,Month.APRIL,2);
+        SalespeopleEntity[] salespeople={
+            SalespeopleEntity.builder()
+                .id("1").salesperson("Rosaria")
+                .salesDate(salespeopleTime).numArticle(2).finalValue(new BigDecimal(23)).articleEntityList(List.of(articles[0]))
+                .ticketEntityList(List.of(tickets[0]))
+                .build(),
+            SalespeopleEntity.builder()
+                .id("2").salesperson("Nacho")
+                .salesDate(salespeopleTime2).numArticle(5).finalValue(new BigDecimal(25.3)).articleEntityList(List.of(articles[0]))
+                .ticketEntityList(List.of(tickets[1]))
+                .build(),
+
+        };
+        this.salespeopleDao.saveAll(Arrays.asList(salespeople));
+        LogManager.getLogger(this.getClass()).warn("        ------  salespeople");
+
     }
 
 }

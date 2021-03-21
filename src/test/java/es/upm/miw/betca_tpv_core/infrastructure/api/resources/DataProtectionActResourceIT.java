@@ -2,9 +2,9 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.Rgpd;
 import es.upm.miw.betca_tpv_core.domain.model.RgpdType;
-import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.RgpdUserDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.RgpdUserWithFileDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +51,7 @@ public class DataProtectionActResourceIT {
 
     @Test
     void testCreate() {
-        Rgpd rgpd = new Rgpd(new User("987456321"), RgpdType.MEDIUM, null);
+        RgpdUserWithFileDto rgpd = new RgpdUserWithFileDto("987456321", RgpdType.MEDIUM, "YQ==");
         this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(DataProtectionActResource.DATA_PROTECTION_ACT)
@@ -68,7 +68,7 @@ public class DataProtectionActResourceIT {
 
     @Test
     void testCreateAlreadyExist() {
-        Rgpd rgpd = new Rgpd(new User("123456789"), RgpdType.MEDIUM, null);
+        RgpdUserWithFileDto rgpd = new RgpdUserWithFileDto("123456789", RgpdType.MEDIUM, "YQ==");
         this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(DataProtectionActResource.DATA_PROTECTION_ACT)

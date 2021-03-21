@@ -3,12 +3,15 @@ package es.upm.miw.betca_tpv_core.domain.services;
 import es.upm.miw.betca_tpv_core.domain.exceptions.BadRequestException;
 import es.upm.miw.betca_tpv_core.domain.model.Cashier;
 import es.upm.miw.betca_tpv_core.domain.model.CashierClose;
+import es.upm.miw.betca_tpv_core.domain.model.CashierMovement;
 import es.upm.miw.betca_tpv_core.domain.model.CashierState;
 import es.upm.miw.betca_tpv_core.domain.persistence.CashierPersistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -74,4 +77,29 @@ public class CashierService {
                 .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier));
     }
 
+    public Flux < Cashier > findCashierEntitiesByClosureDateBetween(LocalDateTime dateBegin, LocalDateTime dateEnd) {
+        return this.cashierPersistence.findCashierEntitiesByClosureDateBetween(dateBegin, dateEnd);
+    }
+
+    public Flux<Cashier> findAll() {
+        return this.cashierPersistence.findAll();
+    }
+
+    public Mono<Cashier> movementIn(@Valid CashierMovement cashierMovement) {
+        return this.lastByOpenedAssure(true)
+                .map(lastCashier -> {
+                    lastCashier.movementIn(cashierMovement);
+                    return lastCashier;
+                })
+                .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier));
+    }
+
+    public Mono<Cashier> movementOut(@Valid CashierMovement cashierMovement) {
+        return this.lastByOpenedAssure(true)
+                .map(lastCashier -> {
+                    lastCashier.movementOut(cashierMovement);
+                    return lastCashier;
+                })
+                .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier));
+    }
 }
