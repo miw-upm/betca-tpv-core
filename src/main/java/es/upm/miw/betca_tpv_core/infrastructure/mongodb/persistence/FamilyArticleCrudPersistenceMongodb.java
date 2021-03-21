@@ -12,9 +12,15 @@ import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ArticleEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ArticlesTreeEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.CompositeArticleEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.SingleArticleEntity;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Repository
 public class FamilyArticleCrudPersistenceMongodb implements ArticleFamilyCrudPersistence {
@@ -36,9 +42,9 @@ public class FamilyArticleCrudPersistenceMongodb implements ArticleFamilyCrudPer
     }
 
     @Override
-    public Mono<Void> deleteComposeArticleFamily(String reference) {
-        return this.assertReferenceExist(reference)
-                .then(this.articlesTreeReactive.deleteByReference(reference));
+    public Mono<Void> delete(String id) {
+        return this.assertIdExist(id)
+                .then(this.articlesTreeReactive.deleteById(id));
     }
 
     @Override
@@ -61,6 +67,9 @@ public class FamilyArticleCrudPersistenceMongodb implements ArticleFamilyCrudPer
         return this.assertReferenceExist(articleBarcodeWithParentReferenceDto.getParentReference())
                 .flatMap(compositeArticle -> this.assertBarcodeNotExist(articleBarcodeWithParentReferenceDto.getBarcode())
                         .flatMap(articleEntity -> {
+                            if(this.isSingleInComposite(compositeArticle, new SingleArticleEntity(articleEntity))){
+                                return Mono.error(new NotFoundException("Already existent article with barcode: " + articleEntity.getBarcode() + " in "+ compositeArticle.getReference()));
+                            }
                             SingleArticleEntity singleArticleEntity = new SingleArticleEntity(articleEntity);
                             return this.articlesTreeReactive.save(singleArticleEntity);
                         })
@@ -69,23 +78,17 @@ public class FamilyArticleCrudPersistenceMongodb implements ArticleFamilyCrudPer
                             return this.articlesTreeReactive.save(compositeArticle);
                         }))
                 .map(ArticlesTreeEntity::toDto);
-
-
-
     }
 
     @Override
-    public Mono<Void> deleteSingleArticle(ArticleBarcodeWithParentReferenceDto articleBarcodeWithParentReferenceDto) {
-        return this.assertReferenceExist(articleBarcodeWithParentReferenceDto.getParentReference())
-                .flatMap(parentArticlesTreeEntity -> this.assertBarcodeNotExist(articleBarcodeWithParentReferenceDto.getBarcode())
-                        .flatMap(articleEntity -> {
-                            if(!this.isSingleInComposite(parentArticlesTreeEntity, new SingleArticleEntity(articleEntity))){
-                                return Mono.error(new NotFoundException("Non existent article with barcode: " + articleEntity.getBarcode() + "dentro de "+ parentArticlesTreeEntity.getReference()));
-                            }
-                            parentArticlesTreeEntity.remove(new SingleArticleEntity(articleEntity));
-                            return this.articlesTreeReactive.save(parentArticlesTreeEntity);
-                        }))
-                .then();
+    public Mono<ArticleFamilyCrud> editComposeArticleFamily(ArticleFamilyCrud articleFamilyCrud) {
+        return this.assertReferenceNotExist(articleFamilyCrud.getReference(),articleFamilyCrud.getId())
+                .then(this.articlesTreeReactive.findById(articleFamilyCrud.getId()))
+                .flatMap(articlesTreeEntity -> {
+                    this.myCopyProperties(articleFamilyCrud,articlesTreeEntity);
+                    return this.articlesTreeReactive.save(articlesTreeEntity);
+                })
+                .map(ArticlesTreeEntity::toDto);
     }
 
     private Mono<ArticlesTreeEntity> assertReferenceExist(String reference) {
@@ -95,11 +98,29 @@ public class FamilyArticleCrudPersistenceMongodb implements ArticleFamilyCrudPer
                 );
     }
 
+    private Mono<ArticlesTreeEntity> assertIdExist(String id) {
+        return this.articlesTreeReactive.findById(id)
+                .switchIfEmpty(Mono.error(
+                        new NotFoundException("Non existent article-family"))
+                );
+    }
+
     private Mono<Void> assertReferenceNotExist(String reference) {
         return this.articlesTreeReactive.findFirstByReference(reference)
                 .flatMap(articleEntity -> Mono.error(
                         new ConflictException("Article-Family reference already exists : " + reference)
                 ));
+    }
+
+    private Mono<Void> assertReferenceNotExist(String reference, String id) {
+        return this.articlesTreeReactive.findFirstByReference(reference)
+                .flatMap(articleEntity -> {
+                    if(!articleEntity.getId().equals(id))
+                    return Mono.error(
+                            new ConflictException("Article-Family reference already exists : " + reference)
+                    );
+                    else return Mono.empty();
+                });
     }
 
     private Mono<ArticleEntity> assertBarcodeNotExist(String barcode) {
@@ -114,6 +135,24 @@ public class FamilyArticleCrudPersistenceMongodb implements ArticleFamilyCrudPer
                 .contents()
                 .stream()
                 .anyMatch(element -> element.getReference().equals(singleArticleEntity.getReference()));
+    }
+
+    private String[] getNullPropertyNames (Object source) {
+        final BeanWrapper src = new BeanWrapperImpl(source);
+        java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
+
+        Set<String> emptyNames = new HashSet<>();
+        for(java.beans.PropertyDescriptor pd : pds) {
+            Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue == null) emptyNames.add(pd.getName());
+        }
+
+        String[] result = new String[emptyNames.size()];
+        return emptyNames.toArray(result);
+    }
+
+    private void myCopyProperties(Object src, Object target) {
+        BeanUtils.copyProperties(src, target, getNullPropertyNames(src));
     }
 
 }

@@ -14,7 +14,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ArticleFamilyCrud {
+    private String id;
     private String reference;
+    private String barcode;
     private String parentReference;
     private String description;
     private TreeType treeType;
