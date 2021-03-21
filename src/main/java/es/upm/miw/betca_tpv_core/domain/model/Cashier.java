@@ -78,4 +78,9 @@ public class Cashier {
         this.closureDate = LocalDateTime.now();
     }
 
+    public void movement(CashierMovement cashierMovement) {
+        this.assertIsOpened();
+        this.deposit = this.deposit.add(cashierMovement.getDeposit());
+    }
+
 }

@@ -33,6 +33,7 @@ public class DatabaseSeederDev {
     private RgpdDao rgpdDao;
     private CustomerDiscountDao customerDiscountDao;
     private BudgetDao budgetDao;
+    private SalespeopleDao salespeopleDao;
 
     private DatabaseStarting databaseStarting;
 
@@ -40,7 +41,7 @@ public class DatabaseSeederDev {
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
                              TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,
                              CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao,
-                             CustomerDiscountDao customerDiscountDao,BudgetDao budgetDao, DatabaseStarting databaseStarting) {
+                             CustomerDiscountDao customerDiscountDao,BudgetDao budgetDao,SalespeopleDao salespeopleDao, DatabaseStarting databaseStarting) {
 
         this.articleDao = articleDao;
         this.providerDao = providerDao;
@@ -55,6 +56,7 @@ public class DatabaseSeederDev {
         this.rgpdDao = rgpdDao;
         this.customerDiscountDao = customerDiscountDao;
         this.budgetDao=budgetDao;
+        this.salespeopleDao=salespeopleDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -75,6 +77,7 @@ public class DatabaseSeederDev {
         this.rgpdDao.deleteAll();
         this.customerDiscountDao.deleteAll();
         this.budgetDao.deleteAll();
+        this.salespeopleDao.deleteAll();
 
         LogManager.getLogger(this.getClass()).warn("------- Delete All -----------");
         this.databaseStarting.initialize();
@@ -305,6 +308,23 @@ public class DatabaseSeederDev {
         this.budgetDao.saveAll(Arrays.asList(budgets));
         LogManager.getLogger(this.getClass()).warn("        ------- budgets");
 
+        LocalDate salespeopleTime=LocalDate.of(2021,Month.APRIL,1);
+        LocalDate salespeopleTime2=LocalDate.of(2021,Month.APRIL,2);
+        SalespeopleEntity[] salespeople={
+            SalespeopleEntity.builder()
+                .id("1").salesperson("Rosaria")
+                .salesDate(salespeopleTime).numArticle(2).finalValue(new BigDecimal(23)).articleEntityList(List.of(articles[0]))
+                .ticketEntityList(List.of(tickets[0]))
+                .build(),
+            SalespeopleEntity.builder()
+                .id("2").salesperson("Nacho")
+                .salesDate(salespeopleTime2).numArticle(5).finalValue(new BigDecimal(25.3)).articleEntityList(List.of(articles[0]))
+                .ticketEntityList(List.of(tickets[1]))
+                .build(),
+
+        };
+        this.salespeopleDao.saveAll(Arrays.asList(salespeople));
+        LogManager.getLogger(this.getClass()).warn("        ------  salespeople");
     }
 
 
