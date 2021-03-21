@@ -2,13 +2,14 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.dtos;
 
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.BeanUtils;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class TicketBasicDto {
     private String id;
     private String reference;
