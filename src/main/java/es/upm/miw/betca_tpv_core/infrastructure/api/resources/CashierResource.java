@@ -27,7 +27,8 @@ public class CashierResource {
     public static final String STATE = "/state";
     public static final String SEARCH = "/search";
     public static final String UPDATE = "/update";
-    public static final String MOVEMENT = "/movement";
+    public static final String MOVEMENT_IN = "/movement-in";
+    public static final String MOVEMENT_OUT = "/movement-out";
 
     private CashierService cashierService;
 
@@ -71,8 +72,13 @@ public class CashierResource {
         return cashierService.close(cashierClose);
     }
 
-    @PatchMapping(value = LAST + MOVEMENT)
-    public Mono< Cashier > movementCashier(@Valid @RequestBody CashierMovement cashierMovement) {
-        return cashierService.movement(cashierMovement);
+    @PatchMapping(value = LAST + MOVEMENT_IN)
+    public Mono< Cashier > movementCashierIn(@Valid @RequestBody CashierMovement cashierMovement) {
+        return cashierService.movementIn(cashierMovement);
+    }
+
+    @PatchMapping(value = LAST + MOVEMENT_OUT)
+    public Mono< Cashier > movementCashierOut(@Valid @RequestBody CashierMovement cashierMovement) {
+        return cashierService.movementOut(cashierMovement);
     }
 }

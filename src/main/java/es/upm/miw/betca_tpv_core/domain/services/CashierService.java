@@ -85,11 +85,21 @@ public class CashierService {
         return this.cashierPersistence.findAll();
     }
 
-    public Mono<Cashier> movement(@Valid CashierMovement cashierMovement) {
+    public Mono<Cashier> movementIn(@Valid CashierMovement cashierMovement) {
         return this.lastByOpenedAssure(true)
                 .map(lastCashier -> {
-                    lastCashier.movement(cashierMovement);
+                    lastCashier.movementIn(cashierMovement);
                     return lastCashier;
                 })
-                .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier));    }
+                .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier));
+    }
+
+    public Mono<Cashier> movementOut(@Valid CashierMovement cashierMovement) {
+        return this.lastByOpenedAssure(true)
+                .map(lastCashier -> {
+                    lastCashier.movementOut(cashierMovement);
+                    return lastCashier;
+                })
+                .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier));
+    }
 }
