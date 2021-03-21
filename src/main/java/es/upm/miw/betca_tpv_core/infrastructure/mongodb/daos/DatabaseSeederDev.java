@@ -33,6 +33,7 @@ public class DatabaseSeederDev {
     private RgpdDao rgpdDao;
     private CustomerDiscountDao customerDiscountDao;
     private BudgetDao budgetDao;
+    private InvoiceDao invoiceDao;
 
     private DatabaseStarting databaseStarting;
 
@@ -40,7 +41,7 @@ public class DatabaseSeederDev {
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
                              TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,
                              CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao,
-                             CustomerDiscountDao customerDiscountDao,BudgetDao budgetDao, DatabaseStarting databaseStarting) {
+                             CustomerDiscountDao customerDiscountDao,BudgetDao budgetDao, InvoiceDao invoiceDao, DatabaseStarting databaseStarting) {
 
         this.articleDao = articleDao;
         this.providerDao = providerDao;
@@ -55,6 +56,7 @@ public class DatabaseSeederDev {
         this.rgpdDao = rgpdDao;
         this.customerDiscountDao = customerDiscountDao;
         this.budgetDao=budgetDao;
+        this.invoiceDao = invoiceDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -305,6 +307,12 @@ public class DatabaseSeederDev {
         this.budgetDao.saveAll(Arrays.asList(budgets));
         LogManager.getLogger(this.getClass()).warn("        ------- budgets");
 
+        InvoiceEntity[] invoices = {
+                InvoiceEntity.builder().id("invc_ID_1A2B3C4D5E").number("invc_N_1A2B3C4D5E").ticketEntity(tickets[0]).creationDate(LocalDateTime.now())
+                        .baseTax(new BigDecimal("16.53")).taxValue(new BigDecimal("3.47")).build()
+        };
+        this.invoiceDao.saveAll(Arrays.asList(invoices));
+        LogManager.getLogger(this.getClass()).warn("        ------- invoices");
     }
 
 
