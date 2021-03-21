@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_core.domain.persistence;
 import es.upm.miw.betca_tpv_core.domain.model.CustomerDiscount;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 public interface CustomerDiscountPersistence {
@@ -11,4 +12,6 @@ public interface CustomerDiscountPersistence {
 
     Flux<CustomerDiscount> findByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe(
             String note, Double discount, Double minimumPurchase, String user);
+
+    Mono< CustomerDiscount > create (CustomerDiscount customerDiscount);
 }
