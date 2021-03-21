@@ -3,12 +3,14 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 import es.upm.miw.betca_tpv_core.domain.model.StockAlarm;
 import es.upm.miw.betca_tpv_core.domain.model.StockAlarmLine;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.StockAlarmsDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import static com.mongodb.internal.connection.tlschannel.util.Util.assertTrue;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.StockAlarmResource.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -122,6 +124,60 @@ class StockAlarmResourceIT {
                 .uri(STOCK_ALARMS + NAME_ID, nameFromSeeder)
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testFindAlarmsWarning() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(STOCK_ALARMS + ALARMS)
+                        .queryParam("alarms", "WARNING")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(StockAlarmsDto.class)
+                .value(Assertions::assertNotNull)
+                .value(stockAlarmsDto -> {
+                    assertTrue(stockAlarmsDto.getWarningAlarms().size() > 0);
+                    assertTrue(stockAlarmsDto.getCriticalAlarms().size() == 0);
+                });
+    }
+
+    @Test
+    void testFindAlarmsCritical() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(STOCK_ALARMS + ALARMS)
+                        .queryParam("alarms", "CRITICAL")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(StockAlarmsDto.class)
+                .value(Assertions::assertNotNull)
+                .value(stockAlarmsDto -> {
+                    assertTrue(stockAlarmsDto.getWarningAlarms().size() == 0);
+                    assertTrue(stockAlarmsDto.getCriticalAlarms().size() > 0);
+                });
+    }
+
+    @Test
+    void testFindAlarmsWarningAndCritical() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(STOCK_ALARMS + ALARMS)
+                        .queryParam("alarms", "CRITICAL,WARNING")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(StockAlarmsDto.class)
+                .value(Assertions::assertNotNull)
+                .value(stockAlarmsDto -> {
+                    assertTrue(stockAlarmsDto.getWarningAlarms().size() > 0);
+                    assertTrue(stockAlarmsDto.getCriticalAlarms().size() > 0);
+                });
     }
 
 }

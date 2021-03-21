@@ -32,6 +32,8 @@ public class DatabaseSeederDev {
     private CreditDao creditDao;
     private RgpdDao rgpdDao;
     private CustomerDiscountDao customerDiscountDao;
+    private BudgetDao budgetDao;
+    private SalespeopleDao salespeopleDao;
 
     private DatabaseStarting databaseStarting;
 
@@ -39,7 +41,7 @@ public class DatabaseSeederDev {
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
                              TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,
                              CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao,
-                             CustomerDiscountDao customerDiscountDao, DatabaseStarting databaseStarting) {
+                             CustomerDiscountDao customerDiscountDao,BudgetDao budgetDao,SalespeopleDao salespeopleDao, DatabaseStarting databaseStarting) {
 
         this.articleDao = articleDao;
         this.providerDao = providerDao;
@@ -53,6 +55,8 @@ public class DatabaseSeederDev {
         this.stockAlarmDao = stockAlarmDao;
         this.rgpdDao = rgpdDao;
         this.customerDiscountDao = customerDiscountDao;
+        this.budgetDao=budgetDao;
+        this.salespeopleDao=salespeopleDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -72,6 +76,8 @@ public class DatabaseSeederDev {
         this.creditDao.deleteAll();
         this.rgpdDao.deleteAll();
         this.customerDiscountDao.deleteAll();
+        this.budgetDao.deleteAll();
+        this.salespeopleDao.deleteAll();
 
         LogManager.getLogger(this.getClass()).warn("------- Delete All -----------");
         this.databaseStarting.initialize();
@@ -222,16 +228,26 @@ public class DatabaseSeederDev {
         this.offerDao.saveAll(List.of(offers));
         LogManager.getLogger(this.getClass()).warn("        ------- offers");
 
+        ArticleEntity article1 = ArticleEntity.builder().barcode("stockAlamt00001").reference("zz-falda-T2").description("Zarzuela - Falda T2")
+                .retailPrice(new BigDecimal("20")).stock(10).providerEntity(providers[0])
+                .registrationDate(LocalDateTime.now()).discontinued(false).build();
 
-        StockAlarmLineEntity stockAlarmLineEntity1 = StockAlarmLineEntity.builder().articleEntity(articles[1]).build();
-        StockAlarmLineEntity stockAlarmLineEntity2 = StockAlarmLineEntity.builder().articleEntity(articles[2]).warning(1).critical(2).build();
+        ArticleEntity article2= ArticleEntity.builder().barcode("stockAlamt00002").reference("zz-falda-T2").description("Zarzuela - Falda T2")
+                .retailPrice(new BigDecimal("20")).stock(4).providerEntity(providers[0])
+                .registrationDate(LocalDateTime.now()).discontinued(false).build();
+
+        this.articleDao.save(article1);
+        this.articleDao.save(article2);
+
+        StockAlarmLineEntity stockAlarmLineEntity1 = StockAlarmLineEntity.builder().articleEntity(article1).build();
+        StockAlarmLineEntity stockAlarmLineEntity2 = StockAlarmLineEntity.builder().articleEntity(article2).warning(1).critical(2).build();
         StockAlarmLineEntity stockAlarmLineEntity3 = StockAlarmLineEntity.builder().articleEntity(articles[3]).warning(2).build();
         StockAlarmLineEntity stockAlarmLineEntity4 = StockAlarmLineEntity.builder().articleEntity(articles[4]).critical(3).build();
         StockAlarmLineEntity stockAlarmLineEntity5 = StockAlarmLineEntity.builder().articleEntity(articles[5]).warning(5).critical(3).build();
 
         StockAlarmEntity[] stocksAlarms = {
-                StockAlarmEntity.builder().name("alarm-pack-1").warning(5).critical(5).alarmLine(stockAlarmLineEntity1).alarmLine(stockAlarmLineEntity2).build(),
-                StockAlarmEntity.builder().name("alarm-pack-2").warning(99).critical(99).alarmLine(stockAlarmLineEntity1).alarmLine(stockAlarmLineEntity4).build(),
+                StockAlarmEntity.builder().name("alarm-pack-1").warning(11).critical(5).alarmLine(stockAlarmLineEntity1).alarmLine(stockAlarmLineEntity2).build(),
+                StockAlarmEntity.builder().name("alarm-pack-2").warning(20).critical(11).alarmLine(stockAlarmLineEntity1).alarmLine(stockAlarmLineEntity4).build(),
                 StockAlarmEntity.builder().name("alarm-pac-2").warning(55).critical(55).alarmLine(stockAlarmLineEntity3).alarmLine(stockAlarmLineEntity5).build(),
                 StockAlarmEntity.builder().name("alarm-delete").warning(55).critical(55).alarmLine(stockAlarmLineEntity3).alarmLine(stockAlarmLineEntity5).build()
 
@@ -274,15 +290,43 @@ public class DatabaseSeederDev {
         LogManager.getLogger(this.getClass()).warn("        ------- rgpds");
 
         CustomerDiscountEntity[] customersDiscounts = {
-                CustomerDiscountEntity.builder().id("1").note("discount1").registrationDate(LocalDateTime.now()).discount(30.0).minimumPurchase(50.0).user("66666666").build(),
-                CustomerDiscountEntity.builder().id("2").note("discount2").registrationDate(LocalDateTime.now()).discount(10.0).minimumPurchase(40.0).user("66666666").build(),
-                CustomerDiscountEntity.builder().id("3").note("discount3").registrationDate(LocalDateTime.now()).discount(25.5).minimumPurchase(35.0).user("66666666").build(),
-                CustomerDiscountEntity.builder().id("4").note("discount4").registrationDate(LocalDateTime.now()).discount(80.0).minimumPurchase(100.0).user("66666666").build(),
+                CustomerDiscountEntity.builder().id("1").note("discount1").registrationDate(LocalDateTime.now()).discount(30.0).minimumPurchase(50.0).user("66").build(),
+                CustomerDiscountEntity.builder().id("2").note("discount2").registrationDate(LocalDateTime.now()).discount(10.0).minimumPurchase(40.0).user("77").build(),
+                CustomerDiscountEntity.builder().id("3").note("discount3").registrationDate(LocalDateTime.now()).discount(25.5).minimumPurchase(35.0).user("88").build(),
+                CustomerDiscountEntity.builder().id("4").note("discount4").registrationDate(LocalDateTime.now()).discount(80.0).minimumPurchase(100.0).user("99").build(),
         };
         this.customerDiscountDao.saveAll(List.of(customersDiscounts));
         LogManager.getLogger(this.getClass()).warn("        ------- customer discount");
 
+        BudgetEntity[] budgets = {
+                new BudgetEntity("1", date, List.of(shoppingList[0], shoppingList[1])),
+                new BudgetEntity("2", date, List.of(shoppingList[2], shoppingList[3])),
+                new BudgetEntity("3", date, List.of(shoppingList[4], shoppingList[5])),
+
+
+        };
+        this.budgetDao.saveAll(Arrays.asList(budgets));
+        LogManager.getLogger(this.getClass()).warn("        ------- budgets");
+
+        LocalDate salespeopleTime=LocalDate.of(2021,Month.APRIL,1);
+        LocalDate salespeopleTime2=LocalDate.of(2021,Month.APRIL,2);
+        SalespeopleEntity[] salespeople={
+            SalespeopleEntity.builder()
+                .id("1").salesperson("Rosaria")
+                .salesDate(salespeopleTime).numArticle(2).finalValue(new BigDecimal(23)).articleEntityList(List.of(articles[0]))
+                .ticketEntityList(List.of(tickets[0]))
+                .build(),
+            SalespeopleEntity.builder()
+                .id("2").salesperson("Nacho")
+                .salesDate(salespeopleTime2).numArticle(5).finalValue(new BigDecimal(25.3)).articleEntityList(List.of(articles[0]))
+                .ticketEntityList(List.of(tickets[1]))
+                .build(),
+
+        };
+        this.salespeopleDao.saveAll(Arrays.asList(salespeople));
+        LogManager.getLogger(this.getClass()).warn("        ------  salespeople");
     }
+
 
 
 }

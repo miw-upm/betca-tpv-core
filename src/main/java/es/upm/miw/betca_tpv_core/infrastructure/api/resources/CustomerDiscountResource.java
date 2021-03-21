@@ -4,10 +4,11 @@ import es.upm.miw.betca_tpv_core.domain.model.CustomerDiscount;
 import es.upm.miw.betca_tpv_core.domain.services.CustomerDiscountService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import javax.validation.Valid;
 
 @Rest
 @RequestMapping(CustomerDiscountResource.CUSTOMERS_DISCOUNTS)
@@ -22,18 +23,16 @@ public class CustomerDiscountResource {
         this.customerDiscountService = customerDiscountService;
     }
 
-/*    @GetMapping(SEARCH)
-    public Flux< CustomerDiscount > findByUser(
-            @RequestParam(required = false) String user
-    ) {
-        return this.customerDiscountService.findByUser(user);
-    }*/
-
     @GetMapping(SEARCH)
     public Flux< CustomerDiscount > findByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe(
             @RequestParam(required = false) String note, @RequestParam(required = false) Double discount,
             @RequestParam(required = false) Double minimumPurchase, @RequestParam(required = false) String user
     ) {
         return this.customerDiscountService.findByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe(note, discount, minimumPurchase, user);
+    }
+
+    @PostMapping(produces = {"application/json"})
+    public Mono<CustomerDiscount> create(@Valid @RequestBody CustomerDiscount customerDiscount){
+        return this.customerDiscountService.create(customerDiscount);
     }
 }

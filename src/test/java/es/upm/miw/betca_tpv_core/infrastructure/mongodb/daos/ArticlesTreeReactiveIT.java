@@ -32,9 +32,9 @@ class ArticlesTreeReactiveIT {
         StepVerifier
                 .create(this.articlesTreeReactive.findByReference("zz-falda-T2"))
                 .expectNextMatches(articleLeaf -> {
-                    assertEquals(articleLeaf.getReference(), "zz-falda-T2");
-                    assertEquals(articleLeaf.getDescription(), "Zarzuela - Falda T2");
-                    assertEquals(articleLeaf.getTreeType(), TreeType.ARTICLE);
+                    assertEquals("zz-falda-T2", articleLeaf.getReference());
+                    assertEquals("Zarzuela - Falda T2", articleLeaf.getDescription());
+                    assertEquals(TreeType.ARTICLE, articleLeaf.getTreeType());
 
                     return true;
                 })

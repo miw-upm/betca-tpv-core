@@ -7,7 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -15,11 +17,9 @@ import java.time.LocalDateTime;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CustomerDiscount {
-    @NotBlank
-    private String id;
     private String note;
-    private LocalDateTime registrationDate;
-    @NotBlank
+    private String registrationDate;
+    @NotNull
     private Double discount;
     private Double minimumPurchase;
     @NotBlank
