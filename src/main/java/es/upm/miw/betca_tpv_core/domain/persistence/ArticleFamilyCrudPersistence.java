@@ -8,8 +8,8 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface ArticleFamilyCrudPersistence {
     Mono<ArticleFamilyCrud> readByReference(String reference);
-    Mono<Void> deleteComposeArticleFamily(String reference);
+    Mono<Void> delete(String id);
     Mono<ArticleFamilyCrud> createComposeArticleFamily(ArticleFamilyCrud articleFamilyCrud);
     Mono<ArticleFamilyCrud> addArticleToArticleFamily(ArticleBarcodeWithParentReferenceDto articleBarcodeWithParentReferenceDto);
-    Mono<Void> deleteSingleArticle(ArticleBarcodeWithParentReferenceDto articleBarcodeWithParentReferenceDto);
+    Mono<ArticleFamilyCrud> editComposeArticleFamily(ArticleFamilyCrud articleFamilyCrud);
 }

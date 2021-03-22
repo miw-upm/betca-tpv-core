@@ -34,6 +34,7 @@ public class DatabaseSeederDev {
     private CustomerDiscountDao customerDiscountDao;
     private BudgetDao budgetDao;
     private MessengerDao messengerDao;
+    private InvoiceDao invoiceDao;
     private SalespeopleDao salespeopleDao;
     private DatabaseStarting databaseStarting;
 
@@ -42,7 +43,8 @@ public class DatabaseSeederDev {
                              TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,
                              CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao,
                              CustomerDiscountDao customerDiscountDao, BudgetDao budgetDao, MessengerDao messengerDao,
-                             SalespeopleDao salespeopleDao, DatabaseStarting databaseStarting) {
+                             SalespeopleDao salespeopleDao, InvoiceDao invoiceDao, DatabaseStarting databaseStarting) {
+
         this.articleDao = articleDao;
         this.providerDao = providerDao;
         this.articlesTreeDao = articlesTreeDao;
@@ -57,6 +59,7 @@ public class DatabaseSeederDev {
         this.customerDiscountDao = customerDiscountDao;
         this.budgetDao=budgetDao;
         this.messengerDao=messengerDao;
+        this.invoiceDao = invoiceDao;
         this.salespeopleDao=salespeopleDao;
 
         this.deleteAllAndInitializeAndSeedDataBase();
@@ -319,6 +322,13 @@ public class DatabaseSeederDev {
         };
         this.messengerDao.saveAll(List.of(messageEntities));
         LogManager.getLogger(this.getClass()).warn("        ------- messages");
+
+        InvoiceEntity[] invoices = {
+                InvoiceEntity.builder().id("invc_ID_1A2B3C4D5E").number("invc_N_1A2B3C4D5E").ticketEntity(tickets[0]).creationDate(LocalDateTime.now())
+                        .baseTax(new BigDecimal("16.53")).taxValue(new BigDecimal("3.47")).build()
+        };
+        this.invoiceDao.saveAll(Arrays.asList(invoices));
+        LogManager.getLogger(this.getClass()).warn("        ------- invoices");
 
         LocalDate salespeopleTime=LocalDate.of(2021,Month.APRIL,1);
         LocalDate salespeopleTime2=LocalDate.of(2021,Month.APRIL,2);
