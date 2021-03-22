@@ -66,7 +66,7 @@ class MessengerPersistenceMongodbIT {
 
                     return true;
                 })
-                .expectComplete()
+                .thenCancel()
                 .verify();
     }
 
@@ -87,7 +87,7 @@ class MessengerPersistenceMongodbIT {
 
                     return true;
                 })
-                .expectComplete()
+                .thenCancel()
                 .verify();
     }
 
