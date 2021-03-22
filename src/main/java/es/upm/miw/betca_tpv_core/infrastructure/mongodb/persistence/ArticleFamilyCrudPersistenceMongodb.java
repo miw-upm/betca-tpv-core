@@ -23,13 +23,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Repository
-public class FamilyArticleCrudPersistenceMongodb implements ArticleFamilyCrudPersistence {
+public class ArticleFamilyCrudPersistenceMongodb implements ArticleFamilyCrudPersistence {
     ArticlesTreeReactive articlesTreeReactive;
     ArticleReactive articleReactive;
     ArticlesTreeDao articlesTreeDao;
 
     @Autowired
-    public FamilyArticleCrudPersistenceMongodb(ArticlesTreeReactive articlesTreeReactive, ArticleReactive articleReactive, ArticlesTreeDao articlesTreeDao) {
+    public ArticleFamilyCrudPersistenceMongodb(ArticlesTreeReactive articlesTreeReactive, ArticleReactive articleReactive, ArticlesTreeDao articlesTreeDao) {
         this.articlesTreeReactive = articlesTreeReactive;
         this.articleReactive = articleReactive;
         this.articlesTreeDao = articlesTreeDao;
@@ -67,7 +67,7 @@ public class FamilyArticleCrudPersistenceMongodb implements ArticleFamilyCrudPer
         return this.assertReferenceExist(articleBarcodeWithParentReferenceDto.getParentReference())
                 .flatMap(compositeArticle -> this.assertBarcodeNotExist(articleBarcodeWithParentReferenceDto.getBarcode())
                         .flatMap(articleEntity -> {
-                            if(this.isSingleInComposite(compositeArticle, new SingleArticleEntity(articleEntity))){
+                            if(Boolean.TRUE.equals(this.isSingleInComposite(compositeArticle, new SingleArticleEntity(articleEntity)))){
                                 return Mono.error(new NotFoundException("Already existent article with barcode: " + articleEntity.getBarcode() + " in "+ compositeArticle.getReference()));
                             }
                             SingleArticleEntity singleArticleEntity = new SingleArticleEntity(articleEntity);
@@ -116,9 +116,9 @@ public class FamilyArticleCrudPersistenceMongodb implements ArticleFamilyCrudPer
         return this.articlesTreeReactive.findFirstByReference(reference)
                 .flatMap(articleEntity -> {
                     if(!articleEntity.getId().equals(id))
-                    return Mono.error(
+                        return Mono.error(
                             new ConflictException("Article-Family reference already exists : " + reference)
-                    );
+                        );
                     else return Mono.empty();
                 });
     }
