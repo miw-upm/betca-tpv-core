@@ -33,17 +33,18 @@ public class DatabaseSeederDev {
     private RgpdDao rgpdDao;
     private CustomerDiscountDao customerDiscountDao;
     private BudgetDao budgetDao;
+    private MessengerDao messengerDao;
     private InvoiceDao invoiceDao;
     private SalespeopleDao salespeopleDao;
-
     private DatabaseStarting databaseStarting;
 
     @Autowired
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
                              TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,
                              CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao,
-                             CustomerDiscountDao customerDiscountDao,BudgetDao budgetDao, InvoiceDao invoiceDao, SalespeopleDao salespeopleDao,
-                             DatabaseStarting databaseStarting) {
+                             CustomerDiscountDao customerDiscountDao, BudgetDao budgetDao, MessengerDao messengerDao,
+                             SalespeopleDao salespeopleDao, InvoiceDao invoiceDao, DatabaseStarting databaseStarting) {
+
         this.articleDao = articleDao;
         this.providerDao = providerDao;
         this.articlesTreeDao = articlesTreeDao;
@@ -57,8 +58,10 @@ public class DatabaseSeederDev {
         this.rgpdDao = rgpdDao;
         this.customerDiscountDao = customerDiscountDao;
         this.budgetDao=budgetDao;
+        this.messengerDao=messengerDao;
         this.invoiceDao = invoiceDao;
         this.salespeopleDao=salespeopleDao;
+
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -79,6 +82,7 @@ public class DatabaseSeederDev {
         this.rgpdDao.deleteAll();
         this.customerDiscountDao.deleteAll();
         this.budgetDao.deleteAll();
+        this.messengerDao.deleteAll();
         this.salespeopleDao.deleteAll();
 
         LogManager.getLogger(this.getClass()).warn("------- Delete All -----------");
@@ -310,6 +314,15 @@ public class DatabaseSeederDev {
         this.budgetDao.saveAll(Arrays.asList(budgets));
         LogManager.getLogger(this.getClass()).warn("        ------- budgets");
 
+        MessageEntity[] messageEntities = {
+                MessageEntity.builder().id("1").subject("Message 1").text("Message text 1").userFrom("6").userTo("666666001").isRead(Boolean.TRUE).creationDate(LocalDate.now()).build(),
+                MessageEntity.builder().id("2").subject("Message 2").text("Message text 2").userFrom("666666001").userTo("6").isRead(Boolean.TRUE).creationDate(LocalDate.now()).build(),
+                MessageEntity.builder().id("3").subject("Message 3").text("Message text 3").userFrom("666666001").userTo("6").isRead(Boolean.FALSE).creationDate(LocalDate.now()).build(),
+                MessageEntity.builder().id("4").subject("Message 4").text("Message text 4").userFrom("6").userTo("666666001").isRead(Boolean.FALSE).creationDate(LocalDate.now()).build()
+        };
+        this.messengerDao.saveAll(List.of(messageEntities));
+        LogManager.getLogger(this.getClass()).warn("        ------- messages");
+
         InvoiceEntity[] invoices = {
                 InvoiceEntity.builder().id("invc_ID_1A2B3C4D5E").number("invc_N_1A2B3C4D5E").ticketEntity(tickets[0]).creationDate(LocalDateTime.now())
                         .baseTax(new BigDecimal("16.53")).taxValue(new BigDecimal("3.47")).build()
@@ -334,9 +347,8 @@ public class DatabaseSeederDev {
         };
         this.salespeopleDao.saveAll(Arrays.asList(salespeople));
         LogManager.getLogger(this.getClass()).warn("        ------  salespeople");
+
     }
-
-
 
 }
 

@@ -45,4 +45,58 @@ class MessengerResourceIT {
         assertNotNull(createdMessage);
     }
 
+    @Test
+    void testGetSentMessages() {
+        this.restClientTestService.loginManager(webTestClient)
+                .get()
+                .uri(MessengerResource.MESSENGER + MessengerResource.SENT_MESSAGES)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Message.class)
+                .value(messages -> assertTrue(
+                        messages.stream()
+                                .anyMatch(message -> message.getSubject().equals("Message 2"))
+                        )
+                );
+    }
+
+    @Test
+    void testGetReceivedMessages() {
+        this.restClientTestService.loginManager(webTestClient)
+                .get()
+                .uri(MessengerResource.MESSENGER + MessengerResource.RECEIVED_MESSAGES)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Message.class)
+                .value(messages -> assertTrue(
+                        messages.stream()
+                                .anyMatch(message -> message.getSubject().equals("Message 4"))
+                        )
+                );
+    }
+
+    @Test
+    void testCheckNewMessages() {
+        Message newMessage = new Message("Test subject", "Text message", "6", "666666001",
+                false, LocalDate.of(2021, 9, 15));
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(MessengerResource.MESSENGER)
+                .body(Mono.just(newMessage), Message.class)
+                .exchange()
+                .expectStatus().isOk();
+
+        this.restClientTestService.loginManager(webTestClient)
+                .get()
+                .uri(MessengerResource.MESSENGER + MessengerResource.CHECK_NEW_MESSAGES)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Message.class)
+                .value(messages -> assertTrue(
+                        messages.stream()
+                                .anyMatch(message -> message.getSubject().equals("Test subject"))
+                        )
+                );
+    }
 }

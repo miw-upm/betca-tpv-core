@@ -23,7 +23,7 @@ public class MessageEntity {
     private String text;
     private String userFrom;
     private String userTo;
-    private boolean isRead;
+    private Boolean isRead;
     private LocalDate creationDate;
 
     public MessageEntity(Message message) {
