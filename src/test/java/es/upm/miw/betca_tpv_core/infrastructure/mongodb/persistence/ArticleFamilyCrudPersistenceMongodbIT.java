@@ -19,13 +19,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class ArticleFamilyCrudPersistenceMongodbIT {
 
     @Autowired
-    private FamilyArticleCrudPersistenceMongodb familyArticleCrudPersistenceMongodb;
+    private ArticleFamilyCrudPersistenceMongodb articleFamilyCrudPersistenceMongodb;
 
     @Test
     void testWhenAddArticleToParentReferenceThenReturnParentWithNewArticle() {
         AtomicReference<String> idSingleArticle = new AtomicReference<>("");
         StepVerifier
-                .create(this.familyArticleCrudPersistenceMongodb.addArticleToArticleFamily(ArticleBarcodeWithParentReferenceDto.builder().barcode("8400000000017").parentReference("Zz Polo").build()))
+                .create(this.articleFamilyCrudPersistenceMongodb.addArticleToArticleFamily(ArticleBarcodeWithParentReferenceDto.builder().barcode("8400000000017").parentReference("Zz Polo").build()))
                 .expectNextMatches(articleFamilyCrud -> {
                     assertEquals("Zz Polo", articleFamilyCrud.getReference());
                     assertNotNull(getArticleByBarcode(articleFamilyCrud, "8400000000017"));
@@ -36,7 +36,7 @@ class ArticleFamilyCrudPersistenceMongodbIT {
                 .verify();
 
         StepVerifier
-                .create(this.familyArticleCrudPersistenceMongodb.delete(idSingleArticle.get()))
+                .create(this.articleFamilyCrudPersistenceMongodb.delete(idSingleArticle.get()))
                 .expectComplete()
                 .verify();
     }
@@ -47,7 +47,7 @@ class ArticleFamilyCrudPersistenceMongodbIT {
         AtomicReference<String> idComposeArticle = new AtomicReference<>("");
 
         StepVerifier
-                .create(this.familyArticleCrudPersistenceMongodb.createComposeArticleFamily(ArticleFamilyCrud.builder().reference("newCompose").treeType(TreeType.SIZES).parentReference("Zz").build()))
+                .create(this.articleFamilyCrudPersistenceMongodb.createComposeArticleFamily(ArticleFamilyCrud.builder().reference("newCompose").treeType(TreeType.SIZES).parentReference("Zz").build()))
                 .expectNextMatches(articleFamilyCrud -> {
                     assertEquals("Zz", articleFamilyCrud.getReference());
                     assertNotNull(getArticleByReference(articleFamilyCrud, "newCompose"));
@@ -58,7 +58,7 @@ class ArticleFamilyCrudPersistenceMongodbIT {
                 .verify();
 
         StepVerifier
-                .create(this.familyArticleCrudPersistenceMongodb.editComposeArticleFamily(ArticleFamilyCrud.builder().id(idComposeArticle.get()).description("New Description").build()))
+                .create(this.articleFamilyCrudPersistenceMongodb.editComposeArticleFamily(ArticleFamilyCrud.builder().id(idComposeArticle.get()).description("New Description").build()))
                 .expectNextMatches(articleFamilyCrud -> {
                     assertEquals("newCompose", articleFamilyCrud.getReference());
                     assertEquals("New Description", articleFamilyCrud.getDescription());
@@ -68,7 +68,7 @@ class ArticleFamilyCrudPersistenceMongodbIT {
                 .verify();
 
         StepVerifier
-                .create(this.familyArticleCrudPersistenceMongodb.delete(idComposeArticle.get()))
+                .create(this.articleFamilyCrudPersistenceMongodb.delete(idComposeArticle.get()))
                 .expectComplete()
                 .verify();
     }
@@ -76,7 +76,7 @@ class ArticleFamilyCrudPersistenceMongodbIT {
     @Test
     void readSingleArticleByReference() {
         StepVerifier
-                .create(this.familyArticleCrudPersistenceMongodb.readByReference("zz-falda-T2"))
+                .create(this.articleFamilyCrudPersistenceMongodb.readByReference("zz-falda-T2"))
                 .expectNextMatches(articleFamilyDto -> {
                     assertEquals("zz-falda-T2", articleFamilyDto.getReference());
                     assertEquals("Zarzuela - Falda T2", articleFamilyDto.getDescription());
@@ -90,7 +90,7 @@ class ArticleFamilyCrudPersistenceMongodbIT {
     @Test
     void readComposeArticleByReference() {
         StepVerifier
-                .create(this.familyArticleCrudPersistenceMongodb.readByReference("Zz Falda"))
+                .create(this.articleFamilyCrudPersistenceMongodb.readByReference("Zz Falda"))
                 .expectNextMatches(articleFamilyDto -> {
                     assertEquals(2, articleFamilyDto.getArticleFamilyCrudList().size());
                     assertEquals("zz-falda-T2", articleFamilyDto.getArticleFamilyCrudList().get(0).getReference());
@@ -104,7 +104,7 @@ class ArticleFamilyCrudPersistenceMongodbIT {
     @Test
     void testGivenNewCompositeArticleFamilyWithExistentReferenceWhenAddToParentReferenceThenReturnConflictMonoError() {
         StepVerifier
-                .create(this.familyArticleCrudPersistenceMongodb.createComposeArticleFamily(ArticleFamilyCrud.builder().reference("Zz").treeType(TreeType.SIZES).parentReference("Zz").build()))
+                .create(this.articleFamilyCrudPersistenceMongodb.createComposeArticleFamily(ArticleFamilyCrud.builder().reference("Zz").treeType(TreeType.SIZES).parentReference("Zz").build()))
                 .expectErrorMatches(throwable -> throwable instanceof ConflictException &&
                         throwable.getMessage().equals("Conflict Exception. Article-Family reference already exists : Zz"))
                 .verify();
@@ -113,7 +113,7 @@ class ArticleFamilyCrudPersistenceMongodbIT {
     @Test
     void testGivenNewCompositeArticleFamilyWhenAddToNotExistentParentReferenceThenReturnNotFoundMonoError() {
         StepVerifier
-                .create(this.familyArticleCrudPersistenceMongodb.createComposeArticleFamily(ArticleFamilyCrud.builder().reference("reference").treeType(TreeType.SIZES).parentReference("notExistent").build()))
+                .create(this.articleFamilyCrudPersistenceMongodb.createComposeArticleFamily(ArticleFamilyCrud.builder().reference("reference").treeType(TreeType.SIZES).parentReference("notExistent").build()))
                 .expectErrorMatches(throwable -> throwable instanceof NotFoundException &&
                         throwable.getMessage().equals("Not Found Exception. Non existent article-family with reference: notExistent"))
                 .verify();
