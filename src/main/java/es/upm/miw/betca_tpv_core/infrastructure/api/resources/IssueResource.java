@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_core.domain.model.Issue;
 import es.upm.miw.betca_tpv_core.domain.services.IssueService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.IssueBasicDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.IssueDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -27,8 +28,9 @@ public class IssueResource {
     }
 
     @GetMapping(ISSUE_NUMBER)
-    public Mono<Issue> read(@PathVariable Integer number) {
-        return this.issueService.read(number);
+    public Mono<IssueDto> read(@PathVariable Integer number) {
+        return this.issueService.read(number)
+                .map(IssueDto::new);
     }
 
     @GetMapping(SEARCH)

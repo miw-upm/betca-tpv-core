@@ -21,12 +21,10 @@ public class Issue {
     @NotBlank
     private String title;
     private String body;
-    @JsonProperty("collection")
     private IssueLabel[] labels;
     private String state;
     private IssueAssignee assignee;
     private IssueMilestone milestone;
-    //@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created_at;
 
     public static Issue ofTitleBodyLabels(Issue issue) {

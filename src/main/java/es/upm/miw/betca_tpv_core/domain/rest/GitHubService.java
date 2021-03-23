@@ -8,7 +8,7 @@ public interface GitHubService {
 
     Mono<Issue> create(Issue issue);
 
-    Mono<Issue> read(Integer id);
+    Mono<Issue> read(Integer number);
 
     Flux<Issue> search(String labels, String state, String assignee);
 

@@ -28,8 +28,8 @@ public class IssueService {
                 );
     }
 
-    public Mono<Issue> read(Integer id) {
-        return null; // TODO implement
+    public Mono<Issue> read(Integer number) {
+        return this.gitHubService.read(number);
     }
 
     public Mono<Issue> create(Issue issue) {
