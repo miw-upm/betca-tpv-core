@@ -72,7 +72,7 @@ class InvoiceServiceIT {
     @Test
     void testFindByPhoneNullAndTicketIdNotNullSafe(){
         String phoneUser = null; //"66";
-        String ticketId = "5gfaw03b7513a164chop77ac"; //
+        String ticketId = "5fa45f6f3a61083cb241289c"; //
 
         StepVerifier
                 .create(this.invoiceService.findByPhoneAndTicketIdNullSafe(phoneUser, ticketId))

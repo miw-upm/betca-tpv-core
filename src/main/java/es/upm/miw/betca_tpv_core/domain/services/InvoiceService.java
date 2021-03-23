@@ -39,14 +39,14 @@ public class InvoiceService {
     }
 
 
-    protected Mono<Invoice> create(String idTicket) {
+    protected Mono<Invoice> create(String ticketRef) {
         Invoice invoice = Invoice.builder()
                 .number(UUIDBase64.URL.encode())
                 .creationDate(LocalDateTime.now())
                 .build();
 
-        return this.ticketPersistence.findByReference(idTicket)
-                .switchIfEmpty(Mono.error(new NotFoundException("Ticket: " + idTicket)))
+        return this.ticketPersistence.findByReference(ticketRef)
+                .switchIfEmpty(Mono.error(new NotFoundException("Ticket Ref: " + ticketRef)))
                 .doOnNext(invoice::setTicket)
                 .flatMap(ticket -> this.invoicePersistence.create(invoice));
     }
@@ -62,8 +62,8 @@ public class InvoiceService {
                 .map(new PdfInvoiceBuilder()::generateInvoice);
     }
 
-    public Mono<byte[]> createInvoiceAndPrint(String idTicket) {
-        return create(idTicket)
+    public Mono<byte[]> createInvoiceAndPrint(String ticketRef) {
+        return create(ticketRef)
                 .flatMap(invoice -> print(invoice.getId()));
     }
 
