@@ -65,8 +65,8 @@ class InvoiceResourceIT {
 
     @Test
     void testfindByPhoneAndTicketIdNullSafe() {
-        String ticketId = "5gfaw03b7513a164chop77ac";
-        String userPhone = "666666000";
+        String ticketId = "5fa45f6f3a61083cb241289c";
+        String userPhone = "666666004";
 
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()

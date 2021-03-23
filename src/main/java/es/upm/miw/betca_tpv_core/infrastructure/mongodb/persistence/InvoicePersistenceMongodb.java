@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
+import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Invoice;
 import es.upm.miw.betca_tpv_core.domain.persistence.InvoicePersistence;
@@ -8,6 +9,7 @@ import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.TicketReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.InvoiceEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ShoppingEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.TicketEntity;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
@@ -46,7 +48,7 @@ public class InvoicePersistenceMongodb implements InvoicePersistence {
         String ticketRef = invoice.getTicket() != null ? invoice.getTicket().getReference() : null;
         return this.ticketReactive.findByReference(ticketRef)
                 .switchIfEmpty(Mono.error(new NotFoundException("Ticket Ref: " + ticketRef)))
-                .doOnNext(invoiceEntity::addTicket)
+                .doOnNext(invoiceEntity::setTicketEntity)
                 .flatMap(ticketEntity -> totalBaseTax(ticketEntity)
                         .map(totalBaseTax -> {
                             invoiceEntity.setBaseTax(totalBaseTax);
@@ -70,7 +72,13 @@ public class InvoicePersistenceMongodb implements InvoicePersistence {
 
     @Override
     public Flux<Invoice> findByPhoneAndTicketIdNullSafe(String phoneUser, String ticketId) {
-        return this.invoiceReactive.findByTicketIdNullSafe(ticketId)
+        ObjectId oTicketId;
+        try{
+            oTicketId = (ticketId != null) ? new ObjectId(ticketId) : null;
+        }catch (Exception e){
+            throw new ConflictException("Fail in ticketId: " + ticketId);
+        }
+        return this.invoiceReactive.findByTicketIdNullSafe(oTicketId)
                 .filter(invoiceEntity -> {
                     if(phoneUser != null){
                         return phoneUser.equals(invoiceEntity.getTicketEntity().getUserMobile());

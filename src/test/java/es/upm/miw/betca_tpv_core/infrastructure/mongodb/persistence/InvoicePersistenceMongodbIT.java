@@ -69,7 +69,7 @@ class InvoicePersistenceMongodbIT {
     @Test
     void testFindByPhoneNullAndTicketIdNotNullSafe(){
         String phoneUser = null; //"66";
-        String ticketId = "5gfaw03b7513a164chop77ac"; //
+        String ticketId = "5fa45e863d6e834d642689ac"; //
 
         StepVerifier
                 .create(this.invoicePersistenceMongodb.findByPhoneAndTicketIdNullSafe(phoneUser, ticketId))
