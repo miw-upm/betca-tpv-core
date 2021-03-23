@@ -320,7 +320,7 @@ public class DatabaseSeederDev {
         MessageEntity[] messageEntities = {
                 MessageEntity.builder().id("1").subject("Message 1").text("Message text 1").userFrom("6").userTo("666666001").isRead(Boolean.TRUE).creationDate(LocalDate.now()).build(),
                 MessageEntity.builder().id("2").subject("Message 2").text("Message text 2").userFrom("666666001").userTo("6").isRead(Boolean.TRUE).creationDate(LocalDate.now()).build(),
-                MessageEntity.builder().id("3").subject("Message 3").text("Message text 3").userFrom("666666001").userTo("6").isRead(Boolean.FALSE).creationDate(LocalDate.now()).build(),
+                MessageEntity.builder().id("3").subject("Message 3").text("Message text 3").userFrom("666666001").userTo("66").isRead(Boolean.FALSE).creationDate(LocalDate.now()).build(),
                 MessageEntity.builder().id("4").subject("Message 4").text("Message text 4").userFrom("6").userTo("666666001").isRead(Boolean.FALSE).creationDate(LocalDate.now()).build()
         };
         this.messengerDao.saveAll(List.of(messageEntities));
