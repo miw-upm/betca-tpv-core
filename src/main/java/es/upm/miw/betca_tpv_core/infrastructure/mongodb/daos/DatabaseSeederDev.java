@@ -33,6 +33,7 @@ public class DatabaseSeederDev {
     private RgpdDao rgpdDao;
     private CustomerDiscountDao customerDiscountDao;
     private BudgetDao budgetDao;
+    private TagDao tagDao;
 
     private DatabaseStarting databaseStarting;
 
@@ -40,7 +41,7 @@ public class DatabaseSeederDev {
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
                              TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,
                              CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao,
-                             CustomerDiscountDao customerDiscountDao,BudgetDao budgetDao, DatabaseStarting databaseStarting) {
+                             CustomerDiscountDao customerDiscountDao,BudgetDao budgetDao, TagDao tagDao, DatabaseStarting databaseStarting) {
 
         this.articleDao = articleDao;
         this.providerDao = providerDao;
@@ -55,6 +56,7 @@ public class DatabaseSeederDev {
         this.rgpdDao = rgpdDao;
         this.customerDiscountDao = customerDiscountDao;
         this.budgetDao=budgetDao;
+        this.tagDao=tagDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -65,6 +67,7 @@ public class DatabaseSeederDev {
 
     private void deleteAllAndInitialize() {
         this.ticketDao.deleteAll();
+        this.tagDao.deleteAll();
         this.articleDao.deleteAll();
         this.providerDao.deleteAll();
         this.cashierDao.deleteAll();
@@ -304,7 +307,13 @@ public class DatabaseSeederDev {
         };
         this.budgetDao.saveAll(Arrays.asList(budgets));
         LogManager.getLogger(this.getClass()).warn("        ------- budgets");
-
+        TagEntity[] tags = {
+                TagEntity.builder().name("name1").group("group1").description("description").articleEntityList(List.of(articles[0], articles[1])).build(),
+                TagEntity.builder().name("name2").group("group1").description("description").articleEntityList(List.of(articles[2], articles[3])).build(),
+                TagEntity.builder().name("name3").group("group1").description("description").articleEntityList(List.of(articles[4], articles[5])).build()
+        };
+        this.tagDao.saveAll(Arrays.asList(tags));
+        LogManager.getLogger(this.getClass()).warn("        ------- tags");
     }
 
 
