@@ -3,6 +3,8 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.InvoiceItemDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.StockManagerDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketBasicDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -59,6 +61,26 @@ class InvoiceResourceIT {
                 .expectStatus().isOk()
                 .expectBody(byte[].class)
                 .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void testfindByPhoneAndTicketIdNullSafe() {
+        String ticketId = "5gfaw03b7513a164chop77ac";
+        String userPhone = "666666000";
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(INVOICES + InvoiceResource.SEARCH)
+                        .queryParam("ticketId", ticketId)
+                        .queryParam("userPhone", userPhone)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(InvoiceItemDto.class)
+                .value(Assertions::assertNotNull)
+                .value(invoices -> invoices.stream()
+                        .allMatch(invoice -> ticketId.equals(invoice.getTicketId())));
     }
 
 

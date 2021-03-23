@@ -329,7 +329,11 @@ public class DatabaseSeederDev {
 
         InvoiceEntity[] invoices = {
                 InvoiceEntity.builder().id("invc_ID_1A2B3C4D5E").number("invc_N_1A2B3C4D5E").ticketEntity(tickets[0]).creationDate(LocalDateTime.now())
-                        .baseTax(new BigDecimal("16.53")).taxValue(new BigDecimal("3.47")).build()
+                        .baseTax(new BigDecimal("16.53")).taxValue(new BigDecimal("3.47")).build(),
+                InvoiceEntity.builder().id("invc_ID_9Z8X7Y6V5U").number("invc_N_9Z8X7Y6V5U").ticketEntity(tickets[5]).creationDate(LocalDateTime.now())
+                        .baseTax(new BigDecimal("20.00")).taxValue(new BigDecimal("0.00")).build(),
+                InvoiceEntity.builder().id("invc_ID_AANNDDFFRR").number("invc_N_AANNDDFFRR").ticketEntity(tickets[3]).creationDate(LocalDateTime.now())
+                        .baseTax(new BigDecimal("80.00")).taxValue(new BigDecimal("0.00")).build()
         };
         this.invoiceDao.saveAll(Arrays.asList(invoices));
         LogManager.getLogger(this.getClass()).warn("        ------- invoices");

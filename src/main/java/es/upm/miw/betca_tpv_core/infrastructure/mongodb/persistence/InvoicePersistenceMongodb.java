@@ -68,5 +68,16 @@ public class InvoicePersistenceMongodb implements InvoicePersistence {
                 .map(InvoiceEntity::toInvoice);
     }
 
+    @Override
+    public Flux<Invoice> findByPhoneAndTicketIdNullSafe(String phoneUser, String ticketId) {
+        return this.invoiceReactive.findByTicketIdNullSafe(ticketId)
+                .filter(invoiceEntity -> {
+                    if(phoneUser != null){
+                        return phoneUser.equals(invoiceEntity.getTicketEntity().getUserMobile());
+                    }
+                    return true;
+                })
+                .map(InvoiceEntity::toInvoice);
+    }
 
 }
