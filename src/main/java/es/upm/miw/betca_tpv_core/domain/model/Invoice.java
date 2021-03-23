@@ -23,4 +23,12 @@ public class Invoice {
     private BigDecimal baseTax;
     private BigDecimal taxValue;
     private Ticket ticket;
+
+    public String getPhoneUser(){
+        return (ticket != null && ticket.getUser() != null) ? ticket.getUser().getMobile() : null;
+    }
+
+    public String getTicketId(){
+        return (ticket != null) ? ticket.getId() : null;
+    }
 }

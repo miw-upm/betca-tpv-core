@@ -10,6 +10,7 @@ import es.upm.miw.betca_tpv_core.domain.services.utils.PdfInvoiceBuilder;
 import es.upm.miw.betca_tpv_core.domain.services.utils.UUIDBase64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -64,5 +65,9 @@ public class InvoiceService {
     public Mono<byte[]> createInvoiceAndPrint(String idTicket) {
         return create(idTicket)
                 .flatMap(invoice -> print(invoice.getId()));
+    }
+
+    public Flux<Invoice> findByPhoneAndTicketIdNullSafe(String phoneUser, String ticketId) {
+        return this.invoicePersistence.findByPhoneAndTicketIdNullSafe(phoneUser, ticketId);
     }
 }

@@ -8,11 +8,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -22,12 +24,13 @@ import java.time.LocalDateTime;
 public class InvoiceEntity {
     @Id
     private String id;
+    @Indexed(unique = true)
     private String number;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime creationDate;
     private BigDecimal baseTax;
     private BigDecimal taxValue;
-    @DBRef
+    @DBRef(lazy = true)
     private TicketEntity ticketEntity;
 
     public InvoiceEntity(Invoice invoice) {
@@ -41,8 +44,8 @@ public class InvoiceEntity {
     public Invoice toInvoice() {
         Invoice invoice = new Invoice();
         BeanUtils.copyProperties(this, invoice);
-        if (this.ticketEntity != null) {
-            invoice.setTicket(this.ticketEntity.toTicket());
+        if ( Objects.nonNull(this.getTicketEntity())) {
+            invoice.setTicket(this.getTicketEntity().toTicket());
         }
         return invoice;
     }

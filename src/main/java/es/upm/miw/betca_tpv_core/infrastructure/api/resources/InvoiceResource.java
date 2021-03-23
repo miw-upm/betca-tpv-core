@@ -2,17 +2,18 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.services.InvoiceService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.InvoiceItemDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketBasicDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Rest
 @RequestMapping(InvoiceResource.INVOICES)
 public class InvoiceResource {
     public static final String INVOICES = "/invoices";
+    public static final String SEARCH = "/search";
 
     private InvoiceService invoiceService;
 
@@ -25,6 +26,13 @@ public class InvoiceResource {
     public Mono<byte[]> createInvoiceAndPrint(@RequestBody TicketBasicDto ticketDto) {
 
         return this.invoiceService.createInvoiceAndPrint(ticketDto.getReference());
+    }
+
+    @GetMapping(SEARCH)
+    public Flux<InvoiceItemDto> findByPhoneAndTicketIdNullSafe(@RequestParam(required = false) String userPhone,
+                                                        @RequestParam(required = false) String ticketId){
+        return this.invoiceService.findByPhoneAndTicketIdNullSafe(userPhone, ticketId)
+                .map(InvoiceItemDto::new);
     }
 
 }
