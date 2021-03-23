@@ -12,7 +12,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class IssueMilestone {
-    private Integer number;
     private String title;
-    private String description;
 }

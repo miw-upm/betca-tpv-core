@@ -45,14 +45,34 @@ public class GitHubServiceRest implements GitHubService {
 
     // https://docs.github.com/en/rest/reference/issues#get-an-issue
     @Override
-    public Mono<Issue> read(Integer id) {
-        return null; // TODO implement
+    public Mono<Issue> read(Integer number) {
+        return this.webClientBuilder.build()
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .scheme("https")
+                        .host(gitHubUri)
+                        .path("/repos/" + gitHubOwner + "/" + gitHubRepo + "/issues/" + number)
+                        .build())
+                .exchange()
+                .onErrorResume(exception ->
+                        Mono.error(new BadGatewayException("Unexpected error. GitHub Service. " + exception.getMessage())))
+                .flatMap(response -> {
+                    if (HttpStatus.UNAUTHORIZED.equals(response.statusCode())) {
+                        return Mono.error(new ForbiddenException("Forbidden: GitHub Issue Details"));
+                    } else if (HttpStatus.NOT_FOUND.equals(response.statusCode())) {
+                        return Mono.error(new NotFoundException("Not Found: GitHub Issue Details"));
+                    } else if (response.statusCode().isError()) {
+                        return Mono.error(new BadGatewayException("Unexpected error: GitHub Service."));
+                    } else {
+                        return response.bodyToMono(Issue.class);
+                    }
+                });
     }
 
     // https://docs.github.com/en/rest/reference/issues#list-repository-issues
     @Override
     public Flux<Issue> search(String labels, String state, String assignee) {
-        String query = "?state=" + state
+        String query = "state=" + state
                 + (!assignee.equals("") ? "&assignee=" + assignee : "")
                 + (!labels.equals("") ? "&labels=" + labels : "");
 
