@@ -6,6 +6,7 @@ import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ArticleNewDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketBasicDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketEditionDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.UserBasicDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +18,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleResource.*;
@@ -203,6 +205,23 @@ class TicketResourceIT {
                 .exchange()
                 .expectStatus().isNotFound();
 
+    }
+
+    @Test
+    void testGetByBarcodeAndAmount() {
+        List<Tracking> data = new ArrayList<>();
+        Tracking tracking = new Tracking();
+        tracking.setBarcode("8400000000024");
+        tracking.setAmount(1);
+        data.add(tracking);
+        this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(TICKETS + TicketResource.SEARCH + TRACKING)
+                .bodyValue(data)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(UserBasicDto.class)
+                .value(users -> System.out.println(">>>>> users: " + users));
     }
 
     @Test

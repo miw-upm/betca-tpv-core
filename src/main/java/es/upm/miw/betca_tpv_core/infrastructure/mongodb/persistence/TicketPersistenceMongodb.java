@@ -117,4 +117,10 @@ public class TicketPersistenceMongodb implements TicketPersistence {
                 .map(TicketEntity::toTicket);
     }
 
+    @Override
+    public Flux<Ticket> findAll() {
+        return this.ticketReactive.findAll()
+                .map(TicketEntity::toTicket);
+    }
+
 }

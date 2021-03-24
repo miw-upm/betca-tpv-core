@@ -52,13 +52,13 @@ class MessengerReactiveIT {
     @Test
     void testFindByUserToAndIsRead() {
         StepVerifier
-                .create(this.messengerReactive.findByUserToAndIsRead("6", Boolean.FALSE))
+                .create(this.messengerReactive.findByUserToAndIsRead("66", Boolean.FALSE))
                 .expectNextMatches(messageEntity -> {
                     assertEquals("3", messageEntity.getId());
                     assertEquals("Message 3", messageEntity.getSubject());
                     assertEquals("Message text 3", messageEntity.getText());
                     assertEquals("666666001", messageEntity.getUserFrom());
-                    assertEquals("6", messageEntity.getUserTo());
+                    assertEquals("66", messageEntity.getUserTo());
                     assertFalse(messageEntity.getIsRead());
 
                     return true;
