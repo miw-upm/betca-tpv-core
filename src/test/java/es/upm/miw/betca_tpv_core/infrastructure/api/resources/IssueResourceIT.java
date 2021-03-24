@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 
 @RestTestConfig
-public class IssueResourceIT {
+class IssueResourceIT {
 
     @Autowired
     private WebTestClient webTestClient;
@@ -112,7 +112,7 @@ public class IssueResourceIT {
     }
 
     @Test
-    void testFindByTitleAndBodyAndLabelsAndStateAndMilestoneAndAssigneeNullSafe() {
+    void testFindByTitleAndBodyAndLabelsAndStateAndMilestoneAndAssigneeNullSafeWithTitle() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -125,6 +125,59 @@ public class IssueResourceIT {
                 .value(issueBasicDtos ->
                         assertTrue(issueBasicDtos.stream()
                                 .anyMatch(issueBasicDto -> issueBasicDto.getTitle().contains("bug")))
+                );
+    }
+
+    @Test
+    void testFindByTitleAndBodyAndLabelsAndStateAndMilestoneAndAssigneeNullSafeWithStateAndBody() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(ISSUES + SEARCH)
+                        .queryParam("body", "problem")
+                        .queryParam("state", "open")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(IssueBasicDto.class)
+                .value(issueBasicDtos ->
+                        assertTrue(issueBasicDtos.stream()
+                                .anyMatch(issueBasicDto -> issueBasicDto.getState().equals("open")))
+                );
+    }
+
+    @Test
+    void testFindByTitleAndBodyAndLabelsAndStateAndMilestoneAndAssigneeNullSafeWithLabelAndMilestone() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(ISSUES + SEARCH)
+                        .queryParam("milestone", "v1.1")
+                        .queryParam("labels", "enhancement")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(IssueBasicDto.class)
+                .value(issueBasicDtos ->
+                        assertTrue(issueBasicDtos.stream()
+                                .anyMatch(issueBasicDto -> issueBasicDto.getLabels().contains("enhancement")))
+                );
+    }
+
+    @Test
+    void testFindByTitleAndBodyAndLabelsAndStateAndMilestoneAndAssigneeNullSafeWithAssignee() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(ISSUES + SEARCH)
+                        .queryParam("assignee", "enhancement")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(IssueBasicDto.class)
+                .value(issueBasicDtos ->
+                        assertTrue(issueBasicDtos.stream()
+                                .anyMatch(issueBasicDto -> issueBasicDto.getAssignee().equals("octocat")))
                 );
     }
 
