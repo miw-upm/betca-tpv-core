@@ -59,10 +59,14 @@ public class StockManager {
     }
 
     public static StockManager ofEmptyStock(Article article, Integer days) {
-        if(days < 1){
-            days = 0;
+        LocalDate dateStockEmpty;
+        if(days.equals(-1)){
+            dateStockEmpty = null;
+        }else if(days < 1){
+            dateStockEmpty = LocalDate.now().plusDays(0);
+        }else{
+            dateStockEmpty = LocalDate.now().plusDays(days);
         }
-        LocalDate dateStockEmpty = LocalDate.now().plusDays(days);
         return StockManager.builder()
                 .barcode(article.getBarcode())
                 .description(article.getDescription())

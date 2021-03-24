@@ -222,10 +222,10 @@ public class DatabaseSeederDev {
                         List.of(shoppingList[2], shoppingList[3], shoppingList[4]), date, new BigDecimal("25.0"),
                         ZERO, ZERO, "note", "66"),
                 new TicketEntity("7faw03b7513a164chop77ac", "Asdfv521Rj6iKmzp5aERAA",
-                        List.of(shoppingList[8]), LocalDateTime.now().minusDays(5), new BigDecimal("25.0"),
+                        List.of(shoppingList[7]), LocalDateTime.now().minusDays(5), new BigDecimal("25.0"),
                         ZERO, ZERO, "note", "66"),
-                new TicketEntity("9jfaw03b7513a164chop77ac", "Asgffv521Rj6iKmzp5aERAA",
-                        List.of(shoppingList[7]), LocalDateTime.now().minusDays(4), new BigDecimal("20.0"),
+               new TicketEntity("9jfaw03b7513a164chop77ac", "Asgffv521Rj6iKmzp5aERAA",
+                        List.of(shoppingList[6]), LocalDateTime.now().minusDays(4), new BigDecimal("20.0"),
                         ZERO, ZERO, "note", "66"),
         };
         this.ticketDao.saveAll(Arrays.asList(tickets));

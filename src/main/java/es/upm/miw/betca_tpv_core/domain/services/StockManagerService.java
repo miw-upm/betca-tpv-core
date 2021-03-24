@@ -76,7 +76,13 @@ public class StockManagerService {
     }
     private Mono<StockManager> emptyStock(Article article) {
         return this.soldProductsLastWeek(article.getBarcode())
-                .map(productSoldWeek -> article.getStock() / productSoldWeek)
+                .map(productSoldWeek -> {
+                    if(productSoldWeek.equals(0)){
+                        return -1;
+                    }else{
+                        return article.getStock() / productSoldWeek;
+                    }
+                })
                 .map(days -> StockManager.ofEmptyStock(article, days));
     }
     private Mono<Integer> soldProductsLastWeek(String barcode){

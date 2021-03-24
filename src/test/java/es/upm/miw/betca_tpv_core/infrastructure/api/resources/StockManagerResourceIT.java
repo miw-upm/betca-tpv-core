@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 
@@ -95,7 +96,7 @@ public class StockManagerResourceIT {
     }
     @Test
     void testSearchEmptyStock() {
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
+        LocalDate end = LocalDate.now().plusDays(1);
 
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
