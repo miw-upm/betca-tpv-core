@@ -35,8 +35,16 @@ public class IssueDto {
                     .collect(Collectors.joining(","));
         }
         this.state = issue.getState();
-        this.assignee = issue.getAssignee().getLogin();
-        this.milestone = issue.getMilestone().getTitle();
+        if (issue.getAssignee() != null) {
+            this.assignee = issue.getAssignee().getLogin();
+        } else {
+            this.assignee = null;
+        }
+        if (issue.getMilestone() != null) {
+            this.milestone = issue.getMilestone().getTitle();
+        } else {
+            this.milestone = null;
+        }
         this.created_at = issue.getCreated_at();
     }
 }

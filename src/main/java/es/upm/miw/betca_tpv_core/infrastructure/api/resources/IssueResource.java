@@ -1,9 +1,9 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
-import es.upm.miw.betca_tpv_core.domain.model.Issue;
 import es.upm.miw.betca_tpv_core.domain.services.IssueService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.IssueBasicDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.IssueCreationDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.IssueDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -50,9 +50,9 @@ public class IssueResource {
     }
 
     @PostMapping(produces = {"application/json"})
-    public Mono<Issue> create(@Valid @RequestBody Issue issue) {
-        issue.doDefault();
-        return this.issueService.create(issue);
+    public Mono<IssueDto> create(@Valid @RequestBody IssueCreationDto issueCreationDto) {
+        return this.issueService.create(issueCreationDto)
+                .map(IssueDto::new);
     }
 
 }
