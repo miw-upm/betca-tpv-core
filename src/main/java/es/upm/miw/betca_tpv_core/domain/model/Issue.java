@@ -1,7 +1,6 @@
 package es.upm.miw.betca_tpv_core.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -26,18 +24,4 @@ public class Issue {
     private IssueAssignee assignee;
     private IssueMilestone milestone;
     private LocalDateTime created_at;
-
-    public static Issue ofTitleBodyLabels(Issue issue) {
-        return Issue.builder()
-                .title(issue.getTitle())
-                .body(issue.getBody())
-                .labels(issue.getLabels())
-                .build();
-    }
-
-    public void doDefault() {
-        if (Objects.isNull(state)) {
-            this.state = "open";
-        }
-    }
 }

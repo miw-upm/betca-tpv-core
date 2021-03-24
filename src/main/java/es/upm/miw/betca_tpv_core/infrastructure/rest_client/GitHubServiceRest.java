@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_core.domain.exceptions.ForbiddenException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Issue;
 import es.upm.miw.betca_tpv_core.domain.rest.GitHubService;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.IssueCreationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -35,12 +36,6 @@ public class GitHubServiceRest implements GitHubService {
         this.gitHubRepo = gitHubRepo;
         this.gitHubAPIKey = gitHubAPIKey;
         this.webClientBuilder = webClientBuilder;
-    }
-
-    // https://docs.github.com/en/rest/reference/issues#create-an-issue
-    @Override
-    public Mono<Issue> create(Issue issue) {
-        return null; // TODO implement
     }
 
     // https://docs.github.com/en/rest/reference/issues#get-an-issue
@@ -77,8 +72,6 @@ public class GitHubServiceRest implements GitHubService {
                 + (!labels.equals("") ? "&labels=" + labels : "");
 
         return this.webClientBuilder.build()
-                //.mutate()
-                //.defaultHeader("Authorization", "Basic " + gitHubOwner + ":" + gitHubAPIKey).build()
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .scheme("https")
@@ -98,6 +91,34 @@ public class GitHubServiceRest implements GitHubService {
                         return Mono.error(new BadGatewayException("Unexpected error: GitHub Service."));
                     } else {
                         return response.bodyToFlux(Issue.class);
+                    }
+                });
+    }
+
+    // https://docs.github.com/en/rest/reference/issues#create-an-issue
+    @Override
+    public Mono<Issue> create(IssueCreationDto issueCreationDto) {
+        return this.webClientBuilder.build()
+                .mutate().defaultHeader("Authorization", "token " + gitHubAPIKey).build()
+                .post()
+                .uri(uriBuilder -> uriBuilder
+                        .scheme("https")
+                        .host(gitHubUri)
+                        .path("/repos/" + gitHubOwner + "/" + gitHubRepo + "/issues")
+                        .build())
+                .body(Mono.just(issueCreationDto), IssueCreationDto.class)
+                .exchange()
+                .onErrorResume(exception ->
+                        Mono.error(new BadGatewayException("Unexpected error. GitHub Service. " + exception.getMessage())))
+                .flatMap(response -> {
+                    if (HttpStatus.UNAUTHORIZED.equals(response.statusCode())) {
+                        return Mono.error(new ForbiddenException("Forbidden: GitHub Issue Creation"));
+                    } else if (HttpStatus.NOT_FOUND.equals(response.statusCode())) {
+                        return Mono.error(new NotFoundException("Not Found: GitHub Issue Creation"));
+                    } else if (response.statusCode().isError()) {
+                        return Mono.error(new BadGatewayException("Unexpected error: GitHub Service."));
+                    } else {
+                        return response.bodyToMono(Issue.class);
                     }
                 });
     }
