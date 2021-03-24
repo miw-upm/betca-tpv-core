@@ -61,10 +61,37 @@ public class StockManagerService {
                 .map(amount -> StockManager.ofSoldStock(article, amount));
     }
 
-    public int amountArticleSold(Stream<Shopping> shoppingStream, String barcode) {
+    private int amountArticleSold(Stream<Shopping> shoppingStream, String barcode) {
         return shoppingStream
                 .filter(shopping -> shopping.getBarcode().equals(barcode))
                 .map(Shopping::getAmount)
                 .reduce(0, Integer::sum);
     }
+
+    public Mono<StockManager> searchEmptyStock(String barcode) {
+        return this.articlePersistence.readByBarcode(barcode)
+                .switchIfEmpty(Mono.error(new NotFoundException("Article : " + barcode)))
+                .map(this::emptyStock)
+                .flatMap(stockManagerMono -> stockManagerMono);
+    }
+    private Mono<StockManager> emptyStock(Article article) {
+        return this.soldProductsLastWeek(article.getBarcode())
+                .map(productSoldWeek -> {
+                    if(productSoldWeek.equals(0)){
+                        return -1;
+                    }else{
+                        return article.getStock() / productSoldWeek;
+                    }
+                })
+                .map(days -> StockManager.ofEmptyStock(article, days));
+    }
+    private Mono<Integer> soldProductsLastWeek(String barcode){
+        // last week prevision
+        LocalDateTime ini = LocalDateTime.now().minusDays(7);
+        LocalDateTime end = LocalDateTime.now();
+        return this.ticketPersistence.findByRangeRegistrationDate(ini, end)
+                .map(ticket -> amountArticleSold(ticket.getShoppingList().stream(), barcode))
+                .reduce(0, Integer::sum);
+    }
+
 }
