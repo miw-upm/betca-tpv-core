@@ -93,4 +93,26 @@ public class StockManagerResourceIT {
                 .exchange()
                 .expectStatus().isNotFound();
     }
+    @Test
+    void testSearchEmptyStock() {
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(StockManagerResource.STOCK_MANAGER + StockManagerResource.STOCK_EMPTY)
+                        .queryParam("barcode", "8400000000555")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(StockManagerDto.class)
+                .value(Assertions::assertNotNull)
+                .value(returnStockManager -> {
+                    assertEquals("8400000000555", returnStockManager.getBarcode());
+                    // assertEquals(7, returnStockManager.getStock());
+                    assertEquals("without provider", returnStockManager.getDescription());
+                    assertEquals(end, returnStockManager.getDateStockEmpty());
+
+                });
+    }
 }

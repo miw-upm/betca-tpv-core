@@ -14,7 +14,6 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
@@ -76,8 +75,17 @@ public class StockManagerService {
                 .flatMap(stockManagerMono -> stockManagerMono);
     }
     private Mono<StockManager> emptyStock(Article article) {
-        StockManager stockManager = new StockManager();
-        return Mono.just(stockManager);
+        return this.soldProductsLastWeek(article.getBarcode())
+                .map(productSoldWeek -> article.getStock() / productSoldWeek)
+                .map(days -> StockManager.ofEmptyStock(article, days));
+    }
+    private Mono<Integer> soldProductsLastWeek(String barcode){
+        // last week prevision
+        LocalDateTime ini = LocalDateTime.now().minusDays(7);
+        LocalDateTime end = LocalDateTime.now();
+        return this.ticketPersistence.findByRangeRegistrationDate(ini, end)
+                .map(ticket -> amountArticleSold(ticket.getShoppingList().stream(), barcode))
+                .reduce(0, Integer::sum);
     }
 
 }

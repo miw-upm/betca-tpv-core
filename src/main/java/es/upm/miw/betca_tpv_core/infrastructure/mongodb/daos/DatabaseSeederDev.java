@@ -141,6 +141,9 @@ public class DatabaseSeederDev {
                 ArticleEntity.builder().barcode("8400000000100").reference("without provider").description("without provider")
                         .retailPrice(new BigDecimal("0.12")).stock(5).registrationDate(LocalDateTime.now())
                         .discontinued(false).build(),
+                ArticleEntity.builder().barcode("8400000000555").reference("without provider").description("without provider")
+                        .retailPrice(new BigDecimal("0.12")).stock(10).registrationDate(LocalDateTime.now())
+                        .discontinued(false).build(),
         };
         this.articleDao.saveAll(List.of(articles));
         LogManager.getLogger(this.getClass()).warn("        ------- articles");
@@ -193,6 +196,10 @@ public class DatabaseSeederDev {
                         3, ZERO, ShoppingState.COMMITTED),
                 new ShoppingEntity(articles[5], articles[5].getDescription(), articles[5].getRetailPrice(),
                         2, ZERO, ShoppingState.COMMITTED),
+                new ShoppingEntity(articles[10], articles[10].getDescription(), articles[10].getRetailPrice(),
+                        2, ZERO, ShoppingState.COMMITTED),
+                new ShoppingEntity(articles[10], articles[10].getDescription(), articles[10].getRetailPrice(),
+                        4, ZERO, ShoppingState.COMMITTED),
         };
         LocalDateTime date = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
         TicketEntity[] tickets = {
@@ -213,6 +220,12 @@ public class DatabaseSeederDev {
                         ZERO, ZERO, "note", "66"),
                 new TicketEntity("5gfaw03b7513a164chop77ac", "AAhfv521Rj6iKmzp5aERAA",
                         List.of(shoppingList[2], shoppingList[3], shoppingList[4]), date, new BigDecimal("25.0"),
+                        ZERO, ZERO, "note", "66"),
+                new TicketEntity("7faw03b7513a164chop77ac", "Asdfv521Rj6iKmzp5aERAA",
+                        List.of(shoppingList[8]), LocalDateTime.now().minusDays(5), new BigDecimal("25.0"),
+                        ZERO, ZERO, "note", "66"),
+                new TicketEntity("9jfaw03b7513a164chop77ac", "Asgffv521Rj6iKmzp5aERAA",
+                        List.of(shoppingList[7]), LocalDateTime.now().minusDays(4), new BigDecimal("20.0"),
                         ZERO, ZERO, "note", "66"),
         };
         this.ticketDao.saveAll(Arrays.asList(tickets));

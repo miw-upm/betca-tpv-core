@@ -1,6 +1,5 @@
 package es.upm.miw.betca_tpv_core.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +9,6 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Builder
@@ -57,6 +55,21 @@ public class StockManager {
                 .stock(rest)
                 .dateSell(null)
                 .dateStockEmpty(null)
+                .build();
+    }
+
+    public static StockManager ofEmptyStock(Article article, Integer days) {
+        if(days < 1){
+            days = 0;
+        }
+        LocalDate dateStockEmpty = LocalDate.now().plusDays(days);
+        return StockManager.builder()
+                .barcode(article.getBarcode())
+                .description(article.getDescription())
+                .retailPrice(article.getRetailPrice())
+                .stock(0)
+                .dateSell(null)
+                .dateStockEmpty(dateStockEmpty)
                 .build();
     }
 }
