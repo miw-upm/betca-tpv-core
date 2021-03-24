@@ -17,6 +17,11 @@ import reactor.core.publisher.Mono;
 @Service("gitHubClient")
 public class GitHubServiceRest implements GitHubService {
 
+    private final String HTTPS = "https";
+    private final String REPOS = "/repos/";
+    private final String ISSUES = "/issues";
+    private final String UNEXPECTED_ERROR = "Unexpected error. GitHub Service.";
+
     private String gitHubUri;
     private String gitHubOwner;
     private String gitHubRepo;
@@ -44,20 +49,20 @@ public class GitHubServiceRest implements GitHubService {
         return this.webClientBuilder.build()
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
+                        .scheme(HTTPS)
                         .host(gitHubUri)
-                        .path("/repos/" + gitHubOwner + "/" + gitHubRepo + "/issues/" + number)
+                        .path(REPOS + gitHubOwner + "/" + gitHubRepo + ISSUES + "/" + number)
                         .build())
                 .exchange()
                 .onErrorResume(exception ->
-                        Mono.error(new BadGatewayException("Unexpected error. GitHub Service. " + exception.getMessage())))
+                        Mono.error(new BadGatewayException(UNEXPECTED_ERROR + exception.getMessage())))
                 .flatMap(response -> {
                     if (HttpStatus.UNAUTHORIZED.equals(response.statusCode())) {
                         return Mono.error(new ForbiddenException("Forbidden: GitHub Issue Details"));
                     } else if (HttpStatus.NOT_FOUND.equals(response.statusCode())) {
                         return Mono.error(new NotFoundException("Not Found: GitHub Issue Details"));
                     } else if (response.statusCode().isError()) {
-                        return Mono.error(new BadGatewayException("Unexpected error: GitHub Service."));
+                        return Mono.error(new BadGatewayException(UNEXPECTED_ERROR));
                     } else {
                         return response.bodyToMono(Issue.class);
                     }
@@ -74,21 +79,21 @@ public class GitHubServiceRest implements GitHubService {
         return this.webClientBuilder.build()
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
+                        .scheme(HTTPS)
                         .host(gitHubUri)
-                        .path("/repos/" + gitHubOwner + "/" + gitHubRepo + "/issues")
+                        .path(REPOS + gitHubOwner + "/" + gitHubRepo + ISSUES)
                         .query(query)
                         .build())
                 .exchange()
                 .onErrorResume(exception ->
-                        Mono.error(new BadGatewayException("Unexpected error. GitHub Service. " + exception.getMessage())))
+                        Mono.error(new BadGatewayException(UNEXPECTED_ERROR + exception.getMessage())))
                 .flatMapMany(response -> {
                     if (HttpStatus.UNAUTHORIZED.equals(response.statusCode())) {
                         return Mono.error(new ForbiddenException("Forbidden: GitHub Issue Search"));
                     } else if (HttpStatus.NOT_FOUND.equals(response.statusCode())) {
                         return Mono.error(new NotFoundException("Not Found: GitHub Issue Search"));
                     } else if (response.statusCode().isError()) {
-                        return Mono.error(new BadGatewayException("Unexpected error: GitHub Service."));
+                        return Mono.error(new BadGatewayException(UNEXPECTED_ERROR));
                     } else {
                         return response.bodyToFlux(Issue.class);
                     }
@@ -102,21 +107,21 @@ public class GitHubServiceRest implements GitHubService {
                 .mutate().defaultHeader("Authorization", "token " + gitHubAPIKey).build()
                 .post()
                 .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
+                        .scheme(HTTPS)
                         .host(gitHubUri)
-                        .path("/repos/" + gitHubOwner + "/" + gitHubRepo + "/issues")
+                        .path(REPOS + gitHubOwner + "/" + gitHubRepo + ISSUES)
                         .build())
                 .body(Mono.just(issueCreationDto), IssueCreationDto.class)
                 .exchange()
                 .onErrorResume(exception ->
-                        Mono.error(new BadGatewayException("Unexpected error. GitHub Service. " + exception.getMessage())))
+                        Mono.error(new BadGatewayException(UNEXPECTED_ERROR + exception.getMessage())))
                 .flatMap(response -> {
                     if (HttpStatus.UNAUTHORIZED.equals(response.statusCode())) {
                         return Mono.error(new ForbiddenException("Forbidden: GitHub Issue Creation"));
                     } else if (HttpStatus.NOT_FOUND.equals(response.statusCode())) {
                         return Mono.error(new NotFoundException("Not Found: GitHub Issue Creation"));
                     } else if (response.statusCode().isError()) {
-                        return Mono.error(new BadGatewayException("Unexpected error: GitHub Service."));
+                        return Mono.error(new BadGatewayException(UNEXPECTED_ERROR));
                     } else {
                         return response.bodyToMono(Issue.class);
                     }
