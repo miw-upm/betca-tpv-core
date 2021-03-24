@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
@@ -61,10 +62,22 @@ public class StockManagerService {
                 .map(amount -> StockManager.ofSoldStock(article, amount));
     }
 
-    public int amountArticleSold(Stream<Shopping> shoppingStream, String barcode) {
+    private int amountArticleSold(Stream<Shopping> shoppingStream, String barcode) {
         return shoppingStream
                 .filter(shopping -> shopping.getBarcode().equals(barcode))
                 .map(Shopping::getAmount)
                 .reduce(0, Integer::sum);
     }
+
+    public Mono<StockManager> searchEmptyStock(String barcode) {
+        return this.articlePersistence.readByBarcode(barcode)
+                .switchIfEmpty(Mono.error(new NotFoundException("Article : " + barcode)))
+                .map(this::emptyStock)
+                .flatMap(stockManagerMono -> stockManagerMono);
+    }
+    private Mono<StockManager> emptyStock(Article article) {
+        StockManager stockManager = new StockManager();
+        return Mono.just(stockManager);
+    }
+
 }
