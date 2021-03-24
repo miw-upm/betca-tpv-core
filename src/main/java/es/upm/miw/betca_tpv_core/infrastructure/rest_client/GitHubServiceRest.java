@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_core.domain.exceptions.ForbiddenException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Issue;
 import es.upm.miw.betca_tpv_core.domain.rest.GitHubService;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.IssueCreationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,11 @@ import reactor.core.publisher.Mono;
 
 @Service("gitHubClient")
 public class GitHubServiceRest implements GitHubService {
+
+    public static final String HTTPS = "https";
+    public static final String REPOS = "/repos/";
+    public static final String ISSUES = "/issues";
+    public static final String UNEXPECTED_ERROR = "Unexpected error. GitHub Service.";
 
     private String gitHubUri;
     private String gitHubOwner;
@@ -37,32 +43,26 @@ public class GitHubServiceRest implements GitHubService {
         this.webClientBuilder = webClientBuilder;
     }
 
-    // https://docs.github.com/en/rest/reference/issues#create-an-issue
-    @Override
-    public Mono<Issue> create(Issue issue) {
-        return null; // TODO implement
-    }
-
     // https://docs.github.com/en/rest/reference/issues#get-an-issue
     @Override
     public Mono<Issue> read(Integer number) {
         return this.webClientBuilder.build()
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
+                        .scheme(HTTPS)
                         .host(gitHubUri)
-                        .path("/repos/" + gitHubOwner + "/" + gitHubRepo + "/issues/" + number)
+                        .path(REPOS + gitHubOwner + "/" + gitHubRepo + ISSUES + "/" + number)
                         .build())
                 .exchange()
                 .onErrorResume(exception ->
-                        Mono.error(new BadGatewayException("Unexpected error. GitHub Service. " + exception.getMessage())))
+                        Mono.error(new BadGatewayException(UNEXPECTED_ERROR + exception.getMessage())))
                 .flatMap(response -> {
                     if (HttpStatus.UNAUTHORIZED.equals(response.statusCode())) {
                         return Mono.error(new ForbiddenException("Forbidden: GitHub Issue Details"));
                     } else if (HttpStatus.NOT_FOUND.equals(response.statusCode())) {
                         return Mono.error(new NotFoundException("Not Found: GitHub Issue Details"));
                     } else if (response.statusCode().isError()) {
-                        return Mono.error(new BadGatewayException("Unexpected error: GitHub Service."));
+                        return Mono.error(new BadGatewayException(UNEXPECTED_ERROR));
                     } else {
                         return response.bodyToMono(Issue.class);
                     }
@@ -77,27 +77,53 @@ public class GitHubServiceRest implements GitHubService {
                 + (!labels.equals("") ? "&labels=" + labels : "");
 
         return this.webClientBuilder.build()
-                //.mutate()
-                //.defaultHeader("Authorization", "Basic " + gitHubOwner + ":" + gitHubAPIKey).build()
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
+                        .scheme(HTTPS)
                         .host(gitHubUri)
-                        .path("/repos/" + gitHubOwner + "/" + gitHubRepo + "/issues")
+                        .path(REPOS + gitHubOwner + "/" + gitHubRepo + ISSUES)
                         .query(query)
                         .build())
                 .exchange()
                 .onErrorResume(exception ->
-                        Mono.error(new BadGatewayException("Unexpected error. GitHub Service. " + exception.getMessage())))
+                        Mono.error(new BadGatewayException(UNEXPECTED_ERROR + exception.getMessage())))
                 .flatMapMany(response -> {
                     if (HttpStatus.UNAUTHORIZED.equals(response.statusCode())) {
                         return Mono.error(new ForbiddenException("Forbidden: GitHub Issue Search"));
                     } else if (HttpStatus.NOT_FOUND.equals(response.statusCode())) {
                         return Mono.error(new NotFoundException("Not Found: GitHub Issue Search"));
                     } else if (response.statusCode().isError()) {
-                        return Mono.error(new BadGatewayException("Unexpected error: GitHub Service."));
+                        return Mono.error(new BadGatewayException(UNEXPECTED_ERROR));
                     } else {
                         return response.bodyToFlux(Issue.class);
+                    }
+                });
+    }
+
+    // https://docs.github.com/en/rest/reference/issues#create-an-issue
+    @Override
+    public Mono<Issue> create(IssueCreationDto issueCreationDto) {
+        return this.webClientBuilder.build()
+                .mutate().defaultHeader("Authorization", "token " + gitHubAPIKey).build()
+                .post()
+                .uri(uriBuilder -> uriBuilder
+                        .scheme(HTTPS)
+                        .host(gitHubUri)
+                        .path(REPOS + gitHubOwner + "/" + gitHubRepo + ISSUES)
+                        .build())
+                .body(Mono.just(issueCreationDto), IssueCreationDto.class)
+                .exchange()
+                .onErrorResume(exception ->
+                        Mono.error(new BadGatewayException(UNEXPECTED_ERROR + exception.getMessage())))
+                .flatMap(response -> {
+                    if (HttpStatus.UNAUTHORIZED.equals(response.statusCode())) {
+                        return Mono.error(new ForbiddenException("Forbidden: GitHub Issue Creation"));
+                    } else if (HttpStatus.NOT_FOUND.equals(response.statusCode())) {
+                        return Mono.error(new NotFoundException("Not Found: GitHub Issue Creation"));
+                    } else if (response.statusCode().isError()) {
+                        return Mono.error(new BadGatewayException(UNEXPECTED_ERROR));
+                    } else {
+                        return response.bodyToMono(Issue.class);
                     }
                 });
     }

@@ -59,10 +59,10 @@ public class DatabaseSeederDev {
         this.stockAlarmDao = stockAlarmDao;
         this.rgpdDao = rgpdDao;
         this.customerDiscountDao = customerDiscountDao;
-        this.budgetDao=budgetDao;
-        this.messengerDao=messengerDao;
+        this.budgetDao = budgetDao;
+        this.messengerDao = messengerDao;
         this.invoiceDao = invoiceDao;
-        this.salespeopleDao=salespeopleDao;
+        this.salespeopleDao = salespeopleDao;
 
         this.deleteAllAndInitializeAndSeedDataBase();
     }
@@ -73,19 +73,24 @@ public class DatabaseSeederDev {
     }
 
     private void deleteAllAndInitialize() {
+        this.creditDao.deleteAll();
+
+        this.creditSaleDao.deleteAll();
+        this.salespeopleDao.deleteAll();
+        this.invoiceDao.deleteAll();
+
         this.ticketDao.deleteAll();
-        this.articleDao.deleteAll();
-        this.providerDao.deleteAll();
-        this.cashierDao.deleteAll();
         this.offerDao.deleteAll();
         this.stockAlarmDao.deleteAll();
-        this.creditSaleDao.deleteAll();
-        this.creditDao.deleteAll();
+        this.budgetDao.deleteAll();
+
+        this.articleDao.deleteAll();
+
+        this.providerDao.deleteAll();
+        this.cashierDao.deleteAll();
         this.rgpdDao.deleteAll();
         this.customerDiscountDao.deleteAll();
-        this.budgetDao.deleteAll();
         this.messengerDao.deleteAll();
-        this.salespeopleDao.deleteAll();
 
         LogManager.getLogger(this.getClass()).warn("------- Delete All -----------");
         this.databaseStarting.initialize();
@@ -240,7 +245,7 @@ public class DatabaseSeederDev {
                 .retailPrice(new BigDecimal("20")).stock(10).providerEntity(providers[0])
                 .registrationDate(LocalDateTime.now()).discontinued(false).build();
 
-        ArticleEntity article2= ArticleEntity.builder().barcode("stockAlamt00002").reference("zz-falda-T2").description("Zarzuela - Falda T2")
+        ArticleEntity article2 = ArticleEntity.builder().barcode("stockAlamt00002").reference("zz-falda-T2").description("Zarzuela - Falda T2")
                 .retailPrice(new BigDecimal("20")).stock(4).providerEntity(providers[0])
                 .registrationDate(LocalDateTime.now()).discontinued(false).build();
 
@@ -319,7 +324,7 @@ public class DatabaseSeederDev {
         MessageEntity[] messageEntities = {
                 MessageEntity.builder().id("1").subject("Message 1").text("Message text 1").userFrom("6").userTo("666666001").isRead(Boolean.TRUE).creationDate(LocalDate.now()).build(),
                 MessageEntity.builder().id("2").subject("Message 2").text("Message text 2").userFrom("666666001").userTo("6").isRead(Boolean.TRUE).creationDate(LocalDate.now()).build(),
-                MessageEntity.builder().id("3").subject("Message 3").text("Message text 3").userFrom("666666001").userTo("6").isRead(Boolean.FALSE).creationDate(LocalDate.now()).build(),
+                MessageEntity.builder().id("3").subject("Message 3").text("Message text 3").userFrom("666666001").userTo("66").isRead(Boolean.FALSE).creationDate(LocalDate.now()).build(),
                 MessageEntity.builder().id("4").subject("Message 4").text("Message text 4").userFrom("6").userTo("666666001").isRead(Boolean.FALSE).creationDate(LocalDate.now()).build()
         };
         this.messengerDao.saveAll(List.of(messageEntities));
@@ -328,7 +333,7 @@ public class DatabaseSeederDev {
         InvoiceEntity[] invoices = {
                 InvoiceEntity.builder().id("invc_ID_1A2B3C4D5E").number("invc_N_1A2B3C4D5E").ticketEntity(tickets[0]).creationDate(LocalDateTime.now())
                         .baseTax(new BigDecimal("16.53")).taxValue(new BigDecimal("3.47")).build(),
-                InvoiceEntity.builder().id("invc_ID_9Z8X7Y6V5U").number("invc_N_9Z8X7Y6V5U").ticketEntity(tickets[5]).creationDate(LocalDateTime.now())
+                InvoiceEntity.builder().id("invc_ID_9Z8X7Y6V5U").number("invc_N_9Z8X7Y6V5U").ticketEntity(tickets[1]).creationDate(LocalDateTime.now())
                         .baseTax(new BigDecimal("20.00")).taxValue(new BigDecimal("0.00")).build(),
                 InvoiceEntity.builder().id("invc_ID_AANNDDFFRR").number("invc_N_AANNDDFFRR").ticketEntity(tickets[3]).creationDate(LocalDateTime.now())
                         .baseTax(new BigDecimal("80.00")).taxValue(new BigDecimal("0.00")).build()
@@ -336,19 +341,19 @@ public class DatabaseSeederDev {
         this.invoiceDao.saveAll(Arrays.asList(invoices));
         LogManager.getLogger(this.getClass()).warn("        ------- invoices");
 
-        LocalDate salespeopleTime=LocalDate.of(2021,Month.APRIL,1);
-        LocalDate salespeopleTime2=LocalDate.of(2021,Month.APRIL,2);
-        SalespeopleEntity[] salespeople={
-            SalespeopleEntity.builder()
-                .id("1").salesperson("Rosaria")
-                .salesDate(salespeopleTime).numArticle(2).finalValue(new BigDecimal(23)).articleEntityList(List.of(articles[0]))
-                .ticketEntityList(List.of(tickets[0]))
-                .build(),
-            SalespeopleEntity.builder()
-                .id("2").salesperson("Nacho")
-                .salesDate(salespeopleTime2).numArticle(5).finalValue(new BigDecimal(25.3)).articleEntityList(List.of(articles[0]))
-                .ticketEntityList(List.of(tickets[1]))
-                .build(),
+        LocalDate salespeopleTime = LocalDate.of(2021, Month.APRIL, 1);
+        LocalDate salespeopleTime2 = LocalDate.of(2021, Month.APRIL, 2);
+        SalespeopleEntity[] salespeople = {
+                SalespeopleEntity.builder()
+                        .id("1").salesperson("Rosaria")
+                        .salesDate(salespeopleTime).numArticle(2).finalValue(new BigDecimal(23)).articleEntityList(List.of(articles[0]))
+                        .ticketEntityList(List.of(tickets[0]))
+                        .build(),
+                SalespeopleEntity.builder()
+                        .id("2").salesperson("Nacho")
+                        .salesDate(salespeopleTime2).numArticle(5).finalValue(new BigDecimal(25.3)).articleEntityList(List.of(articles[0]))
+                        .ticketEntityList(List.of(tickets[1]))
+                        .build(),
 
         };
         this.salespeopleDao.saveAll(Arrays.asList(salespeople));
@@ -356,6 +361,3 @@ public class DatabaseSeederDev {
     }
 
 }
-
-
-

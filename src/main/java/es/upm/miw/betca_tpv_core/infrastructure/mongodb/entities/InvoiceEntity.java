@@ -35,6 +35,9 @@ public class InvoiceEntity {
 
     public InvoiceEntity(Invoice invoice) {
         BeanUtils.copyProperties(invoice, this);
+        if(invoice.getTicket() != null){
+            setTicketEntity(new TicketEntity(invoice.getTicket()));
+        }
     }
 
     public void addTicket(TicketEntity ticketEntity) {
