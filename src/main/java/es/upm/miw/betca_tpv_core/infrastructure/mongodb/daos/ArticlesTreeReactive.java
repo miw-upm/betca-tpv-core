@@ -6,6 +6,7 @@ import reactor.core.publisher.Mono;
 
 public interface ArticlesTreeReactive extends ReactiveSortingRepository< ArticlesTreeEntity, String > {
     Mono<ArticlesTreeEntity> findByReference(String reference);
+    Mono<ArticlesTreeEntity> findById(String reference);
     Mono<ArticlesTreeEntity> findFirstByReference(String reference);
-    Mono<Void> deleteByReference(String reference);
+    Mono<Void> deleteById(String reference);
 }

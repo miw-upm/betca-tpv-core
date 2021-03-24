@@ -6,6 +6,7 @@ import es.upm.miw.betca_tpv_core.domain.model.ArticleFamilyCrud;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -49,9 +50,8 @@ public class SingleArticleEntity extends ArticlesTreeEntity {
     @Override
     public ArticleFamilyCrud toDto() {
         ArticleFamilyCrud articleFamilyCrud = new ArticleFamilyCrud();
-        articleFamilyCrud.setDescription(this.getDescription());
-        articleFamilyCrud.setTreeType(this.getTreeType());
-        articleFamilyCrud.setReference(this.getReference());
+        BeanUtils.copyProperties(this, articleFamilyCrud);
+        articleFamilyCrud.setBarcode(this.articleEntity.getBarcode());
         return articleFamilyCrud;
     }
 
