@@ -17,10 +17,10 @@ import reactor.core.publisher.Mono;
 @Service("gitHubClient")
 public class GitHubServiceRest implements GitHubService {
 
-    private final String HTTPS = "https";
-    private final String REPOS = "/repos/";
-    private final String ISSUES = "/issues";
-    private final String UNEXPECTED_ERROR = "Unexpected error. GitHub Service.";
+    public static final String HTTPS = "https";
+    public static final String REPOS = "/repos/";
+    public static final String ISSUES = "/issues";
+    public static final String UNEXPECTED_ERROR = "Unexpected error. GitHub Service.";
 
     private String gitHubUri;
     private String gitHubOwner;
