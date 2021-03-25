@@ -77,7 +77,7 @@ public class TicketResource {
                 .map(TicketEditionDto::new);
     }
 
-    @PreAuthorize("hasRole('CUSTOMER') or hasRole('ADMIN') or hasRole('MANAGER') or hasRole('OPERATOR')")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping(SEARCH + BOUGHT_ARTICLES)
     public Flux<ArticleNewDto> findAllBoughtArticlesByMobile(@RequestHeader("Authorization") String token) {
         String extractedToken = this.jwtService.extractBearerToken(token);

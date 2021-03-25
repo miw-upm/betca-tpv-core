@@ -14,12 +14,14 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.math.BigDecimal.ZERO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
 @TestConfig
@@ -106,6 +108,23 @@ class TicketServiceIT {
         StepVerifier
                 .create(this.ticketService.readReceipt("5fa45e863d6e834d642689ac"))
                 .expectNextCount(1)
+                .verifyComplete();
+    }
+
+    @Test
+    void testCorrectShoppingWhenFindAllBoughtArticlesByMobile() {
+        List<String> articleBarcodes = new ArrayList<String>(
+                List.of("8400000000017", "8400000000024", "8400000000031",
+                        "8400000000055", "8400000000062", "8400000000555")
+        );
+        StepVerifier
+                .create(this.ticketService.findAllBoughtArticlesByMobile("66"))
+                .assertNext(shopping -> assertTrue(articleBarcodes.contains(shopping.getBarcode())))
+                .assertNext(shopping -> assertTrue(articleBarcodes.contains(shopping.getBarcode())))
+                .assertNext(shopping -> assertTrue(articleBarcodes.contains(shopping.getBarcode())))
+                .assertNext(shopping -> assertTrue(articleBarcodes.contains(shopping.getBarcode())))
+                .assertNext(shopping -> assertTrue(articleBarcodes.contains(shopping.getBarcode())))
+                .assertNext(shopping -> assertTrue(articleBarcodes.contains(shopping.getBarcode())))
                 .verifyComplete();
     }
 

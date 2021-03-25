@@ -263,7 +263,7 @@ class TicketResourceIT {
     }
 
     @Test
-    void testFindAllBoughtArticlesByMobileUnauthorized() {
+    void testFindAllBoughtArticlesByMobileServerError() {
         this.webTestClient
                 .get()
                 .uri(TICKETS + TicketResource.SEARCH + BOUGHT_ARTICLES)
