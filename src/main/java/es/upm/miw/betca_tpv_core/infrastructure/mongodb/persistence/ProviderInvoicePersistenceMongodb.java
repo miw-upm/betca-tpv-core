@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.ProviderInvoice;
 import es.upm.miw.betca_tpv_core.domain.persistence.ProviderInvoicePersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ProviderInvoiceReactive;
@@ -33,7 +34,10 @@ public class ProviderInvoicePersistenceMongodb implements ProviderInvoicePersist
     public Mono< ProviderInvoice > create(ProviderInvoice providerInvoice) {
         return this.assertNumberNotExist(providerInvoice.getNumber())
                 .then(Mono.just(providerInvoice.getProviderCompany()))
-                .flatMap(providerCompany -> this.providerReactive.findByCompany(providerCompany))
+                .flatMap(providerCompany -> this.providerReactive.findByCompany(providerCompany)
+                        .switchIfEmpty(Mono.error(
+                                new NotFoundException("Non existent company: " + providerCompany)
+                        )))
                 .map(providerEntity -> new ProviderInvoiceEntity(providerInvoice, providerEntity))
                 .flatMap(this.providerInvoiceReactive::save)
                 .map(ProviderInvoiceEntity::toProviderInvoice);

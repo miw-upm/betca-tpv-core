@@ -63,6 +63,7 @@ public class DatabaseSeederDev {
         this.messengerDao = messengerDao;
         this.invoiceDao = invoiceDao;
         this.salespeopleDao = salespeopleDao;
+        this.providerInvoiceDao = providerInvoiceDao;
 
         this.deleteAllAndInitializeAndSeedDataBase();
     }
@@ -85,6 +86,7 @@ public class DatabaseSeederDev {
         this.budgetDao.deleteAll();
 
         this.articleDao.deleteAll();
+        this.providerInvoiceDao.deleteAll();
 
         this.providerDao.deleteAll();
         this.cashierDao.deleteAll();
@@ -358,6 +360,31 @@ public class DatabaseSeederDev {
         };
         this.salespeopleDao.saveAll(Arrays.asList(salespeople));
         LogManager.getLogger(this.getClass()).warn("        ------  salespeople");
+
+        ProviderInvoiceEntity[] providerInvoiceEntities = {
+                ProviderInvoiceEntity.builder()
+                        .id("1").number(1111).creationDate(LocalDate.of(2021, 1, 1))
+                        .baseTax(new BigDecimal("1000")).taxValue(new BigDecimal("10"))
+                        .providerEntity(providers[0]).orderId("ord1")
+                        .build(),
+                ProviderInvoiceEntity.builder()
+                        .id("2").number(2222).creationDate(LocalDate.of(2021, 2, 1))
+                        .baseTax(new BigDecimal("2000")).taxValue(new BigDecimal("20"))
+                        .providerEntity(providers[1]).orderId("ord2")
+                        .build(),
+                ProviderInvoiceEntity.builder()
+                        .id("3").number(3333).creationDate(LocalDate.of(2021, 3, 1))
+                        .baseTax(new BigDecimal("3000")).taxValue(new BigDecimal("30"))
+                        .providerEntity(providers[2]).orderId("ord3")
+                        .build(),
+                ProviderInvoiceEntity.builder()
+                        .id("4").number(4444).creationDate(LocalDate.of(2021, 4, 1))
+                        .baseTax(new BigDecimal("4000")).taxValue(new BigDecimal("40"))
+                        .providerEntity(providers[3]).orderId("ord4")
+                        .build(),
+        };
+        this.providerInvoiceDao.saveAll(List.of(providerInvoiceEntities));
+        LogManager.getLogger(this.getClass()).warn("        ------  provider invoices");
     }
 
 }
