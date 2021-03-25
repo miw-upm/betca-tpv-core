@@ -11,4 +11,6 @@ public interface ProviderInvoicePersistence {
     Flux< ProviderInvoice > findAll();
 
     Mono< ProviderInvoice > create(ProviderInvoice providerInvoice);
+
+    Mono< ProviderInvoice > findByNumber(Integer number);
 }
