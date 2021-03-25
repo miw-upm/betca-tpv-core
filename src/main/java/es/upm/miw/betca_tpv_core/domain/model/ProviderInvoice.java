@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -18,8 +18,8 @@ import java.time.LocalDateTime;
 public class ProviderInvoice {
     @NotNull
     private Integer number;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime creationDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate creationDate;
     @PositiveBigDecimal
     private BigDecimal baseTax;
     @PositiveBigDecimal

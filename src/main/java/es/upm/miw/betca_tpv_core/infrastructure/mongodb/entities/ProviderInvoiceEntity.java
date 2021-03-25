@@ -1,8 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import es.upm.miw.betca_tpv_core.domain.model.ProviderInvoice;
-import es.upm.miw.betca_tpv_core.domain.model.validations.PositiveBigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,9 +11,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Document
 @Data
@@ -27,12 +24,17 @@ public class ProviderInvoiceEntity {
     private String id;
     @Indexed(unique = true)
     private Integer number;
-    private LocalDateTime creationDate;
+    private LocalDate creationDate;
     private BigDecimal baseTax;
     private BigDecimal taxValue;
     @DBRef(lazy = true)
     private ProviderEntity providerEntity;
     private String orderId;
+
+    public ProviderInvoiceEntity(ProviderInvoice providerInvoice, ProviderEntity providerEntity) {
+        BeanUtils.copyProperties(providerInvoice, this);
+        this.providerEntity = providerEntity;
+    }
 
     public ProviderInvoice toProviderInvoice() {
         ProviderInvoice providerInvoice = new ProviderInvoice();
