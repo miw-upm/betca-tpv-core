@@ -6,6 +6,8 @@ import es.upm.miw.betca_tpv_core.domain.model.CashierClose;
 import es.upm.miw.betca_tpv_core.domain.model.CashierMovement;
 import es.upm.miw.betca_tpv_core.domain.model.CashierState;
 import es.upm.miw.betca_tpv_core.domain.persistence.CashierPersistence;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.CashierEntity;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ShoppingEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -101,5 +103,108 @@ public class CashierService {
                     return lastCashier;
                 })
                 .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier));
+    }
+
+    public Mono<Cashier> findAllTotals() {
+        Cashier cashier = new Cashier();
+        Flux<Cashier> flux = this.cashierPersistence.findAll();
+        cashier.setInitialCash(flux
+                .map(Cashier::getInitialCash)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .block()
+        );
+        cashier.setCashSales(flux
+                .map(Cashier::getCashSales)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .block()
+        );
+        cashier.setCardSales(flux
+                .map(Cashier::getCardSales)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .block()
+        );
+        cashier.setUsedVouchers(flux
+                .map(Cashier::getUsedVouchers)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .block()
+        );
+        cashier.setDeposit(flux
+                .map(Cashier::getDeposit)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .block()
+        );
+        cashier.setWithdrawal(flux
+                .map(Cashier::getWithdrawal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .block()
+        );
+        cashier.setLostCard(flux
+                .map(Cashier::getLostCard)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .block()
+        );
+        cashier.setLostCash(flux
+                .map(Cashier::getLostCash)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .block()
+        );
+        cashier.setFinalCash(flux
+                .map(Cashier::getFinalCash)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .block()
+        );
+        return Mono.just(cashier);
+
+    }
+
+    public Mono<Cashier> findCashierEntitiesByClosureDateBetweenTotals(LocalDateTime dateBegin, LocalDateTime dateEnd) {
+        Cashier cashier = new Cashier();
+        Flux<Cashier> flux = this.cashierPersistence.findCashierEntitiesByClosureDateBetween(dateBegin, dateEnd);
+        cashier.setInitialCash(flux
+                .map(Cashier::getInitialCash)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .block()
+        );
+        cashier.setCashSales(flux
+                .map(Cashier::getCashSales)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .block()
+        );
+        cashier.setCardSales(flux
+                .map(Cashier::getCardSales)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .block()
+        );
+        cashier.setUsedVouchers(flux
+                .map(Cashier::getUsedVouchers)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .block()
+        );
+        cashier.setDeposit(flux
+                .map(Cashier::getDeposit)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .block()
+        );
+        cashier.setWithdrawal(flux
+                .map(Cashier::getWithdrawal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .block()
+        );
+        cashier.setLostCard(flux
+                .map(Cashier::getLostCard)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .block()
+        );
+        cashier.setLostCash(flux
+                .map(Cashier::getLostCash)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .block()
+        );
+        cashier.setFinalCash(flux
+                .map(Cashier::getFinalCash)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .block()
+        );
+        return Mono.just(cashier);
     }
 }
