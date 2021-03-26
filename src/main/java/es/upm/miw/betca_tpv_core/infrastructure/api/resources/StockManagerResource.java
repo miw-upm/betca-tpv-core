@@ -20,6 +20,7 @@ public class StockManagerResource {
     public static final String STOCK = "/stock";
     public static final String STOCK_SOLD = "/stock-sold";
     public static final String STOCK_FUTURE = "/stock-future";
+    public static final String STOCK_EMPTY = "/stock-empty";
 
     private StockManagerService stockManagerService;
 
@@ -45,6 +46,12 @@ public class StockManagerResource {
     @GetMapping(STOCK_FUTURE)
     public Mono<StockManagerDto> searchFutureStock(@RequestParam() String barcode) {
         return this.stockManagerService.searchFutureStock(barcode)
+                .map(StockManagerDto::new);
+
+    }
+    @GetMapping(STOCK_EMPTY)
+    public Mono<StockManagerDto> searchEmptyStock(@RequestParam() String barcode) {
+        return this.stockManagerService.searchEmptyStock(barcode)
                 .map(StockManagerDto::new);
 
     }

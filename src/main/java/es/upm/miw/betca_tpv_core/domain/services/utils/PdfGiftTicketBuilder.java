@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 public class PdfGiftTicketBuilder {
     private static final String PATH = "/tpv-pdfs/gifttickets/";
-    private static final String FILE = "ticket-";
+    private static final String FILE = "giftticket-";
     private static final String GIFTTICKET = "/home/gifttickets/";
 
     public byte[] generateGiftTicket(GiftTicket giftTicket) {
