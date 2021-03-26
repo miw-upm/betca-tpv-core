@@ -37,7 +37,7 @@ public class SalespeopleReactiveIT {
                 .create(this.salespeopleReactive.findBySalesDate(salespeopleTime))
                 .expectNextMatches(salespeople->{
                     assertEquals(5,salespeople.getNumArticle());
-                    assertEquals(new BigDecimal(25.3),salespeople.getFinalValue());
+                    assertEquals(new BigDecimal(25),salespeople.getFinalValue());
                     return true;
                 })
                 .thenCancel()

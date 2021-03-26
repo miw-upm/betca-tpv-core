@@ -375,7 +375,7 @@ public class DatabaseSeederDev {
                         .build(),
                 SalespeopleEntity.builder()
                         .id("2").salesperson("Nacho")
-                        .salesDate(salespeopleTime2).numArticle(5).finalValue(new BigDecimal(25.3)).articleEntityList(List.of(articles[0]))
+                        .salesDate(salespeopleTime2).numArticle(5).finalValue(new BigDecimal(25)).articleEntityList(List.of(articles[0]))
                         .ticketEntityList(List.of(tickets[1]))
                         .build(),
 
