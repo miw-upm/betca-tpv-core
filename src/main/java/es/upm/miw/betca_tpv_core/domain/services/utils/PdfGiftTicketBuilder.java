@@ -3,7 +3,7 @@ package es.upm.miw.betca_tpv_core.domain.services.utils;
 import es.upm.miw.betca_tpv_core.domain.model.GiftTicket;
 import es.upm.miw.betca_tpv_core.domain.model.Property;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class PdfGiftTicketBuilder {
     private static final String PATH = "/tpv-pdfs/gifttickets/";
@@ -16,7 +16,7 @@ public class PdfGiftTicketBuilder {
         pdf.paragraphEmphasized("GIFTTICKET");
         pdf.barcode(giftTicket.getId()).line();
         pdf.paragraphEmphasized("Gift ticket message: " + giftTicket.getMessage());
-        //pdf.paragraphEmphasized("Gift ticket expiry date: " + new LocalDateTime.now());
+        pdf.paragraphEmphasized("Gift ticket date: " + LocalDate.now());
         pdf.qrCode(Property.getProperty().getMiwTpv() + GIFTTICKET + giftTicket.getId());
         return pdf.foot().build();
     }
