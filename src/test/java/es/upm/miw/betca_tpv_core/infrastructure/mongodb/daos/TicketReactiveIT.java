@@ -8,6 +8,7 @@ import reactor.test.StepVerifier;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -74,6 +75,22 @@ public class TicketReactiveIT {
                     assertTrue(ticket.getCreationDate().isAfter(dateIni) && ticket.getCreationDate().isBefore(dateEnd));
                     return true;
                 })
+                .thenCancel()
+                .verify();
+    }
+
+    @Test
+    void testFindByUserMobile() {
+        List<String> ticketsIds = List.of(
+                "5fa4603b7513a164chop77ac", "5gfaw03b7513a164chop77ac",
+                "7faw03b7513a164chop77ac", "9jfaw03b7513a164chop77ac"
+        );
+        StepVerifier
+                .create(this.ticketReactive.findByUserMobile("66"))
+                .assertNext(ticketEntity -> assertTrue(ticketsIds.contains(ticketEntity.getId())))
+                .assertNext(ticketEntity -> assertTrue(ticketsIds.contains(ticketEntity.getId())))
+                .assertNext(ticketEntity -> assertTrue(ticketsIds.contains(ticketEntity.getId())))
+                .assertNext(ticketEntity -> assertTrue(ticketsIds.contains(ticketEntity.getId())))
                 .thenCancel()
                 .verify();
     }

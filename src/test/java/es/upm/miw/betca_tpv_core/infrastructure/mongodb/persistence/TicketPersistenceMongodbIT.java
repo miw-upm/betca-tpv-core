@@ -127,4 +127,19 @@ class TicketPersistenceMongodbIT {
                 .verify();
     }
 
+    @Test
+    void testFindByUserMobile() {
+        List<String> ticketsIds = List.of(
+                "5fa4603b7513a164chop77ac", "5gfaw03b7513a164chop77ac",
+                "7faw03b7513a164chop77ac", "9jfaw03b7513a164chop77ac"
+        );
+        StepVerifier
+                .create(this.ticketPersistenceMongodb.findByUserMobile("66"))
+                .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))
+                .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))
+                .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))
+                .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))
+                .thenCancel()
+                .verify();
+    }
 }
