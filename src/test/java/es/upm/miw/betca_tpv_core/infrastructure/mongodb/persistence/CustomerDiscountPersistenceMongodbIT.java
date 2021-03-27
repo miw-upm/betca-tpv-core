@@ -84,4 +84,31 @@ public class CustomerDiscountPersistenceMongodbIT {
                 .expectComplete()
                 .verify();
     }
+
+    @Test
+    void testFindByUser() {
+        StepVerifier
+                .create(this.customerDiscountPersistenceMongodb.findByUser("66"))
+                .expectNextMatches(customerDiscount -> {
+                    assertEquals("discount1", customerDiscount.getNote());
+                    assertEquals(30.0, customerDiscount.getDiscount());
+                    assertEquals(50.0, customerDiscount.getMinimumPurchase());
+                    return true;
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void testFindByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe() {
+        StepVerifier
+                .create(this.customerDiscountPersistenceMongodb.findByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe(null, null, null, null))
+                .expectNextMatches(customerDiscount -> {
+                    assertEquals("discount1", customerDiscount.getNote());
+                    assertEquals(30.0, customerDiscount.getDiscount());
+                    assertEquals(50.0, customerDiscount.getMinimumPurchase());
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }
 }
