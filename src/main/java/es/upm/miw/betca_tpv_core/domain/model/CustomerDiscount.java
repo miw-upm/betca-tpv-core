@@ -17,6 +17,8 @@ import java.util.Objects;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CustomerDiscount {
+    @NotBlank
+    private String id;
     private String note;
     private String registrationDate;
     @NotNull

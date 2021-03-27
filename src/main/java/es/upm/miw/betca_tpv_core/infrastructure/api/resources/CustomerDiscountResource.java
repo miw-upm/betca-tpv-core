@@ -15,6 +15,7 @@ import javax.validation.Valid;
 public class CustomerDiscountResource {
     public static final String CUSTOMERS_DISCOUNTS = "/customer-discount";
     public static final String SEARCH = "/search";
+    public static final String CUSTOMER_DISCOUNT_ID = "/{id}";
 
     private CustomerDiscountService customerDiscountService;
 
@@ -34,5 +35,10 @@ public class CustomerDiscountResource {
     @PostMapping(produces = {"application/json"})
     public Mono<CustomerDiscount> create(@Valid @RequestBody CustomerDiscount customerDiscount){
         return this.customerDiscountService.create(customerDiscount);
+    }
+
+    @PutMapping(CUSTOMER_DISCOUNT_ID)
+    public Mono<CustomerDiscount> update(@PathVariable String id, @Valid @RequestBody CustomerDiscount customerDiscount) {
+        return this.customerDiscountService.update(id, customerDiscount);
     }
 }
