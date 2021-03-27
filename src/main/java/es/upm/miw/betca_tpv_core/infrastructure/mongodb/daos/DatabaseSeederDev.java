@@ -25,6 +25,7 @@ public class DatabaseSeederDev {
     private ProviderDao providerDao;
     private ArticlesTreeDao articlesTreeDao;
     private TicketDao ticketDao;
+    private GiftTicketDao giftTicketDao;
     private CashierDao cashierDao;
     private OfferDao offerDao;
     private StockAlarmDao stockAlarmDao;
@@ -41,7 +42,7 @@ public class DatabaseSeederDev {
 
     @Autowired
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
-                             TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,
+                             TicketDao ticketDao, GiftTicketDao giftTicketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,
                              CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao,
                              CustomerDiscountDao customerDiscountDao, BudgetDao budgetDao, MessengerDao messengerDao,
                              SalespeopleDao salespeopleDao, InvoiceDao invoiceDao, ProviderInvoiceDao providerInvoiceDao,
@@ -51,6 +52,7 @@ public class DatabaseSeederDev {
         this.providerDao = providerDao;
         this.articlesTreeDao = articlesTreeDao;
         this.ticketDao = ticketDao;
+        this.giftTicketDao = giftTicketDao;
         this.cashierDao = cashierDao;
         this.offerDao = offerDao;
         this.creditSaleDao = creditSaleDao;
@@ -81,6 +83,7 @@ public class DatabaseSeederDev {
         this.invoiceDao.deleteAll();
 
         this.ticketDao.deleteAll();
+        this.giftTicketDao.deleteAll();
         this.offerDao.deleteAll();
         this.stockAlarmDao.deleteAll();
         this.budgetDao.deleteAll();
@@ -232,6 +235,12 @@ public class DatabaseSeederDev {
         };
         this.ticketDao.saveAll(Arrays.asList(tickets));
         LogManager.getLogger(this.getClass()).warn("        ------- tickets");
+        GiftTicketEntity[] giftTicketEntities = {
+                new GiftTicketEntity("asdhgsjd56736jdfb", "mensaje 1", tickets[0]),
+                new GiftTicketEntity("asdhbjhjds8987397jkdbcb", "mensaje 2", tickets[1]),
+        };
+        this.giftTicketDao.saveAll(Arrays.asList(giftTicketEntities));
+        LogManager.getLogger(this.getClass()).warn("        ------- GiftTickets");
         LocalDate offerCreationDate = LocalDate.of(2021, Month.MARCH, 12);
         LocalDate offerExpiryDate = LocalDate.of(2021, Month.JULY, 12);
         OfferEntity[] offers = {
@@ -366,7 +375,7 @@ public class DatabaseSeederDev {
                         .build(),
                 SalespeopleEntity.builder()
                         .id("2").salesperson("Nacho")
-                        .salesDate(salespeopleTime2).numArticle(5).finalValue(new BigDecimal(25.3)).articleEntityList(List.of(articles[0]))
+                        .salesDate(salespeopleTime2).numArticle(5).finalValue(new BigDecimal(25)).articleEntityList(List.of(articles[0]))
                         .ticketEntityList(List.of(tickets[1]))
                         .build(),
 

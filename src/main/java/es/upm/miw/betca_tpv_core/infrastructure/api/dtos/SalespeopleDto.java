@@ -1,0 +1,29 @@
+package es.upm.miw.betca_tpv_core.infrastructure.api.dtos;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import es.upm.miw.betca_tpv_core.domain.model.Salespeople;
+import es.upm.miw.betca_tpv_core.domain.model.validations.PositiveBigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class SalespeopleDto {
+    private String salesperson;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate localDate;
+    @PositiveBigDecimal
+    private BigDecimal finalValue;
+
+    public SalespeopleDto(Salespeople salespeople) {
+        this.salesperson=salespeople.getSalesperson();
+        this.localDate=salespeople.getSalesDate();
+        this.finalValue=salespeople.getFinalValue();
+    }
+
+}

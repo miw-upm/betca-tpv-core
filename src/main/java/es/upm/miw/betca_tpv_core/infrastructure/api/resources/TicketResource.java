@@ -10,7 +10,6 @@ import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ArticleNewDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketBasicDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketEditionDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.UserBasicDto;
-import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +18,6 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.logging.Logger;
 
 @Rest
 @RequestMapping(TicketResource.TICKETS)
@@ -77,7 +75,7 @@ public class TicketResource {
                 .map(TicketEditionDto::new);
     }
 
-    @PreAuthorize("hasRole('CUSTOMER') or hasRole('ADMIN') or hasRole('MANAGER') or hasRole('OPERATOR')")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping(SEARCH + BOUGHT_ARTICLES)
     public Flux<ArticleNewDto> findAllBoughtArticlesByMobile(@RequestHeader("Authorization") String token) {
         String extractedToken = this.jwtService.extractBearerToken(token);

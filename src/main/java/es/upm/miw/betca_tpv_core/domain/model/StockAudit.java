@@ -9,18 +9,20 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
 public class StockAudit {
+    private String id;
     @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime creationDate;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime closeDate;
-    private String[] barcodesWithoutAudit;
+    private List<String> barcodesWithoutAudit;
     private BigDecimal lossValue;
-    private ArticleLoss[] losses;
+    private List<ArticleLoss> losses;
 }
