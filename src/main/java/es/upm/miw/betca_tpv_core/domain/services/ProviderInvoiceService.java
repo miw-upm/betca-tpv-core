@@ -24,4 +24,8 @@ public class ProviderInvoiceService {
     public Mono< ProviderInvoice > create(ProviderInvoice providerInvoice) {
         return this.providerInvoicePersistence.create(providerInvoice);
     }
+
+    public Mono< ProviderInvoice > read(Integer number) {
+        return this.providerInvoicePersistence.readByNumber(number);
+    }
 }
