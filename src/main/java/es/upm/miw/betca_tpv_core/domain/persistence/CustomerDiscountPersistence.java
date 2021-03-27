@@ -14,4 +14,6 @@ public interface CustomerDiscountPersistence {
             String note, Double discount, Double minimumPurchase, String user);
 
     Mono< CustomerDiscount > create (CustomerDiscount customerDiscount);
+
+    Mono<CustomerDiscount> update (String id, CustomerDiscount customerDiscount);
 }

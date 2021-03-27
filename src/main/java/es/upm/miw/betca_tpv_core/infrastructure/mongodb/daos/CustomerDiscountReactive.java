@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.CustomerDiscoun
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveSortingRepository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface CustomerDiscountReactive extends ReactiveSortingRepository<CustomerDiscountEntity, String> {
     @Query("{$and:[" // allow NULL: all elements
@@ -17,4 +18,6 @@ public interface CustomerDiscountReactive extends ReactiveSortingRepository<Cust
     );
 
     Flux<CustomerDiscountEntity> findByUser(String user);
+
+    Mono<CustomerDiscountEntity> findById(String id);
 }

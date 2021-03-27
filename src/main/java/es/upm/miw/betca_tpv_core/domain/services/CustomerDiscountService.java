@@ -29,4 +29,8 @@ public class CustomerDiscountService {
         return this.customerDiscountPersistence.create(customerDiscount);
     }
 
+    public Mono<CustomerDiscount> update(String id, CustomerDiscount customerDiscount) {
+        return this.customerDiscountPersistence.update(id, customerDiscount);
+    }
+
 }

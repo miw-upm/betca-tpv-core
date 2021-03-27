@@ -34,4 +34,16 @@ public class CustomerDiscountPersistenceMongodbIT {
                 .expectComplete()
                 .verify();
     }
+
+    @Test
+    void testUpdate() {
+        StepVerifier
+                .create(this.customerDiscountPersistenceMongodb.update("1", CustomerDiscount.builder().note("test update").discount(40.0).build()))
+                .expectNextMatches(customerDiscount -> {
+                    assertEquals("test update", customerDiscount.getNote());
+                    assertEquals(40.0, customerDiscount.getDiscount());
+                    return true;
+                })
+                .verifyComplete();
+    }
 }

@@ -1,11 +1,13 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.CustomerDiscount;
 import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.persistence.CustomerDiscountPersistence;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.CustomerDiscountReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.CustomerDiscountEntity;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
@@ -41,6 +43,17 @@ public class CustomerDiscountPersistenceMongodb implements CustomerDiscountPersi
         customerDiscountEntity.addRegistrationDate();
         return this.readUserByUserMobileNullSafe(customerDiscount.getUser())
                 .then(this.customerDiscountReactive.save(customerDiscountEntity))
+                .map(CustomerDiscountEntity::toCustomerDiscount);
+    }
+
+    @Override
+    public Mono<CustomerDiscount> update(String id, CustomerDiscount customerDiscount) {
+        return this.customerDiscountReactive.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non existent id: " + id)))
+                .flatMap(customerDiscountEntity -> {
+                    BeanUtils.copyProperties(customerDiscount, customerDiscountEntity);
+                    return this.customerDiscountReactive.save(customerDiscountEntity);
+                })
                 .map(CustomerDiscountEntity::toCustomerDiscount);
     }
 
