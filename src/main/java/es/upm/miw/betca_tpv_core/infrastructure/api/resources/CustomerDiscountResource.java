@@ -25,7 +25,7 @@ public class CustomerDiscountResource {
     }
 
     @GetMapping(SEARCH)
-    public Flux< CustomerDiscount > findByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe(
+    public Flux<CustomerDiscount> findByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe(
             @RequestParam(required = false) String note, @RequestParam(required = false) Double discount,
             @RequestParam(required = false) Double minimumPurchase, @RequestParam(required = false) String user
     ) {
@@ -33,7 +33,7 @@ public class CustomerDiscountResource {
     }
 
     @PostMapping(produces = {"application/json"})
-    public Mono<CustomerDiscount> create(@Valid @RequestBody CustomerDiscount customerDiscount){
+    public Mono<CustomerDiscount> create(@Valid @RequestBody CustomerDiscount customerDiscount) {
         return this.customerDiscountService.create(customerDiscount);
     }
 
@@ -45,5 +45,10 @@ public class CustomerDiscountResource {
     @GetMapping(CUSTOMER_DISCOUNT_ID)
     public Mono<CustomerDiscount> read(@PathVariable String id) {
         return this.customerDiscountService.read(id);
+    }
+
+    @DeleteMapping(CUSTOMER_DISCOUNT_ID)
+    public Mono<Void> delete(@PathVariable String id) {
+        return this.customerDiscountService.delete(id);
     }
 }

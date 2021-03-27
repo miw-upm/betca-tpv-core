@@ -64,6 +64,13 @@ public class CustomerDiscountPersistenceMongodb implements CustomerDiscountPersi
                 .map(CustomerDiscountEntity::toCustomerDiscount);
     }
 
+    @Override
+    public Mono<Void> delete(String id) {
+        return this.customerDiscountReactive.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non existent id: " + id)))
+                .then(this.customerDiscountReactive.deleteById(id));
+    }
+
     private Mono<User> readUserByUserMobileNullSafe(String userMobile) {
         if (userMobile != null) {
             return this.userMicroservice.readByMobile(userMobile);

@@ -8,6 +8,7 @@ import reactor.test.StepVerifier;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -59,5 +60,28 @@ public class CustomerDiscountPersistenceMongodbIT {
                     return true;
                 })
                 .verifyComplete();
+    }
+
+    @Test
+    void testCreateAndDelete() {
+        AtomicReference<String> idCustomer = new AtomicReference<>("");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        StepVerifier
+                .create(this.customerDiscountPersistenceMongodb.create(CustomerDiscount.builder().note("test").registrationDate(LocalDateTime.now().format(formatter)).discount(10.0).minimumPurchase(100.0).user("6").build()))
+                .expectNextMatches(customerDiscount -> {
+                    assertEquals(10.0, customerDiscount.getDiscount());
+                    assertEquals(100.0, customerDiscount.getMinimumPurchase());
+                    assertEquals("6", customerDiscount.getUser());
+                    assertEquals("test", customerDiscount.getNote());
+                    assertNotNull(customerDiscount.getRegistrationDate());
+                    idCustomer.set(customerDiscount.getId());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+        StepVerifier
+                .create(this.customerDiscountPersistenceMongodb.delete(idCustomer.get()))
+                .expectComplete()
+                .verify();
     }
 }
