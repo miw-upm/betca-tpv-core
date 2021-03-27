@@ -44,7 +44,7 @@ public class ProviderInvoicePersistenceMongodb implements ProviderInvoicePersist
     }
 
     @Override
-    public Mono< ProviderInvoice > findByNumber(Integer number) {
+    public Mono< ProviderInvoice > readByNumber(Integer number) {
         return this.providerInvoiceReactive.findByNumber(number)
                 .switchIfEmpty(Mono.error(
                         new NotFoundException("Non existing provider invoice with number: " + number)))

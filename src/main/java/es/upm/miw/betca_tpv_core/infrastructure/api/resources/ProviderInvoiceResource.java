@@ -35,7 +35,7 @@ public class ProviderInvoiceResource {
 
     @GetMapping(NUMBER)
     public Mono< ProviderInvoice > read(@PathVariable Integer number) {
-        return this.providerInvoiceService.findByNumber(number);
+        return this.providerInvoiceService.read(number);
     }
 
 }

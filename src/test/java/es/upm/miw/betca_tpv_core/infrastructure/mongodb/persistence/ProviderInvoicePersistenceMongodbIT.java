@@ -48,4 +48,12 @@ class ProviderInvoicePersistenceMongodbIT {
                 .expectError(NotFoundException.class)
                 .verify();
     }
+
+    @Test
+    void testReadNonExistingNumber() {
+        StepVerifier
+                .create(this.providerInvoicePersistenceMongodb.readByNumber(9999))
+                .expectError(NotFoundException.class)
+                .verify();
+    }
 }

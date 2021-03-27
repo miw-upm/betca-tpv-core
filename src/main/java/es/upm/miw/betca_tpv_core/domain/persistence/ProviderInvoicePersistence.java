@@ -12,5 +12,5 @@ public interface ProviderInvoicePersistence {
 
     Mono< ProviderInvoice > create(ProviderInvoice providerInvoice);
 
-    Mono< ProviderInvoice > findByNumber(Integer number);
+    Mono< ProviderInvoice > readByNumber(Integer number);
 }
