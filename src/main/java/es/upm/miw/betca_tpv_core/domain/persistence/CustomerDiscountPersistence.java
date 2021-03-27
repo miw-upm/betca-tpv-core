@@ -16,4 +16,6 @@ public interface CustomerDiscountPersistence {
     Mono< CustomerDiscount > create (CustomerDiscount customerDiscount);
 
     Mono<CustomerDiscount> update (String id, CustomerDiscount customerDiscount);
+
+    Mono<CustomerDiscount> readById(String id);
 }

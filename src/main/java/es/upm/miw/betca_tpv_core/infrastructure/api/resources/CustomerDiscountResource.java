@@ -41,4 +41,9 @@ public class CustomerDiscountResource {
     public Mono<CustomerDiscount> update(@PathVariable String id, @Valid @RequestBody CustomerDiscount customerDiscount) {
         return this.customerDiscountService.update(id, customerDiscount);
     }
+
+    @GetMapping(CUSTOMER_DISCOUNT_ID)
+    public Mono<CustomerDiscount> read(@PathVariable String id) {
+        return this.customerDiscountService.read(id);
+    }
 }

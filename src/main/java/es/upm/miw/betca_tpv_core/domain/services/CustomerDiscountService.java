@@ -33,4 +33,7 @@ public class CustomerDiscountService {
         return this.customerDiscountPersistence.update(id, customerDiscount);
     }
 
+    public Mono<CustomerDiscount> read(String id) {
+        return this.customerDiscountPersistence.readById(id);
+    }
 }

@@ -46,4 +46,18 @@ public class CustomerDiscountPersistenceMongodbIT {
                 })
                 .verifyComplete();
     }
+
+    @Test
+    void testReadById() {
+        StepVerifier
+                .create(this.customerDiscountPersistenceMongodb.readById("2"))
+                .expectNextMatches(customerDiscount -> {
+                    assertEquals("discount2", customerDiscount.getNote());
+                    assertEquals(10.0, customerDiscount.getDiscount());
+                    assertEquals(40.0, customerDiscount.getMinimumPurchase());
+                    assertEquals("77", customerDiscount.getUser());
+                    return true;
+                })
+                .verifyComplete();
+    }
 }
