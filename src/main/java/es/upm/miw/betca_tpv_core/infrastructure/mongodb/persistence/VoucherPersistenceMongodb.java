@@ -42,10 +42,13 @@ public class VoucherPersistenceMongodb implements VoucherPersistence {
 
     @Override
     public Mono<Voucher> consume(String reference) {
-        return this.readByReference(reference).map(voucher -> {
-                    voucher.setDateOfUse(LocalDateTime.now());
-                    this.voucherReactive.save(new VoucherEntity(voucher));
-                    return voucher;
-        });
+        return this.voucherReactive.findById(reference)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non existent voucher with reference: " + reference)))
+                .map(voucherEntity -> {
+                    voucherEntity.setDateOfUse(LocalDateTime.now());
+                    return voucherEntity;
+                })
+                .flatMap(this.voucherReactive::save)
+                .map(VoucherEntity::toVoucher);
     }
 }
