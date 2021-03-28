@@ -7,7 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -29,5 +31,11 @@ public class Tag {
                 .group(tag.getGroup())
                 .description(tag.getDescription())
                 .build();
+    }
+
+    public void doDefault() {
+        if (Objects.isNull(articleList)) {
+            this.articleList = new ArrayList<Article>();
+        }
     }
 }

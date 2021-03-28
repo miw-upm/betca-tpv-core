@@ -1,6 +1,5 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities;
 
-import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.model.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +13,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Data
@@ -38,10 +36,16 @@ public class TagEntity {
         this.articleEntityList = new ArrayList<ArticleEntity>();
     }
 
+    public void add(ArticleEntity articleEntity) {
+        this.articleEntityList.add(articleEntity);
+    }
+
     public Tag toTag() {
         Tag tag = new Tag();
         BeanUtils.copyProperties(this, tag);
-        tag.setArticleList(this.getArticleEntityList().stream().map(ArticleEntity::toArticle).collect(Collectors.toList()));
+        tag.setArticleList(this.getArticleEntityList().stream()
+                .map(ArticleEntity::toArticle)
+                .collect(Collectors.toList()));
         return tag;
     }
 }

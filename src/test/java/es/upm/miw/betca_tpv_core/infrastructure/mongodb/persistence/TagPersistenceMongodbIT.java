@@ -2,16 +2,14 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
-import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.model.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
-import static java.math.BigDecimal.TEN;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestConfig
 public class TagPersistenceMongodbIT {
@@ -31,19 +29,21 @@ public class TagPersistenceMongodbIT {
                 .expectComplete()
                 .verify();
     }
+
     @Test
     void testCreateExistingName() {
         StepVerifier
                 .create(this.tagPersistenceMongodb.create(
-                        Tag.builder().name("name1").group("group2").description("description").build()))
+                        Tag.builder().name("name1").group("group2").description("description").articleList(List.of()).build()))
                 .expectError(ConflictException.class)
                 .verify();
     }
+
     @Test
     void testCreate() {
         StepVerifier
                 .create(this.tagPersistenceMongodb.create(
-                        Tag.builder().name("name4").group("group3").description("description").build()))
+                        Tag.builder().name("name4").group("group3").description("description").articleList(List.of()).build()))
                 .expectNextMatches(tag -> {
                     assertEquals("name4", tag.getName());
                     assertEquals("group3", tag.getGroup());
@@ -52,19 +52,21 @@ public class TagPersistenceMongodbIT {
                 })
                 .verifyComplete();
     }
+
     @Test
     void testUpdateExistingName() {
         StepVerifier
                 .create(this.tagPersistenceMongodb.update("name1",
-                        Tag.builder().name("name2").group("group1").description("description").build()))
+                        Tag.builder().name("name2").group("group1").description("description").articleList(List.of()).build()))
                 .expectError(ConflictException.class)
                 .verify();
     }
+
     @Test
     void testUpdate() {
         StepVerifier
                 .create(this.tagPersistenceMongodb.update("name3",
-                        Tag.builder().name("name3").group("group1").description("description").build()))
+                        Tag.builder().name("name3").group("group1").description("description").articleList(List.of()).build()))
                 .expectNextMatches(tag -> {
                     assertEquals("group1", tag.getGroup());
                     assertEquals("description", tag.getDescription());

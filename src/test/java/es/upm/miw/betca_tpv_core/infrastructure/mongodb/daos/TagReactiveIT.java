@@ -17,14 +17,15 @@ public class TagReactiveIT {
     void testFindByName() {
         StepVerifier.
                 create(this.tagReactive.findByName("name1")).
-        expectNextMatches(tag -> {
-            System.out.println("tag: " + tag);
-            assertTrue(tag.getName().contains("name1"));
-            return true;
-        })
-        .thenCancel()
-        .verify();
+                expectNextMatches(tag -> {
+                    System.out.println("tag: " + tag);
+                    assertTrue(tag.getName().contains("name1"));
+                    return true;
+                })
+                .thenCancel()
+                .verify();
     }
+
     @Test
     void testFindBNameAndGroupAndDescriptionNullSafe() {
         StepVerifier
