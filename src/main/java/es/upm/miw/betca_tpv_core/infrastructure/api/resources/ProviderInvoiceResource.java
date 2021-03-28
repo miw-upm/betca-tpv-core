@@ -38,4 +38,12 @@ public class ProviderInvoiceResource {
         return this.providerInvoiceService.read(number);
     }
 
+    @PutMapping(NUMBER)
+    public Mono< ProviderInvoice > update(
+            @PathVariable Integer number,
+            @Valid @RequestBody ProviderInvoice providerInvoice
+    ) {
+        return this.providerInvoiceService.update(number, providerInvoice);
+    }
+
 }
