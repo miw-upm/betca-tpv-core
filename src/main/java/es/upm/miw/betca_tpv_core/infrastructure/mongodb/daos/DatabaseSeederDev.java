@@ -340,9 +340,9 @@ public class DatabaseSeederDev {
         LogManager.getLogger(this.getClass()).warn("        ------- customer discount");
 
         BudgetEntity[] budgets = {
-                new BudgetEntity("1", date, List.of(shoppingList[0], shoppingList[1])),
-                new BudgetEntity("2", date, List.of(shoppingList[2], shoppingList[3])),
-                new BudgetEntity("3", date, List.of(shoppingList[4], shoppingList[5])),
+                new BudgetEntity("1","cmVmZXJlbmNlb2ZmZXIy", date, List.of(shoppingList[0], shoppingList[1])),
+                new BudgetEntity("2", "FGhfvfMORj6iKmzp5aERAA",date, List.of(shoppingList[2], shoppingList[3])),
+                new BudgetEntity("3", "nUs81zZ4R_iuoq0_zCRm6A",date, List.of(shoppingList[4], shoppingList[5])),
 
 
         };
