@@ -38,6 +38,7 @@ public class DatabaseSeederDev {
     private InvoiceDao invoiceDao;
     private SalespeopleDao salespeopleDao;
     private ProviderInvoiceDao providerInvoiceDao;
+    private VoucherDao voucherDao;
     private DatabaseStarting databaseStarting;
 
     @Autowired
@@ -45,7 +46,7 @@ public class DatabaseSeederDev {
                              TicketDao ticketDao, GiftTicketDao giftTicketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,
                              CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao,
                              CustomerDiscountDao customerDiscountDao, BudgetDao budgetDao, MessengerDao messengerDao,
-                             SalespeopleDao salespeopleDao, InvoiceDao invoiceDao, ProviderInvoiceDao providerInvoiceDao,
+                             SalespeopleDao salespeopleDao, InvoiceDao invoiceDao, ProviderInvoiceDao providerInvoiceDao, VoucherDao voucherDao,
                              DatabaseStarting databaseStarting) {
 
         this.articleDao = articleDao;
@@ -66,6 +67,7 @@ public class DatabaseSeederDev {
         this.invoiceDao = invoiceDao;
         this.salespeopleDao = salespeopleDao;
         this.providerInvoiceDao = providerInvoiceDao;
+        this.voucherDao = voucherDao;
 
         this.deleteAllAndInitializeAndSeedDataBase();
     }
@@ -96,6 +98,7 @@ public class DatabaseSeederDev {
         this.rgpdDao.deleteAll();
         this.customerDiscountDao.deleteAll();
         this.messengerDao.deleteAll();
+        this.voucherDao.deleteAll();
 
         LogManager.getLogger(this.getClass()).warn("------- Delete All -----------");
         this.databaseStarting.initialize();
@@ -407,6 +410,12 @@ public class DatabaseSeederDev {
         };
         this.providerInvoiceDao.saveAll(List.of(providerInvoiceEntities));
         LogManager.getLogger(this.getClass()).warn("        ------  provider invoices");
-    }
 
+        VoucherEntity[] voucherEntities = {
+                new VoucherEntity("reference1", 10, LocalDateTime.now(), null),
+                new VoucherEntity("reference1", 10, LocalDateTime.now().minusDays(10), LocalDateTime.now())
+        };
+        this.voucherDao.saveAll(List.of(voucherEntities));
+        LogManager.getLogger(this.getClass()).warn("        ------  vouchers");
+    }
 }
