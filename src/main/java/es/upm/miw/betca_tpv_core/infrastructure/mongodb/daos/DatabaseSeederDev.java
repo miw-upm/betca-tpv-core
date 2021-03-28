@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static java.math.BigDecimal.ZERO;
 
@@ -412,8 +413,8 @@ public class DatabaseSeederDev {
         LogManager.getLogger(this.getClass()).warn("        ------  provider invoices");
 
         VoucherEntity[] voucherEntities = {
-                new VoucherEntity("reference1", 10, LocalDateTime.now(), null),
-                new VoucherEntity("reference1", 10, LocalDateTime.now().minusDays(10), LocalDateTime.now())
+                new VoucherEntity(UUID.randomUUID().toString(), 10, LocalDateTime.now(), null),
+                new VoucherEntity(UUID.randomUUID().toString(), 10, LocalDateTime.now().minusDays(10), LocalDateTime.now())
         };
         this.voucherDao.saveAll(List.of(voucherEntities));
         LogManager.getLogger(this.getClass()).warn("        ------  vouchers");

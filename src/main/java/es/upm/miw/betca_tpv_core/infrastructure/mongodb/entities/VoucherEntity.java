@@ -8,6 +8,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -23,6 +24,7 @@ public class VoucherEntity {
     public Voucher toVoucher() {
         Voucher voucher = new Voucher();
         BeanUtils.copyProperties(this, voucher);
+        voucher.setReference(UUID.fromString(this.getReference()));
         return voucher;
     }
 }
