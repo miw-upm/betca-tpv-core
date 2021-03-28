@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public class BudgetEntity {
     @Id
     private String id;
+    private String reference;
     private LocalDateTime creationDate;
     private List< ShoppingEntity > shoppingEntityList;
 
