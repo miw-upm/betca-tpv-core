@@ -1,11 +1,13 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Voucher;
 import es.upm.miw.betca_tpv_core.domain.persistence.VoucherPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.VoucherReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.VoucherEntity;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 public class VoucherPersistenceMongodb implements VoucherPersistence {
@@ -19,6 +21,13 @@ public class VoucherPersistenceMongodb implements VoucherPersistence {
     @Override
     public Flux<Voucher> readAll() {
         return this.voucherReactive.findAll()
+                .map(VoucherEntity::toVoucher);
+    }
+
+    @Override
+    public Mono<Voucher> readByReference(String reference) {
+        return this.voucherReactive.findById(reference)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non existent voucher with reference: " + reference)))
                 .map(VoucherEntity::toVoucher);
     }
 }

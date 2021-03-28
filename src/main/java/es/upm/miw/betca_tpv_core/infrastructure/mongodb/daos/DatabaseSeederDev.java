@@ -414,7 +414,8 @@ public class DatabaseSeederDev {
 
         VoucherEntity[] voucherEntities = {
                 new VoucherEntity(UUID.randomUUID().toString(), 10, LocalDateTime.now(), null),
-                new VoucherEntity(UUID.randomUUID().toString(), 10, LocalDateTime.now().minusDays(10), LocalDateTime.now())
+                new VoucherEntity(UUID.randomUUID().toString(), 10, LocalDateTime.now().minusDays(10), LocalDateTime.now()),
+                new VoucherEntity("6aa2b2e8-8fcb-11eb-8dcd-0242ac130003", 10, LocalDateTime.now().minusDays(10), null)
         };
         this.voucherDao.saveAll(List.of(voucherEntities));
         LogManager.getLogger(this.getClass()).warn("        ------  vouchers");

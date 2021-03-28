@@ -5,4 +5,4 @@ import org.springframework.data.repository.reactive.ReactiveSortingRepository;
 
 import java.util.UUID;
 
-public interface VoucherReactive extends ReactiveSortingRepository<VoucherEntity, UUID> { }
+public interface VoucherReactive extends ReactiveSortingRepository<VoucherEntity, String> { }
