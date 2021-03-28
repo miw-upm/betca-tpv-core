@@ -10,4 +10,5 @@ public interface VoucherPersistence {
     Mono<Voucher> create(Voucher voucher);
     Flux< Voucher > readAll();
     Mono<Voucher> readByReference(String reference);
+    Mono<Voucher> consume(String reference);
 }

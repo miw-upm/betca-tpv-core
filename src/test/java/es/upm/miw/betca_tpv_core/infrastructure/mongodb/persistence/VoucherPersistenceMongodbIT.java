@@ -52,4 +52,23 @@ public class VoucherPersistenceMongodbIT {
                 .expectComplete()
                 .verify();
     }
+
+    @Test
+    void testConsume() {
+        String reference = "6aa2b2e8-8fcb-11eb-8dcd-0242ac130003";
+        StepVerifier
+                .create(this.voucherPersistenceMongodb.consume(reference))
+                .expectNextMatches(v -> v.getDateOfUse() != null)
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testConsumeVoucherNotExist() {
+        String reference = "not_exists";
+        StepVerifier
+                .create(this.voucherPersistenceMongodb.consume(reference))
+                .expectError()
+                .verify();
+    }
 }

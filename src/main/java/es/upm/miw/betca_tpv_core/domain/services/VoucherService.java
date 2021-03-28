@@ -30,4 +30,8 @@ public class VoucherService {
         voucher.setCreationDate(LocalDateTime.now());
         return voucherPersistence.create(voucher);
     }
+
+    public Mono<Voucher> consume(String reference) {
+        return this.voucherPersistence.consume(reference);
+    }
 }

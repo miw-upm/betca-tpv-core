@@ -33,4 +33,9 @@ public class VoucherResource {
     public Mono<Voucher> create(@RequestBody Voucher voucher) {
         return this.voucherService.create(voucher);
     }
+
+    @PutMapping(SEARCH_ID)
+    public Mono<Voucher> consume(@PathVariable String reference) {
+        return this.voucherService.consume(reference);
+    }
 }

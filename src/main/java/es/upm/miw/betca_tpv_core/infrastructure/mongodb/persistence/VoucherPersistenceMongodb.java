@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+
 @Repository
 public class VoucherPersistenceMongodb implements VoucherPersistence {
 
@@ -35,6 +37,18 @@ public class VoucherPersistenceMongodb implements VoucherPersistence {
     public Mono<Voucher> readByReference(String reference) {
         return this.voucherReactive.findById(reference)
                 .switchIfEmpty(Mono.error(new NotFoundException("Non existent voucher with reference: " + reference)))
+                .map(VoucherEntity::toVoucher);
+    }
+
+    @Override
+    public Mono<Voucher> consume(String reference) {
+        return this.voucherReactive.findById(reference)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non existent voucher with reference: " + reference)))
+                .map(voucherEntity -> {
+                    voucherEntity.setDateOfUse(LocalDateTime.now());
+                    return voucherEntity;
+                })
+                .flatMap(this.voucherReactive::save)
                 .map(VoucherEntity::toVoucher);
     }
 }
