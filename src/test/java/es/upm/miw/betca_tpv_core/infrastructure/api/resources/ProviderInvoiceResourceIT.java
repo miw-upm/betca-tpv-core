@@ -84,7 +84,7 @@ public class ProviderInvoiceResourceIT {
     @Test
     void testCreateProviderNotFound() {
         ProviderInvoice providerInvoice = ProviderInvoice.builder()
-                .number(999999)
+                .number(9999)
                 .baseTax(new BigDecimal("1"))
                 .taxValue(new BigDecimal("1"))
                 .creationDate(LocalDate.now())
@@ -119,8 +119,82 @@ public class ProviderInvoiceResourceIT {
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path(ProviderInvoiceResource.PROVIDER_INVOICES)
-                        .pathSegment("9999").build())
+                        .pathSegment("9999")
+                        .build())
                 .exchange()
                 .expectStatus().isNotFound();
     }
+
+    @Test
+    void testUpdate() {
+        ProviderInvoice providerInvoice = ProviderInvoice.builder()
+                .number(1111)
+                .creationDate(LocalDate.of(2021, 1, 1))
+                .baseTax(new BigDecimal("1000"))
+                .taxValue(new BigDecimal("10"))
+                .providerCompany("pro1")
+                .orderId("updated ord1")
+                .build();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(uriBuilder -> uriBuilder
+                        .path(ProviderInvoiceResource.PROVIDER_INVOICES)
+                        .pathSegment("1111")
+                        .build())
+                .body(Mono.just(providerInvoice), ProviderInvoice.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ProviderInvoice.class)
+                .value(Assertions::assertNotNull)
+                .value(returnProviderInvoice -> {
+                    assertEquals(1111, returnProviderInvoice.getNumber());
+                    assertEquals("updated ord1", providerInvoice.getOrderId());
+                });
+    }
+
+    @Test
+    void testUpdateOldProviderInvoiceNotFound() {
+        ProviderInvoice providerInvoice = ProviderInvoice.builder()
+                .number(9999)
+                .creationDate(LocalDate.of(2021, 1, 1))
+                .baseTax(new BigDecimal("1000"))
+                .taxValue(new BigDecimal("10"))
+                .providerCompany("pro1")
+                .orderId("updated ord1")
+                .build();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(uriBuilder -> uriBuilder
+                        .path(ProviderInvoiceResource.PROVIDER_INVOICES)
+                        .pathSegment("9999")
+                        .build())
+                .body(Mono.just(providerInvoice), ProviderInvoice.class)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testUpdateProviderNotFound() {
+        ProviderInvoice providerInvoice = ProviderInvoice.builder()
+                .number(1111)
+                .creationDate(LocalDate.of(2021, 1, 1))
+                .baseTax(new BigDecimal("1000"))
+                .taxValue(new BigDecimal("10"))
+                .providerCompany("kk")
+                .orderId("updated ord1")
+                .build();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(uriBuilder -> uriBuilder
+                        .path(ProviderInvoiceResource.PROVIDER_INVOICES)
+                        .pathSegment("1111")
+                        .build())
+                .body(Mono.just(providerInvoice), ProviderInvoice.class)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
 }

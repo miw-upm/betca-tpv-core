@@ -13,4 +13,7 @@ public interface ProviderInvoicePersistence {
     Mono< ProviderInvoice > create(ProviderInvoice providerInvoice);
 
     Mono< ProviderInvoice > readByNumber(Integer number);
+
+    Mono< ProviderInvoice > update(Integer number, ProviderInvoice dataProviderInvoice);
+
 }
