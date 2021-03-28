@@ -52,4 +52,9 @@ public class BudgetPersistenceMongodb implements BudgetPersistence {
                 .map(BudgetEntity::toBudget
                 );
     }
+    @Override
+    public Flux< String > findByReferenceNullSafe(String reference) {
+        return this.budgetReactive.findByReferenceNullSafe(reference)
+                .map(BudgetEntity::getReference);
+    }
 }

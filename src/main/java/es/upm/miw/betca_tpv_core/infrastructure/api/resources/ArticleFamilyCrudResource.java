@@ -16,8 +16,12 @@ public class ArticleFamilyCrudResource {
     public static final String ARTICLE_FAMILY_CRUD = "/article-family-crud";
     public static final String SINGLE = "/single";
     public static final String REFERENCE = "/{reference}";
+    public static final String ID = "/{id}";
+    public static final String BARCODE = "/{barcode}";
+    public static final String PARENT = "/parent";
 
-    private ArticleFamilyCrudService articleFamilyCrudService;
+
+    private final ArticleFamilyCrudService articleFamilyCrudService;
 
     @Autowired
     public ArticleFamilyCrudResource(ArticleFamilyCrudService articleFamilyCrudService) {
@@ -29,27 +33,28 @@ public class ArticleFamilyCrudResource {
         return this.articleFamilyCrudService.read(reference);
     }
 
-    @DeleteMapping(REFERENCE)
-    public Mono<Void> deleteComposeArticleFamily(@PathVariable String reference) {
-        return this.articleFamilyCrudService.deleteComposeArticleFamily(reference);
+    @DeleteMapping(ID)
+    public Mono<Void> delete(@PathVariable String id) {
+        return this.articleFamilyCrudService.delete(id);
     }
 
-    @DeleteMapping(value = SINGLE + REFERENCE)
-    public Mono<Void> deleteSingleArticle(@RequestBody ArticleBarcodeWithParentReferenceDto articleBarcodeWithParentReferenceDto) {
-        return this.articleFamilyCrudService.deleteSingleArticle(articleBarcodeWithParentReferenceDto);
-    }
 
     @PostMapping(produces = {"application/json"})
     public Mono<ArticleFamilyCrud> createComposeArticleFamily(@Valid @RequestBody ArticleFamilyCrud articleFamilyCrud) {
         articleFamilyCrud.doDefault();
-            return this.articleFamilyCrudService.createComposeArticleFamily(articleFamilyCrud);
+        return this.articleFamilyCrudService.createComposeArticleFamily(articleFamilyCrud);
+    }
+
+    @PutMapping(produces = {"application/json"})
+    public Mono<ArticleFamilyCrud> editComposeArticleFamily(@Valid @RequestBody ArticleFamilyCrud articleFamilyCrud) {
+        articleFamilyCrud.doDefault();
+        return this.articleFamilyCrudService.editComposeArticleFamily(articleFamilyCrud);
     }
 
     @PostMapping(value = SINGLE, produces = {"application/json"})
     public Mono<ArticleFamilyCrud> addArticleToArticleFamily(@Valid @RequestBody ArticleBarcodeWithParentReferenceDto articleBarcodeWithParentReferenceDto) {
         return this.articleFamilyCrudService.addArticleToArticleFamily(articleBarcodeWithParentReferenceDto);
     }
-
 
 
 }

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 
@@ -40,6 +41,7 @@ public class StockManagerResourceIT {
     void testSearchSoldProducts() {
         LocalDateTime dateIni = LocalDateTime.of(2019, Month.JANUARY, 01, 00, 00, 00);
         LocalDateTime dateEnd = LocalDateTime.of(2019, Month.JANUARY, 15, 00, 00, 00);
+
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -48,11 +50,14 @@ public class StockManagerResourceIT {
                         .queryParam("end", dateEnd)
                         .build())
                 .exchange()
-                .expectStatus().isOk();
-        //     .expectBodyList(StockManagerDto.class);
-        //      .value(Assertions::assertNotNull);
-        //                 .value(stocks -> stocks.stream()
-        //                        .allMatch(stockManagerDto -> stockManagerDto.getDateSell().isBefore(dateEnd) && stockManagerDto.getDateSell().isAfter(dateIni) ));
+                .expectStatus().isOk()
+             .expectBodyList(StockManagerDto.class)
+                .value(Assertions::assertNotNull)
+                         .value(stocks -> stocks.stream()
+                                .allMatch(stockManagerDto -> stockManagerDto.getDateSell().isBefore(dateEnd.toLocalDate())))
+                .value(stocks -> stocks.stream()
+                        .allMatch(stockManagerDto -> stockManagerDto.getDateSell().isAfter(dateIni.toLocalDate())));
+
     }
 
     @Test
@@ -88,5 +93,27 @@ public class StockManagerResourceIT {
                         .build())
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+    @Test
+    void testSearchEmptyStock() {
+        LocalDate end = LocalDate.now().plusDays(1);
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(StockManagerResource.STOCK_MANAGER + StockManagerResource.STOCK_EMPTY)
+                        .queryParam("barcode", "8400000000555")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(StockManagerDto.class)
+                .value(Assertions::assertNotNull)
+                .value(returnStockManager -> {
+                    assertEquals("8400000000555", returnStockManager.getBarcode());
+                    // assertEquals(7, returnStockManager.getStock());
+                    assertEquals("without provider", returnStockManager.getDescription());
+                    assertEquals(end, returnStockManager.getDateStockEmpty());
+
+                });
     }
 }

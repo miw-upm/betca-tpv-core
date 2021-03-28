@@ -32,4 +32,10 @@ public class GiftTicketPersistenceMongodb implements GiftTicketPersistence {
                 .flatMap(this.giftTicketReactive::save)
                 .map(GiftTicketEntity::toGiftTicket);
     }
+
+    @Override
+    public Mono<GiftTicket> readById(String id) {
+        return this.giftTicketReactive.findById(id)
+                .map(GiftTicketEntity::toGiftTicket);
+    }
 }

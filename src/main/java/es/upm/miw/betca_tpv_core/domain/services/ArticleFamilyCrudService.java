@@ -10,19 +10,21 @@ import reactor.core.publisher.Mono;
 @Service
 public class ArticleFamilyCrudService {
 
-    private ArticleFamilyCrudPersistence articleFamilyCrudPersistence;
+    private final ArticleFamilyCrudPersistence articleFamilyCrudPersistence;
 
     @Autowired
     public ArticleFamilyCrudService(ArticleFamilyCrudPersistence articleFamilyCrudPersistence) {
         this.articleFamilyCrudPersistence = articleFamilyCrudPersistence;
     }
+
     public Mono<ArticleFamilyCrud> read(String reference) {
         return this.articleFamilyCrudPersistence.readByReference(reference);
     }
 
-    public Mono<Void> deleteComposeArticleFamily(String reference) {
-        return this.articleFamilyCrudPersistence.deleteComposeArticleFamily(reference);
+    public Mono<Void> delete(String id) {
+        return this.articleFamilyCrudPersistence.delete(id);
     }
+
     public Mono<ArticleFamilyCrud> createComposeArticleFamily(ArticleFamilyCrud articleFamilyCrud) {
         return this.articleFamilyCrudPersistence.createComposeArticleFamily(articleFamilyCrud);
     }
@@ -31,7 +33,7 @@ public class ArticleFamilyCrudService {
         return this.articleFamilyCrudPersistence.addArticleToArticleFamily(articleBarcodeWithParentReferenceDto);
     }
 
-    public Mono<Void> deleteSingleArticle(ArticleBarcodeWithParentReferenceDto articleBarcodeWithParentReferenceDto) {
-        return this.articleFamilyCrudPersistence.deleteSingleArticle(articleBarcodeWithParentReferenceDto);
+    public Mono<ArticleFamilyCrud> editComposeArticleFamily(ArticleFamilyCrud articleFamilyCrud) {
+        return this.articleFamilyCrudPersistence.editComposeArticleFamily(articleFamilyCrud);
     }
 }

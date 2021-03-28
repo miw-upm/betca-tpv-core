@@ -1,6 +1,5 @@
 package es.upm.miw.betca_tpv_core.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @NoArgsConstructor
 @Builder
@@ -21,10 +20,8 @@ public class StockManager {
     private String barcode;
     private String description;
     private BigDecimal retailPrice;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime dateSell;
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime dateStockEmpty;
+    private LocalDate dateSell;
+    private LocalDate dateStockEmpty;
     private Integer stock;
 
     public static StockManager ofProductsByStock(Article article) {
@@ -38,7 +35,7 @@ public class StockManager {
                 .build();
     }
 
-    public static StockManager ofShopping(Shopping article, LocalDateTime dateCreation) {
+    public static StockManager ofShopping(Shopping article, LocalDate dateCreation) {
         return StockManager.builder()
                 .barcode(article.getBarcode())
                 .description(article.getDescription())
@@ -58,6 +55,25 @@ public class StockManager {
                 .stock(rest)
                 .dateSell(null)
                 .dateStockEmpty(null)
+                .build();
+    }
+
+    public static StockManager ofEmptyStock(Article article, Integer days) {
+        LocalDate dateStockEmpty;
+        if(days.equals(-1)){
+            dateStockEmpty = null;
+        }else if(days < 1){
+            dateStockEmpty = LocalDate.now().plusDays(0);
+        }else{
+            dateStockEmpty = LocalDate.now().plusDays(days);
+        }
+        return StockManager.builder()
+                .barcode(article.getBarcode())
+                .description(article.getDescription())
+                .retailPrice(article.getRetailPrice())
+                .stock(0)
+                .dateSell(null)
+                .dateStockEmpty(dateStockEmpty)
                 .build();
     }
 }
