@@ -69,4 +69,23 @@ public class VoucherServiceIT {
                 .expectError()
                 .verify();
     }
+
+    @Test
+    void testPrintByReference() {
+        String reference = "6aa2b2e8-8fcb-11eb-8dcd-0242ac130003";
+        StepVerifier
+                .create(this.voucherService.printByReference(reference))
+                .expectNextCount(1)
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testPrintByReferenceVoucherNotExist() {
+        String reference = "not_exists";
+        StepVerifier
+                .create(this.voucherService.printByReference(reference))
+                .expectError()
+                .verify();
+    }
 }

@@ -12,6 +12,7 @@ import reactor.core.publisher.Mono;
 public class VoucherResource {
     public static final String VOUCHERS = "/vouchers";
     public static final String SEARCH_ID = "/{reference}";
+    public static final String PDF = "/pdf";
 
     private final VoucherService voucherService;
 
@@ -37,5 +38,10 @@ public class VoucherResource {
     @PutMapping(SEARCH_ID)
     public Mono<Voucher> consume(@PathVariable String reference) {
         return this.voucherService.consume(reference);
+    }
+
+    @GetMapping(value =SEARCH_ID + PDF, produces = {"application/pdf"})
+    public Mono<byte[]> printVoucher(@PathVariable String reference) {
+        return this.voucherService.printByReference(reference);
     }
 }
