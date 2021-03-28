@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
@@ -22,6 +23,14 @@ public class BudgetReactiveIT {
                     assertEquals("1", budget.getId());
                     return true;
                 })
+                .thenCancel()
+                .verify();
+    }
+    @Test
+    void testFindByReferenceNullSafe() {
+        StepVerifier
+                .create(this.budgetReactive.findByReferenceNullSafe(""))
+                .assertNext(Assertions::assertNotNull)
                 .thenCancel()
                 .verify();
     }
