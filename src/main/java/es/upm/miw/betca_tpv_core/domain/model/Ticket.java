@@ -4,12 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import es.upm.miw.betca_tpv_core.domain.model.validations.ListNotEmpty;
 import es.upm.miw.betca_tpv_core.domain.model.validations.PositiveBigDecimal;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketBasicDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.BeanUtils;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

@@ -29,4 +29,15 @@ public class CustomerDiscountService {
         return this.customerDiscountPersistence.create(customerDiscount);
     }
 
+    public Mono<CustomerDiscount> update(String id, CustomerDiscount customerDiscount) {
+        return this.customerDiscountPersistence.update(id, customerDiscount);
+    }
+
+    public Mono<CustomerDiscount> read(String id) {
+        return this.customerDiscountPersistence.readById(id);
+    }
+
+    public Mono<Void> delete(String id) {
+        return this.customerDiscountPersistence.delete(id);
+    }
 }

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -21,11 +21,21 @@ public class Salespeople {
     @NotBlank
     private String salesperson;
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime salesDate;
+    private LocalDate salesDate;
     private String[] articleBarcodes;
     private String[] ticketBarcodes;
     private Integer numArticle;
     @PositiveBigDecimal
     private BigDecimal finalValue;
 
+    public static Salespeople ofSalespeopleSalesDateFinalValue(Salespeople salespeople){
+        return Salespeople.builder()
+                .salesperson(salespeople.getSalesperson())
+                .salesDate(salespeople.getSalesDate())
+                .articleBarcodes(salespeople.getArticleBarcodes())
+                .ticketBarcodes(salespeople.getTicketBarcodes())
+                .numArticle(salespeople.getNumArticle())
+                .finalValue(salespeople.getFinalValue())
+                .build();
+    }
 }

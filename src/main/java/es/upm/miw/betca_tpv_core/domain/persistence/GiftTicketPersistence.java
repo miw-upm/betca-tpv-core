@@ -7,4 +7,6 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface GiftTicketPersistence {
     Mono<GiftTicket> create(GiftTicket giftTicket);
+
+    Mono<GiftTicket> readById(String id);
 }

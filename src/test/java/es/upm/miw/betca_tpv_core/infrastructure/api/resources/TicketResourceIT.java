@@ -21,7 +21,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleResource.*;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.CASHIERS;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.LAST;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.TicketResource.*;
