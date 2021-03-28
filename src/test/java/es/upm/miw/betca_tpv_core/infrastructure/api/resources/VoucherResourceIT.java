@@ -55,8 +55,25 @@ public class VoucherResourceIT {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Voucher.class)
-                .value(v -> {
-                    System.out.println(">>>>>> Voucher reference: " + v.getReference());
-                });
+                .value(v -> System.out.println(">>>>>> Voucher reference: " + v.getReference()));
+    }
+
+    @Test
+    void testConsume() {
+        String reference = "6aa2b2e8-8fcb-11eb-8dcd-0242ac130003";
+        restClientTestService.loginAdmin(webTestClient)
+                .put().uri(VoucherResource.VOUCHERS + "/" + reference)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Voucher.class);
+    }
+
+    @Test
+    void testConsumeVoucherNotExist() {
+        String reference = "not_exists";
+        restClientTestService.loginAdmin(webTestClient)
+                .put().uri(VoucherResource.VOUCHERS + "/" + reference)
+                .exchange()
+                .expectStatus().isNotFound();
     }
 }
