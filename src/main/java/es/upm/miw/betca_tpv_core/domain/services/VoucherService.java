@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.model.Voucher;
 import es.upm.miw.betca_tpv_core.domain.persistence.VoucherPersistence;
+import es.upm.miw.betca_tpv_core.domain.services.utils.PdfVoucherBuilder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -33,5 +34,10 @@ public class VoucherService {
 
     public Mono<Voucher> consume(String reference) {
         return this.voucherPersistence.consume(reference);
+    }
+
+    public Mono<byte[]> printByReference(String reference) {
+        return this.voucherPersistence.readByReference(reference)
+                .map(new PdfVoucherBuilder()::generateVoucherTicket);
     }
 }
