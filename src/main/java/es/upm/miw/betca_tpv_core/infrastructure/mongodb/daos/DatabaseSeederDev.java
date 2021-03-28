@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static java.math.BigDecimal.ZERO;
 
@@ -38,6 +39,7 @@ public class DatabaseSeederDev {
     private InvoiceDao invoiceDao;
     private SalespeopleDao salespeopleDao;
     private ProviderInvoiceDao providerInvoiceDao;
+    private VoucherDao voucherDao;
     private DatabaseStarting databaseStarting;
 
     @Autowired
@@ -45,7 +47,7 @@ public class DatabaseSeederDev {
                              TicketDao ticketDao, GiftTicketDao giftTicketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,
                              CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao,
                              CustomerDiscountDao customerDiscountDao, BudgetDao budgetDao, MessengerDao messengerDao,
-                             SalespeopleDao salespeopleDao, InvoiceDao invoiceDao, ProviderInvoiceDao providerInvoiceDao,
+                             SalespeopleDao salespeopleDao, InvoiceDao invoiceDao, ProviderInvoiceDao providerInvoiceDao, VoucherDao voucherDao,
                              DatabaseStarting databaseStarting) {
 
         this.articleDao = articleDao;
@@ -66,6 +68,7 @@ public class DatabaseSeederDev {
         this.invoiceDao = invoiceDao;
         this.salespeopleDao = salespeopleDao;
         this.providerInvoiceDao = providerInvoiceDao;
+        this.voucherDao = voucherDao;
 
         this.deleteAllAndInitializeAndSeedDataBase();
     }
@@ -96,6 +99,7 @@ public class DatabaseSeederDev {
         this.rgpdDao.deleteAll();
         this.customerDiscountDao.deleteAll();
         this.messengerDao.deleteAll();
+        this.voucherDao.deleteAll();
 
         LogManager.getLogger(this.getClass()).warn("------- Delete All -----------");
         this.databaseStarting.initialize();
@@ -336,9 +340,9 @@ public class DatabaseSeederDev {
         LogManager.getLogger(this.getClass()).warn("        ------- customer discount");
 
         BudgetEntity[] budgets = {
-                new BudgetEntity("1", date, List.of(shoppingList[0], shoppingList[1])),
-                new BudgetEntity("2", date, List.of(shoppingList[2], shoppingList[3])),
-                new BudgetEntity("3", date, List.of(shoppingList[4], shoppingList[5])),
+                new BudgetEntity("1","cmVmZXJlbmNlb2ZmZXIy", date, List.of(shoppingList[0], shoppingList[1])),
+                new BudgetEntity("2", "FGhfvfMORj6iKmzp5aERAA",date, List.of(shoppingList[2], shoppingList[3])),
+                new BudgetEntity("3", "nUs81zZ4R_iuoq0_zCRm6A",date, List.of(shoppingList[4], shoppingList[5])),
 
 
         };
@@ -407,6 +411,13 @@ public class DatabaseSeederDev {
         };
         this.providerInvoiceDao.saveAll(List.of(providerInvoiceEntities));
         LogManager.getLogger(this.getClass()).warn("        ------  provider invoices");
-    }
 
+        VoucherEntity[] voucherEntities = {
+                new VoucherEntity(UUID.randomUUID().toString(), 10, LocalDateTime.now(), null),
+                new VoucherEntity(UUID.randomUUID().toString(), 10, LocalDateTime.now().minusDays(10), LocalDateTime.now()),
+                new VoucherEntity("6aa2b2e8-8fcb-11eb-8dcd-0242ac130003", 10, LocalDateTime.now().minusDays(10), null)
+        };
+        this.voucherDao.saveAll(List.of(voucherEntities));
+        LogManager.getLogger(this.getClass()).warn("        ------  vouchers");
+    }
 }

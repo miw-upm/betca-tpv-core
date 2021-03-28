@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class BudgetDto {
     private String id;
+    private String reference;
     private String creationDate;
     private List<Shopping> shoppingList;
 
