@@ -40,6 +40,8 @@ public class DatabaseSeederDev {
     private SalespeopleDao salespeopleDao;
     private ProviderInvoiceDao providerInvoiceDao;
     private VoucherDao voucherDao;
+    private TagDao tagDao;
+
     private DatabaseStarting databaseStarting;
 
     @Autowired
@@ -48,7 +50,7 @@ public class DatabaseSeederDev {
                              CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao,
                              CustomerDiscountDao customerDiscountDao, BudgetDao budgetDao, MessengerDao messengerDao,
                              SalespeopleDao salespeopleDao, InvoiceDao invoiceDao, ProviderInvoiceDao providerInvoiceDao, VoucherDao voucherDao,
-                             DatabaseStarting databaseStarting) {
+                             TagDao tagDao, DatabaseStarting databaseStarting) {
 
         this.articleDao = articleDao;
         this.providerDao = providerDao;
@@ -69,7 +71,7 @@ public class DatabaseSeederDev {
         this.salespeopleDao = salespeopleDao;
         this.providerInvoiceDao = providerInvoiceDao;
         this.voucherDao = voucherDao;
-
+        this.tagDao=tagDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -86,6 +88,7 @@ public class DatabaseSeederDev {
         this.invoiceDao.deleteAll();
 
         this.ticketDao.deleteAll();
+        this.tagDao.deleteAll();
         this.giftTicketDao.deleteAll();
         this.offerDao.deleteAll();
         this.stockAlarmDao.deleteAll();
@@ -357,6 +360,13 @@ public class DatabaseSeederDev {
         };
         this.messengerDao.saveAll(List.of(messageEntities));
         LogManager.getLogger(this.getClass()).warn("        ------- messages");
+        TagEntity[] tags = {
+                TagEntity.builder().name("name1").group("group1").description("description").articleEntityList(List.of(articles[0], articles[1])).build(),
+                TagEntity.builder().name("name2").group("group1").description("description").articleEntityList(List.of(articles[2], articles[3])).build(),
+                TagEntity.builder().name("name3").group("group1").description("description").articleEntityList(List.of(articles[4], articles[5])).build()
+        };
+        this.tagDao.saveAll(Arrays.asList(tags));
+        LogManager.getLogger(this.getClass()).warn("        ------- tags");
 
         InvoiceEntity[] invoices = {
                 InvoiceEntity.builder().id("invc_ID_1A2B3C4D5E").number("invc_N_1A2B3C4D5E").ticketEntity(tickets[0]).creationDate(LocalDateTime.now())
