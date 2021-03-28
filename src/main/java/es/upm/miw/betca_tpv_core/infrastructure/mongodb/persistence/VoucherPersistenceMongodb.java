@@ -6,6 +6,7 @@ import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.VoucherReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.VoucherEntity;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 public class VoucherPersistenceMongodb implements VoucherPersistence {
@@ -19,6 +20,12 @@ public class VoucherPersistenceMongodb implements VoucherPersistence {
     @Override
     public Flux<Voucher> readAll() {
         return this.voucherReactive.findAll()
+                .map(VoucherEntity::toVoucher);
+    }
+
+    @Override
+    public Mono<Voucher> readByReference(String reference) {
+        return this.voucherReactive.findById(reference)
                 .map(VoucherEntity::toVoucher);
     }
 }
