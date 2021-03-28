@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -26,6 +27,7 @@ public class VoucherService {
 
     public Mono< Voucher > create(Voucher voucher) {
         voucher.setReference(UUID.randomUUID());
+        voucher.setCreationDate(LocalDateTime.now());
         return voucherPersistence.create(voucher);
     }
 }
