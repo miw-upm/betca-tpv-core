@@ -1,9 +1,12 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
+import es.upm.miw.betca_tpv_core.domain.model.Voucher;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
+
+import java.util.UUID;
 
 @TestConfig
 public class VoucherPersistenceMongodbIT {
@@ -15,8 +18,8 @@ public class VoucherPersistenceMongodbIT {
     void testReadAll() {
         StepVerifier
                 .create(voucherPersistenceMongodb.readAll())
-                .expectNextCount(3)
-                .expectComplete()
+                .expectNextMatches(v -> v.getReference() != null)
+                .thenCancel()
                 .verify();
     }
 
@@ -35,6 +38,18 @@ public class VoucherPersistenceMongodbIT {
         StepVerifier
                 .create(voucherPersistenceMongodb.readByReference("not_exist"))
                 .expectError()
+                .verify();
+    }
+
+    @Test
+    void createVoucher() {
+        UUID ref = UUID.randomUUID();
+        Voucher voucher = new Voucher(ref, 140, null, null);
+        StepVerifier
+                .create(voucherPersistenceMongodb.create(voucher))
+                .expectNextMatches(v -> voucher.getReference().equals(v.getReference()) &&
+                        voucher.getValue().equals(v.getValue()))
+                .expectComplete()
                 .verify();
     }
 }

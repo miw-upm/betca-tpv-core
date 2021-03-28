@@ -19,6 +19,13 @@ public class VoucherPersistenceMongodb implements VoucherPersistence {
     }
 
     @Override
+    public Mono<Voucher> create(Voucher voucher) {
+        VoucherEntity voucherEntity = new VoucherEntity(voucher);
+        return voucherReactive.save(voucherEntity)
+                .map(VoucherEntity::toVoucher);
+    }
+
+    @Override
     public Flux<Voucher> readAll() {
         return this.voucherReactive.findAll()
                 .map(VoucherEntity::toVoucher);

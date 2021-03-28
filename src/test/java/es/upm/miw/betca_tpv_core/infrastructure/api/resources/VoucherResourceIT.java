@@ -2,11 +2,12 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.Voucher;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
-import org.junit.jupiter.api.Assertions;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
+
+import java.time.LocalDateTime;
 
 @RestTestConfig
 public class VoucherResourceIT {
@@ -23,8 +24,7 @@ public class VoucherResourceIT {
                 .get().uri(VoucherResource.VOUCHERS)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Voucher.class)
-                .value(vouchers -> Assertions.assertEquals(3, vouchers.size()));
+                .expectBodyList(Voucher.class);
     }
 
     @Test
@@ -44,5 +44,19 @@ public class VoucherResourceIT {
                 .get().uri(VoucherResource.VOUCHERS + "/" + reference)
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testCreateVoucher() {
+        Voucher voucher = new Voucher(null, 200, LocalDateTime.now(), null);
+        restClientTestService.loginAdmin(webTestClient)
+                .post().uri(VoucherResource.VOUCHERS)
+                .body(Mono.just(voucher), Voucher.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Voucher.class)
+                .value(v -> {
+                    System.out.println(">>>>>> Voucher reference: " + v.getReference());
+                });
     }
 }

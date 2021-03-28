@@ -3,9 +3,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 import es.upm.miw.betca_tpv_core.domain.model.Voucher;
 import es.upm.miw.betca_tpv_core.domain.services.VoucherService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -29,5 +27,10 @@ public class VoucherResource {
     @GetMapping(SEARCH_ID)
     public Mono<Voucher> readByReference(@PathVariable String reference) {
         return this.voucherService.readByReference(reference);
+    }
+
+    @PostMapping
+    public Mono<Voucher> create(@RequestBody Voucher voucher) {
+        return this.voucherService.create(voucher);
     }
 }

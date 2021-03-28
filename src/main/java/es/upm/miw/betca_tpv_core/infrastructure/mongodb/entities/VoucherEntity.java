@@ -23,6 +23,11 @@ public class VoucherEntity {
     private LocalDateTime creationDate;
     private LocalDateTime dateOfUse;
 
+    public VoucherEntity(Voucher voucher) {
+        BeanUtils.copyProperties(voucher, this);
+        this.setReference(voucher.getReference().toString());
+    }
+
     public Voucher toVoucher() {
         Voucher voucher = new Voucher();
         BeanUtils.copyProperties(this, voucher);

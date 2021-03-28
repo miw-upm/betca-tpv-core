@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 @Service
 public class VoucherService {
     private final VoucherPersistence voucherPersistence;
@@ -20,5 +22,10 @@ public class VoucherService {
 
     public Mono< Voucher > readByReference(String reference) {
         return this.voucherPersistence.readByReference(reference);
+    }
+
+    public Mono< Voucher > create(Voucher voucher) {
+        voucher.setReference(UUID.randomUUID());
+        return voucherPersistence.create(voucher);
     }
 }
