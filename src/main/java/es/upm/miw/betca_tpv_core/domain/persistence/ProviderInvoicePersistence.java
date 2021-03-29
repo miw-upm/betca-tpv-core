@@ -16,4 +16,6 @@ public interface ProviderInvoicePersistence {
 
     Mono< ProviderInvoice > update(Integer number, ProviderInvoice dataProviderInvoice);
 
+    Mono< Void > delete(Integer number);
+
 }

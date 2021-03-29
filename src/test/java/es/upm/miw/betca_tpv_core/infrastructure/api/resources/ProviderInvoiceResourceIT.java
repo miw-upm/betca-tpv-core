@@ -135,7 +135,6 @@ public class ProviderInvoiceResourceIT {
                 .providerCompany("pro1")
                 .orderId("updated ord1")
                 .build();
-
         this.restClientTestService.loginAdmin(webTestClient)
                 .put()
                 .uri(uriBuilder -> uriBuilder
@@ -163,7 +162,6 @@ public class ProviderInvoiceResourceIT {
                 .providerCompany("pro1")
                 .orderId("updated ord1")
                 .build();
-
         this.restClientTestService.loginAdmin(webTestClient)
                 .put()
                 .uri(uriBuilder -> uriBuilder
@@ -185,7 +183,6 @@ public class ProviderInvoiceResourceIT {
                 .providerCompany("kk")
                 .orderId("updated ord1")
                 .build();
-
         this.restClientTestService.loginAdmin(webTestClient)
                 .put()
                 .uri(uriBuilder -> uriBuilder
@@ -193,6 +190,38 @@ public class ProviderInvoiceResourceIT {
                         .pathSegment("1111")
                         .build())
                 .body(Mono.just(providerInvoice), ProviderInvoice.class)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testDelete() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .delete()
+                .uri(uriBuilder -> uriBuilder
+                        .path(ProviderInvoiceResource.PROVIDER_INVOICES)
+                        .pathSegment("4444")
+                        .build())
+                .exchange()
+                .expectStatus().isOk();
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(ProviderInvoiceResource.PROVIDER_INVOICES)
+                        .pathSegment("4444")
+                        .build())
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testDeleteNotFound() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .delete()
+                .uri(uriBuilder -> uriBuilder
+                        .path(ProviderInvoiceResource.PROVIDER_INVOICES)
+                        .pathSegment("9999")
+                        .build())
                 .exchange()
                 .expectStatus().isNotFound();
     }

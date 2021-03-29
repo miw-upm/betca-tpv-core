@@ -46,4 +46,9 @@ public class ProviderInvoiceResource {
         return this.providerInvoiceService.update(number, providerInvoice);
     }
 
+    @DeleteMapping(NUMBER)
+    public Mono< Void > delete(@PathVariable Integer number) {
+        return this.providerInvoiceService.delete(number);
+    }
+
 }
