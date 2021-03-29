@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
+
 @Repository
 public class ProviderInvoicePersistenceMongodb implements ProviderInvoicePersistence {
 
@@ -92,6 +94,12 @@ public class ProviderInvoicePersistenceMongodb implements ProviderInvoicePersist
                 .switchIfEmpty(Mono.error(new NotFoundException("Non existing provider invoice with number: " + number)))
                 .map(ProviderInvoiceEntity::getId);
         return this.providerInvoiceReactive.deleteById(idMono);
+    }
+
+    @Override
+    public Flux< ProviderInvoice > findByCreationDateBetweenInclusive(LocalDate startDate, LocalDate endDate) {
+        return this.providerInvoiceReactive.findByCreationDateBetweenInclusive(startDate, endDate)
+                .map(ProviderInvoiceEntity::toProviderInvoice);
     }
 
 }

@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.ProviderInvoice;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
+import es.upm.miw.betca_tpv_core.domain.model.ProviderInvoiceTotalTax;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,8 +105,8 @@ public class ProviderInvoiceResourceIT {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .path(ProviderInvoiceResource.PROVIDER_INVOICES)
-                        .pathSegment("1111").build())
+                        .path(ProviderInvoiceResource.PROVIDER_INVOICES + ProviderInvoiceResource.NUMBER)
+                        .build("1111"))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(ProviderInvoice.class)
@@ -118,9 +119,8 @@ public class ProviderInvoiceResourceIT {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .path(ProviderInvoiceResource.PROVIDER_INVOICES)
-                        .pathSegment("9999")
-                        .build())
+                        .path(ProviderInvoiceResource.PROVIDER_INVOICES + ProviderInvoiceResource.NUMBER)
+                        .build("9999"))
                 .exchange()
                 .expectStatus().isNotFound();
     }
@@ -138,9 +138,8 @@ public class ProviderInvoiceResourceIT {
         this.restClientTestService.loginAdmin(webTestClient)
                 .put()
                 .uri(uriBuilder -> uriBuilder
-                        .path(ProviderInvoiceResource.PROVIDER_INVOICES)
-                        .pathSegment("1111")
-                        .build())
+                        .path(ProviderInvoiceResource.PROVIDER_INVOICES + ProviderInvoiceResource.NUMBER)
+                        .build("1111"))
                 .body(Mono.just(providerInvoice), ProviderInvoice.class)
                 .exchange()
                 .expectStatus().isOk()
@@ -165,9 +164,8 @@ public class ProviderInvoiceResourceIT {
         this.restClientTestService.loginAdmin(webTestClient)
                 .put()
                 .uri(uriBuilder -> uriBuilder
-                        .path(ProviderInvoiceResource.PROVIDER_INVOICES)
-                        .pathSegment("9999")
-                        .build())
+                        .path(ProviderInvoiceResource.PROVIDER_INVOICES + ProviderInvoiceResource.NUMBER)
+                        .build("9999"))
                 .body(Mono.just(providerInvoice), ProviderInvoice.class)
                 .exchange()
                 .expectStatus().isNotFound();
@@ -186,9 +184,8 @@ public class ProviderInvoiceResourceIT {
         this.restClientTestService.loginAdmin(webTestClient)
                 .put()
                 .uri(uriBuilder -> uriBuilder
-                        .path(ProviderInvoiceResource.PROVIDER_INVOICES)
-                        .pathSegment("1111")
-                        .build())
+                        .path(ProviderInvoiceResource.PROVIDER_INVOICES + ProviderInvoiceResource.NUMBER)
+                        .build("1111"))
                 .body(Mono.just(providerInvoice), ProviderInvoice.class)
                 .exchange()
                 .expectStatus().isNotFound();
@@ -199,17 +196,15 @@ public class ProviderInvoiceResourceIT {
         this.restClientTestService.loginAdmin(webTestClient)
                 .delete()
                 .uri(uriBuilder -> uriBuilder
-                        .path(ProviderInvoiceResource.PROVIDER_INVOICES)
-                        .pathSegment("4444")
-                        .build())
+                        .path(ProviderInvoiceResource.PROVIDER_INVOICES + ProviderInvoiceResource.NUMBER)
+                        .build("4444"))
                 .exchange()
                 .expectStatus().isOk();
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .path(ProviderInvoiceResource.PROVIDER_INVOICES)
-                        .pathSegment("4444")
-                        .build())
+                        .path(ProviderInvoiceResource.PROVIDER_INVOICES + ProviderInvoiceResource.NUMBER)
+                        .build("4444"))
                 .exchange()
                 .expectStatus().isNotFound();
     }
@@ -219,11 +214,43 @@ public class ProviderInvoiceResourceIT {
         this.restClientTestService.loginAdmin(webTestClient)
                 .delete()
                 .uri(uriBuilder -> uriBuilder
-                        .path(ProviderInvoiceResource.PROVIDER_INVOICES)
-                        .pathSegment("9999")
-                        .build())
+                        .path(ProviderInvoiceResource.PROVIDER_INVOICES + ProviderInvoiceResource.NUMBER)
+                        .build("9999"))
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testCalculateTotalTaxByQuarter() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(ProviderInvoiceResource.PROVIDER_INVOICES +
+                                ProviderInvoiceResource.TOTAL_TAX_QUARTERS +
+                                ProviderInvoiceResource.NUMBER)
+                        .build("1")
+                )
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ProviderInvoiceTotalTax.class)
+                .value(providerInvoiceTotalTax -> {
+                    assertEquals(new BigDecimal("3000"), providerInvoiceTotalTax.getTotalBaseTax());
+                    assertEquals(new BigDecimal("30"), providerInvoiceTotalTax.getTotalTaxValue());
+                });
+    }
+
+    @Test
+    void testCalculateTotalTaxInvalidQuarter() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(ProviderInvoiceResource.PROVIDER_INVOICES +
+                                ProviderInvoiceResource.TOTAL_TAX_QUARTERS +
+                                ProviderInvoiceResource.NUMBER)
+                        .build("5")
+                )
+                .exchange()
+                .expectStatus().isBadRequest();
     }
 
 }

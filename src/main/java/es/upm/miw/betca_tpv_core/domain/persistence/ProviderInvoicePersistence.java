@@ -5,6 +5,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
+
 @Repository
 public interface ProviderInvoicePersistence {
 
@@ -17,5 +19,7 @@ public interface ProviderInvoicePersistence {
     Mono< ProviderInvoice > update(Integer number, ProviderInvoice dataProviderInvoice);
 
     Mono< Void > delete(Integer number);
+
+    Flux< ProviderInvoice > findByCreationDateBetweenInclusive(LocalDate startDate, LocalDate endDate);
 
 }
