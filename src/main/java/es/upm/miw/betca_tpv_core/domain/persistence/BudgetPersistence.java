@@ -10,5 +10,5 @@ public interface BudgetPersistence {
     Mono< Budget > read(String id);
     Mono<Budget> findById(String id);
     Flux< String > findByReferenceNullSafe(String reference);
-
+    Mono<Budget> readByReference(String reference);
 }

@@ -34,5 +34,16 @@ public class BudgetReactiveIT {
                 .thenCancel()
                 .verify();
     }
+    @Test
+    void readByReference() {
+        StepVerifier
+                .create(this.budgetReactive.readByReference("cmVmZXJlbmNlb2ZmZXIy"))
+                .expectNextMatches(budget -> {
+                    assertEquals("cmVmZXJlbmNlb2ZmZXIy", budget.getReference());
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }
 
 }
