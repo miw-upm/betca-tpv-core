@@ -34,5 +34,7 @@ public class BudgetService {
     public Flux< String > findByReferenceNullSafe(String reference) {
         return this.budgetPersistence.findByReferenceNullSafe(reference);
     }
-
+    public Mono<Budget> readByReference(String reference) {
+        return this.budgetPersistence.readByReference(reference);
+    }
 }
