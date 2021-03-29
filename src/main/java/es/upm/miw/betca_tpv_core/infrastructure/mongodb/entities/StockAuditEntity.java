@@ -30,7 +30,11 @@ public class StockAuditEntity {
 
     public StockAuditEntity(StockAudit stockAudit) {
         BeanUtils.copyProperties(stockAudit, this);
-        this.stockAuditArticleList = new ArrayList<>();
+        this.stockAuditArticleList = stockAudit.getBarcodesWithoutAudit()
+                .stream()
+                .map(barcode -> new StockAuditArticleEntity(barcode, null, false))
+                .collect(Collectors.toList());
+        //this.stockAuditArticleList = new ArrayList<>();
     }
 
     public List<String> toBarcodesWithoutAudit() {
