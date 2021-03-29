@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_core.domain.model.Voucher;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
@@ -73,6 +74,25 @@ public class VoucherResourceIT {
         String reference = "not_exists";
         restClientTestService.loginAdmin(webTestClient)
                 .put().uri(VoucherResource.VOUCHERS + "/" + reference)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testPrintVoucher() {
+        String reference = "6aa2b2e8-8fcb-11eb-8dcd-0242ac130003";
+        restClientTestService.loginAdmin(webTestClient)
+                .get().uri(VoucherResource.VOUCHERS + "/" + reference + VoucherResource.PDF)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_PDF);
+    }
+
+    @Test
+    void testPrintVoucherNotExists() {
+        String reference = "not_exists";
+        restClientTestService.loginAdmin(webTestClient)
+                .get().uri(VoucherResource.VOUCHERS + "/" + reference + VoucherResource.PDF)
                 .exchange()
                 .expectStatus().isNotFound();
     }
