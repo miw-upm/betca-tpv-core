@@ -21,6 +21,5 @@ public class CustomerDiscount {
     @NotNull
     private Double discount;
     private Double minimumPurchase;
-    @NotBlank
     private String user;
 }
