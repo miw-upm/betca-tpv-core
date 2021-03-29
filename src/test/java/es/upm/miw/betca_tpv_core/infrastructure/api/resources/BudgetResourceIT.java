@@ -13,13 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleResource.ARTICLES;
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleResource.SEARCH;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.BudgetResource.*;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.CASHIERS;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.LAST;
@@ -113,9 +109,7 @@ class BudgetResourceIT {
                 .expectStatus().isOk()
                 .expectBody(BudgetDto.class)
                 .value(Assertions::assertNotNull)
-                .value(budget -> {
-                    assertEquals("1", budget.getId());
-                });
+                .value(budget -> assertEquals("1", budget.getId()));
     }
 
 
@@ -136,18 +130,6 @@ class BudgetResourceIT {
                 .exchange()
                 .expectStatus().isUnauthorized();
     }
-    @Test
-    void readByReference() {
-        this.restClientTestService.loginAdmin(webTestClient)
-                .get()
-                .uri(BUDGETS + REFERENCE+REFERENCE_ID , "cmVmZXJlbmNlb2ZmZXIy")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(BudgetDto.class)
-                .value(budget -> System.out.println(">>>>> budget: " + budget));
-
-    }
-
 
     @AfterEach
     void closeCashier() {

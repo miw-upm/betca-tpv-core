@@ -12,8 +12,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 @Repository
 public class BudgetPersistenceMongodb implements BudgetPersistence {
-    private BudgetReactive budgetReactive;
-    private ArticleReactive articleReactive;
+    private final BudgetReactive budgetReactive;
+    private final ArticleReactive articleReactive;
 
     public BudgetPersistenceMongodb(BudgetReactive budgetReactive,ArticleReactive articleReactive) {
         this.budgetReactive=budgetReactive;
@@ -53,14 +53,9 @@ public class BudgetPersistenceMongodb implements BudgetPersistence {
                 );
     }
     @Override
-    public Flux< String > findByReferenceNullSafe(String reference) {
-        return this.budgetReactive.findByReferenceNullSafe(reference)
-                .map(BudgetEntity::getReference);
+    public Flux< String > findNullSafe(String id) {
+        return this.budgetReactive.findNullSafe(id)
+                .map(BudgetEntity::getId);
     }
-    @Override
-    public Mono<Budget> readByReference(String reference) {
-        return this.budgetReactive.readByReference(reference)
-                .switchIfEmpty(Mono.error(new NotFoundException("Reference do not exist: " + reference)))
-                .map(BudgetEntity::toBudget);
-    }
+
 }

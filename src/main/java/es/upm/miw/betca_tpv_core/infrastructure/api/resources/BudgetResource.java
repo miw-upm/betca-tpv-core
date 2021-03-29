@@ -17,9 +17,8 @@ public class BudgetResource {
     public static final String BUDGETS = "/budgets";
     public static final String RECEIPT = "/receipt";
     public static final String ID_ID = "/{id}";
-    public static final String REFERENCE = "/reference";
-    public static final String REFERENCE_ID  = "/{reference}";
-    private BudgetService budgetService;
+    public static final String ID = "/id";
+    private final BudgetService budgetService;
 
     @Autowired
     public BudgetResource(BudgetService budgetService) {
@@ -40,17 +39,13 @@ public class BudgetResource {
         return this.budgetService.findById(id)
                 .map(BudgetDto::new);
     }
-    @GetMapping(REFERENCE)
-    public Mono<BudgetReferenceDto> findByReferenceNullSafe(@RequestParam(required = false) String reference) {
-        return this.budgetService.findByReferenceNullSafe(reference)
+    @GetMapping(ID)
+    public Mono<BudgetReferenceDto> findNullSafe(@RequestParam(required = false) String id) {
+        return this.budgetService.findNullSafe(id)
                 .collectList()
                 .map(BudgetReferenceDto::new);
     }
-    @GetMapping(REFERENCE+REFERENCE_ID )
-    public Mono<BudgetDto> readByReference(@PathVariable String reference) {
-        return this.budgetService.readByReference(reference)
-                .map(BudgetDto::new);
-    }
+
 
 
 }
