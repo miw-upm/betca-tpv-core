@@ -24,12 +24,18 @@ public class GiftTicketPersistenceMongodb implements GiftTicketPersistence {
 
     @Override
     public Mono<GiftTicket> create(GiftTicket giftTicket) {
-        System.out.println("es un json" );
-        GiftTicketEntity giftTicketEntity = new GiftTicketEntity(giftTicket);
-        return Mono.just(giftTicket.getTicketId())
-                .map(ticketid-> this.ticketReactive.findById(ticketid)
-                        .switchIfEmpty(Mono.error(new NotFoundException("ticket: " + ticketid))))
-                .then(this.giftTicketReactive.save(giftTicketEntity))
+        return Mono.justOrEmpty(giftTicket.getTicketId())
+                .flatMap(providerTicket -> this.ticketReactive.findById(giftTicket.getTicketId())
+                            .switchIfEmpty(Mono.error(new NotFoundException("Non exist ticket id")))
+                )
+                .map(providerEntity -> new GiftTicketEntity(giftTicket, providerEntity))
+                .flatMap(this.giftTicketReactive::save)
+                .map(GiftTicketEntity::toGiftTicket);
+    }
+
+    @Override
+    public Mono<GiftTicket> readById(String id) {
+        return this.giftTicketReactive.findById(id)
                 .map(GiftTicketEntity::toGiftTicket);
     }
 }

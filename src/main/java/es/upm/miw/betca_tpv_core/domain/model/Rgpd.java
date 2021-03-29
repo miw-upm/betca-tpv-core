@@ -17,6 +17,12 @@ public class Rgpd {
     private RgpdType rgpdType;
     private byte[] agreement;
 
+    public Rgpd(String mobile, RgpdType rgpdType, String agreement) {
+        this.user = new User(mobile);
+        this.rgpdType = rgpdType;
+        this.agreement = agreement.getBytes();
+    }
+
     public String getMobile() {
         return this.user.getMobile();
     }

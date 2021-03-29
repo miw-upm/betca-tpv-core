@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.model.Shopping;
+import es.upm.miw.betca_tpv_core.domain.model.ShoppingState;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
@@ -8,6 +9,7 @@ import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.domain.services.utils.PdfTicketBuilder;
 import es.upm.miw.betca_tpv_core.domain.services.utils.UUIDBase64;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.UserBasicDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -96,5 +98,27 @@ public class TicketService {
 
     public Flux<Ticket> findTicketByRegistrationDateAfter(LocalDateTime localDateTime){
         return this.ticketPersistence.findTicketByRegistrationDateAfter(localDateTime);
+    }
+
+    public Flux<Shopping> findAllBoughtArticlesByMobile(String mobile) {
+        return this.findByUserMobile(mobile)
+                .flatMap(ticket -> Flux.fromIterable(ticket.getShoppingList()))
+                .distinct(Shopping::getBarcode);
+    }
+
+    private Flux<Ticket> findByUserMobile(String mobile) {
+        return this.ticketPersistence.findByUserMobile(mobile);
+    }
+
+    public Flux<UserBasicDto> findByBarcodeAndAmount(String barcode, Integer amount) {
+        return this.ticketPersistence
+                .findAll()
+                .filter(ticket -> ticket.getShoppingList().stream()
+                        .anyMatch(shopping ->
+                                barcode.equals(shopping.getBarcode())
+                                && !(shopping.getState().equals(ShoppingState.COMMITTED))
+                                && shopping.getAmount() > amount
+                        )
+                ).map(ticket -> new UserBasicDto(ticket.getUser()));
     }
 }

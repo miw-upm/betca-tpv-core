@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities;
 
 import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.model.ShoppingState;
+import es.upm.miw.betca_tpv_core.domain.model.Tax;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Data
 @NoArgsConstructor
@@ -33,4 +35,13 @@ public class ShoppingEntity {
         return shopping;
     }
 
+    public BigDecimal baseTaxValue() {
+        Tax taxArticle = articleEntity.getTax();
+        BigDecimal taxValue = taxArticle != null ? taxArticle.getRate() : BigDecimal.ZERO;
+        return retailPrice.divide( BigDecimal.ONE.add(taxValue.divide(new BigDecimal("100"))), 2, RoundingMode.HALF_UP);
+    }
+
+    public BigDecimal taxValue() {
+        return retailPrice.subtract(baseTaxValue());
+    }
 }

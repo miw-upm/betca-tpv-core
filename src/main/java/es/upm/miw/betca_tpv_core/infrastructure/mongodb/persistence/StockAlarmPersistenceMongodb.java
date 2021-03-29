@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.StockAlarm;
+import es.upm.miw.betca_tpv_core.domain.model.StockAlarmLine;
 import es.upm.miw.betca_tpv_core.domain.persistence.StockAlarmPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.StockAlarmReactive;
@@ -66,6 +67,19 @@ public class StockAlarmPersistenceMongodb implements StockAlarmPersistence {
     @Override
     public Mono<Void> delete(String name) {
         return this.stockAlarmReactive.deleteByName(name);
+    }
+
+    @Override
+    public Flux<StockAlarmLine> findAllStockAlarmLinesWithoutNull() {
+        return this.stockAlarmReactive.findAll()
+                .map(StockAlarmEntity::toStockAlarm)
+                .flatMap(stockAlarm -> Flux.fromStream(stockAlarm.getStockAlarmLines().stream())
+                        .map(stockAlarmLine -> {
+                            stockAlarmLine.setWarning(stockAlarmLine.getWarning() == null ? stockAlarm.getWarning() : stockAlarmLine.getWarning());
+                            stockAlarmLine.setCritical(stockAlarmLine.getCritical() == null ? stockAlarm.getCritical() : stockAlarmLine.getCritical());
+                            return stockAlarmLine;
+                        })
+                );
     }
 
     private Mono<Void> updateAlarmLineList(StockAlarmEntity stockAlarmEntity, StockAlarm stockAlarm) {

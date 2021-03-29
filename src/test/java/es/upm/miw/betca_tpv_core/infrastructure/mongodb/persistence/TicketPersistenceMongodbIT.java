@@ -3,23 +3,17 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 import es.upm.miw.betca_tpv_core.TestConfig;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.*;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ShoppingEntity;
-import net.minidev.json.writer.BeansMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static java.math.BigDecimal.TEN;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
@@ -111,5 +105,35 @@ class TicketPersistenceMongodbIT {
                 })
                 .verifyComplete();
     }
+    @Test
+    void testFindByRangeRegistrationDate() {
 
+        LocalDateTime dateIni = LocalDateTime.of(2019, Month.JANUARY, 01, 00, 00, 00);
+        LocalDateTime dateEnd = LocalDateTime.of(2019, Month.JANUARY, 15, 00, 00, 00);
+
+        StepVerifier
+                .create(this.ticketPersistenceMongodb.findByRangeRegistrationDate(dateIni,dateEnd))
+                .expectNextMatches(ticket -> {
+                    assertTrue(ticket.getCreationDate().isAfter(dateIni) && ticket.getCreationDate().isBefore(dateEnd));
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }
+
+    @Test
+    void testFindByUserMobile() {
+        List<String> ticketsIds = List.of(
+                "5fa4603b7513a164chop77ac", "5gfaw03b7513a164chop77ac",
+                "7faw03b7513a164chop77ac", "9jfaw03b7513a164chop77ac"
+        );
+        StepVerifier
+                .create(this.ticketPersistenceMongodb.findByUserMobile("66"))
+                .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))
+                .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))
+                .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))
+                .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))
+                .thenCancel()
+                .verify();
+    }
 }

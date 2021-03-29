@@ -3,8 +3,10 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ArticleNewDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketBasicDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketEditionDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.UserBasicDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +21,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleResource.*;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.CASHIERS;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.LAST;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.TicketResource.*;
@@ -206,6 +207,23 @@ class TicketResourceIT {
     }
 
     @Test
+    void testGetByBarcodeAndAmount() {
+        List<Tracking> data = new ArrayList<>();
+        Tracking tracking = new Tracking();
+        tracking.setBarcode("8400000000024");
+        tracking.setAmount(1);
+        data.add(tracking);
+        this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(TICKETS + TicketResource.SEARCH + TRACKING)
+                .bodyValue(data)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(UserBasicDto.class)
+                .value(users -> System.out.println(">>>>> users: " + users));
+    }
+
+    @Test
     void testFindByIdAndUpdate() {
         TicketEditionDto ticket = this.restClientTestService.loginAdmin(webTestClient)
                 .get()
@@ -241,6 +259,29 @@ class TicketResourceIT {
                 .returnResult()
                 .getResponseBody();
         assertNotNull(ticket);
+    }
+
+    @Test
+    void testFindAllBoughtArticlesByMobileServerError() {
+        this.webTestClient
+                .get()
+                .uri(TICKETS + TicketResource.SEARCH + BOUGHT_ARTICLES)
+                .exchange()
+                .expectStatus().is5xxServerError();
+    }
+
+    @Test
+    void testFindAllBoughtArticlesByMobile() {
+        this.restClientTestService.loginCustomer(webTestClient)
+                .get()
+                .uri(TICKETS + TicketResource.SEARCH + BOUGHT_ARTICLES)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(ArticleNewDto.class)
+                .value(Assertions::assertNotNull)
+                .value(articles -> assertTrue(articles.stream()
+                                        .anyMatch(article ->
+                                                article.getBarcode().equals("8400000000017"))));
     }
 
     @AfterEach

@@ -24,4 +24,10 @@ public interface TicketPersistence {
     Mono<Ticket> update(String id, List<Shopping> shoppingList);
 
     Flux<Ticket> findTicketByRegistrationDateAfter(LocalDateTime localDateTime);
+
+    Flux<Ticket> findByUserMobile(String mobile);
+
+    Flux<Ticket> findByRangeRegistrationDate(LocalDateTime initial, LocalDateTime end);
+
+    Flux<Ticket> findAll();
 }

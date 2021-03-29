@@ -10,7 +10,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,6 +24,7 @@ public class SingleArticleEntity extends ArticlesTreeEntity {
     public SingleArticleEntity(ArticleEntity articleEntity) {
         super(articleEntity.getReference(), TreeType.ARTICLE);
         this.articleEntity = articleEntity;
+
     }
 
     @Override
@@ -51,6 +51,7 @@ public class SingleArticleEntity extends ArticlesTreeEntity {
     public ArticleFamilyCrud toDto() {
         ArticleFamilyCrud articleFamilyCrud = new ArticleFamilyCrud();
         BeanUtils.copyProperties(this, articleFamilyCrud);
+        articleFamilyCrud.setBarcode(this.articleEntity.getBarcode());
         return articleFamilyCrud;
     }
 
@@ -58,12 +59,9 @@ public class SingleArticleEntity extends ArticlesTreeEntity {
     public ArticleFamilyView toArticleFamilyViewDto() {
         return ArticleFamilyView.builder()
                 .reference(this.getReference())
-                //.description("zz-falda-T2")
                 .description(this.getDescription())
                 .treeType(this.getTreeType())
-                //.barcode("8400000000017")
                 .barcode(this.articleEntity.getBarcode())
-                //.retailPrice(new BigDecimal(10))
                 .retailPrice(this.articleEntity.getRetailPrice())
                 .build();
     }

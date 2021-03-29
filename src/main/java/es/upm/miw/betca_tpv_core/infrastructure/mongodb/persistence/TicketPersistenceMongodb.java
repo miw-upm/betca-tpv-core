@@ -6,10 +6,8 @@ import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.TicketReactive;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ProviderEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ShoppingEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.TicketEntity;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
@@ -71,6 +69,12 @@ public class TicketPersistenceMongodb implements TicketPersistence {
     }
 
     @Override
+    public Flux<Ticket> findByUserMobile(String mobile) {
+        return this.ticketReactive.findByUserMobile(mobile)
+                .map(TicketEntity::toTicket);
+    }
+
+    @Override
     public Mono<Ticket> findById(String id) {
         return this.ticketReactive.findById(id)
                 .switchIfEmpty(Mono.error(new NotFoundException("Non existent ticket id: " + id)))
@@ -104,6 +108,17 @@ public class TicketPersistenceMongodb implements TicketPersistence {
                             .then(this.ticketReactive.save(ticketEntity))
                             .map(TicketEntity::toTicket);
                 });
+    }
+    @Override
+    public Flux<Ticket> findByRangeRegistrationDate(LocalDateTime initial, LocalDateTime end) {
+        return this.ticketReactive.findByCreationDateBetween(initial,end)
+                .map(TicketEntity::toTicket);
+    }
+
+    @Override
+    public Flux<Ticket> findAll() {
+        return this.ticketReactive.findAll()
+                .map(TicketEntity::toTicket);
     }
 
 }
