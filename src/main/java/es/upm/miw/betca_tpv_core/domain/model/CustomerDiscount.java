@@ -21,12 +21,5 @@ public class CustomerDiscount {
     @NotNull
     private Double discount;
     private Double minimumPurchase;
-    @NotBlank
     private String user;
-
-    public static CustomerDiscount ofUser(CustomerDiscount customerDiscount) {
-        return CustomerDiscount.builder()
-                .user(customerDiscount.getUser())
-                .build();
-    }
 }
