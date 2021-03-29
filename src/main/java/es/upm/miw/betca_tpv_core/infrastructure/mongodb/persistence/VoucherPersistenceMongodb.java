@@ -51,4 +51,10 @@ public class VoucherPersistenceMongodb implements VoucherPersistence {
                 .flatMap(this.voucherReactive::save)
                 .map(VoucherEntity::toVoucher);
     }
+
+    @Override
+    public Flux<Voucher> getUnconsumedVouchersBetweenDates(LocalDateTime from, LocalDateTime to) {
+        return this.voucherReactive.findByCreationDateBetweenAndDateOfUseIsNull(from, to)
+                .map(VoucherEntity::toVoucher);
+    }
 }

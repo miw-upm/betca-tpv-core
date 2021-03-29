@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @TestConfig
@@ -69,6 +70,17 @@ public class VoucherPersistenceMongodbIT {
         StepVerifier
                 .create(this.voucherPersistenceMongodb.consume(reference))
                 .expectError()
+                .verify();
+    }
+
+    @Test
+    void testFindUnconsumedVouchersBetweenDates() {
+        LocalDateTime from = LocalDateTime.now().minusDays(3);
+        LocalDateTime to = LocalDateTime.now().plusDays(1);
+        StepVerifier
+                .create(this.voucherPersistenceMongodb.getUnconsumedVouchersBetweenDates(from, to))
+                .expectNextCount(2)
+                .expectComplete()
                 .verify();
     }
 }

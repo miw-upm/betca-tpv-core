@@ -8,6 +8,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.UUID;
 
 @Service
@@ -39,5 +40,11 @@ public class VoucherService {
     public Mono<byte[]> printByReference(String reference) {
         return this.voucherPersistence.readByReference(reference)
                 .map(new PdfVoucherBuilder()::generateVoucherTicket);
+    }
+
+    public Flux<Voucher> getUnconsumedVouchersBetweenDates(LocalDateTime from, LocalDateTime to) {
+        from = from.toLocalDate().atTime(LocalTime.MIN);
+        to = to.toLocalDate().atTime(LocalTime.MAX);
+        return this.voucherPersistence.getUnconsumedVouchersBetweenDates(from, to);
     }
 }
