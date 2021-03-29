@@ -11,4 +11,11 @@ public interface ProviderInvoicePersistence {
     Flux< ProviderInvoice > findAll();
 
     Mono< ProviderInvoice > create(ProviderInvoice providerInvoice);
+
+    Mono< ProviderInvoice > readByNumber(Integer number);
+
+    Mono< ProviderInvoice > update(Integer number, ProviderInvoice dataProviderInvoice);
+
+    Mono< Void > delete(Integer number);
+
 }

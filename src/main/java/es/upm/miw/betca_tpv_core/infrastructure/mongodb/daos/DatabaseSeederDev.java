@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static java.math.BigDecimal.ZERO;
 
@@ -38,6 +39,9 @@ public class DatabaseSeederDev {
     private InvoiceDao invoiceDao;
     private SalespeopleDao salespeopleDao;
     private ProviderInvoiceDao providerInvoiceDao;
+    private VoucherDao voucherDao;
+    private TagDao tagDao;
+
     private DatabaseStarting databaseStarting;
 
     @Autowired
@@ -45,8 +49,8 @@ public class DatabaseSeederDev {
                              TicketDao ticketDao, GiftTicketDao giftTicketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,
                              CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao,
                              CustomerDiscountDao customerDiscountDao, BudgetDao budgetDao, MessengerDao messengerDao,
-                             SalespeopleDao salespeopleDao, InvoiceDao invoiceDao, ProviderInvoiceDao providerInvoiceDao,
-                             DatabaseStarting databaseStarting) {
+                             SalespeopleDao salespeopleDao, InvoiceDao invoiceDao, ProviderInvoiceDao providerInvoiceDao, VoucherDao voucherDao,
+                             TagDao tagDao, DatabaseStarting databaseStarting) {
 
         this.articleDao = articleDao;
         this.providerDao = providerDao;
@@ -66,7 +70,8 @@ public class DatabaseSeederDev {
         this.invoiceDao = invoiceDao;
         this.salespeopleDao = salespeopleDao;
         this.providerInvoiceDao = providerInvoiceDao;
-
+        this.voucherDao = voucherDao;
+        this.tagDao=tagDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -83,6 +88,7 @@ public class DatabaseSeederDev {
         this.invoiceDao.deleteAll();
 
         this.ticketDao.deleteAll();
+        this.tagDao.deleteAll();
         this.giftTicketDao.deleteAll();
         this.offerDao.deleteAll();
         this.stockAlarmDao.deleteAll();
@@ -96,6 +102,7 @@ public class DatabaseSeederDev {
         this.rgpdDao.deleteAll();
         this.customerDiscountDao.deleteAll();
         this.messengerDao.deleteAll();
+        this.voucherDao.deleteAll();
 
         LogManager.getLogger(this.getClass()).warn("------- Delete All -----------");
         this.databaseStarting.initialize();
@@ -336,9 +343,9 @@ public class DatabaseSeederDev {
         LogManager.getLogger(this.getClass()).warn("        ------- customer discount");
 
         BudgetEntity[] budgets = {
-                new BudgetEntity("1", date, List.of(shoppingList[0], shoppingList[1])),
-                new BudgetEntity("2", date, List.of(shoppingList[2], shoppingList[3])),
-                new BudgetEntity("3", date, List.of(shoppingList[4], shoppingList[5])),
+                new BudgetEntity("b600b5c9cac1", date, List.of(shoppingList[0], shoppingList[1])),
+                new BudgetEntity("b600b5c9cac2", date, List.of(shoppingList[2], shoppingList[3])),
+                new BudgetEntity("b600b5c9cac3",date, List.of(shoppingList[4], shoppingList[5])),
 
 
         };
@@ -353,6 +360,13 @@ public class DatabaseSeederDev {
         };
         this.messengerDao.saveAll(List.of(messageEntities));
         LogManager.getLogger(this.getClass()).warn("        ------- messages");
+        TagEntity[] tags = {
+                TagEntity.builder().name("name1").group("group1").description("description").articleEntityList(List.of(articles[0], articles[1])).build(),
+                TagEntity.builder().name("name2").group("group1").description("description").articleEntityList(List.of(articles[2], articles[3])).build(),
+                TagEntity.builder().name("name3").group("group1").description("description").articleEntityList(List.of(articles[4], articles[5])).build()
+        };
+        this.tagDao.saveAll(Arrays.asList(tags));
+        LogManager.getLogger(this.getClass()).warn("        ------- tags");
 
         InvoiceEntity[] invoices = {
                 InvoiceEntity.builder().id("invc_ID_1A2B3C4D5E").number("invc_N_1A2B3C4D5E").ticketEntity(tickets[0]).creationDate(LocalDateTime.now())
@@ -407,6 +421,13 @@ public class DatabaseSeederDev {
         };
         this.providerInvoiceDao.saveAll(List.of(providerInvoiceEntities));
         LogManager.getLogger(this.getClass()).warn("        ------  provider invoices");
-    }
 
+        VoucherEntity[] voucherEntities = {
+                new VoucherEntity(UUID.randomUUID().toString(), 10, LocalDateTime.now(), null),
+                new VoucherEntity(UUID.randomUUID().toString(), 10, LocalDateTime.now(), LocalDateTime.now()),
+                new VoucherEntity("6aa2b2e8-8fcb-11eb-8dcd-0242ac130003", 10, LocalDateTime.now().minusDays(2), null),
+        };
+        this.voucherDao.saveAll(List.of(voucherEntities));
+        LogManager.getLogger(this.getClass()).warn("        ------  vouchers");
+    }
 }

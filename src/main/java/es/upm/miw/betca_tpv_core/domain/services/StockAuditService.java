@@ -2,9 +2,12 @@ package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.model.StockAudit;
 import es.upm.miw.betca_tpv_core.domain.persistence.StockAuditPersistence;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.StockAuditDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 public class StockAuditService {
@@ -17,5 +20,9 @@ public class StockAuditService {
 
     public Mono<StockAudit> findSingleOpenedAudit() {
         return this.stockAuditPersistence.findFirstByCloseDateNull();
+    }
+
+    public Mono<StockAudit> create(List<String> barcodesWithoutAudit) {
+        return this.stockAuditPersistence.create(barcodesWithoutAudit);
     }
 }

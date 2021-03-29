@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
@@ -21,12 +24,30 @@ class ProviderInvoicePersistenceMongodbIT {
         StepVerifier
                 .create(this.providerInvoicePersistenceMongodb.findAll())
                 .expectNextMatches(providerInvoice -> {
-                    System.out.println(providerInvoice);
                     assertNotNull(providerInvoice.getNumber());
                     return true;
                 })
                 .thenCancel()
                 .verify();
+    }
+
+    @Test
+    void testCreate() {
+        ProviderInvoice providerInvoice = ProviderInvoice.builder()
+                .number(6666)
+                .creationDate(LocalDate.of(2021, 12, 1))
+                .baseTax(new BigDecimal("6000"))
+                .taxValue(new BigDecimal("60"))
+                .providerCompany("pro1")
+                .orderId("ord6")
+                .build();
+        StepVerifier
+                .create(this.providerInvoicePersistenceMongodb.create(providerInvoice))
+                .expectNextMatches(createdProviderInvoice -> {
+                    assertEquals(6666, providerInvoice.getNumber());
+                    return true;
+                })
+                .verifyComplete();
     }
 
     @Test
@@ -48,4 +69,66 @@ class ProviderInvoicePersistenceMongodbIT {
                 .expectError(NotFoundException.class)
                 .verify();
     }
+
+    @Test
+    void testReadNonExistingNumber() {
+        StepVerifier
+                .create(this.providerInvoicePersistenceMongodb.readByNumber(9999))
+                .expectError(NotFoundException.class)
+                .verify();
+    }
+
+    @Test
+    void testUpdate() {
+        ProviderInvoice providerInvoice = ProviderInvoice.builder()
+                .number(1111)
+                .creationDate(LocalDate.of(2021, 1, 1))
+                .baseTax(new BigDecimal("1000"))
+                .taxValue(new BigDecimal("10"))
+                .providerCompany("pro1")
+                .orderId("new ord1")
+                .build();
+        StepVerifier
+                .create(this.providerInvoicePersistenceMongodb.update(1111, providerInvoice))
+                .expectNextMatches(updatedProviderInvoice -> {
+                    assertEquals(1111, updatedProviderInvoice.getNumber());
+                    assertEquals("new ord1", updatedProviderInvoice.getOrderId());
+                    return true;
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void testUpdateNonExistingProviderInvoice() {
+        ProviderInvoice providerInvoice = ProviderInvoice.builder().number(9999).providerCompany("pro1").build();
+        StepVerifier
+                .create(this.providerInvoicePersistenceMongodb.update(9999, providerInvoice))
+                .expectError(NotFoundException.class)
+                .verify();
+    }
+
+    @Test
+    void testUpdateNotFoundProvider() {
+        ProviderInvoice providerInvoice = ProviderInvoice.builder().number(1111).providerCompany("kk").build();
+        StepVerifier
+                .create(this.providerInvoicePersistenceMongodb.update(1111, providerInvoice))
+                .expectError(NotFoundException.class)
+                .verify();
+    }
+
+    @Test
+    void testDelete() {
+        StepVerifier
+                .create(this.providerInvoicePersistenceMongodb.delete(3333))
+                .verifyComplete();
+    }
+
+    @Test
+    void testDeleteNotFound() {
+        StepVerifier
+                .create(this.providerInvoicePersistenceMongodb.delete(9999))
+                .expectError(NotFoundException.class)
+                .verify();
+    }
+
 }

@@ -3,6 +3,7 @@ import es.upm.miw.betca_tpv_core.domain.model.Budget;
 import es.upm.miw.betca_tpv_core.domain.services.BudgetService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.BudgetDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.BudgetReferenceDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -16,7 +17,8 @@ public class BudgetResource {
     public static final String BUDGETS = "/budgets";
     public static final String RECEIPT = "/receipt";
     public static final String ID_ID = "/{id}";
-    private BudgetService budgetService;
+    public static final String ID = "/id";
+    private final BudgetService budgetService;
 
     @Autowired
     public BudgetResource(BudgetService budgetService) {
@@ -37,6 +39,13 @@ public class BudgetResource {
         return this.budgetService.findById(id)
                 .map(BudgetDto::new);
     }
+    @GetMapping(ID)
+    public Mono<BudgetReferenceDto> findNullSafe(@RequestParam(required = false) String id) {
+        return this.budgetService.findNullSafe(id)
+                .collectList()
+                .map(BudgetReferenceDto::new);
+    }
+
 
 
 }
