@@ -116,4 +116,19 @@ class ProviderInvoicePersistenceMongodbIT {
                 .verify();
     }
 
+    @Test
+    void testDelete() {
+        StepVerifier
+                .create(this.providerInvoicePersistenceMongodb.delete(3333))
+                .verifyComplete();
+    }
+
+    @Test
+    void testDeleteNotFound() {
+        StepVerifier
+                .create(this.providerInvoicePersistenceMongodb.delete(9999))
+                .expectError(NotFoundException.class)
+                .verify();
+    }
+
 }
