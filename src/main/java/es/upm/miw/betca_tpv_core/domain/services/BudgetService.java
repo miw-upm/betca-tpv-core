@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Service
 public class BudgetService {
-    private BudgetPersistence budgetPersistence;
+    private final BudgetPersistence budgetPersistence;
 
     @Autowired
     public BudgetService(BudgetPersistence budgetPersistence) {
@@ -31,10 +31,7 @@ public class BudgetService {
     public Mono<Budget> findById(String id) {
         return this.budgetPersistence.findById(id);
     }
-    public Flux< String > findByReferenceNullSafe(String reference) {
-        return this.budgetPersistence.findByReferenceNullSafe(reference);
-    }
-    public Mono<Budget> readByReference(String reference) {
-        return this.budgetPersistence.readByReference(reference);
+    public Flux< String > findNullSafe(String id) {
+        return this.budgetPersistence.findNullSafe(id);
     }
 }

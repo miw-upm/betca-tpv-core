@@ -18,32 +18,22 @@ public class BudgetReactiveIT {
     @Test
     void testFindById(){
         StepVerifier
-                .create(this.budgetReactive.findById("1"))
+                .create(this.budgetReactive.findById("b600b5c9cac1"))
                 .expectNextMatches(budget -> {
-                    assertEquals("1", budget.getId());
+                    assertEquals("b600b5c9cac1", budget.getId());
                     return true;
                 })
                 .thenCancel()
                 .verify();
     }
     @Test
-    void testFindByReferenceNullSafe() {
+    void findNullSafe() {
         StepVerifier
-                .create(this.budgetReactive.findByReferenceNullSafe(""))
+                .create(this.budgetReactive.findNullSafe(null))
                 .assertNext(Assertions::assertNotNull)
                 .thenCancel()
                 .verify();
     }
-    @Test
-    void readByReference() {
-        StepVerifier
-                .create(this.budgetReactive.readByReference("cmVmZXJlbmNlb2ZmZXIy"))
-                .expectNextMatches(budget -> {
-                    assertEquals("cmVmZXJlbmNlb2ZmZXIy", budget.getReference());
-                    return true;
-                })
-                .thenCancel()
-                .verify();
-    }
+
 
 }
