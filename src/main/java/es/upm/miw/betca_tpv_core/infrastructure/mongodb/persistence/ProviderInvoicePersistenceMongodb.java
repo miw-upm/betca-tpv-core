@@ -44,6 +44,13 @@ public class ProviderInvoicePersistenceMongodb implements ProviderInvoicePersist
                 .map(ProviderInvoiceEntity::toProviderInvoice);
     }
 
+    private Mono< Void > assertNumberNotExist(Integer number) {
+        return this.providerInvoiceReactive.findByNumber(number)
+                .flatMap(providerInvoiceEntity -> Mono.error(
+                        new ConflictException("Provider Invoice number already exists: " + number)
+                ));
+    }
+
     @Override
     public Mono< ProviderInvoice > readByNumber(Integer number) {
         return this.providerInvoiceReactive.findByNumber(number)
@@ -79,10 +86,12 @@ public class ProviderInvoicePersistenceMongodb implements ProviderInvoicePersist
                 .map(ProviderInvoiceEntity::toProviderInvoice);
     }
 
-    private Mono< Void > assertNumberNotExist(Integer number) {
-        return this.providerInvoiceReactive.findByNumber(number)
-                .flatMap(providerInvoiceEntity -> Mono.error(
-                        new ConflictException("Provider Invoice number already exists: " + number)
-                ));
+    @Override
+    public Mono< Void > delete(Integer number) {
+        Mono<String> idMono = this.providerInvoiceReactive.findByNumber(number)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non existing provider invoice with number: " + number)))
+                .map(ProviderInvoiceEntity::getId);
+        return this.providerInvoiceReactive.deleteById(idMono);
     }
+
 }

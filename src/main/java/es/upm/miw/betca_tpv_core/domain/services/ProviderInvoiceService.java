@@ -38,4 +38,8 @@ public class ProviderInvoiceService {
                 })
                 .flatMap(dataProviderInvoice -> this.providerInvoicePersistence.update(number, dataProviderInvoice));
     }
+
+    public Mono< Void > delete(Integer number) {
+        return this.providerInvoicePersistence.delete(number);
+    }
 }
