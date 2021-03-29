@@ -94,7 +94,7 @@ class BudgetResourceIT {
     void testRead() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(BUDGETS + BudgetResource.ID_ID + RECEIPT, "1")
+                .uri(BUDGETS + BudgetResource.ID_ID + RECEIPT, "b600b5c9cac1")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(byte[].class)
@@ -104,12 +104,12 @@ class BudgetResourceIT {
     void testFindById(){
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(BUDGETS + ID_ID, "1")
+                .uri(BUDGETS + ID_ID, "b600b5c9cac1")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(BudgetDto.class)
                 .value(Assertions::assertNotNull)
-                .value(budget -> assertEquals("1", budget.getId()));
+                .value(budget -> assertEquals("b600b5c9cac1", budget.getId()));
     }
 
 
