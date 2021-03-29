@@ -19,7 +19,6 @@ public class BudgetDto {
 
     public BudgetDto(Budget budget) {
         this.id = budget.getId();
-        this.reference=budget.getReference();
         this.creationDate =  budget.getCreationDate().toString();
         this.shoppingList = budget.getShoppingList();
     }

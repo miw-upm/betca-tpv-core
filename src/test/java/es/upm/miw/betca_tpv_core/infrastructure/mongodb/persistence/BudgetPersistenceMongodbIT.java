@@ -49,17 +49,7 @@ class BudgetPersistenceMongodbIT {
                 .expectError(NotFoundException.class)
                 .verify();
     }
-    @Test
-    void readByReference() {
-        StepVerifier
-                .create(this.budgetPersistenceMongodb.readByReference("cmVmZXJlbmNlb2ZmZXIy"))
-                .expectNextMatches(budget -> {
-                    assertEquals("cmVmZXJlbmNlb2ZmZXIy", budget.getReference());
-                    return true;
-                })
-                .expectComplete()
-                .verify();
-    }
+
 
 
 }

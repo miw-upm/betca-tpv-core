@@ -27,23 +27,13 @@ public class BudgetReactiveIT {
                 .verify();
     }
     @Test
-    void testFindByReferenceNullSafe() {
+    void findNullSafe() {
         StepVerifier
-                .create(this.budgetReactive.findByReferenceNullSafe(""))
+                .create(this.budgetReactive.findNullSafe(""))
                 .assertNext(Assertions::assertNotNull)
                 .thenCancel()
                 .verify();
     }
-    @Test
-    void readByReference() {
-        StepVerifier
-                .create(this.budgetReactive.readByReference("cmVmZXJlbmNlb2ZmZXIy"))
-                .expectNextMatches(budget -> {
-                    assertEquals("cmVmZXJlbmNlb2ZmZXIy", budget.getReference());
-                    return true;
-                })
-                .thenCancel()
-                .verify();
-    }
+
 
 }

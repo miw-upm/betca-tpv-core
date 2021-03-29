@@ -9,8 +9,7 @@ import reactor.core.publisher.Mono;
 public interface BudgetReactive extends ReactiveSortingRepository<BudgetEntity, String > {
     Mono<BudgetEntity> findById(String id);
     @Query("{$and:[" // allow NULL in barcode
-            + "?#{ [0] == null ? {_id : {$ne:null}} : { reference : {$regex:[0], $options: 'i'} } },"
+            + "?#{ [0] == null ? {_id : {$ne:null}} : { id : {$regex:[0], $options: 'i'} } },"
             + "] }")
-    Flux<BudgetEntity> findByReferenceNullSafe(String reference);
-    Mono<BudgetEntity> readByReference(String reference);
+    Flux<BudgetEntity> findNullSafe(String id);
 }
