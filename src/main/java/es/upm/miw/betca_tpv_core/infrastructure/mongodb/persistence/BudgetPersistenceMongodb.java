@@ -57,4 +57,10 @@ public class BudgetPersistenceMongodb implements BudgetPersistence {
         return this.budgetReactive.findByReferenceNullSafe(reference)
                 .map(BudgetEntity::getReference);
     }
+    @Override
+    public Mono<Budget> readByReference(String reference) {
+        return this.budgetReactive.readByReference(reference)
+                .switchIfEmpty(Mono.error(new NotFoundException("Reference do not exist: " + reference)))
+                .map(BudgetEntity::toBudget);
+    }
 }

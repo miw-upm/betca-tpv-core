@@ -12,4 +12,5 @@ public interface BudgetReactive extends ReactiveSortingRepository<BudgetEntity, 
             + "?#{ [0] == null ? {_id : {$ne:null}} : { reference : {$regex:[0], $options: 'i'} } },"
             + "] }")
     Flux<BudgetEntity> findByReferenceNullSafe(String reference);
+    Mono<BudgetEntity> readByReference(String reference);
 }

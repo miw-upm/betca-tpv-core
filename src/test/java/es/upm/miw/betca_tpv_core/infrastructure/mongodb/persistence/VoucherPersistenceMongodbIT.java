@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @TestConfig
@@ -49,6 +50,36 @@ public class VoucherPersistenceMongodbIT {
                 .create(voucherPersistenceMongodb.create(voucher))
                 .expectNextMatches(v -> voucher.getReference().equals(v.getReference()) &&
                         voucher.getValue().equals(v.getValue()))
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testConsume() {
+        String reference = "6aa2b2e8-8fcb-11eb-8dcd-0242ac130003";
+        StepVerifier
+                .create(this.voucherPersistenceMongodb.consume(reference))
+                .expectNextMatches(v -> v.getDateOfUse() != null)
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testConsumeVoucherNotExist() {
+        String reference = "not_exists";
+        StepVerifier
+                .create(this.voucherPersistenceMongodb.consume(reference))
+                .expectError()
+                .verify();
+    }
+
+    @Test
+    void testFindUnconsumedVouchersBetweenDates() {
+        LocalDateTime from = LocalDateTime.now().minusDays(3);
+        LocalDateTime to = LocalDateTime.now().plusDays(1);
+        StepVerifier
+                .create(this.voucherPersistenceMongodb.getUnconsumedVouchersBetweenDates(from, to))
+                .expectNextCount(2)
                 .expectComplete()
                 .verify();
     }

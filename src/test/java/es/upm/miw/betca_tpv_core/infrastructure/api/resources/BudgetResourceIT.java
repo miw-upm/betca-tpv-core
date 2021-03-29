@@ -118,6 +118,7 @@ class BudgetResourceIT {
                 });
     }
 
+
     @Test
     void testFindByIdNotFoundException(){
         this.restClientTestService.loginAdmin(webTestClient)
@@ -135,6 +136,18 @@ class BudgetResourceIT {
                 .exchange()
                 .expectStatus().isUnauthorized();
     }
+    @Test
+    void readByReference() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(BUDGETS + REFERENCE+REFERENCE_ID , "cmVmZXJlbmNlb2ZmZXIy")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(BudgetDto.class)
+                .value(budget -> System.out.println(">>>>> budget: " + budget));
+
+    }
+
 
     @AfterEach
     void closeCashier() {
