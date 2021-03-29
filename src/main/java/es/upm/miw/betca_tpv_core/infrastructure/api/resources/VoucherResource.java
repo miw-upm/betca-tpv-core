@@ -7,12 +7,16 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Rest
 @RequestMapping(VoucherResource.VOUCHERS)
 public class VoucherResource {
     public static final String VOUCHERS = "/vouchers";
     public static final String SEARCH_ID = "/{reference}";
     public static final String PDF = "/pdf";
+    public static final String DATES = "/between";
 
     private final VoucherService voucherService;
 
@@ -43,5 +47,12 @@ public class VoucherResource {
     @GetMapping(value =SEARCH_ID + PDF, produces = {"application/pdf"})
     public Mono<byte[]> printVoucher(@PathVariable String reference) {
         return this.voucherService.printByReference(reference);
+    }
+
+    @GetMapping(DATES)
+    public Flux<Voucher> getUnconsumedVouchersBetweenDates(@RequestParam String from, @RequestParam String to) {
+        LocalDateTime fromDate = LocalDateTime.parse(from);
+        LocalDateTime toDate = LocalDateTime.parse(to);
+        return this.voucherService.getUnconsumedVouchersBetweenDates(fromDate, toDate);
     }
 }

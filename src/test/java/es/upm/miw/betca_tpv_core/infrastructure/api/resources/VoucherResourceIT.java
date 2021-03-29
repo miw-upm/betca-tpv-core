@@ -2,10 +2,13 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.Voucher;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -95,5 +98,24 @@ public class VoucherResourceIT {
                 .get().uri(VoucherResource.VOUCHERS + "/" + reference + VoucherResource.PDF)
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testFindUnconsumedVouchersBetweenDates() {
+        LocalDateTime from = LocalDateTime.now().minusDays(3);
+        LocalDateTime to = LocalDateTime.now().plusDays(1);
+        String path = new DefaultUriBuilderFactory().builder()
+                .path(VoucherResource.VOUCHERS + VoucherResource.DATES)
+                .queryParam("from", from)
+                .queryParam("to", to)
+                .build(from, to).toString();
+
+        restClientTestService.loginAdmin(webTestClient)
+                .get().uri(path)
+                .attribute("from", from)
+                .attribute("to", to)
+                .exchange().expectStatus().isOk()
+                .expectBodyList(Voucher.class)
+                .value(vouchers -> Assertions.assertEquals(2, vouchers.size()));
     }
 }
