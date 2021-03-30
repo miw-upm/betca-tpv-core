@@ -61,4 +61,27 @@ public class RgpdPersistenceMongodbIT {
                 .verify();
     }
 
+    @Test
+    void testUpdate() {
+        Rgpd rgpd = new Rgpd(new User("987654321"), RgpdType.MEDIUM, null);
+        StepVerifier
+                .create(this.rgpdPersistenceMongodb.update(rgpd.getMobile(), rgpd))
+                .assertNext(newRgpd -> {
+                    assertEquals(newRgpd.getMobile(), rgpd.getMobile());
+                    assertEquals(newRgpd.getRgpdType(), rgpd.getRgpdType());
+                    assertNull(newRgpd.getAgreement());
+                })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testUpdateNotFound() {
+        Rgpd rgpd = new Rgpd(new User("789625413"), RgpdType.MEDIUM, null);
+        StepVerifier
+                .create(this.rgpdPersistenceMongodb.update(rgpd.getMobile(), rgpd))
+                .expectError()
+                .verify();
+    }
+
 }

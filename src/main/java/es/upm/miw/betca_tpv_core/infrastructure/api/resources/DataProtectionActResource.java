@@ -38,4 +38,10 @@ public class DataProtectionActResource {
                 .map(RgpdUserDto::ofRgpd);
     }
 
+    @PutMapping(DataProtectionActResource.MOBILE_ID)
+    public Mono<RgpdUserDto> update(@PathVariable String mobile, @Valid @RequestBody RgpdUserWithFileDto rgpdUserWithFileDto) {
+        return this.dataProtectionActService.update(mobile, rgpdUserWithFileDto.toRgpd())
+                .map(RgpdUserDto::ofRgpd);
+    }
+
 }
