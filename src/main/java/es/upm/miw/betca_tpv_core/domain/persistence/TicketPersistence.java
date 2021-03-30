@@ -30,4 +30,6 @@ public interface TicketPersistence {
     Flux<Ticket> findByRangeRegistrationDate(LocalDateTime initial, LocalDateTime end);
 
     Flux<Ticket> findAll();
+
+    Flux<Ticket> findAllWithoutInvoice();
 }

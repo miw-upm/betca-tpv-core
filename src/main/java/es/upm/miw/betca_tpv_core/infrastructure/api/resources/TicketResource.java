@@ -31,6 +31,7 @@ public class TicketResource {
     public static final String RECEIPT = "/receipt";
     public static final String BOUGHT_ARTICLES = "/boughtArticles";
     public static final String TRACKING = "/tracking";
+    public static final String NO_INVOICE = "/noInvoice";
 
     private TicketService ticketService;
     private JwtService jwtService;
@@ -88,6 +89,11 @@ public class TicketResource {
         return Flux
                 .fromIterable(data)
                 .flatMap(da -> this.ticketService.findByBarcodeAndAmount(da.getBarcode(), da.getAmount()));
+    }
+
+    @GetMapping(NO_INVOICE)
+    public Flux<TicketBasicDto> findAllWithoutInvoice(){
+        return this.ticketService.findAllWithoutInvoice();
     }
 
 }

@@ -9,6 +9,7 @@ import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.domain.services.utils.PdfTicketBuilder;
 import es.upm.miw.betca_tpv_core.domain.services.utils.UUIDBase64;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketBasicDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.UserBasicDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -120,5 +121,10 @@ public class TicketService {
                                 && shopping.getAmount() > amount
                         )
                 ).map(ticket -> new UserBasicDto(ticket.getUser()));
+    }
+
+    public Flux<TicketBasicDto> findAllWithoutInvoice() {
+        return this.ticketPersistence.findAllWithoutInvoice()
+                .map(TicketBasicDto::new);
     }
 }

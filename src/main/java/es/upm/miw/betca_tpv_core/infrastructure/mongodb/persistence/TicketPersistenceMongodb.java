@@ -1,11 +1,14 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
+import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.InvoiceReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.TicketReactive;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.InvoiceEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ShoppingEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.TicketEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +24,17 @@ public class TicketPersistenceMongodb implements TicketPersistence {
 
     private TicketReactive ticketReactive;
     private ArticleReactive articleReactive;
+    private InvoiceReactive invoiceReactive;
 
     @Autowired
-    public TicketPersistenceMongodb(TicketReactive ticketReactive, ArticleReactive articleReactive) {
+    public TicketPersistenceMongodb(TicketReactive ticketReactive, ArticleReactive articleReactive, InvoiceReactive invoiceReactive) {
         this.ticketReactive = ticketReactive;
         this.articleReactive = articleReactive;
+        this.invoiceReactive = invoiceReactive;
     }
 
     @Override
-    public Mono< Ticket > create(Ticket ticket) {
+    public Mono<Ticket> create(Ticket ticket) {
         TicketEntity ticketEntity = new TicketEntity(ticket);
         return Flux.fromStream(ticket.getShoppingList().stream())
                 .flatMap(shopping -> {
@@ -47,7 +52,7 @@ public class TicketPersistenceMongodb implements TicketPersistence {
     }
 
     @Override
-    public Mono< Ticket > readById(String id) {
+    public Mono<Ticket> readById(String id) {
         return this.ticketReactive.findById(id)
                 .map(TicketEntity::toTicket);
     }
@@ -63,7 +68,7 @@ public class TicketPersistenceMongodb implements TicketPersistence {
                 .map(TicketEntity::toTicket);
     }
 
-    public Flux<Ticket> findTicketByRegistrationDateAfter(LocalDateTime localDateTime){
+    public Flux<Ticket> findTicketByRegistrationDateAfter(LocalDateTime localDateTime) {
         return this.ticketReactive.findTicketEntitiesByCreationDateAfter(localDateTime)
                 .map(TicketEntity::toTicket);
     }
@@ -109,15 +114,52 @@ public class TicketPersistenceMongodb implements TicketPersistence {
                             .map(TicketEntity::toTicket);
                 });
     }
+
     @Override
     public Flux<Ticket> findByRangeRegistrationDate(LocalDateTime initial, LocalDateTime end) {
-        return this.ticketReactive.findByCreationDateBetween(initial,end)
+        return this.ticketReactive.findByCreationDateBetween(initial, end)
                 .map(TicketEntity::toTicket);
     }
 
     @Override
     public Flux<Ticket> findAll() {
         return this.ticketReactive.findAll()
+                .map(TicketEntity::toTicket);
+    }
+
+    /*
+     @Override
+    public Flux<Ticket> findAllWithoutInvoice() {
+        return this.ticketReactive.findAll()
+                .flatMap(ticketEntity -> {
+                    return this.invoiceReactive.findByTicketEntity(ticketEntity)
+                            .flatMap(invoiceEntity -> Mono.error(new ConflictException("error")))
+                            .then(Mono.just(ticketEntity));
+
+                })
+                .map(TicketEntity::toTicket);
+    }
+     */
+
+    @Override
+    public Flux<Ticket> findAllWithoutInvoice() {
+        return this.ticketReactive.findAll()
+                .flatMap(ticketEntity ->
+                        this.invoiceReactive.findByTicketEntity(ticketEntity)
+                                .switchIfEmpty(Mono.just(new InvoiceEntity(ticketEntity)))
+                                //.doOnNext(System.out::println)
+                                .map(invoiceEntity -> {
+                                    if (invoiceEntity.getId() != null) {
+                                        System.out.println("Devuelvo un ticket dummy");
+                                        return new TicketEntity();
+                                    } else {
+                                        System.out.println("Devuelvo un ticket bueno");
+                                        return ticketEntity;
+                                    }
+                                })
+                )
+                .filter(ticketEntity -> ticketEntity.getId() != null)
+                //.doOnNext(System.out::println)
                 .map(TicketEntity::toTicket);
     }
 
