@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static java.math.BigDecimal.ZERO;
 
@@ -25,6 +26,7 @@ public class DatabaseSeederDev {
     private ProviderDao providerDao;
     private ArticlesTreeDao articlesTreeDao;
     private TicketDao ticketDao;
+    private GiftTicketDao giftTicketDao;
     private CashierDao cashierDao;
     private OfferDao offerDao;
     private StockAlarmDao stockAlarmDao;
@@ -33,20 +35,28 @@ public class DatabaseSeederDev {
     private RgpdDao rgpdDao;
     private CustomerDiscountDao customerDiscountDao;
     private BudgetDao budgetDao;
+    private MessengerDao messengerDao;
+    private InvoiceDao invoiceDao;
     private SalespeopleDao salespeopleDao;
+    private ProviderInvoiceDao providerInvoiceDao;
+    private VoucherDao voucherDao;
+    private TagDao tagDao;
 
     private DatabaseStarting databaseStarting;
 
     @Autowired
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
-                             TicketDao ticketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,
+                             TicketDao ticketDao, GiftTicketDao giftTicketDao, CashierDao cashierDao, OfferDao offerDao, StockAlarmDao stockAlarmDao,
                              CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao,
-                             CustomerDiscountDao customerDiscountDao,BudgetDao budgetDao,SalespeopleDao salespeopleDao, DatabaseStarting databaseStarting) {
+                             CustomerDiscountDao customerDiscountDao, BudgetDao budgetDao, MessengerDao messengerDao,
+                             SalespeopleDao salespeopleDao, InvoiceDao invoiceDao, ProviderInvoiceDao providerInvoiceDao, VoucherDao voucherDao,
+                             TagDao tagDao, DatabaseStarting databaseStarting) {
 
         this.articleDao = articleDao;
         this.providerDao = providerDao;
         this.articlesTreeDao = articlesTreeDao;
         this.ticketDao = ticketDao;
+        this.giftTicketDao = giftTicketDao;
         this.cashierDao = cashierDao;
         this.offerDao = offerDao;
         this.creditSaleDao = creditSaleDao;
@@ -55,8 +65,13 @@ public class DatabaseSeederDev {
         this.stockAlarmDao = stockAlarmDao;
         this.rgpdDao = rgpdDao;
         this.customerDiscountDao = customerDiscountDao;
-        this.budgetDao=budgetDao;
-        this.salespeopleDao=salespeopleDao;
+        this.budgetDao = budgetDao;
+        this.messengerDao = messengerDao;
+        this.invoiceDao = invoiceDao;
+        this.salespeopleDao = salespeopleDao;
+        this.providerInvoiceDao = providerInvoiceDao;
+        this.voucherDao = voucherDao;
+        this.tagDao=tagDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -66,18 +81,28 @@ public class DatabaseSeederDev {
     }
 
     private void deleteAllAndInitialize() {
+        this.creditDao.deleteAll();
+
+        this.creditSaleDao.deleteAll();
+        this.salespeopleDao.deleteAll();
+        this.invoiceDao.deleteAll();
+
         this.ticketDao.deleteAll();
-        this.articleDao.deleteAll();
-        this.providerDao.deleteAll();
-        this.cashierDao.deleteAll();
+        this.tagDao.deleteAll();
+        this.giftTicketDao.deleteAll();
         this.offerDao.deleteAll();
         this.stockAlarmDao.deleteAll();
-        this.creditSaleDao.deleteAll();
-        this.creditDao.deleteAll();
+        this.budgetDao.deleteAll();
+
+        this.articleDao.deleteAll();
+        this.providerInvoiceDao.deleteAll();
+
+        this.providerDao.deleteAll();
+        this.cashierDao.deleteAll();
         this.rgpdDao.deleteAll();
         this.customerDiscountDao.deleteAll();
-        this.budgetDao.deleteAll();
-        this.salespeopleDao.deleteAll();
+        this.messengerDao.deleteAll();
+        this.voucherDao.deleteAll();
 
         LogManager.getLogger(this.getClass()).warn("------- Delete All -----------");
         this.databaseStarting.initialize();
@@ -127,6 +152,9 @@ public class DatabaseSeederDev {
                         .discontinued(false).build(),
                 ArticleEntity.builder().barcode("8400000000100").reference("without provider").description("without provider")
                         .retailPrice(new BigDecimal("0.12")).stock(5).registrationDate(LocalDateTime.now())
+                        .discontinued(false).build(),
+                ArticleEntity.builder().barcode("8400000000555").reference("without provider").description("without provider")
+                        .retailPrice(new BigDecimal("0.12")).stock(10).registrationDate(LocalDateTime.now())
                         .discontinued(false).build(),
         };
         this.articleDao.saveAll(List.of(articles));
@@ -180,6 +208,10 @@ public class DatabaseSeederDev {
                         3, ZERO, ShoppingState.COMMITTED),
                 new ShoppingEntity(articles[5], articles[5].getDescription(), articles[5].getRetailPrice(),
                         2, ZERO, ShoppingState.COMMITTED),
+                new ShoppingEntity(articles[10], articles[10].getDescription(), articles[10].getRetailPrice(),
+                        2, ZERO, ShoppingState.COMMITTED),
+                new ShoppingEntity(articles[10], articles[10].getDescription(), articles[10].getRetailPrice(),
+                        4, ZERO, ShoppingState.COMMITTED),
         };
         LocalDateTime date = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
         TicketEntity[] tickets = {
@@ -201,9 +233,21 @@ public class DatabaseSeederDev {
                 new TicketEntity("5gfaw03b7513a164chop77ac", "AAhfv521Rj6iKmzp5aERAA",
                         List.of(shoppingList[2], shoppingList[3], shoppingList[4]), date, new BigDecimal("25.0"),
                         ZERO, ZERO, "note", "66"),
+                new TicketEntity("7faw03b7513a164chop77ac", "Asdfv521Rj6iKmzp5aERAA",
+                        List.of(shoppingList[7]), LocalDateTime.now().minusDays(5), new BigDecimal("25.0"),
+                        ZERO, ZERO, "note", "66"),
+               new TicketEntity("9jfaw03b7513a164chop77ac", "Asgffv521Rj6iKmzp5aERAA",
+                        List.of(shoppingList[6]), LocalDateTime.now().minusDays(4), new BigDecimal("20.0"),
+                        ZERO, ZERO, "note", "66"),
         };
         this.ticketDao.saveAll(Arrays.asList(tickets));
         LogManager.getLogger(this.getClass()).warn("        ------- tickets");
+        GiftTicketEntity[] giftTicketEntities = {
+                new GiftTicketEntity("asdhgsjd56736jdfb", "mensaje 1", tickets[0]),
+                new GiftTicketEntity("asdhbjhjds8987397jkdbcb", "mensaje 2", tickets[1]),
+        };
+        this.giftTicketDao.saveAll(Arrays.asList(giftTicketEntities));
+        LogManager.getLogger(this.getClass()).warn("        ------- GiftTickets");
         LocalDate offerCreationDate = LocalDate.of(2021, Month.MARCH, 12);
         LocalDate offerExpiryDate = LocalDate.of(2021, Month.JULY, 12);
         OfferEntity[] offers = {
@@ -232,7 +276,7 @@ public class DatabaseSeederDev {
                 .retailPrice(new BigDecimal("20")).stock(10).providerEntity(providers[0])
                 .registrationDate(LocalDateTime.now()).discontinued(false).build();
 
-        ArticleEntity article2= ArticleEntity.builder().barcode("stockAlamt00002").reference("zz-falda-T2").description("Zarzuela - Falda T2")
+        ArticleEntity article2 = ArticleEntity.builder().barcode("stockAlamt00002").reference("zz-falda-T2").description("Zarzuela - Falda T2")
                 .retailPrice(new BigDecimal("20")).stock(4).providerEntity(providers[0])
                 .registrationDate(LocalDateTime.now()).discontinued(false).build();
 
@@ -299,37 +343,91 @@ public class DatabaseSeederDev {
         LogManager.getLogger(this.getClass()).warn("        ------- customer discount");
 
         BudgetEntity[] budgets = {
-                new BudgetEntity("1", date, List.of(shoppingList[0], shoppingList[1])),
-                new BudgetEntity("2", date, List.of(shoppingList[2], shoppingList[3])),
-                new BudgetEntity("3", date, List.of(shoppingList[4], shoppingList[5])),
+                new BudgetEntity("b600b5c9cac1", date, List.of(shoppingList[0], shoppingList[1])),
+                new BudgetEntity("b600b5c9cac2", date, List.of(shoppingList[2], shoppingList[3])),
+                new BudgetEntity("b600b5c9cac3",date, List.of(shoppingList[4], shoppingList[5])),
 
 
         };
         this.budgetDao.saveAll(Arrays.asList(budgets));
         LogManager.getLogger(this.getClass()).warn("        ------- budgets");
 
-        LocalDate salespeopleTime=LocalDate.of(2021,Month.APRIL,1);
-        LocalDate salespeopleTime2=LocalDate.of(2021,Month.APRIL,2);
-        SalespeopleEntity[] salespeople={
-            SalespeopleEntity.builder()
-                .id("1").salesperson("Rosaria")
-                .salesDate(salespeopleTime).numArticle(2).finalValue(new BigDecimal(23)).articleEntityList(List.of(articles[0]))
-                .ticketEntityList(List.of(tickets[0]))
-                .build(),
-            SalespeopleEntity.builder()
-                .id("2").salesperson("Nacho")
-                .salesDate(salespeopleTime2).numArticle(5).finalValue(new BigDecimal(25.3)).articleEntityList(List.of(articles[0]))
-                .ticketEntityList(List.of(tickets[1]))
-                .build(),
+        MessageEntity[] messageEntities = {
+                MessageEntity.builder().id("1").subject("Message 1").text("Message text 1").userFrom("6").userTo("666666001").isRead(Boolean.TRUE).creationDate(LocalDate.now()).build(),
+                MessageEntity.builder().id("2").subject("Message 2").text("Message text 2").userFrom("666666001").userTo("6").isRead(Boolean.TRUE).creationDate(LocalDate.now()).build(),
+                MessageEntity.builder().id("3").subject("Message 3").text("Message text 3").userFrom("666666001").userTo("66").isRead(Boolean.FALSE).creationDate(LocalDate.now()).build(),
+                MessageEntity.builder().id("4").subject("Message 4").text("Message text 4").userFrom("6").userTo("666666001").isRead(Boolean.FALSE).creationDate(LocalDate.now()).build()
+        };
+        this.messengerDao.saveAll(List.of(messageEntities));
+        LogManager.getLogger(this.getClass()).warn("        ------- messages");
+        TagEntity[] tags = {
+                TagEntity.builder().name("name1").group("group1").description("description").articleEntityList(List.of(articles[0], articles[1])).build(),
+                TagEntity.builder().name("name2").group("group1").description("description").articleEntityList(List.of(articles[2], articles[3])).build(),
+                TagEntity.builder().name("name3").group("group1").description("description").articleEntityList(List.of(articles[4], articles[5])).build()
+        };
+        this.tagDao.saveAll(Arrays.asList(tags));
+        LogManager.getLogger(this.getClass()).warn("        ------- tags");
+
+        InvoiceEntity[] invoices = {
+                InvoiceEntity.builder().id("invc_ID_1A2B3C4D5E").number("invc_N_1A2B3C4D5E").ticketEntity(tickets[0]).creationDate(LocalDateTime.now())
+                        .baseTax(new BigDecimal("16.53")).taxValue(new BigDecimal("3.47")).build(),
+                InvoiceEntity.builder().id("invc_ID_9Z8X7Y6V5U").number("invc_N_9Z8X7Y6V5U").ticketEntity(tickets[1]).creationDate(LocalDateTime.now())
+                        .baseTax(new BigDecimal("20.00")).taxValue(new BigDecimal("0.00")).build(),
+                InvoiceEntity.builder().id("invc_ID_AANNDDFFRR").number("invc_N_AANNDDFFRR").ticketEntity(tickets[3]).creationDate(LocalDateTime.now())
+                        .baseTax(new BigDecimal("80.00")).taxValue(new BigDecimal("0.00")).build()
+        };
+        this.invoiceDao.saveAll(Arrays.asList(invoices));
+        LogManager.getLogger(this.getClass()).warn("        ------- invoices");
+
+        LocalDate salespeopleTime = LocalDate.of(2021, Month.APRIL, 1);
+        LocalDate salespeopleTime2 = LocalDate.of(2021, Month.APRIL, 2);
+        SalespeopleEntity[] salespeople = {
+                SalespeopleEntity.builder()
+                        .id("1").salesperson("Rosaria")
+                        .salesDate(salespeopleTime).numArticle(2).finalValue(new BigDecimal(23)).articleEntityList(List.of(articles[0]))
+                        .ticketEntityList(List.of(tickets[0]))
+                        .build(),
+                SalespeopleEntity.builder()
+                        .id("2").salesperson("Nacho")
+                        .salesDate(salespeopleTime2).numArticle(5).finalValue(new BigDecimal(25)).articleEntityList(List.of(articles[0]))
+                        .ticketEntityList(List.of(tickets[1]))
+                        .build(),
 
         };
         this.salespeopleDao.saveAll(Arrays.asList(salespeople));
         LogManager.getLogger(this.getClass()).warn("        ------  salespeople");
+
+        ProviderInvoiceEntity[] providerInvoiceEntities = {
+                ProviderInvoiceEntity.builder()
+                        .id("1").number(1111).creationDate(LocalDate.of(2021, 1, 1))
+                        .baseTax(new BigDecimal("1000")).taxValue(new BigDecimal("10"))
+                        .providerEntity(providers[0]).orderId("ord1")
+                        .build(),
+                ProviderInvoiceEntity.builder()
+                        .id("2").number(2222).creationDate(LocalDate.of(2021, 3, 31))
+                        .baseTax(new BigDecimal("2000")).taxValue(new BigDecimal("20"))
+                        .providerEntity(providers[1]).orderId("ord2")
+                        .build(),
+                ProviderInvoiceEntity.builder()
+                        .id("3").number(3333).creationDate(LocalDate.of(2021, 12, 1))
+                        .baseTax(new BigDecimal("3000")).taxValue(new BigDecimal("30"))
+                        .providerEntity(providers[2]).orderId("ord3")
+                        .build(),
+                ProviderInvoiceEntity.builder()
+                        .id("4").number(4444).creationDate(LocalDate.of(2021, 4, 1))
+                        .baseTax(new BigDecimal("4000")).taxValue(new BigDecimal("40"))
+                        .providerEntity(providers[3]).orderId("ord4")
+                        .build(),
+        };
+        this.providerInvoiceDao.saveAll(List.of(providerInvoiceEntities));
+        LogManager.getLogger(this.getClass()).warn("        ------  provider invoices");
+
+        VoucherEntity[] voucherEntities = {
+                new VoucherEntity(UUID.randomUUID().toString(), 10, LocalDateTime.now(), null),
+                new VoucherEntity(UUID.randomUUID().toString(), 10, LocalDateTime.now(), LocalDateTime.now()),
+                new VoucherEntity("6aa2b2e8-8fcb-11eb-8dcd-0242ac130003", 10, LocalDateTime.now().minusDays(2), null),
+        };
+        this.voucherDao.saveAll(List.of(voucherEntities));
+        LogManager.getLogger(this.getClass()).warn("        ------  vouchers");
     }
-
-
-
 }
-
-
-

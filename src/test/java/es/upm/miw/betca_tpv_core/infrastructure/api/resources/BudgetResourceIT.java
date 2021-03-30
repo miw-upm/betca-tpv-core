@@ -13,12 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.BudgetResource.BUDGETS;
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.BudgetResource.ID_ID;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.BudgetResource.*;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.CASHIERS;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.LAST;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.TicketResource.RECEIPT;
@@ -96,7 +94,7 @@ class BudgetResourceIT {
     void testRead() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(BUDGETS + BudgetResource.ID_ID + RECEIPT, "1")
+                .uri(BUDGETS + BudgetResource.ID_ID + RECEIPT, "b600b5c9cac1")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(byte[].class)
@@ -106,15 +104,14 @@ class BudgetResourceIT {
     void testFindById(){
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(BUDGETS + ID_ID, "1")
+                .uri(BUDGETS + ID_ID, "b600b5c9cac1")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(BudgetDto.class)
                 .value(Assertions::assertNotNull)
-                .value(budget -> {
-                    assertEquals("1", budget.getId());
-                });
+                .value(budget -> assertEquals("b600b5c9cac1", budget.getId()));
     }
+
 
     @Test
     void testFindByIdNotFoundException(){
@@ -133,6 +130,7 @@ class BudgetResourceIT {
                 .exchange()
                 .expectStatus().isUnauthorized();
     }
+
     @AfterEach
     void closeCashier() {
         this.restClientTestService.loginAdmin(webTestClient)

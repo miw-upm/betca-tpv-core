@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -17,17 +15,11 @@ import java.util.Objects;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CustomerDiscount {
+    private String id;
     private String note;
     private String registrationDate;
     @NotNull
     private Double discount;
     private Double minimumPurchase;
-    @NotBlank
     private String user;
-
-    public static CustomerDiscount ofUser(CustomerDiscount customerDiscount) {
-        return CustomerDiscount.builder()
-                .user(customerDiscount.getUser())
-                .build();
-    }
 }

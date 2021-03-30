@@ -12,8 +12,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 @Repository
 public class BudgetPersistenceMongodb implements BudgetPersistence {
-    private BudgetReactive budgetReactive;
-    private ArticleReactive articleReactive;
+    private final BudgetReactive budgetReactive;
+    private final ArticleReactive articleReactive;
 
     public BudgetPersistenceMongodb(BudgetReactive budgetReactive,ArticleReactive articleReactive) {
         this.budgetReactive=budgetReactive;
@@ -52,4 +52,10 @@ public class BudgetPersistenceMongodb implements BudgetPersistence {
                 .map(BudgetEntity::toBudget
                 );
     }
+    @Override
+    public Flux< String > findNullSafe(String id) {
+        return this.budgetReactive.findNullSafe(id)
+                .map(BudgetEntity::getId);
+    }
+
 }

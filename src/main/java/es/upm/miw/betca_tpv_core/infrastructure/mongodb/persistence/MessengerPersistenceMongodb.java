@@ -36,7 +36,7 @@ public class MessengerPersistenceMongodb implements MessengerPersistence {
     public Flux<Message> findByUserToNullSafe(User userTo) {
         Flux<Message> userToMessages = this.messengerReactive.findByUserTo(userTo.getMobile())
                 .flatMap(messageEntity -> {
-                        messageEntity.setRead(Boolean.TRUE);
+                        messageEntity.setIsRead(Boolean.TRUE);
                         return this.messengerReactive.save(messageEntity).map(MessageEntity::toMessage);
                 });
 
