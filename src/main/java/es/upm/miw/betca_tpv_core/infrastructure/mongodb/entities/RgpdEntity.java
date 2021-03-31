@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import reactor.core.publisher.Mono;
 
 @Data
 @NoArgsConstructor
@@ -34,4 +35,8 @@ public class RgpdEntity {
         return new Rgpd(new User(this.userMobile), this.rgpdType, this.agreement);
     }
 
+    public void set(Rgpd rgpd) {
+        setRgpdType(rgpd.getRgpdType());
+        setAgreement(rgpd.getAgreement());
+    }
 }

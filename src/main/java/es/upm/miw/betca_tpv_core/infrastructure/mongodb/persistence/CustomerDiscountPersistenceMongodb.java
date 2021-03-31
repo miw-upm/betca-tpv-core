@@ -18,6 +18,7 @@ public class CustomerDiscountPersistenceMongodb implements CustomerDiscountPersi
 
     private CustomerDiscountReactive customerDiscountReactive;
     private UserMicroservice userMicroservice;
+    public static final String MESSAGE = "Non existent id: ";
 
     @Autowired
     public CustomerDiscountPersistenceMongodb(CustomerDiscountReactive customerDiscountReactive, UserMicroservice userMicroservice) {
@@ -49,7 +50,7 @@ public class CustomerDiscountPersistenceMongodb implements CustomerDiscountPersi
     @Override
     public Mono<CustomerDiscount> update(String id, CustomerDiscount customerDiscount) {
         return this.customerDiscountReactive.findById(id)
-                .switchIfEmpty(Mono.error(new NotFoundException("Non existent id: " + id)))
+                .switchIfEmpty(Mono.error(new NotFoundException(MESSAGE + id)))
                 .flatMap(customerDiscountEntity -> {
                     BeanUtils.copyProperties(customerDiscount, customerDiscountEntity);
                     return this.customerDiscountReactive.save(customerDiscountEntity);
@@ -60,14 +61,14 @@ public class CustomerDiscountPersistenceMongodb implements CustomerDiscountPersi
     @Override
     public Mono<CustomerDiscount> readById(String id) {
         return this.customerDiscountReactive.findById(id)
-                .switchIfEmpty(Mono.error(new NotFoundException("Non existent id: " + id)))
+                .switchIfEmpty(Mono.error(new NotFoundException(MESSAGE + id)))
                 .map(CustomerDiscountEntity::toCustomerDiscount);
     }
 
     @Override
     public Mono<Void> delete(String id) {
         return this.customerDiscountReactive.findById(id)
-                .switchIfEmpty(Mono.error(new NotFoundException("Non existent id: " + id)))
+                .switchIfEmpty(Mono.error(new NotFoundException(MESSAGE + id)))
                 .then(this.customerDiscountReactive.deleteById(id));
     }
 
