@@ -48,7 +48,7 @@ class InvoiceReactiveIT {
     void testFindByTicketEntity(){
 
         TicketEntity ticketEntity = new TicketEntity();
-        ticketEntity.setId("5fa45e863d6e834d642689ac");
+        ticketEntity.setId("5fa45f6f3a61083cb241289c");
 
         StepVerifier
                 .create(this.invoiceReactive.findByTicketEntity(ticketEntity))

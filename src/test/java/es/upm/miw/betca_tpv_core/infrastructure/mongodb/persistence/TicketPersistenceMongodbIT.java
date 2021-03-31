@@ -148,6 +148,10 @@ class TicketPersistenceMongodbIT {
         StepVerifier
                 .create(this.ticketPersistenceMongodb.findAllWithoutInvoice())
                 .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))
+                .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))
+                .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))
+                .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))
+                .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))
                 .thenCancel()
                 .verify();
     }
