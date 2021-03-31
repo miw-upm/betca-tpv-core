@@ -196,6 +196,19 @@ class TicketResourceIT {
     }
 
     @Test
+    void testFindSelectedByReference() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(TICKETS + REFERENCE_ID + REFERENCE + SELECTED, "WB9-e8xQT4ejb74r1vLrCw")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(TicketSelectedDto.class)
+                .value(Assertions::assertNotNull)
+                .value(ticket -> System.out.println(">>>>> ticket: " + ticket));
+
+    }
+
+    @Test
     void testFindByReferenceNotFoundException() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()

@@ -146,6 +146,24 @@ class TicketServiceIT {
                 .verify();
     }
 
+    @Test
+    void findSelectedByReference(){
+        String ticketRef = "Asdfv521Rj6iKmzp5aERAA";
+
+        StepVerifier
+                .create(this.ticketService.findSelectedByReference(ticketRef))
+                .expectNextMatches(ticket -> {
+                    assertNotNull(ticket.getId());
+                    assertNotNull(ticket.getReference());
+                    assertNotNull(ticket.getUser());
+                    assertNotNull(ticket.getUser().getFirstName());
+                    assertNotNull(ticket.getUser().getMobile());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
+
     @AfterEach
     void closeCashier() {
         StepVerifier

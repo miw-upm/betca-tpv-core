@@ -29,6 +29,7 @@ public class TicketResource {
     public static final String BOUGHT_ARTICLES = "/boughtArticles";
     public static final String TRACKING = "/tracking";
     public static final String NO_INVOICE = "/noInvoice";
+    public static final String SELECTED = "/selected";
 
     private TicketService ticketService;
     private JwtService jwtService;
@@ -65,6 +66,12 @@ public class TicketResource {
     public Mono<TicketEditionDto> findByReference(@PathVariable String reference) {
         return this.ticketService.findByReference(reference)
                 .map(TicketEditionDto::new);
+    }
+
+    @GetMapping(REFERENCE_ID + REFERENCE + SELECTED)
+    public Mono<TicketSelectedDto> findSelectedByReference(@PathVariable String reference) {
+        return this.ticketService.findByReference(reference)
+                .map(TicketSelectedDto::new);
     }
 
     @PutMapping(ID_ID)
