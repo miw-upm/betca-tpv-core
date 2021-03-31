@@ -6,10 +6,7 @@ import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.model.Tracking;
 import es.upm.miw.betca_tpv_core.domain.services.TicketService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ArticleNewDto;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketBasicDto;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketEditionDto;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.UserBasicDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +28,7 @@ public class TicketResource {
     public static final String RECEIPT = "/receipt";
     public static final String BOUGHT_ARTICLES = "/boughtArticles";
     public static final String TRACKING = "/tracking";
+    public static final String NO_INVOICE = "/noInvoice";
 
     private TicketService ticketService;
     private JwtService jwtService;
@@ -42,12 +40,12 @@ public class TicketResource {
     }
 
     @PostMapping(produces = {"application/json"})
-    public Mono< Ticket > create(@Valid @RequestBody Ticket ticket) {
+    public Mono<Ticket> create(@Valid @RequestBody Ticket ticket) {
         return this.ticketService.create(ticket);
     }
 
     @GetMapping(value = ID_ID + RECEIPT, produces = {"application/pdf", "application/json"})
-    public Mono< byte[] > readReceipt(@PathVariable String id) {
+    public Mono<byte[]> readReceipt(@PathVariable String id) {
         return this.ticketService.readReceipt(id);
     }
 
@@ -88,6 +86,13 @@ public class TicketResource {
         return Flux
                 .fromIterable(data)
                 .flatMap(da -> this.ticketService.findByBarcodeAndAmount(da.getBarcode(), da.getAmount()));
+    }
+
+    @GetMapping(SEARCH + NO_INVOICE)
+    public Mono<TicketReferencesDto> findAllWithoutInvoice() {
+        return this.ticketService.findAllWithoutInvoice()
+                .collectList()
+                .map(TicketReferencesDto::new);
     }
 
 }

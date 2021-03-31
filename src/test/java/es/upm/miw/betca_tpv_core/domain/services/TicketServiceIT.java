@@ -127,6 +127,25 @@ class TicketServiceIT {
                 .verify();
     }
 
+    @Test
+    void testFindAllWithoutInvoice(){
+        List<String> ticketsRef = List.of(
+                "FGhfvfMORj6iKmzp5aERAA", "FGhfv521Rj6iKmzp5aERAA",
+                "AAhfv521Rj6iKmzp5aERAA", "Asdfv521Rj6iKmzp5aERAA",
+                "Asgffv521Rj6iKmzp5aERAA"
+        );
+
+        StepVerifier
+                .create(this.ticketService.findAllWithoutInvoice())
+                .assertNext(ticket -> assertTrue(ticketsRef.contains(ticket)))
+                .assertNext(ticket -> assertTrue(ticketsRef.contains(ticket)))
+                .assertNext(ticket -> assertTrue(ticketsRef.contains(ticket)))
+                .assertNext(ticket -> assertTrue(ticketsRef.contains(ticket)))
+                .assertNext(ticket -> assertTrue(ticketsRef.contains(ticket)))
+                .thenCancel()
+                .verify();
+    }
+
     @AfterEach
     void closeCashier() {
         StepVerifier

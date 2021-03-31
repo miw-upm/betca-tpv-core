@@ -121,4 +121,9 @@ public class TicketService {
                         )
                 ).map(ticket -> new UserBasicDto(ticket.getUser()));
     }
+
+    public Flux<String> findAllWithoutInvoice() {
+        return this.ticketPersistence.findAllWithoutInvoice()
+                .map(Ticket::getReference);
+    }
 }
