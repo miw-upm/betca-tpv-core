@@ -92,6 +92,18 @@ public class TicketService {
         return this.ticketPersistence.findByReference(reference);
     }
 
+    public Mono<Ticket> findSelectedByReference(String reference) {
+        return this.ticketPersistence.findByReference(reference)
+                .flatMap(ticket ->
+                    this.readUserByUserMobileNullSafe(ticket.getUser())
+                            .map(user -> {
+                                ticket.setUser(user);
+                                return ticket;
+                            })
+                            .switchIfEmpty(Mono.just(ticket))
+                );
+    }
+
     public Mono<Ticket> update(String id, List<Shopping> shoppingList) {
         return this.ticketPersistence.update(id, shoppingList);
     }
