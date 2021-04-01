@@ -1,7 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
-import es.upm.miw.betca_tpv_core.domain.model.CashierClose;
-import es.upm.miw.betca_tpv_core.domain.model.CashierState;
+import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.CashierLastDto;
 import org.junit.jupiter.api.Assertions;
@@ -14,8 +13,7 @@ import java.math.BigDecimal;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.*;
 import static java.math.BigDecimal.ZERO;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @RestTestConfig
 class CashierResourceIT {
@@ -92,5 +90,127 @@ class CashierResourceIT {
                 .expectBody(CashierLastDto.class)
                 .value(Assertions::assertNotNull)
                 .value(cashier -> assertTrue(cashier.getClosed()));
+    }
+
+    @Test
+    void testFindAllCashierByClosureDateBetween() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(CASHIERS + SEARCH)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Cashier.class)
+                .value(Assertions::assertNotNull)
+                .value(cashiers -> assertTrue(cashiers.stream()
+                        .anyMatch(cashier ->
+                                cashier.getOpeningDate() != null)));
+    }
+
+    @Test
+    void testFindAllCashierSearch() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(CASHIERS + SEARCH)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Cashier.class)
+                .value(Assertions::assertNotNull)
+                .value(cashiers -> assertTrue(cashiers.stream()
+                        .anyMatch(cashier ->
+                                cashier.getOpeningDate() != null)));
+    }
+
+    @Test
+    void testMovementInCash() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .post().uri(CASHIERS)
+                .exchange()
+                .expectStatus().isOk();
+        CashierLastDto cashierLast = this.restClientTestService.loginAdmin(webTestClient)
+                .get().uri(CASHIERS + LAST)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(CashierLastDto.class)
+                .value(Assertions::assertNotNull)
+                .value(cashier -> assertFalse(cashier.getClosed()))
+                .returnResult()
+                .getResponseBody();
+        if(cashierLast.getClosed())
+        {
+            this.restClientTestService.loginAdmin(webTestClient)
+                    .post().uri(CASHIERS)
+                    .exchange()
+                    .expectStatus().isOk();
+        }
+
+        CashierState cashierState = this.restClientTestService.loginAdmin(webTestClient)
+                .get().uri(CASHIERS + LAST + STATE)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(CashierState.class)
+                .returnResult()
+                .getResponseBody();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .patch().uri(CASHIERS + LAST + MOVEMENT_IN)
+                .body(Mono.just(new CashierMovement(BigDecimal.valueOf(3000))), CashierMovement.class)
+                .exchange()
+                .expectStatus().isOk();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get().uri(CASHIERS + LAST + STATE)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(CashierState.class)
+                .value(Assertions::assertNotNull)
+                .value(cashierState2 ->
+                        assertEquals(0, cashierState2.getTotalCash().compareTo(cashierState.getTotalCash().add(BigDecimal.valueOf(3000)))));
+    }
+
+    @Test
+    void testMovementOutCash() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .post().uri(CASHIERS)
+                .exchange()
+                .expectStatus().isOk();
+        CashierLastDto cashierLast = this.restClientTestService.loginAdmin(webTestClient)
+                .get().uri(CASHIERS + LAST)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(CashierLastDto.class)
+                .value(Assertions::assertNotNull)
+                .value(cashier -> assertFalse(cashier.getClosed()))
+                .returnResult()
+                .getResponseBody();
+        if(cashierLast.getClosed())
+        {
+            this.restClientTestService.loginAdmin(webTestClient)
+                    .post().uri(CASHIERS)
+                    .exchange()
+                    .expectStatus().isOk();
+        }
+
+        CashierState cashierState = this.restClientTestService.loginAdmin(webTestClient)
+                .get().uri(CASHIERS + LAST + STATE)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(CashierState.class)
+                .returnResult()
+                .getResponseBody();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .patch().uri(CASHIERS + LAST + MOVEMENT_OUT)
+                .body(Mono.just(new CashierMovement(BigDecimal.valueOf(3000))), CashierMovement.class)
+                .exchange()
+                .expectStatus().isOk();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get().uri(CASHIERS + LAST + STATE)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(CashierState.class)
+                .value(Assertions::assertNotNull)
+                .value(cashierState2 ->
+                        assertEquals(0, cashierState2.getTotalCash().compareTo(cashierState.getTotalCash().subtract(BigDecimal.valueOf(3000)))));
     }
 }
