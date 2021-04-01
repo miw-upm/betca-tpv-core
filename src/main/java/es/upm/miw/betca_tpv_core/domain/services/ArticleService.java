@@ -11,6 +11,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,17 +64,19 @@ public class ArticleService {
 
     public Flux< Article > findTop5ArticleSalesLastWeek(){
         Map<String, Integer> articleBarcodes = new HashMap<>();
-        Flux<Shopping> shoppingFlux = this.ticketPersistence.findTicketByRegistrationDateAfter(LocalDateTime.now().minusDays(7))
+        return this.ticketPersistence.findTicketByRegistrationDateAfter(LocalDateTime.now().minusDays(7))
                 .doOnNext(System.out::println)
                 .flatMap(ticket -> Flux.fromStream(ticket.getShoppingList().stream()))
                 .doOnNext(System.out::println)
-                .doOnNext(shopping -> articleBarcodes.computeIfPresent(shopping.getBarcode(),
-                        (key, value) -> value + 1))
+                .doOnNext(shopping -> articleBarcodes.merge(shopping.getBarcode(), 1, (oldValue, newValue) -> oldValue++))
+                .doOnNext(System.out::println)
+                .doOnNext(shopping -> articleBarcodes.entrySet().stream()
+                        .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                        .limit(5))
+                .thenMany(this.articlePersistence.findArticlesByBarcodes(
+                                Flux.fromStream(articleBarcodes.keySet().stream())
+                                )
+                        )
                 .doOnNext(System.out::println);
-
-
-        return this.articlePersistence.findArticlesByBarcodes(
-                shoppingFlux.map(Shopping::getBarcode)
-        );
     }
 }
