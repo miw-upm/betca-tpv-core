@@ -49,6 +49,7 @@ public class StockManagerResource {
                 .map(StockManagerDto::new);
 
     }
+
     @GetMapping(STOCK_EMPTY)
     public Mono<StockManagerDto> searchEmptyStock(@RequestParam() String barcode) {
         return this.stockManagerService.searchEmptyStock(barcode)
