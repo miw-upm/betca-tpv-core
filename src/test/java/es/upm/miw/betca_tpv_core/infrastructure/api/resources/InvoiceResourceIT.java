@@ -52,7 +52,7 @@ class InvoiceResourceIT {
 
     @Test
     void testCreateInvoiceAndPrint() {
-        TicketBasicDto ticket = TicketBasicDto.builder().reference("nUs81zZ4R_iuoq0_zCRm6A").build();
+        TicketBasicDto ticket = TicketBasicDto.builder().reference("FGhfvfMORj6iKmzp5aERAA").build();
         this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(INVOICES)

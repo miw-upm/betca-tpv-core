@@ -11,15 +11,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Rest
 @RequestMapping(SalespeopleResource.SALESPEOPLE)
 public class SalespeopleResource {
     public static final String SALESPEOPLE="/salespeople";
     public static final String SEARCH_SALESPEOPLE="/search";
-    public static final String SEARCH_SECOND="/search_second";
+    public static final String SEARCH_Month="/search_month";
 
     private SalespeopleService salespeopleService;
+
+    private final DateTimeFormatter formatter=DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Autowired
     public SalespeopleResource(SalespeopleService salespeopleService) {
@@ -27,14 +30,21 @@ public class SalespeopleResource {
     }
 
     @GetMapping(SEARCH_SALESPEOPLE)
-    public Flux<Salespeople> findBySalespersonAndSalesDate(@RequestParam(required = false) String salesperson, @RequestParam(required = false)LocalDate localDate){
-        return this.salespeopleService.findBySalespersonAndSalesDate(salesperson,localDate)
+    public Flux<Salespeople> findBySalespersonAndSalesDate(@RequestParam(required = false) String salesperson,
+                                                           @RequestParam(required = false)String dateBeginString,
+                                                           @RequestParam(required = false)String dateEndString){
+        LocalDate dateBegin=LocalDate.parse(dateBeginString,formatter);
+        LocalDate dateEnd=LocalDate.parse(dateEndString,formatter);
+        return this.salespeopleService.findBySalespersonAndSalesDateBetween(salesperson,dateBegin,dateEnd)
                 .map(Salespeople::ofSalespeopleSalesDateFinalValue);
     }
 
-    @GetMapping(SEARCH_SECOND)
-    public Flux<SalespeopleDto> findBySalesDate(@RequestParam(required = false) LocalDate localDate){
-        return this.salespeopleService.findBySalesDate(localDate)
+    @GetMapping(SEARCH_Month)
+    public Flux<SalespeopleDto> findBySalesDate(@RequestParam(required = false) String dateBeginString,
+                                                @RequestParam(required = false) String dateEndString){
+        LocalDate dateBegin=LocalDate.parse(dateBeginString,formatter);
+        LocalDate dateEnd=LocalDate.parse(dateEndString,formatter);
+        return this.salespeopleService.findBySalesDateBetween(dateBegin,dateEnd)
                 .map(SalespeopleDto::new);
     }
 }

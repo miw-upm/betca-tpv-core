@@ -17,12 +17,12 @@ public class SalespeopleService {
         this.salespeoplePersistence = salespeoplePersistence;
     }
 
-    public Flux<Salespeople> findBySalespersonAndSalesDate(String salesperson, LocalDate localDate){
-        return this.salespeoplePersistence.findBySalespersonAndSalesDate(salesperson,localDate);
+    public Flux<Salespeople> findBySalespersonAndSalesDateBetween(String salesperson, LocalDate dateBegin,LocalDate dateEnd){
+        return this.salespeoplePersistence.findBySalespersonAndSalesDateBetween(salesperson,dateBegin,dateEnd);
     }
 
-    public Flux<Salespeople> findBySalesDate(LocalDate localDate){
-        return this.salespeoplePersistence.findBySalesDate(localDate);
+    public Flux<Salespeople> findBySalesDateBetween(LocalDate dateBegin,LocalDate dateEnd){
+        return this.salespeoplePersistence.findBySalesDateBetween(dateBegin,dateEnd);
     }
 
 

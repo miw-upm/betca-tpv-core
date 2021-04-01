@@ -1,11 +1,11 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
-import es.upm.miw.betca_tpv_core.domain.model.Rgpd;
 import es.upm.miw.betca_tpv_core.domain.services.DataProtectionActService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.RgpdUserDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.RgpdUserWithFileDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -31,9 +31,16 @@ public class DataProtectionActResource {
                 .map(RgpdUserDto::ofRgpd);
     }
 
+    @PreAuthorize("permitAll()")
     @PostMapping(produces = {"application/json"})
     public Mono<RgpdUserDto> create(@Valid @RequestBody RgpdUserWithFileDto rgpdUserWithFileDto) {
         return this.dataProtectionActService.create(rgpdUserWithFileDto.toRgpd())
+                .map(RgpdUserDto::ofRgpd);
+    }
+
+    @PutMapping(DataProtectionActResource.MOBILE_ID)
+    public Mono<RgpdUserDto> update(@PathVariable String mobile, @Valid @RequestBody RgpdUserWithFileDto rgpdUserWithFileDto) {
+        return this.dataProtectionActService.update(mobile, rgpdUserWithFileDto.toRgpd())
                 .map(RgpdUserDto::ofRgpd);
     }
 

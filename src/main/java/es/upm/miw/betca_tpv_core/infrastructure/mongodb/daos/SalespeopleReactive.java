@@ -5,9 +5,8 @@ import org.springframework.data.repository.reactive.ReactiveSortingRepository;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
-import java.time.Month;
 
 public interface SalespeopleReactive extends ReactiveSortingRepository<SalespeopleEntity,String> {
-    Flux<SalespeopleEntity>  findBySalespersonAndSalesDate(String salesperson, LocalDate localDate);
-    Flux<SalespeopleEntity> findBySalesDate(LocalDate localDate);
+    Flux<SalespeopleEntity>  findBySalespersonAndSalesDateBetween(String salesperson, LocalDate dateBegin,LocalDate dateEnd);
+    Flux<SalespeopleEntity> findBySalesDateBetween(LocalDate dateBegin,LocalDate dateEnd);
 }

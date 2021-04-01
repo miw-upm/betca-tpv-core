@@ -18,12 +18,12 @@ public class SalespeopleDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate localDate;
     @PositiveBigDecimal
-    private BigDecimal finalValue;
+    private BigDecimal total;
 
     public SalespeopleDto(Salespeople salespeople) {
         this.salesperson=salespeople.getSalesperson();
         this.localDate=salespeople.getSalesDate();
-        this.finalValue=salespeople.getFinalValue();
+        this.total=salespeople.total();
     }
 
 }
