@@ -397,12 +397,27 @@ public class DatabaseSeederDev {
                         .ticketEntityList(List.of(tickets[2]))
                         .build(),
                 SalespeopleEntity.builder()
-                        .id("4").salesperson("Pablo")
+                        .id("4").salesperson("Alex")
+                        .salesDate(tickets[3].getCreationDate().toLocalDate())
+                        .ticketEntityList(List.of(tickets[3]))
+                        .build(),
+                SalespeopleEntity.builder()
+                        .id("5").salesperson("Ozuna")
+                        .salesDate(tickets[4].getCreationDate().toLocalDate())
+                        .ticketEntityList(List.of(tickets[4]))
+                        .build(),
+                SalespeopleEntity.builder()
+                        .id("6").salesperson("Pedro")
+                        .salesDate(tickets[5].getCreationDate().toLocalDate())
+                        .ticketEntityList(List.of(tickets[5]))
+                        .build(),
+                SalespeopleEntity.builder()
+                        .id("7").salesperson("Pablo")
                         .salesDate(tickets[6].getCreationDate().toLocalDate())
                         .ticketEntityList(List.of(tickets[6]))
                         .build(),
                 SalespeopleEntity.builder()
-                        .id("5").salesperson("Carlos")
+                        .id("8").salesperson("Carlos")
                         .salesDate(tickets[7].getCreationDate().toLocalDate())
                         .ticketEntityList(List.of(tickets[7]))
                         .build()
