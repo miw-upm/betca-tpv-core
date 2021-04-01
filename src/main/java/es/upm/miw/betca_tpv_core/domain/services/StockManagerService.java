@@ -51,7 +51,6 @@ public class StockManagerService {
     }
 
     private Mono<StockManager> futureStock(Article article) {
-        // last week prevision
         LocalDateTime ini = LocalDateTime.now().minusDays(7);
         LocalDateTime end = LocalDateTime.now();
 
@@ -74,19 +73,20 @@ public class StockManagerService {
                 .map(this::emptyStock)
                 .flatMap(stockManagerMono -> stockManagerMono);
     }
+
     private Mono<StockManager> emptyStock(Article article) {
         return this.soldProductsLastWeek(article.getBarcode())
                 .map(productSoldWeek -> {
-                    if(productSoldWeek.equals(0)){
+                    if (productSoldWeek.equals(0)) {
                         return -1;
-                    }else{
+                    } else {
                         return article.getStock() / productSoldWeek;
                     }
                 })
                 .map(days -> StockManager.ofEmptyStock(article, days));
     }
-    private Mono<Integer> soldProductsLastWeek(String barcode){
-        // last week prevision
+
+    private Mono<Integer> soldProductsLastWeek(String barcode) {
         LocalDateTime ini = LocalDateTime.now().minusDays(7);
         LocalDateTime end = LocalDateTime.now();
         return this.ticketPersistence.findByRangeRegistrationDate(ini, end)
