@@ -11,10 +11,9 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -27,29 +26,21 @@ public class SalespeopleEntity {
     @Indexed(unique = true)
     private String salesperson;
     private LocalDate salesDate;
-    private Integer numArticle;
-    private BigDecimal finalValue;
 
-    @DBRef(lazy = true)
-    private List<ArticleEntity> articleEntityList;
     @DBRef(lazy = true)
     private List<TicketEntity> ticketEntityList;
 
-    public SalespeopleEntity(Salespeople salespeople, List<ArticleEntity> articleEntityList, List<TicketEntity> ticketEntityList) {
+    public SalespeopleEntity(Salespeople salespeople, List<TicketEntity> ticketEntityList) {
         BeanUtils.copyProperties(salespeople, this);
-        this.articleEntityList = articleEntityList;
         this.ticketEntityList = ticketEntityList;
     }
 
     public Salespeople toSalespeople() {
         Salespeople salespeople = new Salespeople();
         BeanUtils.copyProperties(this, salespeople);
-        salespeople.setArticleBarcodes(this.getArticleEntityList().stream()
-                .map(ArticleEntity::getBarcode)
-                .toArray(String[]::new));
-        salespeople.setTicketBarcodes(this.getTicketEntityList().stream()
-                .map(TicketEntity::getId)
-                .toArray(String[]::new));
+        salespeople.setTicketList(this.getTicketEntityList().stream()
+                .map(TicketEntity::toTicket)
+                .collect(Collectors.toList()));
         return salespeople;
     }
 }
