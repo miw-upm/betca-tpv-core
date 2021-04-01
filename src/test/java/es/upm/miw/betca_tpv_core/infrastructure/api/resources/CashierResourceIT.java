@@ -31,7 +31,7 @@ class CashierResourceIT {
                 .expectStatus().isOk()
                 .expectBody(CashierLastDto.class)
                 .value(Assertions::assertNotNull)
-                .value(cashier -> assertTrue(cashier.getClosed()));
+                .value(cashier -> assertNotNull(cashier.getClosed()));
     }
 
     @Test
@@ -78,6 +78,24 @@ class CashierResourceIT {
 
     @Test
     void testOpenCloseCashier() {
+        CashierLastDto cashierLast = this.restClientTestService.loginAdmin(webTestClient)
+                .get().uri(CASHIERS + LAST)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(CashierLastDto.class)
+                .value(Assertions::assertNotNull)
+                .returnResult()
+                .getResponseBody();
+        if(!cashierLast.getClosed()) {
+            this.restClientTestService.loginAdmin(webTestClient)
+                    .patch().uri(CASHIERS + LAST)
+                    .body(Mono.just(new CashierClose(ZERO, ZERO, "test")), CashierClose.class)
+                    .exchange()
+                    .expectStatus().isOk()
+                    .expectBody(CashierLastDto.class)
+                    .value(Assertions::assertNotNull)
+                    .value(cashier -> assertTrue(cashier.getClosed()));
+        }
         this.restClientTestService.loginAdmin(webTestClient)
                 .post().uri(CASHIERS)
                 .exchange()
@@ -122,17 +140,12 @@ class CashierResourceIT {
 
     @Test
     void testMovementInCash() {
-        this.restClientTestService.loginAdmin(webTestClient)
-                .post().uri(CASHIERS)
-                .exchange()
-                .expectStatus().isOk();
         CashierLastDto cashierLast = this.restClientTestService.loginAdmin(webTestClient)
                 .get().uri(CASHIERS + LAST)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(CashierLastDto.class)
                 .value(Assertions::assertNotNull)
-                .value(cashier -> assertFalse(cashier.getClosed()))
                 .returnResult()
                 .getResponseBody();
         if(cashierLast.getClosed())
@@ -169,17 +182,12 @@ class CashierResourceIT {
 
     @Test
     void testMovementOutCash() {
-        this.restClientTestService.loginAdmin(webTestClient)
-                .post().uri(CASHIERS)
-                .exchange()
-                .expectStatus().isOk();
         CashierLastDto cashierLast = this.restClientTestService.loginAdmin(webTestClient)
                 .get().uri(CASHIERS + LAST)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(CashierLastDto.class)
                 .value(Assertions::assertNotNull)
-                .value(cashier -> assertFalse(cashier.getClosed()))
                 .returnResult()
                 .getResponseBody();
         if(cashierLast.getClosed())
