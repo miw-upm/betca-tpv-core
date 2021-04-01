@@ -2,7 +2,6 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.domain.model.Salespeople;
 import es.upm.miw.betca_tpv_core.domain.persistence.SalespeoplePersistence;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.SalespeopleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.TicketReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.SalespeopleEntity;
@@ -16,25 +15,24 @@ import java.time.LocalDate;
 public class SalespeoplePersistenceMongodb implements SalespeoplePersistence {
 
     private SalespeopleReactive salespeopleReactive;
-    private ArticleReactive articleReactive;
     private TicketReactive ticketReactive;
 
     @Autowired
-    public SalespeoplePersistenceMongodb(SalespeopleReactive salespeopleReactive, ArticleReactive articleReactive, TicketReactive ticketReactive) {
+    public SalespeoplePersistenceMongodb(SalespeopleReactive salespeopleReactive, TicketReactive ticketReactive) {
         this.salespeopleReactive = salespeopleReactive;
-        this.articleReactive=articleReactive;
         this.ticketReactive = ticketReactive;
     }
 
     @Override
-    public Flux<Salespeople> findBySalespersonAndSalesDate(String salesperson, LocalDate localDate) {
-        return this.salespeopleReactive.findBySalespersonAndSalesDate(salesperson, localDate)
+    public Flux<Salespeople> findBySalespersonAndSalesDateBetween(String salesperson, LocalDate dateBegin, LocalDate dateEnd) {
+        return this.salespeopleReactive.findBySalespersonAndSalesDateBetween(salesperson,dateBegin,dateEnd)
                 .map(SalespeopleEntity::toSalespeople);
     }
 
     @Override
-    public Flux<Salespeople> findBySalesDate(LocalDate localDate) {
-        return this.salespeopleReactive.findBySalesDate(localDate)
+    public Flux<Salespeople> findBySalesDateBetween(LocalDate dateBegin, LocalDate dateEnd) {
+        return this.salespeopleReactive.findBySalesDateBetween(dateBegin,dateEnd)
                 .map(SalespeopleEntity::toSalespeople);
     }
+
 }
