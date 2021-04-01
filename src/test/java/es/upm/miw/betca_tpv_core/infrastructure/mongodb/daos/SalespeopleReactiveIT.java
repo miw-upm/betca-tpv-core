@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.Month;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestConfig
 public class SalespeopleReactiveIT {
@@ -18,12 +19,12 @@ public class SalespeopleReactiveIT {
     private SalespeopleReactive salespeopleReactive;
     @Test
     void testFindByUserAndDate(){
-        LocalDate salespeopleTime=LocalDate.of(2021,Month.APRIL,1);
+        LocalDate dateBegin=LocalDate.of(2021,Month.MARCH,1);
+        LocalDate dateEnd=LocalDate.of(2021,Month.APRIL,1);
         StepVerifier
-                .create(this.salespeopleReactive.findBySalespersonAndSalesDate("Rosaria",salespeopleTime))
+                .create(this.salespeopleReactive.findBySalespersonAndSalesDateBetween("Carlos",dateBegin,dateEnd))
                 .expectNextMatches(salespeople->{
-                    assertEquals(2,salespeople.getNumArticle());
-                    assertEquals(new BigDecimal(23),salespeople.getFinalValue());
+                    assertTrue(salespeople.getSalesDate().isAfter(dateBegin)&&salespeople.getSalesDate().isBefore(dateEnd));
                     return true;
                 })
                 .thenCancel()
@@ -32,12 +33,12 @@ public class SalespeopleReactiveIT {
 
     @Test
     void findBySalesDate(){
-        LocalDate salespeopleTime=LocalDate.of(2021,Month.APRIL,2);
+        LocalDate dateBegin=LocalDate.of(2021,Month.MARCH,1);
+        LocalDate dateEnd=LocalDate.of(2021,Month.APRIL,1);
         StepVerifier
-                .create(this.salespeopleReactive.findBySalesDate(salespeopleTime))
+                .create(this.salespeopleReactive.findBySalesDateBetween(dateBegin,dateEnd))
                 .expectNextMatches(salespeople->{
-                    assertEquals(5,salespeople.getNumArticle());
-                    assertEquals(new BigDecimal(25),salespeople.getFinalValue());
+                    assertTrue(salespeople.getSalesDate().isAfter(dateBegin)&&salespeople.getSalesDate().isBefore(dateEnd));
                     return true;
                 })
                 .thenCancel()
