@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 public class InvoiceResource {
     public static final String INVOICES = "/invoices";
     public static final String SEARCH = "/search";
+    public static final String TICKET_REF = "/ticketRef";
 
     private InvoiceService invoiceService;
 
@@ -35,4 +36,9 @@ public class InvoiceResource {
                 .map(InvoiceItemDto::new);
     }
 
+    @PostMapping(TICKET_REF)
+    public Mono<InvoiceItemDto> createFromTicketRef(@RequestBody TicketBasicDto ticketDto){
+        return this.invoiceService.createFromTicketRef(ticketDto.getReference())
+                .map(InvoiceItemDto::new);
+    }
 }

@@ -21,7 +21,7 @@ class InvoicePersistenceMongodbIT {
 
     @Test
     void tesCreate() {
-        Ticket ticket = Ticket.builder().reference("nUs81zZ4R_iuoq0_zCRm6A").build();
+        Ticket ticket = Ticket.builder().reference("FGhfvfMORj6iKmzp5aERAA").build();
         Invoice invoice = Invoice.builder().number("01A2B3C4D5E").creationDate(LocalDateTime.now()).ticket(ticket).build();
         StepVerifier
                 .create(this.invoicePersistenceMongodb.create(invoice))
