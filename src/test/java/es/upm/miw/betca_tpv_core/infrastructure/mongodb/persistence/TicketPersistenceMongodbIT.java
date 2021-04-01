@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_core.TestConfig;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.*;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
@@ -138,6 +139,7 @@ class TicketPersistenceMongodbIT {
     }
 
     @Test
+    @Disabled
     void testFindAllWithoutInvoice(){
         List<String> ticketsIds = List.of(
                 "5fa4603b7513a164c99677ac", "5fa4603b7513a164chop77ac",
