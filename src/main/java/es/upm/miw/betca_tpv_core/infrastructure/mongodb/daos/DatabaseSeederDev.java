@@ -325,6 +325,7 @@ public class DatabaseSeederDev {
                 RgpdEntity.builder().id("1lh9dps68h3d7809l982sd452d8a")
                         .userMobile("123456789")
                         .rgpdType(RgpdType.ADVANCED)
+                        .agreement(new byte[1])
                         .build(),
                 RgpdEntity.builder().id("0lh9dp468h3d7809l982sd458d8a")
                         .userMobile("987654321")
