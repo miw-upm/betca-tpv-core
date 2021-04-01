@@ -25,4 +25,8 @@ public class StockAuditService {
     public Mono<StockAudit> create(List<String> barcodesWithoutAudit) {
         return this.stockAuditPersistence.create(barcodesWithoutAudit);
     }
+
+    public Mono<StockAuditDto> update(String id, StockAuditDto stockAuditDto) {
+        return this.stockAuditPersistence.update(id, stockAuditDto);
+    }
 }

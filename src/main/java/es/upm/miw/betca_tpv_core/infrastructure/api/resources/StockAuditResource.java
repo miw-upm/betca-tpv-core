@@ -4,13 +4,9 @@ import es.upm.miw.betca_tpv_core.domain.services.StockAuditService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.StockAuditDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Rest
@@ -18,6 +14,7 @@ import java.util.List;
 public class StockAuditResource {
     public static final String AUDITS = "/audits";
     public static final String OPENED = "/opened";
+    public static final String AUDIT_ID = "/{id}";
 
     private StockAuditService stockAuditService;
 
@@ -38,5 +35,10 @@ public class StockAuditResource {
         return this.stockAuditService
                 .create(barcodesWithoutAudit)
                 .map(StockAuditDto::new);
+    }
+
+    @PutMapping(AUDIT_ID)
+    public Mono<StockAuditDto> update(@PathVariable String id, @RequestBody StockAuditDto stockAuditDto) {
+        return this.stockAuditService.update(id, stockAuditDto);
     }
 }
