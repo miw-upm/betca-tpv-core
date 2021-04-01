@@ -139,7 +139,6 @@ class TicketPersistenceMongodbIT {
     }
 
     @Test
-    @Disabled
     void testFindAllWithoutInvoice(){
         List<String> ticketsIds = List.of(
                 "5gfaw03b7513a164chop77ac", "7faw03b7513a164chop77ac",
