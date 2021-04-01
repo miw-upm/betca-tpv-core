@@ -3,10 +3,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ArticleNewDto;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketBasicDto;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketEditionDto;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.UserBasicDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,15 +12,16 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleResource.*;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.CASHIERS;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.LAST;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.InvoiceResource.INVOICES;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.TicketResource.*;
 import static java.math.BigDecimal.ZERO;
 import static org.junit.jupiter.api.Assertions.*;
@@ -198,6 +196,19 @@ class TicketResourceIT {
     }
 
     @Test
+    void testFindSelectedByReference() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(TICKETS + REFERENCE_ID + REFERENCE + SELECTED, "WB9-e8xQT4ejb74r1vLrCw")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(TicketSelectedDto.class)
+                .value(Assertions::assertNotNull)
+                .value(ticket -> System.out.println(">>>>> ticket: " + ticket));
+
+    }
+
+    @Test
     void testFindByReferenceNotFoundException() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
@@ -283,6 +294,20 @@ class TicketResourceIT {
                 .value(articles -> assertTrue(articles.stream()
                                         .anyMatch(article ->
                                                 article.getBarcode().equals("8400000000017"))));
+    }
+
+    @Test
+    void testFindAllWithoutInvoice() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(TICKETS + SEARCH + NO_INVOICE)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(TicketReferencesDto.class)
+                .value(Assertions::assertNotNull)
+                .value(ticketsRef -> assertTrue(ticketsRef.getReferences().stream()
+                        .anyMatch(ticketRef -> ticketRef.equals("Asgffv521Rj6iKmzp5aERAA"))
+                ));
     }
 
     @AfterEach

@@ -14,7 +14,6 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -113,10 +112,9 @@ class TicketServiceIT {
 
     @Test
     void testCorrectShoppingWhenFindAllBoughtArticlesByMobile() {
-        List<String> articleBarcodes = new ArrayList<String>(
-                List.of("8400000000017", "8400000000024", "8400000000031",
-                        "8400000000055", "8400000000062", "8400000000555")
-        );
+        List<String> articleBarcodes = List.of(
+                "8400000000017", "8400000000024", "8400000000031",
+                "8400000000055", "8400000000062", "8400000000555");
         StepVerifier
                 .create(this.ticketService.findAllBoughtArticlesByMobile("66"))
                 .assertNext(shopping -> assertTrue(articleBarcodes.contains(shopping.getBarcode())))
@@ -125,7 +123,45 @@ class TicketServiceIT {
                 .assertNext(shopping -> assertTrue(articleBarcodes.contains(shopping.getBarcode())))
                 .assertNext(shopping -> assertTrue(articleBarcodes.contains(shopping.getBarcode())))
                 .assertNext(shopping -> assertTrue(articleBarcodes.contains(shopping.getBarcode())))
-                .verifyComplete();
+                .thenCancel()
+                .verify();
+    }
+
+    @Test
+    void testFindAllWithoutInvoice(){
+        List<String> ticketsRef = List.of(
+                "FGhfvfMORj6iKmzp5aERAA", "FGhfv521Rj6iKmzp5aERAA",
+                "AAhfv521Rj6iKmzp5aERAA", "Asdfv521Rj6iKmzp5aERAA",
+                "Asgffv521Rj6iKmzp5aERAA"
+        );
+
+        StepVerifier
+                .create(this.ticketService.findAllWithoutInvoice())
+                .assertNext(ticket -> assertTrue(ticketsRef.contains(ticket)))
+                .assertNext(ticket -> assertTrue(ticketsRef.contains(ticket)))
+                .assertNext(ticket -> assertTrue(ticketsRef.contains(ticket)))
+                .assertNext(ticket -> assertTrue(ticketsRef.contains(ticket)))
+                .assertNext(ticket -> assertTrue(ticketsRef.contains(ticket)))
+                .thenCancel()
+                .verify();
+    }
+
+    @Test
+    void findSelectedByReference(){
+        String ticketRef = "Asdfv521Rj6iKmzp5aERAA";
+
+        StepVerifier
+                .create(this.ticketService.findSelectedByReference(ticketRef))
+                .expectNextMatches(ticket -> {
+                    assertNotNull(ticket.getId());
+                    assertNotNull(ticket.getReference());
+                    assertNotNull(ticket.getUser());
+                    assertNotNull(ticket.getUser().getFirstName());
+                    assertNotNull(ticket.getUser().getMobile());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
     }
 
     @AfterEach

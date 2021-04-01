@@ -11,4 +11,6 @@ public interface RgpdPersistence {
 
     Mono<Rgpd> create(Rgpd rgpd);
 
+    Mono<Rgpd> update(String mobile, Rgpd rgpd);
+
 }

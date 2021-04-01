@@ -5,11 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestConfig
 public class SalespeoplePersistenceMongodbIT {
@@ -19,12 +18,12 @@ public class SalespeoplePersistenceMongodbIT {
 
     @Test
     void findBySalespersonAndSalesDate() {
-        LocalDate localDate = LocalDate.of(2021, Month.APRIL, 1);
+        LocalDate dateBegin = LocalDate.of(2021, Month.MARCH, 1);
+        LocalDate dateEnd=LocalDate.of(2021,Month.APRIL,1);
         StepVerifier
-                .create(this.salespeoplePersistenceMongodb.findBySalespersonAndSalesDate("Rosaria", localDate))
+                .create(this.salespeoplePersistenceMongodb.findBySalespersonAndSalesDateBetween("Pablo",dateBegin,dateEnd))
                 .expectNextMatches(salespeople -> {
-                    assertEquals(2, salespeople.getNumArticle());
-                    assertEquals(new BigDecimal(23), salespeople.getFinalValue());
+                    assertTrue(salespeople.getSalesDate().isAfter(dateBegin)&&salespeople.getSalesDate().isBefore(dateEnd));
                     return true;
                 })
                 .thenCancel()
@@ -33,12 +32,12 @@ public class SalespeoplePersistenceMongodbIT {
 
     @Test
     void findBySalesDate() {
-        LocalDate localDate = LocalDate.of(2021, Month.APRIL, 2);
+        LocalDate dateBegin = LocalDate.of(2021, Month.MARCH, 1);
+        LocalDate dateEnd=LocalDate.of(2021,Month.APRIL,1);
         StepVerifier
-                .create(this.salespeoplePersistenceMongodb.findBySalesDate(localDate))
+                .create(this.salespeoplePersistenceMongodb.findBySalesDateBetween(dateBegin,dateEnd))
                 .expectNextMatches(salespeople -> {
-                    assertEquals(5, salespeople.getNumArticle());
-                    assertEquals(new BigDecimal(25.3), salespeople.getFinalValue());
+                    assertTrue(salespeople.getSalesDate().isAfter(dateBegin)&&salespeople.getSalesDate().isBefore(dateEnd));
                     return true;
                 })
                 .thenCancel()

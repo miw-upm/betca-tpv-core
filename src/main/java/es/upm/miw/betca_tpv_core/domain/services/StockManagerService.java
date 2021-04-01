@@ -29,8 +29,8 @@ public class StockManagerService {
 
     public Flux<StockManager> searchProductsByStock(Integer stock) {
         return this.articlePersistence.findByStockLessThan(stock)
+                .switchIfEmpty(Mono.error(new NotFoundException("Article with stock : " + stock)))
                 .map(StockManager::ofProductsByStock);
-
     }
 
     public Flux<StockManager> searchSoldProducts(LocalDateTime initial, LocalDateTime end) {

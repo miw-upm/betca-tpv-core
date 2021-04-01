@@ -7,10 +7,13 @@ import es.upm.miw.betca_tpv_core.domain.persistence.ProviderInvoicePersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ProviderInvoiceReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ProviderReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ProviderInvoiceEntity;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.time.LocalDate;
 
 @Repository
 public class ProviderInvoicePersistenceMongodb implements ProviderInvoicePersistence {
@@ -49,4 +52,54 @@ public class ProviderInvoicePersistenceMongodb implements ProviderInvoicePersist
                         new ConflictException("Provider Invoice number already exists: " + number)
                 ));
     }
+
+    @Override
+    public Mono< ProviderInvoice > readByNumber(Integer number) {
+        return this.providerInvoiceReactive.findByNumber(number)
+                .switchIfEmpty(Mono.error(
+                        new NotFoundException("Non existing provider invoice with number: " + number)))
+                .map(ProviderInvoiceEntity::toProviderInvoice);
+    }
+
+    @Override
+    public Mono< ProviderInvoice > update(Integer number, ProviderInvoice providerInvoice) {
+        Mono< ProviderInvoiceEntity > providerInvoiceEntityMono;
+        if (!number.equals(providerInvoice.getNumber())) {
+            providerInvoiceEntityMono = this.assertNumberNotExist(providerInvoice.getNumber())
+                .then(this.providerInvoiceReactive.findByNumber(number));
+        } else {
+            providerInvoiceEntityMono = this.providerInvoiceReactive.findByNumber(number);
+        }
+        return providerInvoiceEntityMono
+                .switchIfEmpty(Mono
+                        .error(new NotFoundException("Non existing provider invoice with number: " + number)))
+                .flatMap(providerInvoiceEntity -> {
+                    BeanUtils.copyProperties(providerInvoice, providerInvoiceEntity);
+                    return this.providerReactive.findByCompany(providerInvoice.getProviderCompany())
+                            .switchIfEmpty(Mono.error(
+                                    new NotFoundException("Non existent company: " + providerInvoice.getProviderCompany())
+                            ))
+                            .map(providerEntity -> {
+                                providerInvoiceEntity.setProviderEntity(providerEntity);
+                                return providerInvoiceEntity;
+                            });
+                })
+                .flatMap(this.providerInvoiceReactive::save)
+                .map(ProviderInvoiceEntity::toProviderInvoice);
+    }
+
+    @Override
+    public Mono< Void > delete(Integer number) {
+        Mono<String> idMono = this.providerInvoiceReactive.findByNumber(number)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non existing provider invoice with number: " + number)))
+                .map(ProviderInvoiceEntity::getId);
+        return this.providerInvoiceReactive.deleteById(idMono);
+    }
+
+    @Override
+    public Flux< ProviderInvoice > findByCreationDateBetweenInclusive(LocalDate startDate, LocalDate endDate) {
+        return this.providerInvoiceReactive.findByCreationDateBetweenInclusive(startDate, endDate)
+                .map(ProviderInvoiceEntity::toProviderInvoice);
+    }
+
 }

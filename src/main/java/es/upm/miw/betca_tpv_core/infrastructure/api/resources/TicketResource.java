@@ -6,11 +6,7 @@ import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.model.Tracking;
 import es.upm.miw.betca_tpv_core.domain.services.TicketService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ArticleNewDto;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketBasicDto;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketEditionDto;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.UserBasicDto;
-import org.apache.logging.log4j.LogManager;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +15,6 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.logging.Logger;
 
 @Rest
 @RequestMapping(TicketResource.TICKETS)
@@ -33,6 +28,8 @@ public class TicketResource {
     public static final String RECEIPT = "/receipt";
     public static final String BOUGHT_ARTICLES = "/boughtArticles";
     public static final String TRACKING = "/tracking";
+    public static final String NO_INVOICE = "/noInvoice";
+    public static final String SELECTED = "/selected";
 
     private TicketService ticketService;
     private JwtService jwtService;
@@ -44,12 +41,12 @@ public class TicketResource {
     }
 
     @PostMapping(produces = {"application/json"})
-    public Mono< Ticket > create(@Valid @RequestBody Ticket ticket) {
+    public Mono<Ticket> create(@Valid @RequestBody Ticket ticket) {
         return this.ticketService.create(ticket);
     }
 
     @GetMapping(value = ID_ID + RECEIPT, produces = {"application/pdf", "application/json"})
-    public Mono< byte[] > readReceipt(@PathVariable String id) {
+    public Mono<byte[]> readReceipt(@PathVariable String id) {
         return this.ticketService.readReceipt(id);
     }
 
@@ -71,6 +68,12 @@ public class TicketResource {
                 .map(TicketEditionDto::new);
     }
 
+    @GetMapping(REFERENCE_ID + REFERENCE + SELECTED)
+    public Mono<TicketSelectedDto> findSelectedByReference(@PathVariable String reference) {
+        return this.ticketService.findByReference(reference)
+                .map(TicketSelectedDto::new);
+    }
+
     @PutMapping(ID_ID)
     public Mono<TicketEditionDto> update(@PathVariable String id, @Valid @RequestBody List<Shopping> shoppingList) {
         return this.ticketService.update(id, shoppingList)
@@ -90,6 +93,13 @@ public class TicketResource {
         return Flux
                 .fromIterable(data)
                 .flatMap(da -> this.ticketService.findByBarcodeAndAmount(da.getBarcode(), da.getAmount()));
+    }
+
+    @GetMapping(SEARCH + NO_INVOICE)
+    public Mono<TicketReferencesDto> findAllWithoutInvoice() {
+        return this.ticketService.findAllWithoutInvoice()
+                .collectList()
+                .map(TicketReferencesDto::new);
     }
 
 }

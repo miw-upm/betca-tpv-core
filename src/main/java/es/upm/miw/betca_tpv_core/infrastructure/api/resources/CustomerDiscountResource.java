@@ -15,6 +15,7 @@ import javax.validation.Valid;
 public class CustomerDiscountResource {
     public static final String CUSTOMERS_DISCOUNTS = "/customer-discount";
     public static final String SEARCH = "/search";
+    public static final String CUSTOMER_DISCOUNT_ID = "/{id}";
 
     private CustomerDiscountService customerDiscountService;
 
@@ -24,7 +25,7 @@ public class CustomerDiscountResource {
     }
 
     @GetMapping(SEARCH)
-    public Flux< CustomerDiscount > findByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe(
+    public Flux<CustomerDiscount> findByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe(
             @RequestParam(required = false) String note, @RequestParam(required = false) Double discount,
             @RequestParam(required = false) Double minimumPurchase, @RequestParam(required = false) String user
     ) {
@@ -32,7 +33,22 @@ public class CustomerDiscountResource {
     }
 
     @PostMapping(produces = {"application/json"})
-    public Mono<CustomerDiscount> create(@Valid @RequestBody CustomerDiscount customerDiscount){
+    public Mono<CustomerDiscount> create(@Valid @RequestBody CustomerDiscount customerDiscount) {
         return this.customerDiscountService.create(customerDiscount);
+    }
+
+    @PutMapping(CUSTOMER_DISCOUNT_ID)
+    public Mono<CustomerDiscount> update(@PathVariable String id, @Valid @RequestBody CustomerDiscount customerDiscount) {
+        return this.customerDiscountService.update(id, customerDiscount);
+    }
+
+    @GetMapping(CUSTOMER_DISCOUNT_ID)
+    public Mono<CustomerDiscount> read(@PathVariable String id) {
+        return this.customerDiscountService.read(id);
+    }
+
+    @DeleteMapping(CUSTOMER_DISCOUNT_ID)
+    public Mono<Void> delete(@PathVariable String id) {
+        return this.customerDiscountService.delete(id);
     }
 }

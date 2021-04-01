@@ -10,7 +10,6 @@ import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.domain.services.utils.PdfTicketBuilder;
 import es.upm.miw.betca_tpv_core.domain.services.utils.UUIDBase64;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.UserBasicDto;
-import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -93,6 +92,18 @@ public class TicketService {
         return this.ticketPersistence.findByReference(reference);
     }
 
+    public Mono<Ticket> findSelectedByReference(String reference) {
+        return this.ticketPersistence.findByReference(reference)
+                .flatMap(ticket ->
+                    this.readUserByUserMobileNullSafe(ticket.getUser())
+                            .map(user -> {
+                                ticket.setUser(user);
+                                return ticket;
+                            })
+                            .switchIfEmpty(Mono.just(ticket))
+                );
+    }
+
     public Mono<Ticket> update(String id, List<Shopping> shoppingList) {
         return this.ticketPersistence.update(id, shoppingList);
     }
@@ -121,5 +132,10 @@ public class TicketService {
                                 && shopping.getAmount() > amount
                         )
                 ).map(ticket -> new UserBasicDto(ticket.getUser()));
+    }
+
+    public Flux<String> findAllWithoutInvoice() {
+        return this.ticketPersistence.findAllWithoutInvoice()
+                .map(Ticket::getReference);
     }
 }

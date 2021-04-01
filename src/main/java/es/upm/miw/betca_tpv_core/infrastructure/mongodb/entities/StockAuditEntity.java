@@ -2,10 +2,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities;
 
 import es.upm.miw.betca_tpv_core.domain.model.ArticleLoss;
 import es.upm.miw.betca_tpv_core.domain.model.StockAudit;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,7 +10,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -26,28 +25,42 @@ public class StockAuditEntity {
     private LocalDateTime creationDate;
     private LocalDateTime closeDate;
     private BigDecimal lossValue;
+    @Singular("stockAuditArticle")
     private List<StockAuditArticleEntity> stockAuditArticleList;
 
     public StockAuditEntity(StockAudit stockAudit) {
         BeanUtils.copyProperties(stockAudit, this);
-        this.stockAuditArticleList = new ArrayList<>();
+        this.stockAuditArticleList = stockAudit.getBarcodesWithoutAudit()
+                .stream()
+                .map(barcode -> new StockAuditArticleEntity(barcode, null, false))
+                .collect(Collectors.toList());
+        //this.stockAuditArticleList = new ArrayList<>();
     }
 
-    public String[] toBarcodesWithoutAudit(){
+    public List<String> toBarcodesWithoutAudit() {
         List<StockAuditArticleEntity> stockAuditArticles = this.getStockAuditArticleList();
-        return (String[]) stockAuditArticles
+        return  stockAuditArticles
                 .stream()
                 .filter(stockAuditArticle -> !stockAuditArticle.getAudited())
                 .map(StockAuditArticleEntity::getBarcode)
-                .toArray();
+                .collect(Collectors.toList());
     }
 
-    public ArticleLoss[] toArticleLosses(){
+    public List<ArticleLoss> toArticleLosses() {
         List<StockAuditArticleEntity> stockAuditArticles = this.getStockAuditArticleList();
-        return (ArticleLoss[]) stockAuditArticles
+        return  stockAuditArticles
                 .stream()
                 .filter(stockAuditArticle -> (stockAuditArticle.getAudited()) && (stockAuditArticle.getAmount() > 0))
                 .map(StockAuditArticleEntity::toArticleLoss)
-                .toArray();
+                .collect(Collectors.toList());
+
+    }
+
+    public StockAudit toStockAudit() {
+        StockAudit stockAudit = new StockAudit();
+        BeanUtils.copyProperties(this, stockAudit);
+        stockAudit.setBarcodesWithoutAudit(this.toBarcodesWithoutAudit());
+        stockAudit.setLosses(this.toArticleLosses());
+        return stockAudit;
     }
 }
