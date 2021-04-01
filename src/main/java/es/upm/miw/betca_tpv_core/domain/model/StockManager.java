@@ -10,11 +10,9 @@ import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@NoArgsConstructor
+@Data
 @Builder
 @AllArgsConstructor
-@Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class StockManager {
     @NotBlank
     private String barcode;
