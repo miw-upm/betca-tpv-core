@@ -221,4 +221,18 @@ class CashierResourceIT {
                 .value(cashierState2 ->
                         assertEquals(0, cashierState2.getTotalCash().compareTo(cashierState.getTotalCash().subtract(BigDecimal.valueOf(3000)))));
     }
+
+    @Test
+    void testFindAllCashierSearchTotals() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(CASHIERS + SEARCH + TOTALS)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Cashier.class)
+                .value(Assertions::assertNotNull)
+                .value(cashier -> assertTrue(cashier.getFinalCash().compareTo(ZERO) >= 0));
+    }
+
+
 }
