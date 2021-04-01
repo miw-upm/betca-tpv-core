@@ -23,6 +23,7 @@ import java.util.List;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.CASHIERS;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.LAST;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.InvoiceResource.INVOICES;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.InvoiceResource.TICKET_REF;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.TicketResource.*;
 import static java.math.BigDecimal.ZERO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -60,6 +61,19 @@ class InvoiceResourceIT {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(byte[].class)
+                .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void testCreateFromTicketRef() {
+        TicketBasicDto ticket = TicketBasicDto.builder().reference("FGhfvfMORj6iKmzp5aERAA").build();
+        this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(INVOICES + TICKET_REF)
+                .body(BodyInserters.fromValue(ticket))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(InvoiceItemDto.class)
                 .value(Assertions::assertNotNull);
     }
 
