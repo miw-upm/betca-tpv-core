@@ -130,4 +130,9 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
                 .map(ArticleEntity::toArticle);
     }
 
+    public Flux< Article > findArticlesByBarcodes (Flux<String> barcodes){
+        return this.articleReactive.findArticleEntitiesByBarcode(barcodes)
+                .map(ArticleEntity::toArticle);
+    }
+
 }

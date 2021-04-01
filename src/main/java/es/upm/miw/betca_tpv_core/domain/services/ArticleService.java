@@ -63,7 +63,7 @@ public class ArticleService {
 
     public Flux< Article > findTop5ArticleSalesLastWeek(){
         Map<String, Integer> articleBarcodes = new HashMap<>();
-        Flux<Shopping> x = this.ticketPersistence.findTicketByRegistrationDateAfter(LocalDateTime.now().minusDays(7))
+        Flux<Shopping> shoppingFlux = this.ticketPersistence.findTicketByRegistrationDateAfter(LocalDateTime.now().minusDays(7))
                 .doOnNext(System.out::println)
                 .flatMap(ticket -> Flux.fromStream(ticket.getShoppingList().stream()))
                 .doOnNext(System.out::println)
@@ -72,6 +72,8 @@ public class ArticleService {
                 .doOnNext(System.out::println);
 
 
-        return Flux.empty();
+        return this.articlePersistence.findArticlesByBarcodes(
+                shoppingFlux.map(Shopping::getBarcode)
+        );
     }
 }
