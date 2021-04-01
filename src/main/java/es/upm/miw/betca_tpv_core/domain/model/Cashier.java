@@ -52,20 +52,6 @@ public class Cashier {
         this.usedVouchers = this.usedVouchers.add(voucher);
     }
 
-    public void deposit(BigDecimal cash, String comment) {
-        this.assertIsOpened();
-        this.deposit = this.deposit.add(cash);
-        this.comment += "Deposit (" + cash.setScale(2, RoundingMode.HALF_UP).toString() + "): "
-                + comment + ".\n";
-    }
-
-    public void withdrawal(BigDecimal cash, String comment) {
-        this.assertIsOpened();
-        this.withdrawal = this.withdrawal.add(cash);
-        this.comment += "Withdrawal (" + cash.setScale(2, RoundingMode.HALF_UP).toString() + "): "
-                + comment + ".\n";
-    }
-
     public void close(BigDecimal finalCash, BigDecimal finalCard, String comment) {
         this.assertIsOpened();
         this.finalCash = finalCash;
@@ -81,11 +67,15 @@ public class Cashier {
     public void movementIn(CashierMovement cashierMovement) {
         this.assertIsOpened();
         this.deposit = this.deposit.add(cashierMovement.getAmount());
+        this.comment += "Deposit (" + cashierMovement.getAmount().setScale(2, RoundingMode.HALF_UP).toString() + "): "
+                + "Done by admin" + ".\n";
     }
 
     public void movementOut(CashierMovement cashierMovement) {
         this.assertIsOpened();
         this.withdrawal = this.withdrawal.add(cashierMovement.getAmount());
+        this.comment += "Withdrawal (" + cashierMovement.getAmount().setScale(2, RoundingMode.HALF_UP).toString() + "): "
+                + "Done by admin" + ".\n";
     }
 
 }
