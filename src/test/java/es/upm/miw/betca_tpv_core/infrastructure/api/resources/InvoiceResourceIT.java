@@ -66,7 +66,7 @@ class InvoiceResourceIT {
 
     @Test
     void testCreateFromTicketRef() {
-        TicketBasicDto ticket = TicketBasicDto.builder().reference("FGhfvfMORj6iKmzp5aERAA").build();
+        TicketBasicDto ticket = TicketBasicDto.builder().reference("FGhfv521Rj6iKmzp5aERAA").build();
         this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(INVOICES + TICKET_REF)
