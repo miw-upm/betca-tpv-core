@@ -28,6 +28,4 @@ public interface ArticlePersistence {
     Flux< Article > findArticleEntitiesByRegistrationDateAfter(LocalDateTime localDateTime);
 
     Flux< Article > findByStockLessThan(Integer stock);
-
-    Flux< Article > findTop5ArticleSalesLastWeek();
 }

@@ -1,7 +1,9 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.model.Article;
+import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
+import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,15 +11,19 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class ArticleService {
 
     private ArticlePersistence articlePersistence;
+    private TicketPersistence ticketPersistence;
 
     @Autowired
-    public ArticleService(ArticlePersistence articlePersistence) {
+    public ArticleService(ArticlePersistence articlePersistence, TicketPersistence ticketPersistence) {
         this.articlePersistence = articlePersistence;
+        this.ticketPersistence = ticketPersistence;
     }
 
     public Mono< Article > create(Article article) {
@@ -56,6 +62,16 @@ public class ArticleService {
     }
 
     public Flux< Article > findTop5ArticleSalesLastWeek(){
-        return articlePersistence.findTop5ArticleSalesLastWeek();
+        Map<String, Integer> articleBarcodes = new HashMap<>();
+        Flux<Shopping> x = this.ticketPersistence.findTicketByRegistrationDateAfter(LocalDateTime.now().minusDays(7))
+                .doOnNext(System.out::println)
+                .flatMap(ticket -> Flux.fromStream(ticket.getShoppingList().stream()))
+                .doOnNext(System.out::println)
+                .doOnNext(shopping -> articleBarcodes.computeIfPresent(shopping.getBarcode(),
+                        (key, value) -> value + 1))
+                .doOnNext(System.out::println);
+
+
+        return Flux.empty();
     }
 }
