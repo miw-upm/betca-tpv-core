@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.configuration.JwtService;
 import es.upm.miw.betca_tpv_core.domain.model.Shopping;
+import es.upm.miw.betca_tpv_core.domain.model.ShoppingState;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.model.Tracking;
 import es.upm.miw.betca_tpv_core.domain.services.TicketService;
@@ -62,6 +63,7 @@ public class TicketResource {
                 .map(TicketEditionDto::new);
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping(REFERENCE_ID + REFERENCE)
     public Mono<TicketEditionDto> findByReference(@PathVariable String reference) {
         return this.ticketService.findByReference(reference)
@@ -88,18 +90,23 @@ public class TicketResource {
                 .map(ArticleNewDto::new);
     }
 
-    @PostMapping(SEARCH + TRACKING)
-    public Flux<UserBasicDto> findTracking(@RequestBody List<Tracking> data) {
-        return Flux
-                .fromIterable(data)
-                .flatMap(da -> this.ticketService.findByBarcodeAndAmount(da.getBarcode(), da.getAmount()));
-    }
-
     @GetMapping(SEARCH + NO_INVOICE)
     public Mono<TicketReferencesDto> findAllWithoutInvoice() {
         return this.ticketService.findAllWithoutInvoice()
                 .collectList()
                 .map(TicketReferencesDto::new);
+    }
+
+    @PostMapping(SEARCH + TRACKING)
+    public Flux<UserBasicDto> findTracking(@RequestBody List<Tracking> data) {
+        return this.ticketService
+                .findByBarcodeAndAmountList(data)
+                .map(ticket -> new UserBasicDto(ticket.getUser()));
+    }
+
+    @PatchMapping(TRACKING)
+    public Flux<Ticket> updateState(@RequestParam("state") ShoppingState state, @RequestBody List<Tracking> data) {
+        return this.ticketService.updateByBarcodeAndAmountList(data, state);
     }
 
 }
