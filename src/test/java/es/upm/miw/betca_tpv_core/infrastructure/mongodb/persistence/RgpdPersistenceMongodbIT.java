@@ -24,7 +24,7 @@ public class RgpdPersistenceMongodbIT {
                 .assertNext(rgpd -> {
                     assertEquals(rgpd.getMobile(), "123456789");
                     assertEquals(rgpd.getRgpdType(), RgpdType.ADVANCED);
-                    assertNull(rgpd.getAgreement());
+                    assertEquals(rgpd.getAgreement().length, 1);
                 })
                 .expectComplete()
                 .verify();

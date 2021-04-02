@@ -11,15 +11,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @RestTestConfig
-public class StockManagerResourceIT {
+class StockManagerResourceIT {
     @Autowired
     private WebTestClient webTestClient;
     @Autowired
     private RestClientTestService restClientTestService;
-
 
     @Test
     void testSearchProductsByStock() {
@@ -33,15 +32,15 @@ public class StockManagerResourceIT {
                 .expectStatus().isOk()
                 .expectBodyList(StockManagerDto.class)
                 .value(Assertions::assertNotNull)
-                .value(stocks -> stocks.stream()
-                        .allMatch(stockManagerDto -> stockManagerDto.getStock().compareTo(10) < 0));
+                .value(stocks -> assertTrue(stocks.stream()
+                        .allMatch(stockManagerDto -> stockManagerDto.getStock().compareTo(10) < 0)));
+
     }
 
     @Test
     void testSearchSoldProducts() {
-        LocalDateTime dateIni = LocalDateTime.of(2019, Month.JANUARY, 01, 00, 00, 00);
-        LocalDateTime dateEnd = LocalDateTime.of(2019, Month.JANUARY, 15, 00, 00, 00);
-
+        LocalDateTime dateIni = LocalDateTime.of(2019, Month.JANUARY, 1, 0, 0, 0);
+        LocalDateTime dateEnd = LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0);
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -51,20 +50,16 @@ public class StockManagerResourceIT {
                         .build())
                 .exchange()
                 .expectStatus().isOk()
-             .expectBodyList(StockManagerDto.class)
+                .expectBodyList(StockManagerDto.class)
                 .value(Assertions::assertNotNull)
-                         .value(stocks -> stocks.stream()
-                                .allMatch(stockManagerDto -> stockManagerDto.getDateSell().isBefore(dateEnd.toLocalDate())))
-                .value(stocks -> stocks.stream()
-                        .allMatch(stockManagerDto -> stockManagerDto.getDateSell().isAfter(dateIni.toLocalDate())));
-
+                .value(stocks -> assertTrue(stocks.stream()
+                        .allMatch(stockManagerDto -> stockManagerDto.getDateSell().isAfter(dateIni.toLocalDate()))))
+                .value(stocks -> assertTrue(stocks.stream()
+                        .allMatch(stockManagerDto -> stockManagerDto.getDateSell().isBefore(dateEnd.toLocalDate()))));
     }
 
     @Test
     void testSearchFutureStock() {
-        // Añadir estas dos fechas en futureStock() en la clase StockManagerService
-        //         LocalDateTime ini = LocalDateTime.of(2019, Month.JANUARY, 01, 00, 00);
-        //        LocalDateTime end =LocalDateTime.of(2019, Month.JANUARY, 15, 00, 00);
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -77,7 +72,6 @@ public class StockManagerResourceIT {
                 .value(Assertions::assertNotNull)
                 .value(returnStockManager -> {
                     assertEquals("8400000000017", returnStockManager.getBarcode());
-                    // assertEquals(7, returnStockManager.getStock());
                     assertEquals("Zarzuela - Falda T2", returnStockManager.getDescription());
                 });
 
@@ -94,10 +88,10 @@ public class StockManagerResourceIT {
                 .exchange()
                 .expectStatus().isNotFound();
     }
+
     @Test
     void testSearchEmptyStock() {
         LocalDate end = LocalDate.now().plusDays(1);
-
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -113,6 +107,26 @@ public class StockManagerResourceIT {
                     // assertEquals(7, returnStockManager.getStock());
                     assertEquals("without provider", returnStockManager.getDescription());
                     assertEquals(end, returnStockManager.getDateStockEmpty());
+
+                });
+    }
+
+    @Test
+    void testSearchEmptyStockWithoutDateEmptyStock() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(StockManagerResource.STOCK_MANAGER + StockManagerResource.STOCK_EMPTY)
+                        .queryParam("barcode", "8400000000048")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(StockManagerDto.class)
+                .value(Assertions::assertNotNull)
+                .value(returnStockManager -> {
+                    assertEquals("8400000000048", returnStockManager.getBarcode());
+                    assertEquals("descrip-a4", returnStockManager.getDescription());
+                    assertNull(returnStockManager.getDateStockEmpty());
 
                 });
     }

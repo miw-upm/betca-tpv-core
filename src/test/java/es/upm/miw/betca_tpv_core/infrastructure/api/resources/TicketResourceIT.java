@@ -12,7 +12,6 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
@@ -21,7 +20,6 @@ import java.util.List;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.CASHIERS;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.LAST;
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.InvoiceResource.INVOICES;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.TicketResource.*;
 import static java.math.BigDecimal.ZERO;
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,6 +37,8 @@ class TicketResourceIT {
 
     @BeforeEach
     void openCashier() {
+        System.setProperty("miw.slack.uri", "");
+
         this.restClientTestService.loginAdmin(webTestClient)
                 .post().uri(CASHIERS)
                 .exchange()
@@ -219,11 +219,11 @@ class TicketResourceIT {
     }
 
     @Test
-    void testGetByBarcodeAndAmount() {
+    void testGetUsersByBarcodeAndAmount() {
         List<Tracking> data = new ArrayList<>();
         Tracking tracking = new Tracking();
         tracking.setBarcode("8400000000024");
-        tracking.setAmount(1);
+        tracking.setAmount(5);
         data.add(tracking);
         this.restClientTestService.loginAdmin(webTestClient)
                 .post()
@@ -233,6 +233,27 @@ class TicketResourceIT {
                 .expectStatus().isOk()
                 .expectBodyList(UserBasicDto.class)
                 .value(users -> System.out.println(">>>>> users: " + users));
+    }
+
+    @Test
+    void testUpdateByBarcodeAndAmount() {
+        List<Tracking> data = new ArrayList<>();
+        Tracking tracking = new Tracking();
+        tracking.setBarcode("8400000000024");
+        tracking.setAmount(5);
+        data.add(tracking);
+        this.restClientTestService.loginAdmin(webTestClient)
+                .patch()
+                .uri(uriBuilder -> uriBuilder
+                        .path(TICKETS + TRACKING)
+                        .queryParam("state", ShoppingState.COMMITTED)
+                        .build()
+                )
+                .bodyValue(data)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Ticket.class)
+                .value(tickets -> System.out.println(">>>>> tickets: " + tickets));
     }
 
     @Test
