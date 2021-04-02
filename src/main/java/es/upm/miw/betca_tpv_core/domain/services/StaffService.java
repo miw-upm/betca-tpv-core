@@ -30,7 +30,9 @@ public class StaffService {
                 .loginDate(LocalDateTime.now())
                 .phone(phone)
                 .build();
-        return staffPersistence.saveLogin(loginOrder);
+        return staffPersistence.findByLoginDateAndPhone(LocalDate.now(), phone)
+                .switchIfEmpty(staffPersistence.saveLogin(loginOrder));
+        //return staffPersistence.saveLogin(loginOrder);
     }
 
     public Mono<Login> logout(String phone) {
