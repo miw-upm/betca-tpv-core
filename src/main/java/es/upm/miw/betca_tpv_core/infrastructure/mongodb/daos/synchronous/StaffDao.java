@@ -7,5 +7,6 @@ import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 public interface StaffDao extends MongoRepository<LoginEntity, String> {
+    Stream<LoginEntity> findByLoginDateBetweenAndPhone(LocalDateTime startDate, LocalDateTime endDate, String phone);
     Stream<LoginEntity> findByLoginDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 }

@@ -1,9 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
-import es.upm.miw.betca_tpv_core.domain.model.Login;
-import es.upm.miw.betca_tpv_core.domain.model.LoginOrder;
-import es.upm.miw.betca_tpv_core.domain.model.StaffTime;
-import es.upm.miw.betca_tpv_core.domain.model.StaffTimeOrder;
+import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.domain.services.StaffService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +21,7 @@ public class StaffResource {
     public static final String LOGIN = "/login";
     public static final String LOGOUT = "/logout";
     public static final String TIME = "/time";
+    public static final String REPORTS = "/reports";
 
     private final StaffService staffService;
 
@@ -60,5 +58,10 @@ public class StaffResource {
                 .build();
         if(typeOfSearch.equals("day")) return staffService.findByDays(staffTimeOrder);
         return staffService.findByMonth(staffTimeOrder);
+    }
+
+    @GetMapping(REPORTS)
+    public Stream<StaffReport> findReports(@RequestParam String month) {
+        return staffService.findReports(month);
     }
 }
