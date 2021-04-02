@@ -1,9 +1,11 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.synchronous;
 
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.LoginEntity;
-import org.springframework.data.repository.reactive.ReactiveSortingRepository;
-import reactor.core.publisher.Mono;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface StaffDao extends ReactiveSortingRepository<LoginEntity, String> {
-    Mono<LoginEntity> findTopByPhoneOrderByLoginDateDesc(String phone);
+import java.time.LocalDateTime;
+import java.util.stream.Stream;
+
+public interface StaffDao extends MongoRepository<LoginEntity, String> {
+    Stream<LoginEntity> findByLoginDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 }
