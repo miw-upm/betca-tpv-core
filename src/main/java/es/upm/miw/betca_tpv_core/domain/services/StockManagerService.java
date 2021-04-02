@@ -39,16 +39,23 @@ public class StockManagerService {
         return Flux.merge(tickets.map(ticket -> articleOfShopping(ticket.getShoppingList().stream(), ticket.getCreationDate().toLocalDate())));
     }
 
-    private Flux<StockManager> articleOfShopping(Stream<Shopping> shoppingStream, LocalDate dateCreation) {
-        return Flux.fromStream(shoppingStream
-                .map(shopping -> StockManager.ofShopping(shopping, dateCreation)));
-    }
-
     public Mono<StockManager> searchFutureStock(String barcode) {
         return this.articlePersistence.readByBarcode(barcode)
                 .switchIfEmpty(Mono.error(new NotFoundException("Article : " + barcode)))
                 .map(this::futureStock)
                 .flatMap(stockManagerMono -> stockManagerMono);
+    }
+
+    public Mono<StockManager> searchEmptyStock(String barcode) {
+        return this.articlePersistence.readByBarcode(barcode)
+                .switchIfEmpty(Mono.error(new NotFoundException("Article : " + barcode)))
+                .map(this::emptyStock)
+                .flatMap(stockManagerMono -> stockManagerMono);
+    }
+
+    private Flux<StockManager> articleOfShopping(Stream<Shopping> shoppingStream, LocalDate dateCreation) {
+        return Flux.fromStream(shoppingStream
+                .map(shopping -> StockManager.ofShopping(shopping, dateCreation)));
     }
 
     private Mono<StockManager> futureStock(Article article) {
@@ -61,13 +68,6 @@ public class StockManagerService {
                 .filter(shopping -> shopping.getBarcode().equals(barcode))
                 .map(Shopping::getAmount)
                 .reduce(0, Integer::sum);
-    }
-
-    public Mono<StockManager> searchEmptyStock(String barcode) {
-        return this.articlePersistence.readByBarcode(barcode)
-                .switchIfEmpty(Mono.error(new NotFoundException("Article : " + barcode)))
-                .map(this::emptyStock)
-                .flatMap(stockManagerMono -> stockManagerMono);
     }
 
     private Mono<StockManager> emptyStock(Article article) {
