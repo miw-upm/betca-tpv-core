@@ -5,13 +5,13 @@ import es.upm.miw.betca_tpv_core.domain.services.StaffService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
-import java.util.stream.Stream;
 
 @RestController
 @SecurityRequirement(name = "bearerAuth")
@@ -32,22 +32,24 @@ public class StaffResource {
 
     @PostMapping(LOGIN)
     public Mono<LoginOrder> login(Authentication authentication) {
-        if(authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_MANAGER"))) {
+        if(authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_OPERATOR") || a.getAuthority().equals("ROLE_MANAGER"))) {
             return this.staffService.login((String) authentication.getPrincipal());
         }
         return Mono.empty();
     }
 
     @PostMapping(LOGOUT)
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('OPERATOR')")
     public Mono<Login> logout(Authentication authentication) {
-        if(authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_MANAGER"))) {
+        if(authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_OPERATOR") || a.getAuthority().equals("ROLE_MANAGER"))) {
             return this.staffService.logout((String) authentication.getPrincipal());
         }
         return Mono.empty();
     }
 
     @GetMapping(TIME)
-    public Stream<StaffTime> findTime(@RequestParam String mobile,
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('OPERATOR')")
+    public Flux<StaffTime> findTime(@RequestParam String mobile,
                                       @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam LocalDate startDate,
                                       @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam LocalDate endDate,
                                       @RequestParam String typeOfSearch) {
@@ -61,7 +63,8 @@ public class StaffResource {
     }
 
     @GetMapping(REPORTS)
-    public Stream<StaffReport> findReports(@RequestParam String month) {
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('OPERATOR')")
+    public Flux<StaffReport> findReports(@RequestParam String month) {
         return staffService.findReports(month);
     }
 }
