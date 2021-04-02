@@ -109,4 +109,31 @@ public class DataProtectionActResourceIT {
                 .expectBody(Error.class);
     }
 
+    @Test
+    void testReadAgreement() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(DataProtectionActResource.DATA_PROTECTION_ACT + DataProtectionActResource.AGREEMENT +
+                        DataProtectionActResource.MOBILE_ID, "123456789")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(byte[].class)
+                .value(Assertions::assertNotNull)
+                .value(bytes ->
+                        assertEquals(bytes.length, 1)
+                );
+    }
+
+    @Test
+    void testReadAgreementNotFound() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(DataProtectionActResource.DATA_PROTECTION_ACT + DataProtectionActResource.AGREEMENT +
+                        DataProtectionActResource.MOBILE_ID, "999999999")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(byte[].class)
+                .value(Assertions::assertNull);
+    }
+
 }

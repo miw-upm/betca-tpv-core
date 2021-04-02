@@ -9,8 +9,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,9 +30,8 @@ public class StockAuditEntity {
         BeanUtils.copyProperties(stockAudit, this);
         this.stockAuditArticleList = stockAudit.getBarcodesWithoutAudit()
                 .stream()
-                .map(barcode -> new StockAuditArticleEntity(barcode, null, false))
+                .map(barcode -> new StockAuditArticleEntity(barcode, 0, false))
                 .collect(Collectors.toList());
-        //this.stockAuditArticleList = new ArrayList<>();
     }
 
     public List<String> toBarcodesWithoutAudit() {

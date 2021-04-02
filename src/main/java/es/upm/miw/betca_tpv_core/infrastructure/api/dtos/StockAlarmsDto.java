@@ -19,11 +19,15 @@ public class StockAlarmsDto {
     }
 
     public void addWarning(StockAlarmLine stockAlarmLine) {
-        this.warningAlarms.add(stockAlarmLine);
+        if (!this.warningAlarms.contains(stockAlarmLine)) {
+            this.warningAlarms.add(stockAlarmLine);
+        }
     }
 
     public void addCritical(StockAlarmLine stockAlarmLine) {
-        this.criticalAlarms.add(stockAlarmLine);
+        if (!this.criticalAlarms.contains(stockAlarmLine)) {
+            this.criticalAlarms.add(stockAlarmLine);
+        }
     }
 
 }

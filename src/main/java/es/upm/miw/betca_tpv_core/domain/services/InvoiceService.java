@@ -70,4 +70,14 @@ public class InvoiceService {
     public Flux<Invoice> findByPhoneAndTicketIdNullSafe(String phoneUser, String ticketId) {
         return this.invoicePersistence.findByPhoneAndTicketIdNullSafe(phoneUser, ticketId);
     }
+
+    public Mono<Invoice> createFromTicketRef(String ticketRef) {
+        return this.create(ticketRef)
+                .flatMap(invoice -> this.readUserByUserMobileNullSafe(invoice.getTicket().getUser())
+                        .map(user -> {
+                            invoice.getTicket().setUser(user);
+                            return invoice;
+                        })
+                        .switchIfEmpty(Mono.just(invoice)));
+    }
 }

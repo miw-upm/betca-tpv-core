@@ -1,9 +1,6 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
-import es.upm.miw.betca_tpv_core.domain.model.Shopping;
-import es.upm.miw.betca_tpv_core.domain.model.ShoppingState;
-import es.upm.miw.betca_tpv_core.domain.model.Ticket;
-import es.upm.miw.betca_tpv_core.domain.model.User;
+import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
 import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
@@ -92,6 +89,18 @@ public class TicketService {
         return this.ticketPersistence.findByReference(reference);
     }
 
+    public Mono<Ticket> findSelectedByReference(String reference) {
+        return this.ticketPersistence.findByReference(reference)
+                .flatMap(ticket ->
+                    this.readUserByUserMobileNullSafe(ticket.getUser())
+                            .map(user -> {
+                                ticket.setUser(user);
+                                return ticket;
+                            })
+                            .switchIfEmpty(Mono.just(ticket))
+                );
+    }
+
     public Mono<Ticket> update(String id, List<Shopping> shoppingList) {
         return this.ticketPersistence.update(id, shoppingList);
     }
@@ -110,15 +119,49 @@ public class TicketService {
         return this.ticketPersistence.findByUserMobile(mobile);
     }
 
-    public Flux<UserBasicDto> findByBarcodeAndAmount(String barcode, Integer amount) {
-        return this.ticketPersistence
-                .findAll()
-                .filter(ticket -> ticket.getShoppingList().stream()
-                        .anyMatch(shopping ->
-                                barcode.equals(shopping.getBarcode())
-                                && !(shopping.getState().equals(ShoppingState.COMMITTED))
-                                && shopping.getAmount() > amount
-                        )
-                ).map(ticket -> new UserBasicDto(ticket.getUser()));
+    public Flux<String> findAllWithoutInvoice() {
+        return this.ticketPersistence.findAllWithoutInvoice()
+                .map(Ticket::getReference);
     }
+
+    public Flux<Ticket> findByBarcodeAndAmountList(List<Tracking> data) {
+        return Flux
+                .fromIterable(data)
+                .flatMap(da -> this.ticketPersistence.findAll()
+                        .filter(ticket -> ticket.getShoppingList().stream()
+                                .anyMatch( shopping -> {
+                                    if(
+                                            da.getBarcode().equals(shopping.getBarcode()) &&
+                                                    da.getAmount() >= shopping.getAmount() &&
+                                                    !(shopping.getState().equals(ShoppingState.COMMITTED))
+                                    ) {
+                                        da.setAmount(da.getAmount() - shopping.getAmount());
+                                        return true;
+                                    } else {
+                                        return false;
+                                    }
+                                })
+                        )
+                );
+    }
+
+    public Flux<Ticket> updateByBarcodeAndAmountList(List<Tracking> data, ShoppingState state) {
+        return Flux
+                .fromIterable(data)
+                .flatMap(da -> this.ticketPersistence.findAll()
+                        .map(ticket -> {
+                            List<Shopping> shoppingList = ticket.getShoppingList()
+                                    .stream()
+                                    .peek(shopping -> {
+                                        if (da.getAmount() >= shopping.getAmount() && shopping.getBarcode().equals(da.getBarcode())) {
+                                            da.setAmount(da.getAmount() - shopping.getAmount());
+                                            shopping.setState(state);
+                                        }
+                                    }).collect(Collectors.toList());
+                            this.update(ticket.getId(), shoppingList);
+                            return ticket;
+                        })
+                );
+    }
+
 }
