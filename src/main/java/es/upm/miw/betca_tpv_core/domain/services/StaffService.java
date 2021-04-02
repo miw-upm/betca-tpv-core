@@ -52,10 +52,7 @@ public class StaffService {
                         .build())
                 .groupBy(StaffTime::getTime)
                 .flatMap(stringStaffTimeGroupedFlux -> stringStaffTimeGroupedFlux
-                        .reduce((a,b) -> StaffTime.builder()
-                        .hours(a.getHours() + b.getHours())
-                        .time(a.getTime())
-                        .build()));
+                        .reduce((a,b) -> StaffTime.builder().hours(a.getHours() + b.getHours()).time(a.getTime()).build()));
 
     }
 
@@ -67,10 +64,7 @@ public class StaffService {
                         .build())
                 .groupBy(StaffTime::getTime)
                 .flatMap(stringStaffTimeGroupedFlux -> stringStaffTimeGroupedFlux
-                        .reduce((a,b) -> StaffTime.builder()
-                                .hours(a.getHours() + b.getHours())
-                                .time(a.getTime())
-                                .build()));
+                        .reduce((a,b) -> StaffTime.builder().hours(a.getHours() + b.getHours()).time(a.getTime()).build()));
     }
 
     public Flux<StaffReport> findReports(String month) {
@@ -83,9 +77,6 @@ public class StaffService {
                     .build())
             .groupBy(StaffReport::getUser)
             .flatMap(stringStaffTimeGroupedFlux -> stringStaffTimeGroupedFlux
-                    .reduce((a,b) -> StaffReport.builder()
-                            .hours(a.getHours() + b.getHours())
-                            .user(a.getUser())
-                            .build()));
+                    .reduce((a,b) -> StaffReport.builder().hours(a.getHours() + b.getHours()).user(a.getUser()).build()));
     }
 }

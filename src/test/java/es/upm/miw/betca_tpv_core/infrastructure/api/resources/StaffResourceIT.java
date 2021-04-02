@@ -116,6 +116,7 @@ public class StaffResourceIT {
     @Test
     void testFindReports() {
         performLoginAndLogoutWithManager();
+        performLoginAndLogoutWithCustomer();
         this.restClientTestService.loginManager(webTestClient)
                 .get()
                 .uri(STAFF + REPORTS + "?month=" + LocalDate.now().getMonth().name())
@@ -129,6 +130,18 @@ public class StaffResourceIT {
     }
     private void performLoginAndLogoutWithManager() {
         this.restClientTestService.loginManager(webTestClient)
+                .post()
+                .uri(STAFF + LOGIN)
+                .exchange();
+
+        this.restClientTestService.loginManager(webTestClient)
+                .post()
+                .uri(STAFF + LOGOUT)
+                .exchange();
+    }
+
+    private void performLoginAndLogoutWithCustomer() {
+        this.restClientTestService.loginOperator(webTestClient)
                 .post()
                 .uri(STAFF + LOGIN)
                 .exchange();
