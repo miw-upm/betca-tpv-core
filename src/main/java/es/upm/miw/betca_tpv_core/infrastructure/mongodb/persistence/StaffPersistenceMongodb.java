@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.stream.Stream;
 
 @Repository
@@ -40,6 +41,12 @@ public class StaffPersistenceMongodb implements StaffPersistence {
     public Mono<Login> findLastLogin(String phone) {
         return staffReactive.findTopByPhoneOrderByLoginDateDesc(phone)
                 .map(LoginEntity::toLogin);
+    }
+
+    @Override
+    public Mono<LoginOrder> findByLoginDateAndPhone(LocalDate loginDate, String phone) {
+        return staffReactive.findByLoginDateBetweenAndPhone(loginDate.atStartOfDay(), loginDate.atTime(LocalTime.MAX), phone)
+                .map(LoginEntity::toLoginOrder);
     }
 
     @Override

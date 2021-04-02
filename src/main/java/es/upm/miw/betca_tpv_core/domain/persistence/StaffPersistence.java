@@ -13,6 +13,7 @@ public interface StaffPersistence {
     Mono<LoginOrder> saveLogin(LoginOrder loginOrder);
     Mono<Login> saveLogout(Login login);
     Mono<Login> findLastLogin(String phone);
+    Mono<LoginOrder> findByLoginDateAndPhone(LocalDate loginDate, String phone);
     Stream<Login> findInRangeByPhone(LocalDate startDate, LocalDate endDate, String phone);
     Stream<Login> findInRange(LocalDate startDate, LocalDate endDate);
 }
