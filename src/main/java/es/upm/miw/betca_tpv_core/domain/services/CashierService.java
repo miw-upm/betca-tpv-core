@@ -1,13 +1,12 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.exceptions.BadRequestException;
-import es.upm.miw.betca_tpv_core.domain.model.Cashier;
-import es.upm.miw.betca_tpv_core.domain.model.CashierClose;
-import es.upm.miw.betca_tpv_core.domain.model.CashierMovement;
-import es.upm.miw.betca_tpv_core.domain.model.CashierState;
+import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.domain.persistence.CashierPersistence;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.SlackMessageDto;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.CashierEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ShoppingEntity;
+import es.upm.miw.betca_tpv_core.infrastructure.slack_client.SlackMessagePublisherClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -16,6 +15,7 @@ import reactor.core.publisher.Mono;
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import static java.math.BigDecimal.ZERO;
@@ -24,10 +24,12 @@ import static java.math.BigDecimal.ZERO;
 public class CashierService {
 
     private CashierPersistence cashierPersistence;
+    private SlackMessageService slackMessageService;
 
     @Autowired
-    public CashierService(CashierPersistence cashierPersistence) {
+    public CashierService(CashierPersistence cashierPersistence, SlackMessageService slackMessageService) {
         this.cashierPersistence = cashierPersistence;
+        this.slackMessageService = slackMessageService;
     }
 
 
@@ -68,7 +70,16 @@ public class CashierService {
                     lastCashier.close(cashierClose.getFinalCash(), cashierClose.getFinalCard(), cashierClose.getComment());
                     return lastCashier;
                 })
-                .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier));
+                .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier))
+                .flatMap(cashier -> {
+                    StringBuilder message = new StringBuilder(":lock: Close cashier message: \n");
+                    message.append("Date: ").append(cashier.getClosureDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))).append("\n");
+                    message.append("Final cash: ").append(cashier.getFinalCash()).append("\n");
+                    message.append("Comment: ").append(cashier.getComment()).append("\n");
+
+                    SlackMessageDto slackMessageDto = new SlackMessageDto("Close cashier", message.toString(), "#000");
+                    return this.slackMessageService.createCloseCahierMessage(cashier, slackMessageDto);
+                });
     }
 
     Mono< Cashier > addSale(BigDecimal cash, BigDecimal card, BigDecimal voucher) {

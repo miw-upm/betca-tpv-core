@@ -1,10 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 
-import es.upm.miw.betca_tpv_core.domain.model.Cashier;
-import es.upm.miw.betca_tpv_core.domain.model.CashierClose;
-import es.upm.miw.betca_tpv_core.domain.model.CashierMovement;
-import es.upm.miw.betca_tpv_core.domain.model.CashierState;
+import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.domain.services.CashierService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.CashierLastDto;
@@ -81,7 +78,7 @@ public class CashierResource {
     }
 
     @PatchMapping(value = LAST)
-    public Mono< Cashier > closeCashier(@Valid @RequestBody CashierClose cashierClose) {
+    public Mono<Cashier> closeCashier(@Valid @RequestBody CashierClose cashierClose) {
         return cashierService.close(cashierClose);
     }
 
