@@ -43,6 +43,12 @@ public class StaffPersistenceMongodb implements StaffPersistence {
     }
 
     @Override
+    public Stream<Login> findInRangeByPhone(LocalDate startDate, LocalDate endDate, String phone) {
+        return staffDao.findByLoginDateBetweenAndPhone(startDate.atStartOfDay(), endDate.atStartOfDay(), phone)
+                .map(LoginEntity::toLogin);
+    }
+
+    @Override
     public Stream<Login> findInRange(LocalDate startDate, LocalDate endDate) {
         return staffDao.findByLoginDateBetween(startDate.atStartOfDay(), endDate.atStartOfDay())
                 .map(LoginEntity::toLogin);
