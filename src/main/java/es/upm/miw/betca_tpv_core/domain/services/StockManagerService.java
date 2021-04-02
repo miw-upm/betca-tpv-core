@@ -34,6 +34,7 @@ public class StockManagerService {
     }
 
     public Flux<StockManager> searchSoldProducts(LocalDateTime initial, LocalDateTime end) {
+
         Flux<Ticket> tickets = this.ticketPersistence.findByRangeRegistrationDate(initial, end);
         return Flux.merge(tickets.map(ticket -> articleOfShopping(ticket.getShoppingList().stream(), ticket.getCreationDate().toLocalDate())));
     }
@@ -51,12 +52,7 @@ public class StockManagerService {
     }
 
     private Mono<StockManager> futureStock(Article article) {
-        LocalDateTime ini = LocalDateTime.now().minusDays(7);
-        LocalDateTime end = LocalDateTime.now();
-
-        return this.ticketPersistence.findByRangeRegistrationDate(ini, end)
-                .map(ticket -> amountArticleSold(ticket.getShoppingList().stream(), article.getBarcode()))
-                .reduce(0, Integer::sum)
+        return soldProductsLastWeekByBarcode(article.getBarcode())
                 .map(amount -> StockManager.ofSoldStock(article, amount));
     }
 
@@ -75,7 +71,7 @@ public class StockManagerService {
     }
 
     private Mono<StockManager> emptyStock(Article article) {
-        return this.soldProductsLastWeek(article.getBarcode())
+        return this.soldProductsLastWeekByBarcode(article.getBarcode())
                 .map(productSoldWeek -> {
                     if (productSoldWeek.equals(0)) {
                         return -1;
@@ -86,7 +82,7 @@ public class StockManagerService {
                 .map(days -> StockManager.ofEmptyStock(article, days));
     }
 
-    private Mono<Integer> soldProductsLastWeek(String barcode) {
+    private Mono<Integer> soldProductsLastWeekByBarcode(String barcode) {
         LocalDateTime ini = LocalDateTime.now().minusDays(7);
         LocalDateTime end = LocalDateTime.now();
         return this.ticketPersistence.findByRangeRegistrationDate(ini, end)
