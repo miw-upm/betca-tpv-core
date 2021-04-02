@@ -1,0 +1,116 @@
+package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
+
+import es.upm.miw.betca_tpv_core.domain.model.Login;
+import es.upm.miw.betca_tpv_core.domain.model.LoginOrder;
+import es.upm.miw.betca_tpv_core.domain.model.StaffReport;
+import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.web.reactive.server.WebTestClient;
+
+import java.time.LocalDate;
+
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.StaffResource.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@RestTestConfig
+public class StaffResourceIT {
+
+    @Autowired
+    private WebTestClient webTestClient;
+
+    @Autowired
+    private RestClientTestService restClientTestService;
+
+    @Test
+    void testLoginWithValidUser() {
+        this.restClientTestService.loginManager(webTestClient)
+                .post()
+                .uri(STAFF + LOGIN)
+                .exchange()
+                .expectStatus().isOk()
+        .expectBody(LoginOrder.class)
+        .value(Assertions::assertNotNull)
+        .value(login -> {
+            assertEquals("666666001", login.getPhone());
+        });
+    }
+
+    @Test
+    void testLoginWithInvalidUser() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(STAFF + LOGIN)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(LoginOrder.class)
+                .value(Assertions::assertNull);
+    }
+
+    @Test
+    void testLogout() {
+        this.restClientTestService.loginManager(webTestClient)
+                .post()
+                .uri(STAFF + LOGIN)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(LoginOrder.class)
+                .value(Assertions::assertNotNull);
+
+        this.restClientTestService.loginManager(webTestClient)
+                .post()
+                .uri(STAFF + LOGOUT)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Login.class)
+                .value(Assertions::assertNotNull)
+                .value(login -> {
+                    assertEquals("666666001", login.getPhone());
+                });
+    }
+
+    @Test
+    void testLogoutWithInvalidUser() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(STAFF + LOGOUT)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Login.class)
+                .value(Assertions::assertNull);
+    }
+
+    @Test
+    void testFindReports() {
+        this.restClientTestService.loginManager(webTestClient)
+                .post()
+                .uri(STAFF + LOGIN)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(LoginOrder.class)
+                .value(Assertions::assertNotNull);
+
+        this.restClientTestService.loginManager(webTestClient)
+                .post()
+                .uri(STAFF + LOGOUT)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Login.class)
+                .value(Assertions::assertNotNull)
+                .value(login -> {
+                    assertEquals("666666001", login.getPhone());
+                });
+        this.restClientTestService.loginManager(webTestClient)
+                .get()
+                .uri(STAFF + REPORTS + "?month=" + LocalDate.now().getMonth().name())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(StaffReport.class)
+                .value(Assertions::assertNotNull)
+                .value(staffReports -> {
+                    assertTrue(staffReports.size() >= 1);
+                });
+    }
+}

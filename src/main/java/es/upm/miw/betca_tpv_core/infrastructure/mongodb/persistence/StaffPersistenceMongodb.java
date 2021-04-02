@@ -4,26 +4,23 @@ import es.upm.miw.betca_tpv_core.domain.model.Login;
 import es.upm.miw.betca_tpv_core.domain.model.LoginOrder;
 import es.upm.miw.betca_tpv_core.domain.persistence.StaffPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.StaffReactive;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.synchronous.StaffDao;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.LoginEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.stream.Stream;
 
 @Repository
 public class StaffPersistenceMongodb implements StaffPersistence {
 
     private final StaffReactive staffReactive;
-    private final StaffDao staffDao;
 
     @Autowired
-    public StaffPersistenceMongodb(StaffReactive staffReactive, StaffDao staffDao) {
+    public StaffPersistenceMongodb(StaffReactive staffReactive) {
         this.staffReactive = staffReactive;
-        this.staffDao = staffDao;
     }
     @Override
     public Mono<LoginOrder> saveLogin(LoginOrder loginOrder) {
@@ -44,20 +41,20 @@ public class StaffPersistenceMongodb implements StaffPersistence {
     }
 
     @Override
-    public Mono<LoginOrder> findByLoginDateAndPhone(LocalDate loginDate, String phone) {
+    public Flux<LoginOrder> findByLoginDateAndPhone(LocalDate loginDate, String phone) {
         return staffReactive.findByLoginDateBetweenAndPhone(loginDate.atStartOfDay(), loginDate.atTime(LocalTime.MAX), phone)
                 .map(LoginEntity::toLoginOrder);
     }
 
     @Override
-    public Stream<Login> findInRangeByPhone(LocalDate startDate, LocalDate endDate, String phone) {
-        return staffDao.findByLoginDateBetweenAndPhone(startDate.atStartOfDay(), endDate.atStartOfDay(), phone)
+    public Flux<Login> findInRangeByPhone(LocalDate startDate, LocalDate endDate, String phone) {
+        return staffReactive.findByLoginDateBetweenAndPhone(startDate.atStartOfDay(), endDate.atStartOfDay(), phone)
                 .map(LoginEntity::toLogin);
     }
 
     @Override
-    public Stream<Login> findInRange(LocalDate startDate, LocalDate endDate) {
-        return staffDao.findByLoginDateBetween(startDate.atStartOfDay(), endDate.atStartOfDay())
+    public Flux<Login> findInRange(LocalDate startDate, LocalDate endDate) {
+        return staffReactive.findByLoginDateBetween(startDate.atStartOfDay(), endDate.atStartOfDay())
                 .map(LoginEntity::toLogin);
     }
 }
