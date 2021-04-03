@@ -20,4 +20,8 @@ public class OrderLineService {
         return this.orderLinePersistence.findById(id);
     }
 
+    public Mono<OrderLine> create(OrderLine orderLine) {
+        return this.orderLinePersistence.create(orderLine);
+    }
+
 }

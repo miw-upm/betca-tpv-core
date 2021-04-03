@@ -27,4 +27,8 @@ public class OrderService {
         return this.orderPersistence.findByReference(reference);
     }
 
+    public Mono<Order> create(Order order) {
+        return this.orderPersistence.create(order);
+    }
+
 }

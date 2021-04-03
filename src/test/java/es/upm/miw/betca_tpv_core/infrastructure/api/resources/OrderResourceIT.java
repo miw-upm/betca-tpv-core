@@ -1,13 +1,17 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.Order;
+import es.upm.miw.betca_tpv_core.domain.model.OrderLine;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CreditResource.SEARCH;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.OfferResource.REFERENCE;
@@ -77,6 +81,63 @@ class OrderResourceIT {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(ORDERS + REFERENCE, "ref-not-found")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+
+    @Test
+    void testOrderCreate() {
+        Order order = Order.builder().reference("ref-11")
+                .providerCompany("pro3")
+                .description("order 5")
+                .openingDate(LocalDateTime.of(2021, 2, 20, 9, 30, 0))
+                .orderLines(List.of(OrderLine.builder().articleBarcode("8400000000024")
+                                .requireAmount(30)
+                                .finalAmount(25)
+                                .build(),
+                        OrderLine.builder().articleBarcode("8400000000031")
+                                .requireAmount(50)
+                                .finalAmount(30)
+                                .build()
+                ))
+                .closingDate(LocalDateTime.of(2021, 2, 25, 9, 30, 0))
+                .build();
+        Order orderDB = this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(ORDERS)
+                .body(Mono.just(order), Order.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Order.class)
+                .value(Assertions::assertNotNull)
+                .value(outOrder -> {
+                    assertEquals("ref-11", outOrder.getReference());
+                    assertEquals("order 5", outOrder.getDescription());
+                    assertEquals("pro3", outOrder.getProviderCompany());
+                    assertEquals(LocalDateTime.of(2021, 2, 20, 9, 30, 0), outOrder.getOpeningDate());
+                    assertEquals(2, outOrder.getOrderLines().size());
+                }).returnResult().getResponseBody();
+        assertNotNull(orderDB);
+    }
+
+    @Test
+    void testOrderCreateNotExistBarcode() {
+        Order order = Order.builder().reference("ref-11")
+                .providerCompany("pro3")
+                .description("order 5")
+                .openingDate(LocalDateTime.of(2021, 2, 20, 9, 30, 0))
+                .orderLines(List.of(OrderLine.builder().articleBarcode("8800000000024")
+                        .requireAmount(30)
+                        .finalAmount(25)
+                        .build()
+                ))
+                .closingDate(LocalDateTime.of(2021, 2, 25, 9, 30, 0))
+                .build();
+        this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(ORDERS)
+                .body(Mono.just(order), Order.class)
                 .exchange()
                 .expectStatus().isNotFound();
     }
