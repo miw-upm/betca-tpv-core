@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.TicketEntity;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
@@ -69,6 +70,28 @@ class InvoiceReactiveIT {
 
         StepVerifier
                 .create(this.invoiceReactive.findByTicketEntity(ticketEntity))
+                .expectNextCount(0)
+                .verifyComplete();
+    }
+
+    @Test
+    void testFindByNumber(){
+        String numInvoice = "invc_N_1A2B3C4D5E";
+        StepVerifier
+                .create(this.invoiceReactive.findByNumber(numInvoice))
+                .expectNextMatches(invoiceEntity -> {
+                    assertNotNull(invoiceEntity);
+                    assertEquals(numInvoice, invoiceEntity.getNumber());
+                    return true;
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void testFindByNumberNotExist(){
+        String numInvoice = "invc_N_NOTEXIST";
+        StepVerifier
+                .create(this.invoiceReactive.findByNumber(numInvoice))
                 .expectNextCount(0)
                 .verifyComplete();
     }
