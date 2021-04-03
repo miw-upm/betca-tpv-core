@@ -22,7 +22,7 @@ public class RgpdReactiveIT {
                 .assertNext(rgpdEntity -> {
                     assertEquals(rgpdEntity.getUserMobile(), "123456789");
                     assertEquals(rgpdEntity.getRgpdType(), RgpdType.ADVANCED);
-                    assertNull(rgpdEntity.getAgreement());
+                    assertEquals(rgpdEntity.getAgreement().length, 1);
                 })
                 .expectComplete()
                 .verify();

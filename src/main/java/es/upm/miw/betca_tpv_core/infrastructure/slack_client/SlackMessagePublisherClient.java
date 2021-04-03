@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_core.domain.exceptions.BadGatewayException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ForbiddenException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.SlackUriException;
+import es.upm.miw.betca_tpv_core.domain.model.Cashier;
 import es.upm.miw.betca_tpv_core.domain.model.SlackMessage;
 import es.upm.miw.betca_tpv_core.domain.slack.SlackMessagePublisher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,4 +58,38 @@ public class SlackMessagePublisherClient implements SlackMessagePublisher {
                     }
                 });
     }
+
+    @Override
+    public Mono<Cashier> createCloseCashierMessage(Cashier cashier, SlackMessage slackMessage) {
+        try {
+            this.slackUri = this.env != null ? this.env.getProperty("miw.slack.uri") : null;
+            if (this.slackUri.equals("")) {
+                return Mono.just(cashier);
+            }
+        } catch (Exception e) {
+            return Mono.just(cashier);
+        }
+        return ReactiveSecurityContextHolder.getContext()
+                .map(securityContext -> securityContext.getAuthentication().getCredentials())
+                .flatMap(token -> webClientBuilder.build()
+                        .mutate().defaultHeader("Authorization", "Bearer " + token).build()
+                        .post()
+                        .uri(slackUri)
+                        .body(Mono.just(slackMessage), SlackMessage.class)
+                        .exchange())
+                .onErrorResume(exception ->
+                        Mono.error(new BadGatewayException("Unexpected error. Slack message. " + exception.getMessage())))
+                .flatMap(response -> {
+                    if (HttpStatus.UNAUTHORIZED.equals(response.statusCode())) {
+                        return Mono.error(new ForbiddenException("Forbidden"));
+                    } else if (HttpStatus.NOT_FOUND.equals(response.statusCode())) {
+                        return Mono.error(new NotFoundException("NotFound"));
+                    } else if (response.statusCode().isError()) {
+                        return Mono.error(new BadGatewayException("Unexpected error: Slack."));
+                    } else {
+                        return Mono.just(cashier);
+                    }
+                });
+    }
+
 }

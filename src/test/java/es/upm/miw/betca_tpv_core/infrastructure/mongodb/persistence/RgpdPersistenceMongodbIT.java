@@ -24,7 +24,7 @@ public class RgpdPersistenceMongodbIT {
                 .assertNext(rgpd -> {
                     assertEquals(rgpd.getMobile(), "123456789");
                     assertEquals(rgpd.getRgpdType(), RgpdType.ADVANCED);
-                    assertNull(rgpd.getAgreement());
+                    assertEquals(rgpd.getAgreement().length, 1);
                 })
                 .expectComplete()
                 .verify();
@@ -57,6 +57,29 @@ public class RgpdPersistenceMongodbIT {
         Rgpd rgpd = new Rgpd(new User("123456789"), RgpdType.MEDIUM, null);
         StepVerifier
                 .create(this.rgpdPersistenceMongodb.create(rgpd))
+                .expectError()
+                .verify();
+    }
+
+    @Test
+    void testUpdate() {
+        Rgpd rgpd = new Rgpd(new User("987654321"), RgpdType.MEDIUM, null);
+        StepVerifier
+                .create(this.rgpdPersistenceMongodb.update(rgpd.getMobile(), rgpd))
+                .assertNext(newRgpd -> {
+                    assertEquals(newRgpd.getMobile(), rgpd.getMobile());
+                    assertEquals(newRgpd.getRgpdType(), rgpd.getRgpdType());
+                    assertNull(newRgpd.getAgreement());
+                })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testUpdateNotFound() {
+        Rgpd rgpd = new Rgpd(new User("789625413"), RgpdType.MEDIUM, null);
+        StepVerifier
+                .create(this.rgpdPersistenceMongodb.update(rgpd.getMobile(), rgpd))
                 .expectError()
                 .verify();
     }

@@ -19,7 +19,7 @@ class InvoiceServiceIT {
 
     @Test
     void tesCreate() {
-        Ticket ticket = Ticket.builder().reference("nUs81zZ4R_iuoq0_zCRm6A")
+        Ticket ticket = Ticket.builder().reference("FGhfvfMORj6iKmzp5aERAA")
                 .build();
 
         StepVerifier
@@ -45,7 +45,7 @@ class InvoiceServiceIT {
 
     @Test
     void testCreateAndPrintInvoice() {
-        Ticket ticket = Ticket.builder().reference("nUs81zZ4R_iuoq0_zCRm6A")
+        Ticket ticket = Ticket.builder().reference("FGhfv521Rj6iKmzp5aERAA")
                 .build();
 
         StepVerifier

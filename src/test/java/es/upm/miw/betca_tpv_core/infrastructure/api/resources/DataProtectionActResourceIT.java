@@ -78,4 +78,62 @@ public class DataProtectionActResourceIT {
                 .expectBody(Error.class);
     }
 
+    @Test
+    void testUpdate() {
+        RgpdUserWithFileDto rgpd = new RgpdUserWithFileDto("987654321", RgpdType.MEDIUM, "YQ==");
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(DataProtectionActResource.DATA_PROTECTION_ACT +
+                        DataProtectionActResource.MOBILE_ID, rgpd.getMobile())
+                .body(Mono.just(rgpd), Rgpd.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(RgpdUserDto.class)
+                .value(Assertions::assertNotNull)
+                .value(rgpdUserDto -> {
+                    assertEquals(rgpdUserDto.getMobile(), rgpd.getMobile());
+                    assertEquals(rgpdUserDto.getRgpdType(), rgpd.getRgpdType());
+                });
+    }
+
+    @Test
+    void testUpdateNotFound() {
+        RgpdUserWithFileDto rgpd = new RgpdUserWithFileDto("789625413", RgpdType.MEDIUM, "YQ==");
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(DataProtectionActResource.DATA_PROTECTION_ACT +
+                        DataProtectionActResource.MOBILE_ID, rgpd.getMobile())
+                .body(Mono.just(rgpd), Rgpd.class)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody(Error.class);
+    }
+
+    @Test
+    void testReadAgreement() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(DataProtectionActResource.DATA_PROTECTION_ACT + DataProtectionActResource.AGREEMENT +
+                        DataProtectionActResource.MOBILE_ID, "123456789")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(byte[].class)
+                .value(Assertions::assertNotNull)
+                .value(bytes ->
+                        assertEquals(bytes.length, 1)
+                );
+    }
+
+    @Test
+    void testReadAgreementNotFound() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(DataProtectionActResource.DATA_PROTECTION_ACT + DataProtectionActResource.AGREEMENT +
+                        DataProtectionActResource.MOBILE_ID, "999999999")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(byte[].class)
+                .value(Assertions::assertNull);
+    }
+
 }

@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import es.upm.miw.betca_tpv_core.domain.model.Invoice;
+import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,6 +39,10 @@ public class InvoiceEntity {
         if(invoice.getTicket() != null){
             setTicketEntity(new TicketEntity(invoice.getTicket()));
         }
+    }
+
+    public InvoiceEntity(TicketEntity ticketEntity){
+        setTicketEntity(ticketEntity);
     }
 
     public void addTicket(TicketEntity ticketEntity) {

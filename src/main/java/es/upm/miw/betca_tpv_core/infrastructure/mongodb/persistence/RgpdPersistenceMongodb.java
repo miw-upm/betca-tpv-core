@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Rgpd;
 import es.upm.miw.betca_tpv_core.domain.persistence.RgpdPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.RgpdReactive;
@@ -34,4 +35,17 @@ public class RgpdPersistenceMongodb implements RgpdPersistence {
                 .flatMap(this.rgpdReactive::save)
                 .map(RgpdEntity::toRgpd);
     }
+
+    @Override
+    public Mono<Rgpd> update(String mobile, Rgpd rgpd) {
+        return this.rgpdReactive.findByUserMobile(mobile)
+                .switchIfEmpty(Mono.error(new NotFoundException("Rgpd doesn't exists for mobile: " + mobile)))
+                .flatMap(rgpdEntity -> {
+                    rgpdEntity.set(rgpd);
+                    return Mono.just(rgpdEntity);
+                })
+                .flatMap(this.rgpdReactive::save)
+                .map(RgpdEntity::toRgpd);
+    }
+
 }

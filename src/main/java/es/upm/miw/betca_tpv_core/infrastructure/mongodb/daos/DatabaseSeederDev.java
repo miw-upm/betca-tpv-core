@@ -1,9 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos;
 
-import es.upm.miw.betca_tpv_core.domain.model.RgpdType;
-import es.upm.miw.betca_tpv_core.domain.model.ShoppingState;
-import es.upm.miw.betca_tpv_core.domain.model.Tax;
-import es.upm.miw.betca_tpv_core.domain.model.TreeType;
+import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.synchronous.*;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.*;
 import org.apache.logging.log4j.LogManager;
@@ -335,6 +332,11 @@ public class DatabaseSeederDev {
                 RgpdEntity.builder().id("1lh9dps68h3d7809l982sd452d8a")
                         .userMobile("123456789")
                         .rgpdType(RgpdType.ADVANCED)
+                        .agreement(new byte[1])
+                        .build(),
+                RgpdEntity.builder().id("0lh9dp468h3d7809l982sd458d8a")
+                        .userMobile("987654321")
+                        .rgpdType(RgpdType.BASIC)
                         .build()
         };
         this.rgpdDao.saveAll(List.of(rgpds));
@@ -386,20 +388,47 @@ public class DatabaseSeederDev {
         this.invoiceDao.saveAll(Arrays.asList(invoices));
         LogManager.getLogger(this.getClass()).warn("        ------- invoices");
 
-        LocalDate salespeopleTime = LocalDate.of(2021, Month.APRIL, 1);
-        LocalDate salespeopleTime2 = LocalDate.of(2021, Month.APRIL, 2);
         SalespeopleEntity[] salespeople = {
                 SalespeopleEntity.builder()
                         .id("1").salesperson("Rosaria")
-                        .salesDate(salespeopleTime).numArticle(2).finalValue(new BigDecimal(23)).articleEntityList(List.of(articles[0]))
+                        .salesDate(tickets[0].getCreationDate().toLocalDate())
                         .ticketEntityList(List.of(tickets[0]))
                         .build(),
                 SalespeopleEntity.builder()
                         .id("2").salesperson("Nacho")
-                        .salesDate(salespeopleTime2).numArticle(5).finalValue(new BigDecimal(25)).articleEntityList(List.of(articles[0]))
+                        .salesDate(tickets[1].getCreationDate().toLocalDate())
                         .ticketEntityList(List.of(tickets[1]))
                         .build(),
-
+                SalespeopleEntity.builder()
+                        .id("3").salesperson("Luis")
+                        .salesDate(tickets[2].getCreationDate().toLocalDate())
+                        .ticketEntityList(List.of(tickets[2]))
+                        .build(),
+                SalespeopleEntity.builder()
+                        .id("4").salesperson("Alex")
+                        .salesDate(tickets[3].getCreationDate().toLocalDate())
+                        .ticketEntityList(List.of(tickets[3]))
+                        .build(),
+                SalespeopleEntity.builder()
+                        .id("5").salesperson("Ozuna")
+                        .salesDate(tickets[4].getCreationDate().toLocalDate())
+                        .ticketEntityList(List.of(tickets[4]))
+                        .build(),
+                SalespeopleEntity.builder()
+                        .id("6").salesperson("Pedro")
+                        .salesDate(tickets[5].getCreationDate().toLocalDate())
+                        .ticketEntityList(List.of(tickets[5]))
+                        .build(),
+                SalespeopleEntity.builder()
+                        .id("7").salesperson("Pablo")
+                        .salesDate(tickets[6].getCreationDate().toLocalDate())
+                        .ticketEntityList(List.of(tickets[6]))
+                        .build(),
+                SalespeopleEntity.builder()
+                        .id("8").salesperson("Carlos")
+                        .salesDate(tickets[7].getCreationDate().toLocalDate())
+                        .ticketEntityList(List.of(tickets[7]))
+                        .build()
         };
         this.salespeopleDao.saveAll(Arrays.asList(salespeople));
         LogManager.getLogger(this.getClass()).warn("        ------  salespeople");
