@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,9 +25,9 @@ public class Order {
     @NotBlank
     private String providerCompany;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDate openingDate;
+    private LocalDateTime openingDate;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDate closingDate;
+    private LocalDateTime closingDate;
     private List<OrderLine> orderLines;
 
     public void doDefault() {
@@ -35,7 +35,7 @@ public class Order {
             this.reference = UUIDBase64.URL.encode();
         }
         if (Objects.isNull(openingDate)) {
-            this.openingDate = LocalDate.now();
+            this.openingDate = LocalDateTime.now();
         }
     }
 }
