@@ -17,10 +17,6 @@ public class CustomerDiscountService {
         this.customerDiscountPersistence = customerDiscountPersistence;
     }
 
-    public Flux<CustomerDiscount> findByUser(String user) {
-        return this.customerDiscountPersistence.findByUser(user);
-    }
-
     public Flux<CustomerDiscount> findByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe(String note, Double discount, Double minimumPurchase, String user) {
         return this.customerDiscountPersistence.findByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe(note, discount, minimumPurchase, user);
     }

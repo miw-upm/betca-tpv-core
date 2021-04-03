@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CustomerDiscountResource.*;
@@ -25,7 +27,8 @@ public class CustomerDiscountResourceIT {
 
     @Test
     void testCreate() {
-        /*CustomerDiscount customerDiscount = CustomerDiscount.builder().note("test").discount(30.0).minimumPurchase(50.0).user("6").build();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        CustomerDiscount customerDiscount = new CustomerDiscount("8", "test", LocalDateTime.now().format(formatter), 30.0, 50.0, "6");
         this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(CUSTOMERS_DISCOUNTS)
@@ -38,7 +41,7 @@ public class CustomerDiscountResourceIT {
                     assertEquals("test", returnCustomerDiscount.getNote());
                     assertEquals(30.0, returnCustomerDiscount.getDiscount());
                     assertEquals(50.0, returnCustomerDiscount.getMinimumPurchase());
-                });*/
+                });
     }
 
     @Test
