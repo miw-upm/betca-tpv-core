@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_core.TestConfig;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.*;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
@@ -130,6 +131,22 @@ class TicketPersistenceMongodbIT {
         StepVerifier
                 .create(this.ticketPersistenceMongodb.findByUserMobile("66"))
                 .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))
+                .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))
+                .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))
+                .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))
+                .thenCancel()
+                .verify();
+    }
+
+    @Test
+    void testFindAllWithoutInvoice(){
+        List<String> ticketsIds = List.of(
+                "5gfaw03b7513a164chop77ac", "7faw03b7513a164chop77ac",
+                "9jfaw03b7513a164chop77ac"
+        );
+
+        StepVerifier
+                .create(this.ticketPersistenceMongodb.findAllWithoutInvoice())
                 .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))
                 .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))
                 .assertNext(ticket -> assertTrue(ticketsIds.contains(ticket.getId())))

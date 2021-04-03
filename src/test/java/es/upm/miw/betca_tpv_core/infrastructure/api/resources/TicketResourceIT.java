@@ -3,10 +3,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ArticleNewDto;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketBasicDto;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketEditionDto;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.UserBasicDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +37,8 @@ class TicketResourceIT {
 
     @BeforeEach
     void openCashier() {
+        System.setProperty("miw.slack.uri", "");
+
         this.restClientTestService.loginAdmin(webTestClient)
                 .post().uri(CASHIERS)
                 .exchange()
@@ -197,6 +196,19 @@ class TicketResourceIT {
     }
 
     @Test
+    void testFindSelectedByReference() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(TICKETS + REFERENCE_ID + REFERENCE + SELECTED, "WB9-e8xQT4ejb74r1vLrCw")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(TicketSelectedDto.class)
+                .value(Assertions::assertNotNull)
+                .value(ticket -> System.out.println(">>>>> ticket: " + ticket));
+
+    }
+
+    @Test
     void testFindByReferenceNotFoundException() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
@@ -207,11 +219,11 @@ class TicketResourceIT {
     }
 
     @Test
-    void testGetByBarcodeAndAmount() {
+    void testGetUsersByBarcodeAndAmount() {
         List<Tracking> data = new ArrayList<>();
         Tracking tracking = new Tracking();
         tracking.setBarcode("8400000000024");
-        tracking.setAmount(1);
+        tracking.setAmount(5);
         data.add(tracking);
         this.restClientTestService.loginAdmin(webTestClient)
                 .post()
@@ -221,6 +233,27 @@ class TicketResourceIT {
                 .expectStatus().isOk()
                 .expectBodyList(UserBasicDto.class)
                 .value(users -> System.out.println(">>>>> users: " + users));
+    }
+
+    @Test
+    void testUpdateByBarcodeAndAmount() {
+        List<Tracking> data = new ArrayList<>();
+        Tracking tracking = new Tracking();
+        tracking.setBarcode("8400000000024");
+        tracking.setAmount(5);
+        data.add(tracking);
+        this.restClientTestService.loginAdmin(webTestClient)
+                .patch()
+                .uri(uriBuilder -> uriBuilder
+                        .path(TICKETS + TRACKING)
+                        .queryParam("state", ShoppingState.COMMITTED)
+                        .build()
+                )
+                .bodyValue(data)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Ticket.class)
+                .value(tickets -> System.out.println(">>>>> tickets: " + tickets));
     }
 
     @Test
@@ -282,6 +315,20 @@ class TicketResourceIT {
                 .value(articles -> assertTrue(articles.stream()
                                         .anyMatch(article ->
                                                 article.getBarcode().equals("8400000000017"))));
+    }
+
+    @Test
+    void testFindAllWithoutInvoice() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(TICKETS + SEARCH + NO_INVOICE)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(TicketReferencesDto.class)
+                .value(Assertions::assertNotNull)
+                .value(ticketsRef -> assertTrue(ticketsRef.getReferences().stream()
+                        .anyMatch(ticketRef -> ticketRef.equals("Asgffv521Rj6iKmzp5aERAA"))
+                ));
     }
 
     @AfterEach

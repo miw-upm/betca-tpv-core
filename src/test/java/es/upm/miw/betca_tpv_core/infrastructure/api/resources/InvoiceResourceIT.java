@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
@@ -23,6 +24,7 @@ import java.util.List;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.CASHIERS;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.LAST;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.InvoiceResource.INVOICES;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.InvoiceResource.TICKET_REF;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.TicketResource.*;
 import static java.math.BigDecimal.ZERO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,7 +54,7 @@ class InvoiceResourceIT {
 
     @Test
     void testCreateInvoiceAndPrint() {
-        TicketBasicDto ticket = TicketBasicDto.builder().reference("nUs81zZ4R_iuoq0_zCRm6A").build();
+        TicketBasicDto ticket = TicketBasicDto.builder().reference("FGhfvfMORj6iKmzp5aERAA").build();
         this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(INVOICES)
@@ -60,6 +62,49 @@ class InvoiceResourceIT {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(byte[].class)
+                .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void testCreateFromTicketRef() {
+        TicketBasicDto ticket = TicketBasicDto.builder().reference("FGhfv521Rj6iKmzp5aERAA").build();
+        this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(INVOICES + TICKET_REF)
+                .body(BodyInserters.fromValue(ticket))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(InvoiceItemDto.class)
+                .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void testPrintByNumber() {
+        String numberInvoice = "invc_N_1A2B3C4D5E";
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(INVOICES + InvoiceResource.PRINT)
+                        .queryParam("number", numberInvoice)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(byte[].class)
+                .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void testPrintByNumberNotExist() {
+        String numberInvoice = "invc_N_NOTEXIST";
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(INVOICES + InvoiceResource.PRINT)
+                        .queryParam("number", numberInvoice)
+                        .build())
+                .exchange()
+                .expectStatus().is4xxClientError()
+                .expectBody(NotFoundException.class)
                 .value(Assertions::assertNotNull);
     }
 

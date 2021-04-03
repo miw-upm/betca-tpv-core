@@ -66,7 +66,7 @@ public class InvoicePersistenceMongodb implements InvoicePersistence {
     @Override
     public Mono<Invoice> findById(String id) {
         return this.invoiceReactive.findById(id)
-                .switchIfEmpty(Mono.error(new NotFoundException("Ticket Id: " + id)))
+                .switchIfEmpty(Mono.error(new NotFoundException("Invoice Id: " + id)))
                 .map(InvoiceEntity::toInvoice);
     }
 
@@ -85,6 +85,13 @@ public class InvoicePersistenceMongodb implements InvoicePersistence {
                     }
                     return true;
                 })
+                .map(InvoiceEntity::toInvoice);
+    }
+
+    @Override
+    public Mono<Invoice> findByNumber(String number) {
+        return this.invoiceReactive.findByNumber(number)
+                .switchIfEmpty(Mono.error(new NotFoundException("Invoice Number: " + number)))
                 .map(InvoiceEntity::toInvoice);
     }
 

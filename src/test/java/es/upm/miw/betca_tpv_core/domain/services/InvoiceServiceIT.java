@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ class InvoiceServiceIT {
 
     @Test
     void tesCreate() {
-        Ticket ticket = Ticket.builder().reference("nUs81zZ4R_iuoq0_zCRm6A")
+        Ticket ticket = Ticket.builder().reference("FGhfvfMORj6iKmzp5aERAA")
                 .build();
 
         StepVerifier
@@ -45,7 +46,7 @@ class InvoiceServiceIT {
 
     @Test
     void testCreateAndPrintInvoice() {
-        Ticket ticket = Ticket.builder().reference("nUs81zZ4R_iuoq0_zCRm6A")
+        Ticket ticket = Ticket.builder().reference("FGhfv521Rj6iKmzp5aERAA")
                 .build();
 
         StepVerifier
@@ -53,6 +54,27 @@ class InvoiceServiceIT {
                 .expectNextCount(1)
                 .verifyComplete();
     }
+
+    @Test
+    void testPrintByNumber() {
+        String numberInvoice = "invc_N_1A2B3C4D5E";
+
+        StepVerifier
+                .create(this.invoiceService.printByNumber(numberInvoice))
+                .expectNextCount(1)
+                .verifyComplete();
+    }
+
+    @Test
+    void testPrintByNumberNotExist() {
+        String numberInvoice = "invc_NOT_EXIST";
+
+        StepVerifier
+                .create(this.invoiceService.printByNumber(numberInvoice))
+                .expectError(NotFoundException.class)
+                .verify();
+    }
+
 
     @Test
     void testFindByPhoneNoNullAndTicketIdNullSafe(){

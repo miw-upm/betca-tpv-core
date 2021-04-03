@@ -64,7 +64,7 @@ class ProviderInvoicePersistenceMongodbIT {
     void testCreateNonExistingProvider() {
         StepVerifier
                 .create(this.providerInvoicePersistenceMongodb.create(
-                        ProviderInvoice.builder().number(999999).providerCompany("kk").build()
+                        ProviderInvoice.builder().number(9999).providerCompany("kk").build()
                 ))
                 .expectError(NotFoundException.class)
                 .verify();

@@ -12,4 +12,6 @@ public interface StockAuditPersistence {
     Mono<StockAudit> findFirstByCloseDateNull();
 
     Mono<StockAudit> create(List<String> barcodesWithoutAudit);
+
+    Mono<StockAuditDto> update(String id, StockAuditDto stockAuditDto);
 }

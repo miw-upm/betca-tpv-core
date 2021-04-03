@@ -23,6 +23,11 @@ public class SlackMessageService {
         return this.slackMessagePublisher.create(slackMessage);
     }
 
+    public  Mono<Cashier> createCloseCahierMessage(Cashier cashier, SlackMessageDto slackMessageDto) {
+        SlackMessage slackMessage = this.createMessageFromDto(slackMessageDto);
+        return this.slackMessagePublisher.createCloseCashierMessage(cashier, slackMessage);
+    }
+
     private SlackMessage createMessageFromDto(SlackMessageDto slackMessageDto) {
         SlackMessageText headerText = new SlackMessageText("plain_text", slackMessageDto.getTitle());
         SlackMessageBlock headerBlock = new SlackMessageBlock("header", headerText);

@@ -24,4 +24,7 @@ public class DataProtectionActService {
         return this.rgpdPersistence.create(rgpd);
     }
 
+    public Mono<Rgpd> update(String mobile, Rgpd rgpd) {
+        return this.rgpdPersistence.update(mobile, rgpd);
+    }
 }
