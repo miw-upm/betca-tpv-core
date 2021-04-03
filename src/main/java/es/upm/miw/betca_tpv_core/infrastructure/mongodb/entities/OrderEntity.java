@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,8 +30,8 @@ public class OrderEntity {
     private String description;
     @DBRef(lazy = true)
     private ProviderEntity providerEntity;
-    private LocalDate openingDate;
-    private LocalDate closingDate;
+    private LocalDateTime openingDate;
+    private LocalDateTime closingDate;
     private List<OrderLineEntity> orderLineEntities;
 
 
@@ -41,9 +41,16 @@ public class OrderEntity {
         this.orderLineEntities = new ArrayList<>();
     }
 
+    public void add(OrderLineEntity orderLineEntity) {
+        this.orderLineEntities.add(orderLineEntity);
+    }
+
     public Order toOrder() {
         Order order = new Order();
         BeanUtils.copyProperties(this, order);
+        if (Objects.nonNull(this.getProviderEntity())) {
+            order.setProviderCompany(this.getProviderEntity().getCompany());
+        }
         if (Objects.nonNull(this.getOrderLineEntities())) {
             List<OrderLine> orderLines = new ArrayList<>();
             for (int i = 0; i < this.getOrderLineEntities().size(); i++) {
