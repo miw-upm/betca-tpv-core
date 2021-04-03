@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Invoice;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,31 @@ class InvoicePersistenceMongodbIT {
                     return true;
                 })
                 .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testFindByNumber() {
+        String numInvoice = "invc_N_1A2B3C4D5E";
+        StepVerifier
+                .create(this.invoicePersistenceMongodb.findByNumber(numInvoice))
+                .expectNextMatches(dbInvoice -> {
+                    assertNotNull(dbInvoice.getId());
+                    assertNotNull(dbInvoice.getCreationDate());
+                    assertNotNull(dbInvoice.getNumber());
+                    assertEquals(numInvoice, dbInvoice.getNumber());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testFindByNumberNotExist() {
+        String idInvoice = "invc_N_NOTEXIST";
+        StepVerifier
+                .create(this.invoicePersistenceMongodb.findByNumber(idInvoice))
+                .expectError(NotFoundException.class)
                 .verify();
     }
 

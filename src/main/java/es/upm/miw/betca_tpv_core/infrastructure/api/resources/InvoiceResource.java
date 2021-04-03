@@ -15,6 +15,7 @@ public class InvoiceResource {
     public static final String INVOICES = "/invoices";
     public static final String SEARCH = "/search";
     public static final String TICKET_REF = "/ticketRef";
+    public static final String PRINT = "/print";
 
     private InvoiceService invoiceService;
 
@@ -40,5 +41,10 @@ public class InvoiceResource {
     public Mono<InvoiceItemDto> createFromTicketRef(@RequestBody TicketBasicDto ticketDto){
         return this.invoiceService.createFromTicketRef(ticketDto.getReference())
                 .map(InvoiceItemDto::new);
+    }
+
+    @GetMapping(value = PRINT, produces = {"application/pdf"})
+    public Mono<byte[]> printByNumber(@RequestParam String number) {
+        return this.invoiceService.printByNumber(number);
     }
 }
