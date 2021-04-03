@@ -4,10 +4,11 @@ import es.upm.miw.betca_tpv_core.domain.model.OrderLine;
 import es.upm.miw.betca_tpv_core.domain.services.OrderLineService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
+import javax.validation.Valid;
+
 @Rest
 @RequestMapping(OrderLineResource.ORDER_LINES)
 public class OrderLineResource {
@@ -25,5 +26,10 @@ public class OrderLineResource {
     @GetMapping(ID)
     public Mono<OrderLine> readById(@PathVariable String id) {
         return this.orderLineService.readById(id);
+    }
+
+    @PostMapping(produces = {"application/json"})
+    public Mono<OrderLine> create(@Valid @RequestBody OrderLine orderLine) {
+        return this.orderLineService.create(orderLine);
     }
 }

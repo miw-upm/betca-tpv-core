@@ -5,13 +5,11 @@ import es.upm.miw.betca_tpv_core.domain.services.OrderService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.OrderDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 
 @Rest
@@ -42,5 +40,11 @@ public class OrderResource {
     @GetMapping(REFERENCE)
     public Mono<Order> readByReference(@PathVariable String reference) {
         return this.orderService.readByReference(reference);
+    }
+
+    @PostMapping(produces = {"application/json"})
+    public Mono<Order> create(@Valid @RequestBody Order order) {
+        order.doDefault();
+        return this.orderService.create(order);
     }
 }
