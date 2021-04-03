@@ -13,4 +13,6 @@ public interface InvoicePersistence {
     Mono<Invoice> findById(String id);
 
     Flux<Invoice> findByPhoneAndTicketIdNullSafe(String phoneUser, String ticketId);
+
+    Mono<Invoice> findByNumber(String number);
 }
