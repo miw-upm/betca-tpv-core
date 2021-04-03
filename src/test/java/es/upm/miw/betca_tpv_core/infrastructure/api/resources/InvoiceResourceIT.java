@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
@@ -74,6 +75,36 @@ class InvoiceResourceIT {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(InvoiceItemDto.class)
+                .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void testPrintByNumber() {
+        String numberInvoice = "invc_N_1A2B3C4D5E";
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(INVOICES + InvoiceResource.PRINT)
+                        .queryParam("number", numberInvoice)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(byte[].class)
+                .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void testPrintByNumberNotExist() {
+        String numberInvoice = "invc_N_NOTEXIST";
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(INVOICES + InvoiceResource.PRINT)
+                        .queryParam("number", numberInvoice)
+                        .build())
+                .exchange()
+                .expectStatus().is4xxClientError()
+                .expectBody(NotFoundException.class)
                 .value(Assertions::assertNotNull);
     }
 
