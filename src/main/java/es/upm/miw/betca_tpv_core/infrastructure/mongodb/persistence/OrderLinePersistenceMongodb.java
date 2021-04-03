@@ -8,8 +8,10 @@ import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.OrderLineReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.OrderLineEntity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
+@Repository
 public class OrderLinePersistenceMongodb implements OrderLinePersistence {
 
     private OrderLineReactive orderLineReactive;
@@ -36,8 +38,9 @@ public class OrderLinePersistenceMongodb implements OrderLinePersistence {
 
     @Override
     public Mono<OrderLine> update(String barcode, OrderLine orderLine) {
-        return this.orderLineReactive.findByBarcode(barcode)
+        return this.articleReactive.findByBarcode(barcode)
                 .switchIfEmpty(Mono.error(new NotFoundException("Non existent article with the barcode: " + barcode)))
+                .map(articleEntity -> new OrderLineEntity(orderLine, articleEntity))
                 .flatMap(orderLineEntity -> {
                     BeanUtils.copyProperties(orderLine, orderLineEntity);
                     return this.orderLineReactive.save(orderLineEntity);
@@ -45,8 +48,8 @@ public class OrderLinePersistenceMongodb implements OrderLinePersistence {
     }
 
     @Override
-    public Mono<OrderLine> findByBarcode(String barcode) {
-        return this.orderLineReactive.findByBarcode(barcode)
+    public Mono<OrderLine> findById(String id) {
+        return this.orderLineReactive.findById(id)
                 .map(OrderLineEntity::toOrderLine);
     }
 }

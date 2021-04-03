@@ -5,5 +5,5 @@ import org.springframework.data.repository.reactive.ReactiveSortingRepository;
 import reactor.core.publisher.Mono;
 
 public interface OrderLineReactive extends ReactiveSortingRepository<OrderLineEntity, String> {
-    Mono<OrderLineEntity> findByBarcode(String barcode);
+    Mono<OrderLineEntity> findById(String id);
 }

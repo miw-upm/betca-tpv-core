@@ -10,12 +10,7 @@ import java.time.LocalDateTime;
 
 public interface OrderReactive extends ReactiveSortingRepository<OrderEntity, String> {
 
-    @Query("{$and:[" // allow NULL: all elements
-            + "?#{ [0] == null ? {_id : {$ne:null}} : { description : {$regex:[0], $options: 'i'} } },"
-            + "?#{ [1] == null ? {_id : {$ne:null}} : { description : {$regex:[1], $options: 'i'} } },"
-            + "?#{ $and:[ ?#{ [2] == null}, ?#{ [3] == null} ] ? {_id : {$ne:null}} : { openingDate : {$regex:[1], $options: 'i'} } },"
-            + "] }")
-    Flux<OrderEntity> findByDescriptionAndCompanyAndOpeningDateBetweenAndNullSafe(String company, String description, LocalDateTime openingDate);
+    Flux<OrderEntity> findByDescriptionAndOpeningDateBetween(String description, LocalDateTime fromDate, LocalDateTime toDate);
 
     Mono<OrderEntity> findByReference(String reference);
 }

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Repository
 public interface OrderPersistence {
-    Flux<Order> findByDescriptionAndCompanyAndOpeningDateBetweenAndNullSafe(String company, String description, LocalDateTime openingDate);
+    Flux<Order> findByDescriptionAndOpeningDateBetween(String description, LocalDateTime fromDate, LocalDateTime toDate);
 
     Mono<Order> findByReference(String reference);
 

@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 
 public interface OrderLinePersistence {
 
-    Mono<OrderLine> findByBarcode(String barcode);
+    Mono<OrderLine> findById(String id);
 
     Mono<OrderLine> create(OrderLine OrderLine);
 
