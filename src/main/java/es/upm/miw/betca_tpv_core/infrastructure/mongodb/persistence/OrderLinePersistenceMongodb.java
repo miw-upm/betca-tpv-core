@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 @Repository
 public class OrderLinePersistenceMongodb implements OrderLinePersistence {
 
+    private static final String ORDERLINE_NOT_EXISTS = "OrderLine does not exist: ";
     private OrderLineReactive orderLineReactive;
     private ArticleReactive articleReactive;
 
@@ -50,6 +51,7 @@ public class OrderLinePersistenceMongodb implements OrderLinePersistence {
     @Override
     public Mono<OrderLine> findById(String id) {
         return this.orderLineReactive.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException(ORDERLINE_NOT_EXISTS + id)))
                 .map(OrderLineEntity::toOrderLine);
     }
 }
