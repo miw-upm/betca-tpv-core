@@ -7,7 +7,6 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface CustomerDiscountPersistence {
-    Flux<CustomerDiscount> findByUser(String user);
     Flux<CustomerDiscount> findByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe(
             String note, Double discount, Double minimumPurchase, String user);
     Mono< CustomerDiscount > create (CustomerDiscount customerDiscount);

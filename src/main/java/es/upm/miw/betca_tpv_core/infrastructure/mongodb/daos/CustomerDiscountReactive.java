@@ -16,7 +16,6 @@ public interface CustomerDiscountReactive extends ReactiveSortingRepository<Cust
     Flux<CustomerDiscountEntity> findByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe(
             String note, Double discount, Double minimumPurchase, String user
     );
-    Flux<CustomerDiscountEntity> findByUser(String user);
     Mono<CustomerDiscountEntity> findById(String id);
     Mono<Void> deleteById(String id);
 }
