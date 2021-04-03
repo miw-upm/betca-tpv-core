@@ -34,7 +34,7 @@ public class OrderLineEntity {
         OrderLine orderLine = new OrderLine();
         BeanUtils.copyProperties(this, orderLine);
         if (Objects.nonNull(this.getArticleEntity())) {
-            orderLine.setArticleBarcode(this.articleEntity.getReference());
+            orderLine.setArticleBarcode(this.articleEntity.getBarcode());
         }
         return orderLine;
     }
