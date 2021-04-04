@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.CashierLastDto;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -22,6 +23,11 @@ class CashierResourceIT {
     private WebTestClient webTestClient;
     @Autowired
     private RestClientTestService restClientTestService;
+
+    @BeforeEach
+    void init() {
+        System.setProperty("miw.slack.uri", "");
+    }
 
     @Test
     void testFindLast() {

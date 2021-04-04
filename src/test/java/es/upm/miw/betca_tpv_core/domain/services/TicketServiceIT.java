@@ -38,6 +38,8 @@ class TicketServiceIT {
 
     @BeforeEach
     void openCashier() {
+        System.setProperty("miw.slack.uri", "");
+
         StepVerifier
                 .create(this.cashierService.createOpened())
                 .verifyComplete();
