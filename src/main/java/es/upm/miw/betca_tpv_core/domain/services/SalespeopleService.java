@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_core.domain.persistence.SalespeoplePersistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 
@@ -15,6 +16,10 @@ public class SalespeopleService {
     @Autowired
     public SalespeopleService(SalespeoplePersistence salespeoplePersistence) {
         this.salespeoplePersistence = salespeoplePersistence;
+    }
+
+    public Mono<Salespeople> creat(Salespeople salespeople){
+        return this.salespeoplePersistence.creat(salespeople);
     }
 
     public Flux<Salespeople> findBySalespersonAndSalesDateBetween(String salesperson, LocalDate dateBegin,LocalDate dateEnd){
