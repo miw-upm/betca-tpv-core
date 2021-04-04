@@ -52,4 +52,9 @@ public class OrderResource {
     public Mono<Order> update(@PathVariable String reference, @Valid @RequestBody Order order) {
         return this.orderService.update(reference, order);
     }
+
+    @DeleteMapping(REFERENCE)
+    public Mono<Void> delete(@PathVariable String reference) {
+        return this.orderService.delete(reference);
+    }
 }
