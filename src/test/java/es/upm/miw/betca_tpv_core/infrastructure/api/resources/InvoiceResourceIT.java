@@ -15,6 +15,7 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Mono;
 
@@ -128,6 +129,23 @@ class InvoiceResourceIT {
                         .allMatch(invoice -> ticketId.equals(invoice.getTicketId())));
     }
 
+    @Test
+    void testFindByNumber(){
+        String numberInvoice = "invc_N_1A2B3C4D5E";
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(INVOICES)
+                        .queryParam("number", numberInvoice)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(InvoiceItemDto.class)
+                .value(Assertions::assertNotNull)
+                .value(invoices -> invoices.stream()
+                        .allMatch(invoice -> numberInvoice.equals(invoice.getNumber())));
+    }
 
     @AfterEach
     void closeCashier() {

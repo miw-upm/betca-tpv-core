@@ -91,4 +91,14 @@ public class InvoiceService {
                         })
                         .switchIfEmpty(Mono.just(invoice)));
     }
+
+    public Mono<Invoice> findByNumber(String number) {
+        return this.invoicePersistence.findByNumber(number)
+                .flatMap(invoice -> this.readUserByUserMobileNullSafe(invoice.getTicket().getUser())
+                        .map(user -> {
+                            invoice.getTicket().setUser(user);
+                            return invoice;
+                        })
+                        .switchIfEmpty(Mono.just(invoice)));
+    }
 }
