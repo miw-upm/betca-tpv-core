@@ -15,7 +15,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 @RestTestConfig
-public class ProviderInvoiceResourceIT {
+class ProviderInvoiceResourceIT {
 
     @Autowired
     private WebTestClient webTestClient;
