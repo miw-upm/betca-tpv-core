@@ -212,5 +212,48 @@ class OrderResourceIT {
                 .expectStatus().isNotFound();
     }
 
+    @Test
+    void testDelete() {
+
+        Order orderDel =
+                Order.builder().reference("ref-77")
+                        .providerCompany("pro3")
+                        .description("order 5")
+                        .openingDate(LocalDateTime.of(2021, 2, 20, 9, 30, 0))
+                        .orderLines(List.of(OrderLine.builder().articleBarcode("8400000000024")
+                                .requireAmount(30)
+                                .finalAmount(25)
+                                .build()))
+                        .closingDate(LocalDateTime.of(2021, 2, 25, 9, 30, 0))
+                        .build();
+
+        Order orderDB = this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(ORDERS)
+                .body(Mono.just(orderDel), Order.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Order.class)
+                .value(Assertions::assertNotNull)
+                .returnResult().getResponseBody();
+        assertNotNull(orderDB);
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .delete()
+                .uri(ORDERS + REFERENCE, orderDB.getReference())
+                .exchange()
+                .expectStatus().isOk();
+
+    }
+
+    @Test
+    void testDeleteNotFound() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .delete()
+                .uri(ORDERS + REFERENCE, "order-notfound")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
 
 }
