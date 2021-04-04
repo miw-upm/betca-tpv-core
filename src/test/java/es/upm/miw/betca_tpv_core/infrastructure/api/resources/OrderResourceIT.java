@@ -142,5 +142,75 @@ class OrderResourceIT {
                 .expectStatus().isNotFound();
     }
 
+    @Test
+    void testOrderUpdate() {
+        Order orderUpdate = Order.builder().reference("ref-02")
+                .providerCompany("pro3")
+                .description("order update")
+                .closingDate(LocalDateTime.of(2021, 2, 20, 9, 30, 0))
+                .orderLines(List.of(OrderLine.builder().articleBarcode("8400000000017")
+                        .finalAmount(8)
+                        .build()))
+                .build();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(ORDERS + REFERENCE, "ref-02")
+                .body(Mono.just(orderUpdate), Order.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Order.class)
+                .value(Assertions::assertNotNull)
+                .value(outOrder -> {
+                            assertEquals("order update", outOrder.getDescription());
+                            assertEquals(LocalDateTime.of(2021, 2, 20, 9, 30, 0), outOrder.getClosingDate());
+                            assertEquals(outOrder.getOrderLines().size(), 1);
+                            assertNotNull(outOrder.getOrderLines().get(0));
+                            assertEquals("8400000000017", outOrder.getOrderLines().get(0).getArticleBarcode());
+                            assertEquals(8, outOrder.getOrderLines().get(0).getFinalAmount());
+                        }
+                );
+    }
+
+    @Test
+    void testOrderUpdateNotExistReference() {
+
+        Order orderUpdate = Order.builder().reference("ref-15")
+                .providerCompany("pro3")
+                .description("order update")
+                .closingDate(LocalDateTime.of(2021, 2, 20, 9, 30, 0))
+                .orderLines(List.of(OrderLine.builder().articleBarcode("8400000000017")
+                        .finalAmount(8)
+                        .build()))
+                .build();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(ORDERS + REFERENCE, "ref-15")
+                .body(Mono.just(orderUpdate), Order.class)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testOrderUpdateNotExisBarcode() {
+
+        Order orderUpdate = Order.builder().reference("ref-02")
+                .providerCompany("pro3")
+                .description("order update")
+                .closingDate(LocalDateTime.of(2021, 2, 20, 9, 30, 0))
+                .orderLines(List.of(OrderLine.builder().articleBarcode("9900000000017")
+                        .finalAmount(8)
+                        .build()))
+                .build();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(ORDERS + REFERENCE, "ref-02")
+                .body(Mono.just(orderUpdate), Order.class)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
 
 }

@@ -24,4 +24,8 @@ public class OrderLineService {
         return this.orderLinePersistence.create(orderLine);
     }
 
+    public Mono<OrderLine> update(String barcode, OrderLine orderLine) {
+        return this.orderLinePersistence.update(barcode, orderLine);
+    }
+
 }

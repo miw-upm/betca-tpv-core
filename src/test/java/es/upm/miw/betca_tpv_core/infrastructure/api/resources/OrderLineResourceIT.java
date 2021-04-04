@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.OrderLineResource.ID;
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.OrderLineResource.ORDER_LINES;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.OrderLineResource.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -72,6 +71,41 @@ class OrderLineResourceIT {
                 .post()
                 .uri(ORDER_LINES)
                 .body(Mono.just(orderLine), OrderLine.class)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testUpdate() {
+        OrderLine orderLineUpdate = OrderLine.builder().articleBarcode("8400000000017").requireAmount(55).finalAmount(50).build();
+
+        OrderLine orderLineDB = this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(ORDER_LINES + BARCODE, "8400000000017")
+                .body(Mono.just(orderLineUpdate), OrderLine.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(OrderLine.class)
+                .value(Assertions::assertNotNull)
+                .value(outOrderLine -> {
+                            assertEquals("8400000000017", outOrderLine.getArticleBarcode());
+                            assertEquals(55, outOrderLine.getRequireAmount());
+                            assertEquals(50, outOrderLine.getFinalAmount());
+                        }
+                ).returnResult().getResponseBody();
+        assertNotNull(orderLineDB);
+    }
+
+    @Test
+    void testUpdateNotExistBarcode() {
+
+        OrderLine orderLineUpdate = OrderLine.builder().articleBarcode("9900000000017").requireAmount(55).finalAmount(50).build();
+
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(ORDER_LINES + BARCODE, "9900000000017")
+                .body(Mono.just(orderLineUpdate), OrderLine.class)
                 .exchange()
                 .expectStatus().isNotFound();
     }
