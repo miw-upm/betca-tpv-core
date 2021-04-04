@@ -30,8 +30,8 @@ public class SlackMessageServiceIT {
         Cashier cashier = Cashier.builder().build();
         StepVerifier
                 .create(this.slackMessageService.createCloseCahierMessage(cashier, slackMessageDto))
-                .expectComplete()
-                .verify();
+                .expectNext(cashier)
+                .verifyComplete();
     }
 
     @Test

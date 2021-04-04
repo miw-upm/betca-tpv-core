@@ -42,6 +42,8 @@ class InvoiceResourceIT {
 
     @BeforeEach
     void openCashier() {
+        System.setProperty("miw.slack.uri", "");
+
         this.restClientTestService.loginAdmin(webTestClient)
                 .post().uri(CASHIERS)
                 .exchange()

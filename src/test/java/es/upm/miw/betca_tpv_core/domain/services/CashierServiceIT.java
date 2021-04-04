@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_core.domain.services;
 import es.upm.miw.betca_tpv_core.TestConfig;
 import es.upm.miw.betca_tpv_core.domain.exceptions.BadRequestException;
 import es.upm.miw.betca_tpv_core.domain.model.CashierClose;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
@@ -14,6 +15,11 @@ class CashierServiceIT {
 
     @Autowired
     private CashierService cashierService;
+
+    @BeforeEach
+    void init() {
+        System.setProperty("miw.slack.uri", "");
+    }
 
     @Test
     void testCloseBadRequestException() {
