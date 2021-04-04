@@ -1,7 +1,7 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Article;
-import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
 import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
 import org.springframework.beans.BeanUtils;
@@ -11,6 +11,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,13 +62,21 @@ public class ArticleService {
         return this.articlePersistence.findArticleEntitiesByRegistrationDateAfter(localDateTime);
     }
 
-    public Flux< Article > findTop5ArticleSalesLastWeek(){
+    public Flux < Article > findTop5ArticleSalesLastWeek(){
+        return this.findTop5BarcodeSalesLastWeek()
+                .switchIfEmpty(Flux.error(new NotFoundException("There have been no articles sold in the last week")))
+                .flatMap(barcode -> this.articlePersistence.findArticlesByBarcode(barcode));
+    }
+
+    private Flux<String> findTop5BarcodeSalesLastWeek(){
         Map<String, Integer> articleBarcodes = new HashMap<>();
         return this.ticketPersistence.findByRegistrationDateAfter(LocalDateTime.now().minusDays(7))
                 .flatMap(ticket -> Flux.fromStream(ticket.getShoppingList().stream()))
-                .map(Shopping::getBarcode)
-                .doOnNext(string -> articleBarcodes.merge(string, 1, (oldValue, newValue) -> oldValue++))
-                .flatMap(articlePersistence::findArticlesByBarcode)
-                ;
+                .doOnNext(shopping -> articleBarcodes
+                        .merge(shopping.getBarcode(), shopping.getAmount(), (oldValue, newValue) -> newValue = oldValue + shopping.getAmount()))
+                .thenMany(Flux.fromStream(articleBarcodes.entrySet().stream()
+                        .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                        .limit(5)
+                        .map(Map.Entry::getKey)));
     }
 }
