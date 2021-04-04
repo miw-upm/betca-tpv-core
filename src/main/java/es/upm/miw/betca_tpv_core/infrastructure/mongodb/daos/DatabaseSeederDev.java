@@ -372,7 +372,8 @@ public class DatabaseSeederDev {
         TagEntity[] tags = {
                 TagEntity.builder().name("name1").group("group1").description("description").articleEntityList(List.of(articles[0], articles[1])).build(),
                 TagEntity.builder().name("name2").group("group1").description("description").articleEntityList(List.of(articles[2], articles[3])).build(),
-                TagEntity.builder().name("name3").group("group1").description("description").articleEntityList(List.of(articles[4], articles[5])).build()
+                TagEntity.builder().name("name3").group("group1").description("description").articleEntityList(List.of(articles[4], articles[5])).build(),
+                TagEntity.builder().name("sale").group("adviser").description("Articles on sale").articleEntityList(List.of(articles[0], articles[1])).build()
         };
         this.tagDao.saveAll(Arrays.asList(tags));
         LogManager.getLogger(this.getClass()).warn("        ------- tags");

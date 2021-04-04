@@ -7,7 +7,6 @@ import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.domain.services.utils.MailService;
 import es.upm.miw.betca_tpv_core.domain.services.utils.PdfTicketBuilder;
 import es.upm.miw.betca_tpv_core.domain.services.utils.UUIDBase64;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.UserBasicDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -106,10 +105,6 @@ public class TicketService {
 
     public Mono<Ticket> update(String id, List<Shopping> shoppingList) {
         return this.ticketPersistence.update(id, shoppingList);
-    }
-
-    public Flux<Ticket> findTicketByRegistrationDateAfter(LocalDateTime localDateTime){
-        return this.ticketPersistence.findTicketByRegistrationDateAfter(localDateTime);
     }
 
     public Flux<Shopping> findAllBoughtArticlesByMobile(String mobile) {

@@ -74,4 +74,17 @@ public class TagPersistenceMongodbIT {
                 })
                 .verifyComplete();
     }
+
+    @Test
+    void testFindBNameAndGroupAndDescriptionNullSafe() {
+        StepVerifier
+                .create(this.tagPersistenceMongodb.findBNameAndGroupAndDescriptionNullSafe(null, "group1", null))
+                .expectNextMatches(tag -> {
+                    assertEquals("group1", tag.getGroup());
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }
+
 }

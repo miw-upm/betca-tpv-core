@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.services.InvoiceService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.InvoiceBasicDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.InvoiceItemDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.TicketBasicDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +33,13 @@ public class InvoiceResource {
 
     @GetMapping(SEARCH)
     public Flux<InvoiceItemDto> findByPhoneAndTicketIdNullSafe(@RequestParam(required = false) String userPhone,
-                                                        @RequestParam(required = false) String ticketId){
+                                                               @RequestParam(required = false) String ticketId) {
         return this.invoiceService.findByPhoneAndTicketIdNullSafe(userPhone, ticketId)
                 .map(InvoiceItemDto::new);
     }
 
     @PostMapping(TICKET_REF)
-    public Mono<InvoiceItemDto> createFromTicketRef(@RequestBody TicketBasicDto ticketDto){
+    public Mono<InvoiceItemDto> createFromTicketRef(@RequestBody TicketBasicDto ticketDto) {
         return this.invoiceService.createFromTicketRef(ticketDto.getReference())
                 .map(InvoiceItemDto::new);
     }
@@ -46,5 +47,12 @@ public class InvoiceResource {
     @GetMapping(value = PRINT, produces = {"application/pdf"})
     public Mono<byte[]> printByNumber(@RequestParam String number) {
         return this.invoiceService.printByNumber(number);
+    }
+
+
+    @GetMapping
+    public Mono<InvoiceBasicDto> findByNumber(@RequestParam String number) {
+        return this.invoiceService.findByNumber(number)
+                .map(InvoiceBasicDto::new);
     }
 }

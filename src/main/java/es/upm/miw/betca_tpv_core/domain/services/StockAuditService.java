@@ -27,6 +27,10 @@ public class StockAuditService {
     }
 
     public Mono<StockAuditDto> update(String id, StockAuditDto stockAuditDto) {
-        return this.stockAuditPersistence.update(id, stockAuditDto);
+        return this.stockAuditPersistence.update(id, stockAuditDto, false);
+    }
+
+    public Mono<StockAuditDto> close(String id, StockAuditDto stockAuditDto) {
+        return this.stockAuditPersistence.update(id, stockAuditDto, true);
     }
 }

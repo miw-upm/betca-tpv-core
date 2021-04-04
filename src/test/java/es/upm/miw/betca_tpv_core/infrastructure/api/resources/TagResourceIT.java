@@ -13,6 +13,7 @@ import reactor.core.publisher.Mono;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.TagResource.SEARCH;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.TagResource.TAGS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -151,6 +152,41 @@ public class TagResourceIT {
                     assertEquals("tagTest2", returnTag.getName());
                     assertEquals("tagGroup2", returnTag.getGroup());
                     assertEquals("description", returnTag.getDescription());
+                });
+    }
+
+    @Test
+    void testRead() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(TAGS + "/name1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Tag.class)
+                .value(Assertions::assertNotNull)
+                .value(returnTag -> {
+                    assertEquals("name1", returnTag.getName());
+                    assertEquals("group1", returnTag.getGroup());
+                });
+    }
+
+    @Test
+    void testSearch() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(TAGS + SEARCH)
+                        .queryParam("group1", "group1")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Tag.class)
+                .value(Assertions::assertNotNull)
+                .value(tags -> {
+                    assertTrue(tags.stream()
+                            .anyMatch(tag ->
+                                    tag.getGroup().equals("group1")
+                            ));
                 });
     }
 }
