@@ -55,7 +55,7 @@ public class ProviderInvoiceResource {
     }
 
     @GetMapping(TOTAL_TAX_QUARTERS + NUMBER)
-    public Mono<ProviderInvoiceTotalTax> calculateTotalTaxByQuarter(@PathVariable(name = "number") Integer quarterNumber) {
+    public Mono< ProviderInvoiceTotalTax > calculateTotalTaxByQuarter(@PathVariable(name = "number") Integer quarterNumber) {
         if (!isQuarterValid(quarterNumber)) {
             return Mono.error(new BadRequestException(
                     "Quarter number should be between 1 and 4. Given quarter number: " + quarterNumber
