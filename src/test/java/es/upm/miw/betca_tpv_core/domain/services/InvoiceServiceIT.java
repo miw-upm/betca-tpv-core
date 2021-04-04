@@ -118,4 +118,18 @@ class InvoiceServiceIT {
                 .expectRecordedMatches(invoices -> !invoices.isEmpty())
                 .verifyComplete();
     }
+
+    @Test
+    void testFindByNumber(){
+        String numberInvoice = "invc_N_1A2B3C4D5E";
+
+        StepVerifier
+                .create(this.invoiceService.findByNumber(numberInvoice))
+                .thenConsumeWhile(invoice -> {
+                    assertNotNull(invoice.getTicket());
+                    assertEquals(numberInvoice, invoice.getNumber());
+                    return true;
+                })
+                .verifyComplete();
+    }
 }
