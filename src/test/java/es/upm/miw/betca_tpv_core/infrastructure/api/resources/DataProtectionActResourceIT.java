@@ -142,4 +142,19 @@ public class DataProtectionActResourceIT {
                 .value(Assertions::assertNull);
     }
 
+    @Test
+    void testReadUnsignedAgreement() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(DataProtectionActResource.DATA_PROTECTION_ACT + DataProtectionActResource.AGREEMENT_ID)
+                        .queryParam("mobile", "123456789")
+                        .queryParam("rgpdType", "0")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(byte[].class)
+                .value(Assertions::assertNotNull);
+    }
+
 }

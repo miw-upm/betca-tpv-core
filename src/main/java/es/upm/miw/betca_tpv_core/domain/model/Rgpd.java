@@ -23,6 +23,10 @@ public class Rgpd {
         this.agreement = agreement;
     }
 
+    public Rgpd(String mobile, String rgpdType) {
+        this(mobile, RgpdType.values()[Integer.parseInt(rgpdType)], null);
+    }
+
     public String getMobile() {
         return this.user.getMobile();
     }
