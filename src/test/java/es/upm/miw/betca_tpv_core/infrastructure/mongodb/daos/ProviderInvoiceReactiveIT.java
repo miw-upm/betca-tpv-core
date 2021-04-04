@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
-public class ProviderInvoiceReactiveIT {
+class ProviderInvoiceReactiveIT {
 
     @Autowired
     private ProviderInvoiceReactive providerInvoiceReactive;
