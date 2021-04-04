@@ -33,5 +33,5 @@ public interface ArticleReactive extends ReactiveSortingRepository< ArticleEntit
 
     Flux< ArticleEntity > findByStockLessThan(Integer stock);
 
-    Flux< ArticleEntity > findArticleEntitiesByBarcode(Flux<String> barcodes);
+    Flux< ArticleEntity > findArticleEntitiesByBarcode(String barcode);
 }

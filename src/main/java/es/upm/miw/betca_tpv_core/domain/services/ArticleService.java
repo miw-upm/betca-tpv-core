@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.model.Article;
+import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
 import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
 import org.springframework.beans.BeanUtils;
@@ -10,7 +11,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,14 +65,9 @@ public class ArticleService {
         Map<String, Integer> articleBarcodes = new HashMap<>();
         return this.ticketPersistence.findByRegistrationDateAfter(LocalDateTime.now().minusDays(7))
                 .flatMap(ticket -> Flux.fromStream(ticket.getShoppingList().stream()))
-                .doOnNext(shopping -> articleBarcodes.merge(shopping.getBarcode(), 1, (oldValue, newValue) -> oldValue++))
-                .doOnNext(shopping -> articleBarcodes.entrySet().stream()
-                        .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                        )
-                .thenMany(this.articlePersistence.findArticlesByBarcodes(
-                                Flux.fromStream(articleBarcodes.keySet().stream())
-                                )
-                        )
+                .map(Shopping::getBarcode)
+                .doOnNext(string -> articleBarcodes.merge(string, 1, (oldValue, newValue) -> oldValue++))
+                .flatMap(articlePersistence::findArticlesByBarcode)
                 ;
     }
 }
