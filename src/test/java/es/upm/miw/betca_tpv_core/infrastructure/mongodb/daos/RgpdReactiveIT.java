@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 @TestConfig
 public class RgpdReactiveIT {
@@ -20,9 +19,9 @@ public class RgpdReactiveIT {
         StepVerifier
                 .create(this.rgpdReactive.findByUserMobile("123456789"))
                 .assertNext(rgpdEntity -> {
-                    assertEquals(rgpdEntity.getUserMobile(), "123456789");
-                    assertEquals(rgpdEntity.getRgpdType(), RgpdType.ADVANCED);
-                    assertEquals(rgpdEntity.getAgreement().length, 1);
+                    assertEquals("123456789", rgpdEntity.getUserMobile());
+                    assertEquals(RgpdType.ADVANCED, rgpdEntity.getRgpdType());
+                    assertEquals(1, rgpdEntity.getAgreement().length);
                 })
                 .expectComplete()
                 .verify();

@@ -35,8 +35,8 @@ public class DataProtectionActResourceIT {
                 .expectBody(RgpdUserDto.class)
                 .value(Assertions::assertNotNull)
                 .value(rgpdUserDto -> {
-                    assertEquals(rgpdUserDto.getMobile(), "123456789");
-                    assertEquals(rgpdUserDto.getRgpdType(), RgpdType.ADVANCED);
+                    assertEquals("123456789", rgpdUserDto.getMobile());
+                    assertEquals(RgpdType.ADVANCED, rgpdUserDto.getRgpdType());
                 });
     }
 
@@ -132,7 +132,7 @@ public class DataProtectionActResourceIT {
                 .expectBody(byte[].class)
                 .value(Assertions::assertNotNull)
                 .value(bytes ->
-                        assertEquals(bytes.length, 1)
+                        assertEquals(1, bytes.length)
                 );
     }
 
