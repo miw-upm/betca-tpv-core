@@ -389,46 +389,43 @@ public class DatabaseSeederDev {
         this.invoiceDao.saveAll(Arrays.asList(invoices));
         LogManager.getLogger(this.getClass()).warn("        ------- invoices");
 
+        String[] str1={"8400000000017"};
+        String[] str2={"8400000000017","8400000000048"};
+        LocalDate salesDate1=LocalDate.of(2021,3,24);
+        LocalDate salesDate2=LocalDate.of(2021,3,27);
+        LocalDate salesDate3=LocalDate.of(2021,3,28);
         SalespeopleEntity[] salespeople = {
                 SalespeopleEntity.builder()
                         .id("1").salesperson("Rosaria")
-                        .salesDate(tickets[0].getCreationDate().toLocalDate())
-                        .ticketEntityList(List.of(tickets[0]))
+                        .salesDate(salesDate1)
+                        .ticketBarcode(tickets[0].getId())
+                        .articleBarcode(str1)
+                        .amount(2)
+                        .total(new BigDecimal(22))
                         .build(),
                 SalespeopleEntity.builder()
                         .id("2").salesperson("Nacho")
-                        .salesDate(tickets[1].getCreationDate().toLocalDate())
-                        .ticketEntityList(List.of(tickets[1]))
+                        .salesDate(salesDate2)
+                        .ticketBarcode(tickets[1].getId())
+                        .articleBarcode(str1)
+                        .amount(1)
+                        .total(new BigDecimal(23))
                         .build(),
                 SalespeopleEntity.builder()
                         .id("3").salesperson("Luis")
-                        .salesDate(tickets[2].getCreationDate().toLocalDate())
-                        .ticketEntityList(List.of(tickets[2]))
+                        .salesDate(salesDate3)
+                        .ticketBarcode(tickets[2].getId())
+                        .articleBarcode(str1)
+                        .amount(3)
+                        .total(new BigDecimal(19))
                         .build(),
                 SalespeopleEntity.builder()
-                        .id("4").salesperson("Alex")
-                        .salesDate(tickets[3].getCreationDate().toLocalDate())
-                        .ticketEntityList(List.of(tickets[3]))
-                        .build(),
-                SalespeopleEntity.builder()
-                        .id("5").salesperson("Ozuna")
-                        .salesDate(tickets[4].getCreationDate().toLocalDate())
-                        .ticketEntityList(List.of(tickets[4]))
-                        .build(),
-                SalespeopleEntity.builder()
-                        .id("6").salesperson("Pedro")
-                        .salesDate(tickets[5].getCreationDate().toLocalDate())
-                        .ticketEntityList(List.of(tickets[5]))
-                        .build(),
-                SalespeopleEntity.builder()
-                        .id("7").salesperson("Pablo")
-                        .salesDate(tickets[6].getCreationDate().toLocalDate())
-                        .ticketEntityList(List.of(tickets[6]))
-                        .build(),
-                SalespeopleEntity.builder()
-                        .id("8").salesperson("Carlos")
-                        .salesDate(tickets[7].getCreationDate().toLocalDate())
-                        .ticketEntityList(List.of(tickets[7]))
+                        .id("4").salesperson("Luis")
+                        .salesDate(salesDate3)
+                        .ticketBarcode(tickets[3].getId())
+                        .articleBarcode(str2)
+                        .amount(3)
+                        .total(new BigDecimal(29))
                         .build()
         };
         this.salespeopleDao.saveAll(Arrays.asList(salespeople));

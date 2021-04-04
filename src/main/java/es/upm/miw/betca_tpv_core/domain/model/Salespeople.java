@@ -2,7 +2,7 @@ package es.upm.miw.betca_tpv_core.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import es.upm.miw.betca_tpv_core.domain.model.validations.ListNotEmpty;
+import es.upm.miw.betca_tpv_core.domain.model.validations.PositiveBigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -23,20 +23,31 @@ public class Salespeople {
     private String salesperson;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate salesDate;
+    @NotBlank
+    private String ticketBarcode;
+    private String[] articleBarcode;
+    private Integer amount;
 
-    @ListNotEmpty
-    private List<Ticket> ticketList;
+    @PositiveBigDecimal
+    private BigDecimal total;
 
     public static Salespeople ofSalespeopleSalesDateFinalValue(Salespeople salespeople){
         return Salespeople.builder()
                 .salesperson(salespeople.getSalesperson())
                 .salesDate(salespeople.getSalesDate())
-                .ticketList(salespeople.getTicketList())
+                .ticketBarcode(salespeople.getTicketBarcode())
+                .articleBarcode(salespeople.getArticleBarcode())
+                .amount(salespeople.getAmount())
+                .total(salespeople.getTotal())
                 .build();
     }
-
-    public BigDecimal total(){
-        return this.getTicketList().stream().flatMap(ticket -> ticket.getShoppingList().stream())
-                .map(shopping -> shopping.getRetailPrice()).reduce(BigDecimal.ZERO,BigDecimal::add);
+    public void doDefault(){
+        if (Objects.isNull(salesDate)){
+            this.salesDate=LocalDate.now();
+        }
+        if (Objects.isNull(salesperson)){
+            this.salesperson="admin";
+        }
     }
+
 }

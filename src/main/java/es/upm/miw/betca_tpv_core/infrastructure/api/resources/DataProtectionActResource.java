@@ -76,4 +76,11 @@ public class DataProtectionActResource {
                 .map(Rgpd::getAgreement);
     }
 
+    @PreAuthorize("permitAll()")
+    @GetMapping(value = DataProtectionActResource.AGREEMENT_ID, produces = {"application/pdf", "application/json"})
+    public Mono<byte[]> readUnsignedAgreement(@RequestParam("mobile") String mobile, @RequestParam("rgpdType") String rgpdType) {
+        return this.dataProtectionActService
+                .createAgreement(new Rgpd(mobile, rgpdType));
+    }
+
 }

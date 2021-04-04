@@ -23,7 +23,7 @@ public class SalespeopleDto {
     public SalespeopleDto(Salespeople salespeople) {
         this.salesperson=salespeople.getSalesperson();
         this.localDate=salespeople.getSalesDate();
-        this.total=salespeople.total();
+        this.total=salespeople.getTotal();
     }
 
 }
