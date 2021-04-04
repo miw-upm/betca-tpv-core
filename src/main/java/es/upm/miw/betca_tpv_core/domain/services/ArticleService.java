@@ -1,7 +1,6 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.model.Article;
-import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
 import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
 import org.springframework.beans.BeanUtils;
@@ -11,8 +10,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 @Service
 public class ArticleService {
@@ -61,13 +62,18 @@ public class ArticleService {
         return this.articlePersistence.findArticleEntitiesByRegistrationDateAfter(localDateTime);
     }
 
-    public Flux< Article > findTop5ArticleSalesLastWeek(){
+    public Mono<Stream<String>> findTop5ArticleSalesLastWeek(){
         Map<String, Integer> articleBarcodes = new HashMap<>();
         return this.ticketPersistence.findByRegistrationDateAfter(LocalDateTime.now().minusDays(7))
                 .flatMap(ticket -> Flux.fromStream(ticket.getShoppingList().stream()))
-                .map(Shopping::getBarcode)
-                .doOnNext(string -> articleBarcodes.merge(string, 1, (oldValue, newValue) -> oldValue++))
-                .flatMap(articlePersistence::findArticlesByBarcode)
+                .doOnNext(shopping -> articleBarcodes
+                        .merge(shopping.getBarcode(), shopping.getAmount(), (oldValue, newValue) -> newValue = oldValue + shopping.getAmount()))
+                .then(Mono.just(articleBarcodes.entrySet().stream()
+                        .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                        .limit(5)
+                        .map(Map.Entry::getKey)))
+                .doOnNext(stringStream -> stringStream
+                .forEach(this.articlePersistence::findArticlesByBarcode))
                 ;
     }
 }
