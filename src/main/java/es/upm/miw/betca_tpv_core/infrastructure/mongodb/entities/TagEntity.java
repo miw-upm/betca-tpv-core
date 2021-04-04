@@ -33,7 +33,7 @@ public class TagEntity {
 
     public TagEntity(Tag tag) {
         BeanUtils.copyProperties(tag, this);
-        this.articleEntityList = new ArrayList<ArticleEntity>();
+        this.articleEntityList = new ArrayList<>();
     }
 
     public void add(ArticleEntity articleEntity) {

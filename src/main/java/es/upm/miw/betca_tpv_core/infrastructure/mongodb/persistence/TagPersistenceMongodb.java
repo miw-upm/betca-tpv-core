@@ -6,7 +6,6 @@ import es.upm.miw.betca_tpv_core.domain.model.Tag;
 import es.upm.miw.betca_tpv_core.domain.persistence.TagPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.TagReactive;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ArticleEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.TagEntity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +68,7 @@ public class TagPersistenceMongodb implements TagPersistence {
                 .flatMap(tagEntity ->
                 {
                     BeanUtils.copyProperties(tag, tagEntity);
-                    tagEntity.setArticleEntityList(new ArrayList<ArticleEntity>());
+                    tagEntity.setArticleEntityList(new ArrayList<>());
                     return Flux.fromStream(tag.getArticleList().stream())
                             .flatMap(article -> this.articleReactive.findByBarcode(article.getBarcode())
                                     .switchIfEmpty(Mono.error(new NotFoundException("Non existent article: " + article.getBarcode()))))
