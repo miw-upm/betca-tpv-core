@@ -28,7 +28,7 @@ public class SlackMessageService {
         return this.slackMessagePublisher.createCloseCashierMessage(cashier, slackMessage);
     }
 
-    private SlackMessage createMessageFromDto(SlackMessageDto slackMessageDto) {
+    public SlackMessage createMessageFromDto(SlackMessageDto slackMessageDto) {
         SlackMessageText headerText = new SlackMessageText("plain_text", slackMessageDto.getTitle());
         SlackMessageBlock headerBlock = new SlackMessageBlock("header", headerText);
         SlackMessageText contentText = new SlackMessageText("mrkdwn", slackMessageDto.getText());
