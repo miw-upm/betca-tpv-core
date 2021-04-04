@@ -1,7 +1,6 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.model.Article;
-import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
 import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
 import org.springframework.beans.BeanUtils;
@@ -64,19 +63,16 @@ public class ArticleService {
 
     public Flux< Article > findTop5ArticleSalesLastWeek(){
         Map<String, Integer> articleBarcodes = new HashMap<>();
-        return this.ticketPersistence.findTicketByRegistrationDateAfter(LocalDateTime.now().minusDays(7))
-                .doOnNext(System.out::println)
+        return this.ticketPersistence.findByRegistrationDateAfter(LocalDateTime.now().minusDays(7))
                 .flatMap(ticket -> Flux.fromStream(ticket.getShoppingList().stream()))
-                .doOnNext(System.out::println)
                 .doOnNext(shopping -> articleBarcodes.merge(shopping.getBarcode(), 1, (oldValue, newValue) -> oldValue++))
-                .doOnNext(System.out::println)
                 .doOnNext(shopping -> articleBarcodes.entrySet().stream()
                         .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                        .limit(5))
+                        )
                 .thenMany(this.articlePersistence.findArticlesByBarcodes(
                                 Flux.fromStream(articleBarcodes.keySet().stream())
                                 )
                         )
-                .doOnNext(System.out::println);
+                ;
     }
 }
