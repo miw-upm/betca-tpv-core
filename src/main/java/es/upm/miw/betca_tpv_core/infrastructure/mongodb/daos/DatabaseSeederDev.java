@@ -38,6 +38,8 @@ public class DatabaseSeederDev {
     private ProviderInvoiceDao providerInvoiceDao;
     private VoucherDao voucherDao;
     private TagDao tagDao;
+    private OrderDao orderDao;
+    private OrderLineDao orderLineDao;
 
     private DatabaseStarting databaseStarting;
 
@@ -47,7 +49,7 @@ public class DatabaseSeederDev {
                              CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao,
                              CustomerDiscountDao customerDiscountDao, BudgetDao budgetDao, MessengerDao messengerDao,
                              SalespeopleDao salespeopleDao, InvoiceDao invoiceDao, ProviderInvoiceDao providerInvoiceDao, VoucherDao voucherDao,
-                             TagDao tagDao, DatabaseStarting databaseStarting) {
+                             TagDao tagDao, DatabaseStarting databaseStarting, OrderDao orderDao, OrderLineDao orderLineDao) {
 
         this.articleDao = articleDao;
         this.providerDao = providerDao;
@@ -68,7 +70,9 @@ public class DatabaseSeederDev {
         this.salespeopleDao = salespeopleDao;
         this.providerInvoiceDao = providerInvoiceDao;
         this.voucherDao = voucherDao;
-        this.tagDao=tagDao;
+        this.tagDao = tagDao;
+        this.orderDao = orderDao;
+        this.orderLineDao = orderLineDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -90,6 +94,9 @@ public class DatabaseSeederDev {
         this.offerDao.deleteAll();
         this.stockAlarmDao.deleteAll();
         this.budgetDao.deleteAll();
+
+        this.orderDao.deleteAll();
+        this.orderLineDao.deleteAll();
 
         this.articleDao.deleteAll();
         this.providerInvoiceDao.deleteAll();
@@ -233,7 +240,7 @@ public class DatabaseSeederDev {
                 new TicketEntity("7faw03b7513a164chop77ac", "Asdfv521Rj6iKmzp5aERAA",
                         List.of(shoppingList[7]), LocalDateTime.now().minusDays(5), new BigDecimal("25.0"),
                         ZERO, ZERO, "note", "66"),
-               new TicketEntity("9jfaw03b7513a164chop77ac", "Asgffv521Rj6iKmzp5aERAA",
+                new TicketEntity("9jfaw03b7513a164chop77ac", "Asgffv521Rj6iKmzp5aERAA",
                         List.of(shoppingList[6]), LocalDateTime.now().minusDays(4), new BigDecimal("20.0"),
                         ZERO, ZERO, "note", "66"),
         };
@@ -347,7 +354,7 @@ public class DatabaseSeederDev {
         BudgetEntity[] budgets = {
                 new BudgetEntity("b600b5c9cac1", date, List.of(shoppingList[0], shoppingList[1])),
                 new BudgetEntity("b600b5c9cac2", date, List.of(shoppingList[2], shoppingList[3])),
-                new BudgetEntity("b600b5c9cac3",date, List.of(shoppingList[4], shoppingList[5])),
+                new BudgetEntity("b600b5c9cac3", date, List.of(shoppingList[4], shoppingList[5])),
 
 
         };
@@ -365,7 +372,8 @@ public class DatabaseSeederDev {
         TagEntity[] tags = {
                 TagEntity.builder().name("name1").group("group1").description("description").articleEntityList(List.of(articles[0], articles[1])).build(),
                 TagEntity.builder().name("name2").group("group1").description("description").articleEntityList(List.of(articles[2], articles[3])).build(),
-                TagEntity.builder().name("name3").group("group1").description("description").articleEntityList(List.of(articles[4], articles[5])).build()
+                TagEntity.builder().name("name3").group("group1").description("description").articleEntityList(List.of(articles[4], articles[5])).build(),
+                TagEntity.builder().name("sale").group("adviser").description("Articles on sale").articleEntityList(List.of(articles[0], articles[1])).build()
         };
         this.tagDao.saveAll(Arrays.asList(tags));
         LogManager.getLogger(this.getClass()).warn("        ------- tags");
@@ -381,46 +389,43 @@ public class DatabaseSeederDev {
         this.invoiceDao.saveAll(Arrays.asList(invoices));
         LogManager.getLogger(this.getClass()).warn("        ------- invoices");
 
+        String[] str1={"8400000000017"};
+        String[] str2={"8400000000017","8400000000048"};
+        LocalDate salesDate1=LocalDate.of(2021,3,24);
+        LocalDate salesDate2=LocalDate.of(2021,3,27);
+        LocalDate salesDate3=LocalDate.of(2021,3,28);
         SalespeopleEntity[] salespeople = {
                 SalespeopleEntity.builder()
                         .id("1").salesperson("Rosaria")
-                        .salesDate(tickets[0].getCreationDate().toLocalDate())
-                        .ticketEntityList(List.of(tickets[0]))
+                        .salesDate(salesDate1)
+                        .ticketBarcode(tickets[0].getId())
+                        .articleBarcode(str1)
+                        .amount(2)
+                        .total(new BigDecimal(22))
                         .build(),
                 SalespeopleEntity.builder()
                         .id("2").salesperson("Nacho")
-                        .salesDate(tickets[1].getCreationDate().toLocalDate())
-                        .ticketEntityList(List.of(tickets[1]))
+                        .salesDate(salesDate2)
+                        .ticketBarcode(tickets[1].getId())
+                        .articleBarcode(str1)
+                        .amount(1)
+                        .total(new BigDecimal(23))
                         .build(),
                 SalespeopleEntity.builder()
                         .id("3").salesperson("Luis")
-                        .salesDate(tickets[2].getCreationDate().toLocalDate())
-                        .ticketEntityList(List.of(tickets[2]))
+                        .salesDate(salesDate3)
+                        .ticketBarcode(tickets[2].getId())
+                        .articleBarcode(str1)
+                        .amount(3)
+                        .total(new BigDecimal(19))
                         .build(),
                 SalespeopleEntity.builder()
-                        .id("4").salesperson("Alex")
-                        .salesDate(tickets[3].getCreationDate().toLocalDate())
-                        .ticketEntityList(List.of(tickets[3]))
-                        .build(),
-                SalespeopleEntity.builder()
-                        .id("5").salesperson("Ozuna")
-                        .salesDate(tickets[4].getCreationDate().toLocalDate())
-                        .ticketEntityList(List.of(tickets[4]))
-                        .build(),
-                SalespeopleEntity.builder()
-                        .id("6").salesperson("Pedro")
-                        .salesDate(tickets[5].getCreationDate().toLocalDate())
-                        .ticketEntityList(List.of(tickets[5]))
-                        .build(),
-                SalespeopleEntity.builder()
-                        .id("7").salesperson("Pablo")
-                        .salesDate(tickets[6].getCreationDate().toLocalDate())
-                        .ticketEntityList(List.of(tickets[6]))
-                        .build(),
-                SalespeopleEntity.builder()
-                        .id("8").salesperson("Carlos")
-                        .salesDate(tickets[7].getCreationDate().toLocalDate())
-                        .ticketEntityList(List.of(tickets[7]))
+                        .id("4").salesperson("Luis")
+                        .salesDate(salesDate3)
+                        .ticketBarcode(tickets[3].getId())
+                        .articleBarcode(str2)
+                        .amount(3)
+                        .total(new BigDecimal(29))
                         .build()
         };
         this.salespeopleDao.saveAll(Arrays.asList(salespeople));
@@ -458,5 +463,38 @@ public class DatabaseSeederDev {
         };
         this.voucherDao.saveAll(List.of(voucherEntities));
         LogManager.getLogger(this.getClass()).warn("        ------  vouchers");
+
+        OrderLineEntity[] orderLines = {
+                OrderLineEntity.builder().id("1").articleEntity(articles[0]).requireAmount(10).build(),
+                OrderLineEntity.builder().id(UUID.randomUUID().toString()).articleEntity(articles[1]).requireAmount(5).finalAmount(10).build(),
+                OrderLineEntity.builder().id(UUID.randomUUID().toString()).articleEntity(articles[2]).requireAmount(10).finalAmount(15).build()
+        };
+        this.orderLineDao.saveAll(List.of(orderLines));
+        LogManager.getLogger(this.getClass()).warn("        ------- orderLines");
+
+        OrderEntity[] orders = {
+                OrderEntity.builder().id(UUID.randomUUID().toString()).reference("ref-01")
+                        .providerEntity(providers[0])
+                        .description("order 1")
+                        .openingDate(LocalDateTime.of(2021, 3, 1, 15, 30, 00)).orderLineEntities(List.of(orderLines[0], orderLines[1], orderLines[2]))
+                        .build(),
+                OrderEntity.builder().id(UUID.randomUUID().toString()).reference("ref-02")
+                        .providerEntity(providers[1])
+                        .description("order 2")
+                        .openingDate(LocalDateTime.of(2021, 2, 28, 9, 30, 00)).orderLineEntities(List.of(orderLines[0]))
+                        .build(),
+                OrderEntity.builder().id(UUID.randomUUID().toString()).reference("ref-03")
+                        .providerEntity(providers[2])
+                        .description("order 3")
+                        .openingDate(LocalDateTime.of(2021, 2, 28, 9, 30, 00)).orderLineEntities(List.of(orderLines[1], orderLines[2]))
+                        .closingDate(LocalDateTime.of(2021, 3, 05, 9, 30, 00))
+                        .build(),
+                OrderEntity.builder().id(UUID.randomUUID().toString()).reference("ref-04")
+                        .providerEntity(providers[3])
+                        .description("order 4")
+                        .openingDate(LocalDateTime.of(2021, 2, 1, 20, 00, 00)).orderLineEntities(List.of()).build(),
+        };
+        this.orderDao.saveAll(List.of(orders));
+        LogManager.getLogger(this.getClass()).warn("        ------- orders");
     }
 }

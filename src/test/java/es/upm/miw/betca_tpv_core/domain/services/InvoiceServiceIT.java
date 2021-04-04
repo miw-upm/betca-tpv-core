@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,27 @@ class InvoiceServiceIT {
     }
 
     @Test
+    void testPrintByNumber() {
+        String numberInvoice = "invc_N_1A2B3C4D5E";
+
+        StepVerifier
+                .create(this.invoiceService.printByNumber(numberInvoice))
+                .expectNextCount(1)
+                .verifyComplete();
+    }
+
+    @Test
+    void testPrintByNumberNotExist() {
+        String numberInvoice = "invc_NOT_EXIST";
+
+        StepVerifier
+                .create(this.invoiceService.printByNumber(numberInvoice))
+                .expectError(NotFoundException.class)
+                .verify();
+    }
+
+
+    @Test
     void testFindByPhoneNoNullAndTicketIdNullSafe(){
         String phoneUser = "666666000"; //"666666000";
         String ticketId = null; // 5fa45e863d6e834d642689ac
@@ -94,6 +116,20 @@ class InvoiceServiceIT {
                 .recordWith(ArrayList::new)
                 .thenConsumeWhile(x -> true)
                 .expectRecordedMatches(invoices -> !invoices.isEmpty())
+                .verifyComplete();
+    }
+
+    @Test
+    void testFindByNumber(){
+        String numberInvoice = "invc_N_1A2B3C4D5E";
+
+        StepVerifier
+                .create(this.invoiceService.findByNumber(numberInvoice))
+                .thenConsumeWhile(invoice -> {
+                    assertNotNull(invoice.getTicket());
+                    assertEquals(numberInvoice, invoice.getNumber());
+                    return true;
+                })
                 .verifyComplete();
     }
 }

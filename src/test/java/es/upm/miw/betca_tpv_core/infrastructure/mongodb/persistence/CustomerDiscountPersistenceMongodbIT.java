@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.CustomerDiscount;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +24,11 @@ public class CustomerDiscountPersistenceMongodbIT {
     void testCreate() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         StepVerifier
-                .create(this.customerDiscountPersistenceMongodb.create(CustomerDiscount.builder().note("test").registrationDate(LocalDateTime.now().format(formatter)).discount(10.0).minimumPurchase(100.0).user("6").build()))
+                .create(this.customerDiscountPersistenceMongodb.create(CustomerDiscount.builder().note("test").registrationDate(LocalDateTime.now().format(formatter)).discount(10.0).minimumPurchase(100.0).user("66").build()))
                 .expectNextMatches(customerDiscount -> {
                     assertEquals(10.0, customerDiscount.getDiscount());
                     assertEquals(100.0, customerDiscount.getMinimumPurchase());
-                    assertEquals("6", customerDiscount.getUser());
+                    assertEquals("66", customerDiscount.getUser());
                     assertEquals("test", customerDiscount.getNote());
                     assertNotNull(customerDiscount.getRegistrationDate());
                     return true;
@@ -86,19 +87,6 @@ public class CustomerDiscountPersistenceMongodbIT {
     }
 
     @Test
-    void testFindByUser() {
-        StepVerifier
-                .create(this.customerDiscountPersistenceMongodb.findByUser("66"))
-                .expectNextMatches(customerDiscount -> {
-                    assertEquals("discount1", customerDiscount.getNote());
-                    assertEquals(30.0, customerDiscount.getDiscount());
-                    assertEquals(50.0, customerDiscount.getMinimumPurchase());
-                    return true;
-                })
-                .verifyComplete();
-    }
-
-    @Test
     void testFindByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe() {
         StepVerifier
                 .create(this.customerDiscountPersistenceMongodb.findByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe(null, null, null, null))
@@ -111,4 +99,5 @@ public class CustomerDiscountPersistenceMongodbIT {
                 .thenCancel()
                 .verify();
     }
+
 }

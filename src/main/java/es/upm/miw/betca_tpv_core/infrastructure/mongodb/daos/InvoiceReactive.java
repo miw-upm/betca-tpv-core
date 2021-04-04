@@ -16,4 +16,6 @@ public interface InvoiceReactive extends ReactiveSortingRepository<InvoiceEntity
     Flux<InvoiceEntity> findByTicketIdNullSafe(ObjectId ticketId);
 
     Mono<InvoiceEntity> findByTicketEntity(TicketEntity ticketEntity);
+
+    Mono<InvoiceEntity> findByNumber(String number);
 }

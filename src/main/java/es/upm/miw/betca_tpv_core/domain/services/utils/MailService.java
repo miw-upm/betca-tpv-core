@@ -20,6 +20,9 @@ public class MailService {
     @Value("${spring.mail.username}@example.com")
     private String from;
 
+    @Value("${spring.mail.smtp_data}")
+    private String smtpData;
+
     private final String subject = "TPV-Core Info";
 
     public String getFrom() {
@@ -31,6 +34,7 @@ public class MailService {
     }
 
     public Mono<Void> send(String to, String msg) {
+        if(to==null || smtpData.equals("is_not_present")) return Mono.empty();
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setFrom(getFrom());
         simpleMailMessage.setTo(to);

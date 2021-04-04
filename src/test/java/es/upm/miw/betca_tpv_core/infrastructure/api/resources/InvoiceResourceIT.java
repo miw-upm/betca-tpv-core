@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
@@ -14,6 +15,7 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Mono;
 
@@ -78,6 +80,36 @@ class InvoiceResourceIT {
     }
 
     @Test
+    void testPrintByNumber() {
+        String numberInvoice = "invc_N_1A2B3C4D5E";
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(INVOICES + InvoiceResource.PRINT)
+                        .queryParam("number", numberInvoice)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(byte[].class)
+                .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void testPrintByNumberNotExist() {
+        String numberInvoice = "invc_N_NOTEXIST";
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(INVOICES + InvoiceResource.PRINT)
+                        .queryParam("number", numberInvoice)
+                        .build())
+                .exchange()
+                .expectStatus().is4xxClientError()
+                .expectBody(NotFoundException.class)
+                .value(Assertions::assertNotNull);
+    }
+
+    @Test
     void testfindByPhoneAndTicketIdNullSafe() {
         String ticketId = "5fa45f6f3a61083cb241289c";
         String userPhone = "666666004";
@@ -97,6 +129,23 @@ class InvoiceResourceIT {
                         .allMatch(invoice -> ticketId.equals(invoice.getTicketId())));
     }
 
+    @Test
+    void testFindByNumber(){
+        String numberInvoice = "invc_N_1A2B3C4D5E";
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(INVOICES)
+                        .queryParam("number", numberInvoice)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(InvoiceItemDto.class)
+                .value(Assertions::assertNotNull)
+                .value(invoices -> invoices.stream()
+                        .allMatch(invoice -> numberInvoice.equals(invoice.getNumber())));
+    }
 
     @AfterEach
     void closeCashier() {

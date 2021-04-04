@@ -27,12 +27,6 @@ public class CustomerDiscountPersistenceMongodb implements CustomerDiscountPersi
     }
 
     @Override
-    public Flux<CustomerDiscount> findByUser(String user) {
-        return this.customerDiscountReactive.findByUser(user)
-                .map(CustomerDiscountEntity::toCustomerDiscount);
-    }
-
-    @Override
     public Flux<CustomerDiscount> findByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe(String note, Double discount, Double minimumPurchase, String user) {
         return this.customerDiscountReactive.findByNoteAndDiscountAndMinimumPurchaseAndUserNullSafe(note, discount, minimumPurchase, user)
                 .map(CustomerDiscountEntity::toCustomerDiscount);

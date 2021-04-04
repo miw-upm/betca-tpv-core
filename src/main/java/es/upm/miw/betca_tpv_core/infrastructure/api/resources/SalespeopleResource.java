@@ -5,11 +5,11 @@ import es.upm.miw.betca_tpv_core.domain.services.SalespeopleService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.SalespeopleDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -29,6 +29,11 @@ public class SalespeopleResource {
         this.salespeopleService = salespeopleService;
     }
 
+    @PostMapping(produces = {"application/json"})
+    public Mono<Salespeople> create(@Valid @RequestBody Salespeople salespeople){
+        salespeople.doDefault();
+        return this.salespeopleService.creat(salespeople);
+    }
     @GetMapping(SEARCH_SALESPEOPLE)
     public Flux<Salespeople> findBySalespersonAndSalesDate(@RequestParam(required = false) String salesperson,
                                                            @RequestParam(required = false)String dateBeginString,

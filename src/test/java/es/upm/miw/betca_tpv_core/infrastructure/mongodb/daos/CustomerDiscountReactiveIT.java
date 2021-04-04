@@ -28,20 +28,6 @@ public class CustomerDiscountReactiveIT {
     }
 
     @Test
-    void testFindByUser() {
-        StepVerifier
-                .create(this.customerDiscountReactive.findByUser("66"))
-                .expectNextMatches(customerDiscountEntity -> {
-                    assertEquals("discount1", customerDiscountEntity.getNote());
-                    assertEquals(30.0, customerDiscountEntity.getDiscount());
-                    assertEquals(50.0, customerDiscountEntity.getMinimumPurchase());
-                    return true;
-                })
-                .thenCancel()
-                .verify();
-    }
-
-    @Test
     void testFindById() {
         StepVerifier.create(this.customerDiscountReactive.findById("4"))
                 .expectNextMatches(customerDiscountEntity -> {

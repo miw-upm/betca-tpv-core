@@ -43,7 +43,7 @@ public class TagResource {
     }
 
     @GetMapping(SEARCH)
-    public Flux<Tag> findByBarcodeAndDescriptionAndReferenceAndStockLessThanAndDiscontinuedNullSafe(
+    public Flux<Tag> findByNameAndGroupAndDescriptionNullSafe(
             @RequestParam(required = false) String name, @RequestParam(required = false) String group, @
             RequestParam(required = false) String description) {
         return this.tagService.findByNameAndGroupAndDescriptionNullSafe(

@@ -147,6 +147,11 @@ public class PdfCoreBuilder {
         return this;
     }
 
+    public PdfCoreBuilder a4Size() {
+        this.document.getPdfDocument().setDefaultPageSize(PageSize.A4);
+        return this;
+    }
+
     public PdfTableBuilder table(float... widths) {
         return new PdfTableBuilder(this, this.document, widths);
     }

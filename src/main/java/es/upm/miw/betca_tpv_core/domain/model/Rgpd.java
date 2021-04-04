@@ -17,10 +17,14 @@ public class Rgpd {
     private RgpdType rgpdType;
     private byte[] agreement;
 
-    public Rgpd(String mobile, RgpdType rgpdType, String agreement) {
+    public Rgpd(String mobile, RgpdType rgpdType, byte[] agreement) {
         this.user = new User(mobile);
         this.rgpdType = rgpdType;
-        this.agreement = agreement.getBytes();
+        this.agreement = agreement;
+    }
+
+    public Rgpd(String mobile, String rgpdType) {
+        this(mobile, RgpdType.values()[Integer.parseInt(rgpdType)], null);
     }
 
     public String getMobile() {
