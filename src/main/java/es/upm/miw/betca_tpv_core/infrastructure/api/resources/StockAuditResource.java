@@ -15,6 +15,7 @@ public class StockAuditResource {
     public static final String AUDITS = "/audits";
     public static final String OPENED = "/opened";
     public static final String AUDIT_ID = "/{id}";
+    public static final String CLOSE = "/close";
 
     private StockAuditService stockAuditService;
 
@@ -40,5 +41,10 @@ public class StockAuditResource {
     @PutMapping(AUDIT_ID)
     public Mono<StockAuditDto> update(@PathVariable String id, @RequestBody StockAuditDto stockAuditDto) {
         return this.stockAuditService.update(id, stockAuditDto);
+    }
+
+    @PutMapping(CLOSE + AUDIT_ID)
+    public Mono<StockAuditDto> close(@PathVariable String id, @RequestBody StockAuditDto stockAuditDto) {
+        return this.stockAuditService.close(id, stockAuditDto);
     }
 }

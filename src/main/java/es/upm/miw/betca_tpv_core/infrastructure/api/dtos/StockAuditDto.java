@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -15,13 +14,11 @@ import java.util.List;
 public class StockAuditDto {
     private String id;
     private List<String> barcodesWithoutAudit;
-    private BigDecimal lossValue;
     private List<ArticleLoss> losses;
 
     public StockAuditDto(StockAudit stockAudit) {
         this.id = stockAudit.getId();
         this.barcodesWithoutAudit = stockAudit.getBarcodesWithoutAudit();
-        this.lossValue = stockAudit.getLossValue();
         this.losses = stockAudit.getLosses();
     }
 

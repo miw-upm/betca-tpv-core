@@ -13,5 +13,5 @@ public interface StockAuditPersistence {
 
     Mono<StockAudit> create(List<String> barcodesWithoutAudit);
 
-    Mono<StockAuditDto> update(String id, StockAuditDto stockAuditDto);
+    Mono<StockAuditDto> update(String id, StockAuditDto stockAuditDto, Boolean close);
 }
