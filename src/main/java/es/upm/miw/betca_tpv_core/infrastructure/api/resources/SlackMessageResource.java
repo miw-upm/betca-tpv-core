@@ -16,7 +16,7 @@ import javax.validation.Valid;
 @Rest
 @RequestMapping(SlackMessageResource.SLACK_MESSAGES)
 public class SlackMessageResource {
-    public static final String SLACK_MESSAGES = "slack-messages";
+    public static final String SLACK_MESSAGES = "/slack-messages";
 
     private final SlackMessageService slackMessageService;
 
