@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
 import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
@@ -13,7 +14,6 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
 @Service
 public class ArticleService {
@@ -62,18 +62,21 @@ public class ArticleService {
         return this.articlePersistence.findArticleEntitiesByRegistrationDateAfter(localDateTime);
     }
 
-    public Mono<Stream<String>> findTop5ArticleSalesLastWeek(){
+    public Flux < Article > findTop5ArticleSalesLastWeek(){
+        return this.findTop5BarcodeSalesLastWeek()
+                .switchIfEmpty(Flux.error(new NotFoundException("There have been no articles sold in the last week")))
+                .flatMap(barcode -> this.articlePersistence.findArticlesByBarcode(barcode));
+    }
+
+    private Flux<String> findTop5BarcodeSalesLastWeek(){
         Map<String, Integer> articleBarcodes = new HashMap<>();
         return this.ticketPersistence.findByRegistrationDateAfter(LocalDateTime.now().minusDays(7))
                 .flatMap(ticket -> Flux.fromStream(ticket.getShoppingList().stream()))
                 .doOnNext(shopping -> articleBarcodes
                         .merge(shopping.getBarcode(), shopping.getAmount(), (oldValue, newValue) -> newValue = oldValue + shopping.getAmount()))
-                .then(Mono.just(articleBarcodes.entrySet().stream()
+                .thenMany(Flux.fromStream(articleBarcodes.entrySet().stream()
                         .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
                         .limit(5)
-                        .map(Map.Entry::getKey)))
-                .doOnNext(stringStream -> stringStream
-                .forEach(this.articlePersistence::findArticlesByBarcode))
-                ;
+                        .map(Map.Entry::getKey)));
     }
 }
