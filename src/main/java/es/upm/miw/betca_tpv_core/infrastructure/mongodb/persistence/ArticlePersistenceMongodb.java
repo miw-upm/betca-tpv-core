@@ -3,8 +3,6 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Article;
-import es.upm.miw.betca_tpv_core.domain.model.Shopping;
-import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ProviderReactive;
@@ -16,9 +14,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Repository
 public class ArticlePersistenceMongodb implements ArticlePersistence {
@@ -130,8 +125,8 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
                 .map(ArticleEntity::toArticle);
     }
 
-    public Flux< Article > findArticlesByBarcodes (Flux<String> barcodes){
-        return this.articleReactive.findArticleEntitiesByBarcode(barcodes)
+    public Flux< Article > findArticlesByBarcode(String barcode){
+        return this.articleReactive.findArticleEntitiesByBarcode(barcode)
                 .map(ArticleEntity::toArticle);
     }
 
