@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
+import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.ArticleLoss;
 import es.upm.miw.betca_tpv_core.domain.model.StockAudit;
@@ -41,9 +42,16 @@ public class StockAuditPersistenceMongodb implements StockAuditPersistence {
         stockAudit.setBarcodesWithoutAudit(barcodesWithoutAudit);
 
         StockAuditEntity stockAuditEntity = new StockAuditEntity(stockAudit);
-        return this.stockAuditReactive
-                .save(stockAuditEntity)
+        return this.assertOpenedStockAuditNotExist()
+                .then(this.stockAuditReactive.save(stockAuditEntity))
                 .map(StockAuditEntity::toStockAudit);
+    }
+
+    private Mono<Void> assertOpenedStockAuditNotExist() {
+        return this.stockAuditReactive.findFirstByCloseDateNull()
+                .flatMap(stockAuditEntity -> Mono.error(
+                        new ConflictException("An opened audit already exists : " + stockAuditEntity.getId())
+                ));
     }
 
     @Override
