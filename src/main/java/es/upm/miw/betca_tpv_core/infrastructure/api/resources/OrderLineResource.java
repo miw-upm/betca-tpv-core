@@ -15,6 +15,7 @@ public class OrderLineResource {
 
     public static final String ORDER_LINES = "/orderLines";
     public static final String ID = "/{id}";
+    public static final String BARCODE = "/{barcode}";
 
     private OrderLineService orderLineService;
 
@@ -31,5 +32,10 @@ public class OrderLineResource {
     @PostMapping(produces = {"application/json"})
     public Mono<OrderLine> create(@Valid @RequestBody OrderLine orderLine) {
         return this.orderLineService.create(orderLine);
+    }
+
+    @PutMapping(BARCODE)
+    public Mono<OrderLine> update(@PathVariable String barcode, @Valid @RequestBody OrderLine orderLine) {
+        return this.orderLineService.update(barcode, orderLine);
     }
 }

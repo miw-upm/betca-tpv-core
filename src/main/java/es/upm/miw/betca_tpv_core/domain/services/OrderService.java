@@ -31,4 +31,8 @@ public class OrderService {
         return this.orderPersistence.create(order);
     }
 
+    public Mono<Order> update(String reference, Order order) {
+        return this.orderPersistence.update(reference, order);
+    }
+
 }
