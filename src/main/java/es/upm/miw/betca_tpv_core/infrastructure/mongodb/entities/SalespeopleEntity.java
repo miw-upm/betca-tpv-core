@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,20 +27,19 @@ public class SalespeopleEntity {
     private String salesperson;
     private LocalDate salesDate;
 
-    @DBRef(lazy = true)
-    private List<TicketEntity> ticketEntityList;
+    private String ticketBarcode;
+    private String[] articleBarcode;
+    private Integer amount;
+    private BigDecimal total;
 
-    public SalespeopleEntity(Salespeople salespeople, List<TicketEntity> ticketEntityList) {
+
+    public SalespeopleEntity(Salespeople salespeople) {
         BeanUtils.copyProperties(salespeople, this);
-        this.ticketEntityList = ticketEntityList;
     }
 
     public Salespeople toSalespeople() {
         Salespeople salespeople = new Salespeople();
         BeanUtils.copyProperties(this, salespeople);
-        salespeople.setTicketList(this.getTicketEntityList().stream()
-                .map(TicketEntity::toTicket)
-                .collect(Collectors.toList()));
         return salespeople;
     }
 }
