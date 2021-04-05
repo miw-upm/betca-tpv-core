@@ -25,26 +25,26 @@ public class SalespeopleResourceIT {
     private RestClientTestService restClientTestService;
 
     @Test
-    void testCreate(){
-        LocalDate salesDate=LocalDate.of(2021,4,2);
-        String[] str={"8400000000017","8400000000048"};
-        Salespeople salespeople=new Salespeople("Rosaria", salesDate,
-                "5fa4603b7513a164c99677a8",str,2,new BigDecimal(22));
+    void testCreate() {
+        LocalDate salesDate = LocalDate.of(2021, 4, 2);
+        String[] str = {"8400000000017", "8400000000048"};
+        Salespeople salespeople = new Salespeople("Rosaria", salesDate,
+                "5fa4603b7513a164c99677a8", str, 2, new BigDecimal(22));
 
-        Salespeople createSalespeople=this.restClientTestService.loginAdmin(webTestClient)
+        Salespeople createSalespeople = this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(SalespeopleResource.SALESPEOPLE)
-                .body(Mono.just(salespeople),Salespeople.class)
+                .body(Mono.just(salespeople), Salespeople.class)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Salespeople.class)
-                .value(returnSalespeople->{
+                .value(returnSalespeople -> {
                     assertNotNull(returnSalespeople.getSalesperson());
                     assertNotNull(returnSalespeople.getTicketBarcode());
                     assertNotNull(returnSalespeople.getSalesDate());
                     assertNotNull(returnSalespeople.getArticleBarcode());
-                    assertEquals(2,returnSalespeople.getAmount());
-                    assertEquals(new BigDecimal(22),returnSalespeople.getTotal());
+                    assertEquals(2, returnSalespeople.getAmount());
+                    assertEquals(new BigDecimal(22), returnSalespeople.getTotal());
                 })
                 .returnResult().getResponseBody();
         assertNotNull(createSalespeople);
@@ -52,45 +52,45 @@ public class SalespeopleResourceIT {
     }
 
     @Test
-    void testFindBySalespersonAndSalesDate(){
+    void testFindBySalespersonAndSalesDate() {
         LocalDate dateBegin = LocalDate.of(2021, Month.MARCH, 1);
-        LocalDate dateEnd=LocalDate.of(2021,Month.APRIL,1);
-        String salesperson="Rosaria";
+        LocalDate dateEnd = LocalDate.of(2021, Month.APRIL, 1);
+        String salesperson = "Rosaria";
 
-        String path=new DefaultUriBuilderFactory().builder()
-                .path(SalespeopleResource.SALESPEOPLE+SalespeopleResource.SEARCH_SALESPEOPLE)
-                .queryParam("salesperson",salesperson)
-                .queryParam("dateBeginString",dateBegin)
-                .queryParam("dateEndString",dateEnd)
-                .build(dateBegin,dateEnd).toString();
-
-            restClientTestService.loginAdmin(webTestClient)
-                    .get().uri(path)
-                    .attribute("salesperson",salesperson)
-                    .attribute("dateBeginString",dateBegin)
-                    .attribute("dateEndString",dateEnd)
-                    .exchange().expectStatus().isOk()
-                    .expectBodyList(Salespeople.class)
-                    .value(salespeople -> Assertions.assertEquals(1,salespeople.size()));
-    }
-
-    @Test
-    void testFindSalesDate(){
-        LocalDate dateBegin = LocalDate.of(2021, Month.MARCH, 1);
-        LocalDate dateEnd=LocalDate.of(2021,Month.APRIL,1);
-
-        String path=new DefaultUriBuilderFactory().builder()
-                .path(SalespeopleResource.SALESPEOPLE+SalespeopleResource.SEARCH_Month)
-                .queryParam("dateBeginString",dateBegin)
-                .queryParam("dateEndString",dateEnd)
-                .build(dateBegin,dateEnd).toString();
+        String path = new DefaultUriBuilderFactory().builder()
+                .path(SalespeopleResource.SALESPEOPLE + SalespeopleResource.SEARCH_SALESPEOPLE)
+                .queryParam("salesperson", salesperson)
+                .queryParam("dateBeginString", dateBegin)
+                .queryParam("dateEndString", dateEnd)
+                .build(dateBegin, dateEnd).toString();
 
         restClientTestService.loginAdmin(webTestClient)
                 .get().uri(path)
-                .attribute("dateBeginString",dateBegin)
-                .attribute("dateEndString",dateEnd)
+                .attribute("salesperson", salesperson)
+                .attribute("dateBeginString", dateBegin)
+                .attribute("dateEndString", dateEnd)
                 .exchange().expectStatus().isOk()
                 .expectBodyList(Salespeople.class)
-                .value(salespeople -> Assertions.assertEquals(4,salespeople.size()));
+                .value(salespeople -> Assertions.assertEquals(1, salespeople.size()));
+    }
+
+    @Test
+    void testFindSalesDate() {
+        LocalDate dateBegin = LocalDate.of(2021, Month.MARCH, 1);
+        LocalDate dateEnd = LocalDate.of(2021, Month.APRIL, 1);
+
+        String path = new DefaultUriBuilderFactory().builder()
+                .path(SalespeopleResource.SALESPEOPLE + SalespeopleResource.SEARCH_Month)
+                .queryParam("dateBeginString", dateBegin)
+                .queryParam("dateEndString", dateEnd)
+                .build(dateBegin, dateEnd).toString();
+
+        restClientTestService.loginAdmin(webTestClient)
+                .get().uri(path)
+                .attribute("dateBeginString", dateBegin)
+                .attribute("dateEndString", dateEnd)
+                .exchange().expectStatus().isOk()
+                .expectBodyList(Salespeople.class)
+                .value(salespeople -> Assertions.assertEquals(7, salespeople.size()));
     }
 }

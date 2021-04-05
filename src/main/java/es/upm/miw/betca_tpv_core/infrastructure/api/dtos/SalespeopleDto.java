@@ -21,9 +21,9 @@ public class SalespeopleDto {
     private BigDecimal total;
 
     public SalespeopleDto(Salespeople salespeople) {
-        this.salesperson=salespeople.getSalesperson();
-        this.localDate=salespeople.getSalesDate();
-        this.total=salespeople.getTotal();
+        this.salesperson = salespeople.getSalesperson();
+        this.localDate = salespeople.getSalesDate();
+        this.total = salespeople.getTotal();
     }
 
 }

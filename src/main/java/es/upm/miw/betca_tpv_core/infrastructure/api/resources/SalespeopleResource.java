@@ -16,13 +16,13 @@ import java.time.format.DateTimeFormatter;
 @Rest
 @RequestMapping(SalespeopleResource.SALESPEOPLE)
 public class SalespeopleResource {
-    public static final String SALESPEOPLE="/salespeople";
-    public static final String SEARCH_SALESPEOPLE="/search";
-    public static final String SEARCH_Month="/search_month";
+    public static final String SALESPEOPLE = "/salespeople";
+    public static final String SEARCH_SALESPEOPLE = "/search";
+    public static final String SEARCH_Month = "/search_month";
 
     private SalespeopleService salespeopleService;
 
-    private final DateTimeFormatter formatter=DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Autowired
     public SalespeopleResource(SalespeopleService salespeopleService) {
@@ -30,26 +30,27 @@ public class SalespeopleResource {
     }
 
     @PostMapping(produces = {"application/json"})
-    public Mono<Salespeople> create(@Valid @RequestBody Salespeople salespeople){
+    public Mono<Salespeople> create(@Valid @RequestBody Salespeople salespeople) {
         salespeople.doDefault();
         return this.salespeopleService.creat(salespeople);
     }
+
     @GetMapping(SEARCH_SALESPEOPLE)
     public Flux<Salespeople> findBySalespersonAndSalesDate(@RequestParam(required = false) String salesperson,
-                                                           @RequestParam(required = false)String dateBeginString,
-                                                           @RequestParam(required = false)String dateEndString){
-        LocalDate dateBegin=LocalDate.parse(dateBeginString,formatter);
-        LocalDate dateEnd=LocalDate.parse(dateEndString,formatter);
-        return this.salespeopleService.findBySalespersonAndSalesDateBetween(salesperson,dateBegin,dateEnd)
+                                                           @RequestParam(required = false) String dateBeginString,
+                                                           @RequestParam(required = false) String dateEndString) {
+        LocalDate dateBegin = LocalDate.parse(dateBeginString, formatter);
+        LocalDate dateEnd = LocalDate.parse(dateEndString, formatter);
+        return this.salespeopleService.findBySalespersonAndSalesDateBetween(salesperson, dateBegin, dateEnd)
                 .map(Salespeople::ofSalespeopleSalesDateFinalValue);
     }
 
     @GetMapping(SEARCH_Month)
     public Flux<SalespeopleDto> findBySalesDate(@RequestParam(required = false) String dateBeginString,
-                                                @RequestParam(required = false) String dateEndString){
-        LocalDate dateBegin=LocalDate.parse(dateBeginString,formatter);
-        LocalDate dateEnd=LocalDate.parse(dateEndString,formatter);
-        return this.salespeopleService.findBySalesDateBetween(dateBegin,dateEnd)
+                                                @RequestParam(required = false) String dateEndString) {
+        LocalDate dateBegin = LocalDate.parse(dateBeginString, formatter);
+        LocalDate dateEnd = LocalDate.parse(dateEndString, formatter);
+        return this.salespeopleService.findBySalesDateBetween(dateBegin, dateEnd)
                 .map(SalespeopleDto::new);
     }
 }

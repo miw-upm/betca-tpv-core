@@ -5,11 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestConfig
@@ -17,14 +15,15 @@ public class SalespeopleReactiveIT {
 
     @Autowired
     private SalespeopleReactive salespeopleReactive;
+
     @Test
-    void testFindByUserAndDate(){
-        LocalDate dateBegin=LocalDate.of(2021,Month.MARCH,1);
-        LocalDate dateEnd=LocalDate.of(2021,Month.APRIL,1);
+    void testFindByUserAndDate() {
+        LocalDate dateBegin = LocalDate.of(2021, Month.MARCH, 1);
+        LocalDate dateEnd = LocalDate.of(2021, Month.APRIL, 1);
         StepVerifier
-                .create(this.salespeopleReactive.findBySalespersonAndSalesDateBetween("Rosaria",dateBegin,dateEnd))
-                .expectNextMatches(salespeople->{
-                    assertTrue(salespeople.getSalesDate().isAfter(dateBegin)&&salespeople.getSalesDate().isBefore(dateEnd));
+                .create(this.salespeopleReactive.findBySalespersonAndSalesDateBetween("Rosaria", dateBegin, dateEnd))
+                .expectNextMatches(salespeople -> {
+                    assertTrue(salespeople.getSalesDate().isAfter(dateBegin) && salespeople.getSalesDate().isBefore(dateEnd));
                     return true;
                 })
                 .thenCancel()
@@ -32,13 +31,13 @@ public class SalespeopleReactiveIT {
     }
 
     @Test
-    void findBySalesDate(){
-        LocalDate dateBegin=LocalDate.of(2021,Month.MARCH,1);
-        LocalDate dateEnd=LocalDate.of(2021,Month.APRIL,1);
+    void findBySalesDate() {
+        LocalDate dateBegin = LocalDate.of(2021, Month.MARCH, 1);
+        LocalDate dateEnd = LocalDate.of(2021, Month.APRIL, 1);
         StepVerifier
-                .create(this.salespeopleReactive.findBySalesDateBetween(dateBegin,dateEnd))
-                .expectNextMatches(salespeople->{
-                    assertTrue(salespeople.getSalesDate().isAfter(dateBegin)&&salespeople.getSalesDate().isBefore(dateEnd));
+                .create(this.salespeopleReactive.findBySalesDateBetween(dateBegin, dateEnd))
+                .expectNextMatches(salespeople -> {
+                    assertTrue(salespeople.getSalesDate().isAfter(dateBegin) && salespeople.getSalesDate().isBefore(dateEnd));
                     return true;
                 })
                 .thenCancel()

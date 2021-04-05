@@ -24,19 +24,19 @@ public class SalespeoplePersistenceMongodb implements SalespeoplePersistence {
 
     @Override
     public Mono<Salespeople> creat(Salespeople salespeople) {
-        SalespeopleEntity salespeopleEntity=new SalespeopleEntity(salespeople);
+        SalespeopleEntity salespeopleEntity = new SalespeopleEntity(salespeople);
         return this.salespeopleReactive.save(salespeopleEntity).map(SalespeopleEntity::toSalespeople);
     }
 
     @Override
     public Flux<Salespeople> findBySalespersonAndSalesDateBetween(String salesperson, LocalDate dateBegin, LocalDate dateEnd) {
-        return this.salespeopleReactive.findBySalespersonAndSalesDateBetween(salesperson,dateBegin,dateEnd)
+        return this.salespeopleReactive.findBySalespersonAndSalesDateBetween(salesperson, dateBegin, dateEnd)
                 .map(SalespeopleEntity::toSalespeople);
     }
 
     @Override
     public Flux<Salespeople> findBySalesDateBetween(LocalDate dateBegin, LocalDate dateEnd) {
-        return this.salespeopleReactive.findBySalesDateBetween(dateBegin,dateEnd)
+        return this.salespeopleReactive.findBySalesDateBetween(dateBegin, dateEnd)
                 .map(SalespeopleEntity::toSalespeople);
     }
 
