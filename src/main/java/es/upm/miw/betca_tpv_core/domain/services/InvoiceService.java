@@ -55,7 +55,7 @@ public class InvoiceService {
         return this.invoicePersistence.findById(invoiceId)
                 .flatMap(invoice -> this.readUserByUserMobileNullSafe(invoice.getTicket().getUser())
                         .map(user -> {
-                            invoice.getTicket().setUser(user);
+                            invoice.setUserTicket(user);
                             return invoice;
                         })
                         .switchIfEmpty(Mono.just(invoice)))
@@ -71,7 +71,7 @@ public class InvoiceService {
         return this.invoicePersistence.findByNumber(number)
                 .flatMap(invoice -> this.readUserByUserMobileNullSafe(invoice.getTicket().getUser())
                         .map(user -> {
-                            invoice.getTicket().setUser(user);
+                            invoice.setUserTicket(user);
                             return invoice;
                         })
                         .switchIfEmpty(Mono.just(invoice)))
@@ -86,7 +86,7 @@ public class InvoiceService {
         return this.create(ticketRef)
                 .flatMap(invoice -> this.readUserByUserMobileNullSafe(invoice.getTicket().getUser())
                         .map(user -> {
-                            invoice.getTicket().setUser(user);
+                            invoice.setUserTicket(user);
                             return invoice;
                         })
                         .switchIfEmpty(Mono.just(invoice)));
@@ -96,7 +96,7 @@ public class InvoiceService {
         return this.invoicePersistence.findByNumber(number)
                 .flatMap(invoice -> this.readUserByUserMobileNullSafe(invoice.getTicket().getUser())
                         .map(user -> {
-                            invoice.getTicket().setUser(user);
+                            invoice.setUserTicket(user);
                             return invoice;
                         })
                         .switchIfEmpty(Mono.just(invoice)));

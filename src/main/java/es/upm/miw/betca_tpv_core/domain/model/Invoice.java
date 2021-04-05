@@ -31,4 +31,10 @@ public class Invoice {
     public String getTicketId(){
         return (ticket != null) ? ticket.getId() : null;
     }
+
+    public void setUserTicket(User user){
+        if(getTicket() != null){
+            getTicket().setUser(user);
+        }
+    }
 }
