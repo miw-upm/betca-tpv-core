@@ -18,6 +18,7 @@ import java.time.LocalDate;
 @Repository
 public class ProviderInvoicePersistenceMongodb implements ProviderInvoicePersistence {
 
+    private static final String NON_EXISTING_PROVIDER_INVOICE_WITH_NUMBER = "Non existing provider invoice with number: ";
     private ProviderInvoiceReactive providerInvoiceReactive;
     private ProviderReactive providerReactive;
 
@@ -57,7 +58,7 @@ public class ProviderInvoicePersistenceMongodb implements ProviderInvoicePersist
     public Mono< ProviderInvoice > readByNumber(Integer number) {
         return this.providerInvoiceReactive.findByNumber(number)
                 .switchIfEmpty(Mono.error(
-                        new NotFoundException("Non existing provider invoice with number: " + number)))
+                        new NotFoundException(NON_EXISTING_PROVIDER_INVOICE_WITH_NUMBER + number)))
                 .map(ProviderInvoiceEntity::toProviderInvoice);
     }
 
@@ -72,7 +73,7 @@ public class ProviderInvoicePersistenceMongodb implements ProviderInvoicePersist
         }
         return providerInvoiceEntityMono
                 .switchIfEmpty(Mono
-                        .error(new NotFoundException("Non existing provider invoice with number: " + number)))
+                        .error(new NotFoundException(NON_EXISTING_PROVIDER_INVOICE_WITH_NUMBER + number)))
                 .flatMap(providerInvoiceEntity -> {
                     BeanUtils.copyProperties(providerInvoice, providerInvoiceEntity);
                     return this.providerReactive.findByCompany(providerInvoice.getProviderCompany())
@@ -91,7 +92,7 @@ public class ProviderInvoicePersistenceMongodb implements ProviderInvoicePersist
     @Override
     public Mono< Void > delete(Integer number) {
         Mono<String> idMono = this.providerInvoiceReactive.findByNumber(number)
-                .switchIfEmpty(Mono.error(new NotFoundException("Non existing provider invoice with number: " + number)))
+                .switchIfEmpty(Mono.error(new NotFoundException(NON_EXISTING_PROVIDER_INVOICE_WITH_NUMBER + number)))
                 .map(ProviderInvoiceEntity::getId);
         return this.providerInvoiceReactive.deleteById(idMono);
     }

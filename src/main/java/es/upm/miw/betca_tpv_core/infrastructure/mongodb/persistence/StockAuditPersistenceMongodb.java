@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
+import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.ArticleLoss;
 import es.upm.miw.betca_tpv_core.domain.model.StockAudit;
@@ -17,7 +18,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Repository
 public class StockAuditPersistenceMongodb implements StockAuditPersistence {
@@ -32,7 +32,6 @@ public class StockAuditPersistenceMongodb implements StockAuditPersistence {
     public Mono<StockAudit> findFirstByCloseDateNull() {
         return this.stockAuditReactive
                 .findFirstByCloseDateNull()
-                //.switchIfEmpty(Mono.just(new StockAuditEntity(new StockAudit())))
                 .map(StockAuditEntity::toStockAudit);
     }
 
@@ -43,13 +42,20 @@ public class StockAuditPersistenceMongodb implements StockAuditPersistence {
         stockAudit.setBarcodesWithoutAudit(barcodesWithoutAudit);
 
         StockAuditEntity stockAuditEntity = new StockAuditEntity(stockAudit);
-        return this.stockAuditReactive
-                .save(stockAuditEntity)
+        return this.assertOpenedStockAuditNotExist()
+                .then(this.stockAuditReactive.save(stockAuditEntity))
                 .map(StockAuditEntity::toStockAudit);
     }
 
+    private Mono<Void> assertOpenedStockAuditNotExist() {
+        return this.stockAuditReactive.findFirstByCloseDateNull()
+                .flatMap(stockAuditEntity -> Mono.error(
+                        new ConflictException("An opened audit already exists : " + stockAuditEntity.getId())
+                ));
+    }
+
     @Override
-    public Mono<StockAuditDto> update(String id, StockAuditDto stockAuditDto) {
+    public Mono<StockAuditDto> update(String id, StockAuditDto stockAuditDto, Boolean close) {
         return this.stockAuditReactive
                 .findById(id)
                 .switchIfEmpty(Mono.error(new NotFoundException("Non existent stock audit id: " + id)))
@@ -61,14 +67,14 @@ public class StockAuditPersistenceMongodb implements StockAuditPersistence {
                         List<ArticleLoss> articleLosses = stockAuditDto.getLosses();
                         List<String> articleLossesBarcodes = articleLosses.stream().map(ArticleLoss::getBarcode).collect(Collectors.toList());
 
-                        if(barcodesWithoutAudit.contains(articleBarcode)) {
+                        if (barcodesWithoutAudit.contains(articleBarcode)) {
                             auditArticle.setAmount(0);
                             auditArticle.setAudited(false);
                         } else if (articleLossesBarcodes.contains(articleBarcode)) {
                             Optional<ArticleLoss> lossArticle = articleLosses.stream()
                                     .filter(articleLoss -> articleLoss.getBarcode().equals(articleBarcode))
                                     .findFirst();
-                            if(lossArticle.isPresent()){
+                            if (lossArticle.isPresent()) {
                                 auditArticle.setAmount(lossArticle.get().getAmount());
                                 auditArticle.setAudited(true);
                             }
@@ -77,8 +83,11 @@ public class StockAuditPersistenceMongodb implements StockAuditPersistence {
                             auditArticle.setAudited(true);
                         }
                     });
-                     stockAuditEntity.setStockAuditArticleList(auditArticleEntityList);
-                     return stockAuditEntity;
+                    if (close) {
+                        stockAuditEntity.setCloseDate(LocalDateTime.now());
+                    }
+                    stockAuditEntity.setStockAuditArticleList(auditArticleEntityList);
+                    return stockAuditEntity;
                 })
                 .flatMap(this.stockAuditReactive::save)
                 .map(StockAuditEntity::toStockAudit)

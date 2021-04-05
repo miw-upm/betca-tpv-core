@@ -67,7 +67,7 @@ public class TicketPersistenceMongodb implements TicketPersistence {
                 .map(TicketEntity::toTicket);
     }
 
-    public Flux<Ticket> findTicketByRegistrationDateAfter(LocalDateTime localDateTime) {
+    public Flux<Ticket> findByRegistrationDateAfter(LocalDateTime localDateTime) {
         return this.ticketReactive.findTicketEntitiesByCreationDateAfter(localDateTime)
                 .map(TicketEntity::toTicket);
     }

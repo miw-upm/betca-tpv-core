@@ -22,9 +22,9 @@ public class RgpdPersistenceMongodbIT {
         StepVerifier
                 .create(this.rgpdPersistenceMongodb.readByMobile("123456789"))
                 .assertNext(rgpd -> {
-                    assertEquals(rgpd.getMobile(), "123456789");
-                    assertEquals(rgpd.getRgpdType(), RgpdType.ADVANCED);
-                    assertEquals(rgpd.getAgreement().length, 1);
+                    assertEquals("123456789", rgpd.getMobile());
+                    assertEquals(RgpdType.ADVANCED, rgpd.getRgpdType());
+                    assertEquals(1, rgpd.getAgreement().length);
                 })
                 .expectComplete()
                 .verify();

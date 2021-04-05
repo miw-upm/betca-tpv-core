@@ -40,6 +40,7 @@ public class DatabaseSeederDev {
     private TagDao tagDao;
     private OrderDao orderDao;
     private OrderLineDao orderLineDao;
+    private StockAuditDao stockAuditDao;
 
     private DatabaseStarting databaseStarting;
 
@@ -49,7 +50,7 @@ public class DatabaseSeederDev {
                              CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao,
                              CustomerDiscountDao customerDiscountDao, BudgetDao budgetDao, MessengerDao messengerDao,
                              SalespeopleDao salespeopleDao, InvoiceDao invoiceDao, ProviderInvoiceDao providerInvoiceDao, VoucherDao voucherDao,
-                             TagDao tagDao, DatabaseStarting databaseStarting, OrderDao orderDao, OrderLineDao orderLineDao) {
+                             TagDao tagDao, DatabaseStarting databaseStarting, OrderDao orderDao, OrderLineDao orderLineDao, StockAuditDao stockAuditDao) {
 
         this.articleDao = articleDao;
         this.providerDao = providerDao;
@@ -73,6 +74,7 @@ public class DatabaseSeederDev {
         this.tagDao = tagDao;
         this.orderDao = orderDao;
         this.orderLineDao = orderLineDao;
+        this.stockAuditDao = stockAuditDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -107,6 +109,7 @@ public class DatabaseSeederDev {
         this.customerDiscountDao.deleteAll();
         this.messengerDao.deleteAll();
         this.voucherDao.deleteAll();
+        this.stockAuditDao.deleteAll();
 
         LogManager.getLogger(this.getClass()).warn("------- Delete All -----------");
         this.databaseStarting.initialize();
@@ -496,5 +499,34 @@ public class DatabaseSeederDev {
         };
         this.orderDao.saveAll(List.of(orders));
         LogManager.getLogger(this.getClass()).warn("        ------- orders");
+
+        StockAuditArticleEntity stockAuditArticleEntity0 = StockAuditArticleEntity.builder()
+                .barcode(articles[0].getBarcode())
+                .amount(null)
+                .audited(false)
+                .build();
+        StockAuditArticleEntity stockAuditArticleEntity1 = StockAuditArticleEntity.builder()
+                .barcode(articles[1].getBarcode())
+                .amount(null)
+                .audited(false)
+                .build();
+        StockAuditArticleEntity stockAuditArticleEntity2 = StockAuditArticleEntity.builder()
+                .barcode(articles[2].getBarcode())
+                .amount(null)
+                .audited(false)
+                .build();
+
+        StockAuditEntity[] stockAudits = {
+                StockAuditEntity.builder()
+                        .id("1")
+                        .creationDate(LocalDateTime.now())
+                        .lossValue(new BigDecimal("0.0"))
+                        .stockAuditArticle(stockAuditArticleEntity0)
+                        .stockAuditArticle(stockAuditArticleEntity1)
+                        .stockAuditArticle(stockAuditArticleEntity2)
+                        .build()
+        };
+        this.stockAuditDao.saveAll(List.of(stockAudits));
+        LogManager.getLogger(this.getClass()).warn("        ------  stock audits");
     }
 }

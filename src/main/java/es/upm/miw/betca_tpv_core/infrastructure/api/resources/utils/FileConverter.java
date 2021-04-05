@@ -5,6 +5,7 @@ import org.springframework.http.codec.multipart.FilePart;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class FileConverter {
 
@@ -15,6 +16,13 @@ public class FileConverter {
     public FileConverter(String path, String name, String extension) {
         path = System.getProperty(USER_HOME) + path;
         this.file = new File(path + name + extension);
+        if (!file.exists()) {
+            try {
+                Files.createDirectories(Paths.get(path));
+            } catch (IOException e) {
+                throw new FileException(String.format("FileConverter::prepareDocument. Error when creating directory (%s). %s", path, e));
+            }
+        }
     }
 
     public File convert(FilePart filePart) {
@@ -23,11 +31,11 @@ public class FileConverter {
     }
 
     public static byte[] getBytes(File file) {
-        byte[] agreement = new byte[0];
+        byte[] agreement;
         try {
             agreement = Files.readAllBytes(file.toPath());
         } catch (IOException e) {
-            throw new FileException("FileConverter::getBytes. Error when reading file bytes.");
+            throw new FileException(String.format("FileConverter::getBytes. Error when reading file bytes. %s", e));
         }
         return agreement;
     }
