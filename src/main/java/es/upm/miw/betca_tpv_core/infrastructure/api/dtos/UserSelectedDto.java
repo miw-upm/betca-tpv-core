@@ -13,13 +13,15 @@ import lombok.NoArgsConstructor;
 public class UserSelectedDto {
     private String mobile;
     private String name;
-    private String familYName;
+    private String familyName;
     private String dni;
+    private String email;
 
     public UserSelectedDto(User user){
         this.mobile = user.getMobile();
         this.name = user.getFirstName();
-        this.familYName = user.getFamilyName();
+        this.familyName = user.getFamilyName();
         this.dni = user.getDni();
+        this.email = user.getEmail();
     }
 }

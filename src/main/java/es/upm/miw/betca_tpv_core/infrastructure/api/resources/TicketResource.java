@@ -72,7 +72,7 @@ public class TicketResource {
 
     @GetMapping(REFERENCE_ID + REFERENCE + SELECTED)
     public Mono<TicketSelectedDto> findSelectedByReference(@PathVariable String reference) {
-        return this.ticketService.findByReference(reference)
+        return this.ticketService.findSelectedByReference(reference)
                 .map(TicketSelectedDto::new);
     }
 
