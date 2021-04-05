@@ -6,7 +6,8 @@ import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
 
-public interface SalespeopleReactive extends ReactiveSortingRepository<SalespeopleEntity,String> {
-    Flux<SalespeopleEntity>  findBySalespersonAndSalesDateBetween(String salesperson, LocalDate dateBegin,LocalDate dateEnd);
-    Flux<SalespeopleEntity> findBySalesDateBetween(LocalDate dateBegin,LocalDate dateEnd);
+public interface SalespeopleReactive extends ReactiveSortingRepository<SalespeopleEntity, String> {
+    Flux<SalespeopleEntity> findBySalespersonAndSalesDateBetween(String salesperson, LocalDate dateBegin, LocalDate dateEnd);
+
+    Flux<SalespeopleEntity> findBySalesDateBetween(LocalDate dateBegin, LocalDate dateEnd);
 }

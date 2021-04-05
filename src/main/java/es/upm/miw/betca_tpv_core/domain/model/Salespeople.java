@@ -31,7 +31,7 @@ public class Salespeople {
     @PositiveBigDecimal
     private BigDecimal total;
 
-    public static Salespeople ofSalespeopleSalesDateFinalValue(Salespeople salespeople){
+    public static Salespeople ofSalespeopleSalesDateFinalValue(Salespeople salespeople) {
         return Salespeople.builder()
                 .salesperson(salespeople.getSalesperson())
                 .salesDate(salespeople.getSalesDate())
@@ -41,12 +41,13 @@ public class Salespeople {
                 .total(salespeople.getTotal())
                 .build();
     }
-    public void doDefault(){
-        if (Objects.isNull(salesDate)){
-            this.salesDate=LocalDate.now();
+
+    public void doDefault() {
+        if (Objects.isNull(salesDate)) {
+            this.salesDate = LocalDate.now();
         }
-        if (Objects.isNull(salesperson)){
-            this.salesperson="admin";
+        if (Objects.isNull(salesperson)) {
+            this.salesperson = "admin";
         }
     }
 
