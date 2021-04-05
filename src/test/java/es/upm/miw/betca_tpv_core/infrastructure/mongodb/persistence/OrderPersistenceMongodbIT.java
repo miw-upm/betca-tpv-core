@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Order;
 import es.upm.miw.betca_tpv_core.domain.model.OrderLine;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Mono;
@@ -22,6 +23,15 @@ class OrderPersistenceMongodbIT {
 
     @Autowired
     private OrderPersistenceMongodb orderPersistenceMongodb;
+
+    @Test
+    void testOrderReadAll() {
+        StepVerifier
+                .create(orderPersistenceMongodb.findByAll())
+                .assertNext(Assertions::assertNotNull)
+                .thenCancel()
+                .verify();
+    }
 
     @Test
     void testFindByReference() {

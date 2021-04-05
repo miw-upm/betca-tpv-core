@@ -27,6 +27,14 @@ class OrderResourceIT {
     @Autowired
     private RestClientTestService restClientTestService;
 
+    @Test
+    void testOrderReadAll() {
+        restClientTestService.loginAdmin(webTestClient)
+                .get().uri(ORDERS)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Order.class);
+    }
 
     @Test
     void testOrderFindByDescriptionAndOpeningDateBetween() {
