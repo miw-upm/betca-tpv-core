@@ -41,6 +41,7 @@ public class DatabaseSeederDev {
     private OrderDao orderDao;
     private OrderLineDao orderLineDao;
     private StockAuditDao stockAuditDao;
+    private ArticleSizeFamilyDao articleSizeFamilyDao;
 
     private DatabaseStarting databaseStarting;
 
@@ -50,7 +51,7 @@ public class DatabaseSeederDev {
                              CreditSaleDao creditSaleDao, CreditDao creditDao, RgpdDao rgpdDao,
                              CustomerDiscountDao customerDiscountDao, BudgetDao budgetDao, MessengerDao messengerDao,
                              SalespeopleDao salespeopleDao, InvoiceDao invoiceDao, ProviderInvoiceDao providerInvoiceDao, VoucherDao voucherDao,
-                             TagDao tagDao, DatabaseStarting databaseStarting, OrderDao orderDao, OrderLineDao orderLineDao, StockAuditDao stockAuditDao) {
+                             TagDao tagDao, DatabaseStarting databaseStarting, OrderDao orderDao, OrderLineDao orderLineDao, StockAuditDao stockAuditDao, ArticleSizeFamilyDao articleSizeFamilyDao) {
 
         this.articleDao = articleDao;
         this.providerDao = providerDao;
@@ -75,6 +76,7 @@ public class DatabaseSeederDev {
         this.orderDao = orderDao;
         this.orderLineDao = orderLineDao;
         this.stockAuditDao = stockAuditDao;
+        this.articleSizeFamilyDao = articleSizeFamilyDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -96,6 +98,7 @@ public class DatabaseSeederDev {
         this.offerDao.deleteAll();
         this.stockAlarmDao.deleteAll();
         this.budgetDao.deleteAll();
+        this.articleSizeFamilyDao.deleteAll();
 
         this.orderDao.deleteAll();
         this.orderLineDao.deleteAll();
