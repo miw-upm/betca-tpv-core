@@ -126,8 +126,31 @@ class InvoiceServiceIT {
         StepVerifier
                 .create(this.invoiceService.findByNumber(numberInvoice))
                 .thenConsumeWhile(invoice -> {
-                    assertNotNull(invoice.getTicket());
+                    assertNotNull(invoice);
+                    assertNotNull(invoice.getId());
+                    assertNotNull(invoice.getNumber());
                     assertEquals(numberInvoice, invoice.getNumber());
+                    assertNotNull(invoice.getTicket());
+                    assertNotNull(invoice.getTicket().getUser());
+                    assertEquals("666666000", invoice.getPhoneUser());
+                    return true;
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void testCreateFromTicketRef(){
+        String ticketRef = "FGhfv521Rj6iKmzp5aERAA";
+        StepVerifier
+                .create(this.invoiceService.createFromTicketRef(ticketRef))
+                .thenConsumeWhile(invoice -> {
+                    assertNotNull(invoice);
+                    assertNotNull(invoice.getId());
+                    assertNotNull(invoice.getNumber());
+                    assertNotNull(invoice.getTicket());
+                    assertNotNull(invoice.getTicket().getUser());
+                    assertEquals(ticketRef, invoice.getTicket().getReference());
+                    assertEquals("66", invoice.getPhoneUser());
                     return true;
                 })
                 .verifyComplete();
