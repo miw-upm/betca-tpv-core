@@ -19,6 +19,10 @@ public class OrderService {
         this.orderPersistence = orderPersistence;
     }
 
+    public Flux<Order> readByAll() {
+        return this.orderPersistence.findByAll();
+    }
+
     public Flux<Order> readByDescriptionAndOpeningDateBetween(String description, LocalDateTime fromDate, LocalDateTime toDate) {
         return this.orderPersistence.findByDescriptionAndOpeningDateBetween(description, fromDate, toDate);
     }

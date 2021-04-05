@@ -27,6 +27,11 @@ public class OrderResource {
         this.orderService = orderService;
     }
 
+    @GetMapping
+    public Flux<Order> readAll() {
+        return this.orderService.readByAll();
+    }
+
     @GetMapping(SEARCH)
     public Flux<OrderDto> readByDescriptionAndOpeningDateBetween(
             @RequestParam(required = false) String description,

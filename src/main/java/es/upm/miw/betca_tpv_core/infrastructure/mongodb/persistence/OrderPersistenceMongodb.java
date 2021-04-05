@@ -33,6 +33,11 @@ public class OrderPersistenceMongodb implements OrderPersistence {
         this.articleReactive = articleReactive;
     }
 
+    @Override
+    public Flux<Order> findByAll() {
+        return this.orderReactive.findAll()
+                .map(OrderEntity::toOrder);
+    }
 
     @Override
     public Flux<Order> findByDescriptionAndOpeningDateBetween(String description, LocalDateTime fromDate, LocalDateTime toDate) {
