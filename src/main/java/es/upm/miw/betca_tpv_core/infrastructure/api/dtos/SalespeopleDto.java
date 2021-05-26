@@ -17,7 +17,6 @@ public class SalespeopleDto {
     private String salesperson;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate localDate;
-    @PositiveBigDecimal
     private BigDecimal total;
 
     public SalespeopleDto(Salespeople salespeople) {

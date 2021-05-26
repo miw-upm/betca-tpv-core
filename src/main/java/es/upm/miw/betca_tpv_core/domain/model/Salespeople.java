@@ -24,31 +24,20 @@ public class Salespeople {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate salesDate;
     @NotBlank
-    private String ticketBarcode;
+    private String ticketId;
     private String[] articleBarcode;
     private Integer amount;
-
-    @PositiveBigDecimal
     private BigDecimal total;
 
     public static Salespeople ofSalespeopleSalesDateFinalValue(Salespeople salespeople) {
         return Salespeople.builder()
                 .salesperson(salespeople.getSalesperson())
                 .salesDate(salespeople.getSalesDate())
-                .ticketBarcode(salespeople.getTicketBarcode())
+                .ticketId(salespeople.getTicketId())
                 .articleBarcode(salespeople.getArticleBarcode())
                 .amount(salespeople.getAmount())
                 .total(salespeople.getTotal())
                 .build();
-    }
-
-    public void doDefault() {
-        if (Objects.isNull(salesDate)) {
-            this.salesDate = LocalDate.now();
-        }
-        if (Objects.isNull(salesperson)) {
-            this.salesperson = "admin";
-        }
     }
 
 }

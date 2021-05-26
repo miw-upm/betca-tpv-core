@@ -18,10 +18,10 @@ public class SalespeopleReactiveIT {
 
     @Test
     void testFindByUserAndDate() {
-        LocalDate dateBegin = LocalDate.of(2021, Month.MARCH, 1);
-        LocalDate dateEnd = LocalDate.of(2021, Month.APRIL, 1);
+        LocalDate dateBegin = LocalDate.of(2021, Month.MAY, 1);
+        LocalDate dateEnd = LocalDate.of(2021, Month.MAY, 15);
         StepVerifier
-                .create(this.salespeopleReactive.findBySalespersonAndSalesDateBetween("Rosaria", dateBegin, dateEnd))
+                .create(this.salespeopleReactive.findBySalespersonAndSalesDateBetween("admin", dateBegin, dateEnd))
                 .expectNextMatches(salespeople -> {
                     assertTrue(salespeople.getSalesDate().isAfter(dateBegin) && salespeople.getSalesDate().isBefore(dateEnd));
                     return true;
@@ -32,8 +32,8 @@ public class SalespeopleReactiveIT {
 
     @Test
     void findBySalesDate() {
-        LocalDate dateBegin = LocalDate.of(2021, Month.MARCH, 1);
-        LocalDate dateEnd = LocalDate.of(2021, Month.APRIL, 1);
+        LocalDate dateBegin = LocalDate.of(2021, Month.MAY, 1);
+        LocalDate dateEnd = LocalDate.of(2021, Month.JUNE, 1);
         StepVerifier
                 .create(this.salespeopleReactive.findBySalesDateBetween(dateBegin, dateEnd))
                 .expectNextMatches(salespeople -> {
