@@ -395,76 +395,58 @@ public class DatabaseSeederDev {
         this.invoiceDao.saveAll(Arrays.asList(invoices));
         LogManager.getLogger(this.getClass()).warn("        ------- invoices");
 
-        String[] str1={"8400000000017"};
-        String[] str2={"8400000000017","8400000000048"};
-        LocalDate salesDate1=LocalDate.of(2021,2,21);
-        LocalDate salesDate2=LocalDate.of(2021,3,24);
-        LocalDate salesDate3=LocalDate.of(2021,3,27);
-        LocalDate salesDate4=LocalDate.of(2021,3,28);
+        LocalDate salesDate1=LocalDate.of(2021,4,24);
+        LocalDate salesDate2=LocalDate.of(2021,5,11);
+        LocalDate salesDate3=LocalDate.of(2021,5,12);
+        LocalDate salesDate4=LocalDate.of(2021,5,14);
         SalespeopleEntity[] salespeople = {
                 SalespeopleEntity.builder()
-                        .id("1").salesperson("Rosaria")
+                        .id("1")
+                        .salesperson("Andre")
                         .salesDate(salesDate1)
-                        .ticketBarcode(tickets[0].getId())
-                        .articleBarcode(str1)
-                        .amount(2)
-                        .total(new BigDecimal(22))
+                        .ticketEntity(tickets[0])
                         .build(),
                 SalespeopleEntity.builder()
-                        .id("2").salesperson("Rosaria")
+                        .id("2")
+                        .salesperson("ab")
                         .salesDate(salesDate2)
-                        .ticketBarcode(tickets[1].getId())
-                        .articleBarcode(str1)
-                        .amount(2)
-                        .total(new BigDecimal(22))
+                        .ticketEntity(tickets[1])
                         .build(),
                 SalespeopleEntity.builder()
-                        .id("3").salesperson("Nacho")
+                        .id("3")
+                        .salesperson("ab")
+                        .salesDate(salesDate3)
+                        .ticketEntity(tickets[2])
+                        .build(),
+                SalespeopleEntity.builder()
+                        .id("4")
+                        .salesperson("admin")
+                        .salesDate(salesDate1)
+                        .ticketEntity(tickets[3])
+                        .build(),
+                SalespeopleEntity.builder()
+                        .id("5")
+                        .salesperson("Andre")
                         .salesDate(salesDate2)
-                        .ticketBarcode(tickets[2].getId())
-                        .articleBarcode(str1)
-                        .amount(1)
-                        .total(new BigDecimal(23))
+                        .ticketEntity(tickets[4])
                         .build(),
                 SalespeopleEntity.builder()
-                        .id("4").salesperson("Luis")
+                        .id("6")
+                        .salesperson("admin")
                         .salesDate(salesDate3)
-                        .ticketBarcode(tickets[3].getId())
-                        .articleBarcode(str1)
-                        .amount(3)
-                        .total(new BigDecimal(19))
+                        .ticketEntity(tickets[5])
                         .build(),
                 SalespeopleEntity.builder()
-                        .id("5").salesperson("Luis")
-                        .salesDate(salesDate3)
-                        .ticketBarcode(tickets[4].getId())
-                        .articleBarcode(str2)
-                        .amount(4)
-                        .total(new BigDecimal(29))
-                        .build(),
-                SalespeopleEntity.builder()
-                        .id("6").salesperson("Luis")
-                        .salesDate(salesDate3)
-                        .ticketBarcode(tickets[5].getId())
-                        .articleBarcode(str1)
-                        .amount(2)
-                        .total(new BigDecimal(40))
-                        .build(),
-                SalespeopleEntity.builder()
-                        .id("7").salesperson("Luis")
+                        .id("7")
+                        .salesperson("admin")
                         .salesDate(salesDate4)
-                        .ticketBarcode(tickets[6].getId())
-                        .articleBarcode(str1)
-                        .amount(2)
-                        .total(new BigDecimal(33))
+                        .ticketEntity(tickets[6])
                         .build(),
                 SalespeopleEntity.builder()
-                        .id("8").salesperson("Luis")
+                        .id("8")
+                        .salesperson("admin")
                         .salesDate(salesDate4)
-                        .ticketBarcode(tickets[7].getId())
-                        .articleBarcode(str1)
-                        .amount(2)
-                        .total(new BigDecimal(33))
+                        .ticketEntity(tickets[7])
                         .build(),
         };
         this.salespeopleDao.saveAll(Arrays.asList(salespeople));
