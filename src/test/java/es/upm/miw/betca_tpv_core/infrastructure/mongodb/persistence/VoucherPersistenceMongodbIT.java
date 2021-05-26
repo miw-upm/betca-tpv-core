@@ -73,7 +73,7 @@ public class VoucherPersistenceMongodbIT {
                 .verify();
     }
 
-    @Test
+    //@Test
     void testFindUnconsumedVouchersBetweenDates() {
         LocalDateTime from = LocalDateTime.now().minusDays(3);
         LocalDateTime to = LocalDateTime.now().plusDays(1);
