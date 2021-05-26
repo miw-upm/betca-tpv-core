@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.domain.services.utils;
 
 import es.upm.miw.betca_tpv_core.domain.model.Budget;
+import es.upm.miw.betca_tpv_core.domain.model.Property;
 import es.upm.miw.betca_tpv_core.domain.model.ShoppingState;
 
 
@@ -17,7 +18,7 @@ public class PdfBudgetBuilder {
         PdfCoreBuilder pdf = new PdfCoreBuilder(PATH, FILE + budget.getId());
         pdf.head();
         pdf.paragraphEmphasized("BUDGET");
-        pdf.barcode(budget.getId()).line();
+        pdf.qrCode(Property.getProperty().getMiwTpv() + budget.getId());
 
         pdf.paragraphEmphasized(budget.getCreationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         PdfTableBuilder table = pdf.table(TABLE_COLUMNS_SIZES_TICKETS).tableColumnsHeader(TABLE_COLUMNS_HEADERS);
