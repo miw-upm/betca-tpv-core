@@ -29,6 +29,11 @@ public class SalespeopleResource {
         this.salespeopleService = salespeopleService;
     }
 
+    @PostMapping(produces = {"application/json"})
+    public Mono<Salespeople> create(@Valid @RequestBody Salespeople salespeople) {
+        return this.salespeopleService.creat(salespeople);
+    }
+
     @GetMapping(SEARCH_SALESPEOPLE)
     public Flux<Salespeople> findBySalespersonAndSalesDate(@RequestParam(required = false) String salesperson,
                                                            @RequestParam(required = false) String dateBeginString,

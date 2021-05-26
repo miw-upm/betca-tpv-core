@@ -9,6 +9,8 @@ import java.time.LocalDate;
 
 @Repository
 public interface SalespeoplePersistence {
+
+    Mono<Salespeople> creat(Salespeople salespeople);
     Flux<Salespeople> findBySalespersonAndSalesDateBetween(String salesperson, LocalDate dateBegin, LocalDate dateEnd);
 
     Flux<Salespeople> findBySalesDateBetween(LocalDate dateBegin, LocalDate dateEnd);

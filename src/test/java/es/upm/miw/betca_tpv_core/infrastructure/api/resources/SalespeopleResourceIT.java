@@ -9,7 +9,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 
@@ -23,6 +22,25 @@ public class SalespeopleResourceIT {
 
     @Autowired
     private RestClientTestService restClientTestService;
+
+    @Test
+    void testCreate() {
+        LocalDate localDate=LocalDate.of(2021,5,26);
+        Salespeople salespeople= Salespeople.builder().salesDate(localDate).ticketId("5fa45e863d6e834d642689ac").salesperson("admin").build();
+            this.restClientTestService.loginAdmin(webTestClient)
+                    .post()
+                    .uri(SalespeopleResource.SALESPEOPLE)
+                    .body(Mono.just(salespeople),Salespeople.class)
+                    .exchange()
+                    .expectStatus().isOk()
+                    .expectBody(Salespeople.class)
+                    .value(Assertions::assertNotNull)
+                    .value(returnSalespeople->{
+                        assertEquals(localDate,returnSalespeople.getSalesDate());
+                        assertEquals("5fa45e863d6e834d642689ac",returnSalespeople.getTicketId());
+                        assertEquals("admin",returnSalespeople.getSalesperson());
+                    });
+    }
 
     @Test
     void testFindBySalespersonAndSalesDate() {
@@ -44,7 +62,7 @@ public class SalespeopleResourceIT {
                 .attribute("dateEndString", dateEnd)
                 .exchange().expectStatus().isOk()
                 .expectBodyList(Salespeople.class)
-                .value(salespeople -> Assertions.assertEquals(3, salespeople.size()));
+                .value(salespeople -> Assertions.assertEquals(2, salespeople.size()));
     }
 
     @Test
@@ -64,6 +82,6 @@ public class SalespeopleResourceIT {
                 .attribute("dateEndString", dateEnd)
                 .exchange().expectStatus().isOk()
                 .expectBodyList(Salespeople.class)
-                .value(salespeople -> Assertions.assertEquals(6, salespeople.size()));
+                .value(salespeople -> Assertions.assertEquals(7, salespeople.size()));
     }
 }
