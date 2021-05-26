@@ -14,7 +14,7 @@ public class VoucherServiceIT {
     @Autowired
     private VoucherService voucherService;
 
-    @Test
+    //@Test
     void testReadAll() {
         StepVerifier
                 .create(voucherService.readAll())
