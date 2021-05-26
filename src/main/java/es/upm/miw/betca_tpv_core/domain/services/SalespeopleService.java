@@ -18,6 +18,10 @@ public class SalespeopleService {
         this.salespeoplePersistence = salespeoplePersistence;
     }
 
+    public Mono<Salespeople> creat(Salespeople salespeople) {
+        return this.salespeoplePersistence.creat(salespeople);
+    }
+
     public Flux<Salespeople> findBySalespersonAndSalesDateBetween(String salesperson, LocalDate dateBegin, LocalDate dateEnd) {
         return this.salespeoplePersistence.findBySalespersonAndSalesDateBetween(salesperson, dateBegin, dateEnd);
     }

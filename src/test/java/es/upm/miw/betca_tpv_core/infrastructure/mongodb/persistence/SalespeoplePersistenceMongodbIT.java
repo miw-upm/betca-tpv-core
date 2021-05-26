@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 
@@ -18,6 +17,21 @@ public class SalespeoplePersistenceMongodbIT {
 
     @Autowired
     private SalespeoplePersistenceMongodb salespeoplePersistenceMongodb;
+
+    @Test
+    void testCreate() {
+        LocalDate localDate = LocalDate.of(2021, 5, 26);
+        StepVerifier
+                .create(this.salespeoplePersistenceMongodb.creat(Salespeople.builder().salesDate(localDate).salesperson("admin").ticketId("5fa45e863d6e834d642689ac").build()))
+                .expectNextMatches(salespeople -> {
+                    assertEquals("5fa45e863d6e834d642689ac", salespeople.getTicketId());
+                    assertEquals(localDate, salespeople.getSalesDate());
+                    assertEquals("admin", salespeople.getSalesperson());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
 
     @Test
     void testFindBySalespersonAndSalesDate() {
