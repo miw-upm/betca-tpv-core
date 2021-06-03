@@ -3,12 +3,14 @@ import es.upm.miw.betca_tpv_core.domain.model.Budget;
 import es.upm.miw.betca_tpv_core.domain.services.BudgetService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.BudgetDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.BudgetIdReferenceDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.BudgetReferenceDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.util.List;
 
 
 @Rest
@@ -47,10 +49,10 @@ public class BudgetResource {
                 .map(BudgetReferenceDto::new);
     }
     @GetMapping(Reference)
-    public Mono<BudgetReferenceDto> findIdReference() {
+    public Mono<BudgetIdReferenceDto> findIdReference() {
         return this.budgetService.findByIdReference()
                 .collectList()
-                .map(BudgetReferenceDto::new);
+                .map(BudgetIdReferenceDto::new);
     }
 
 
