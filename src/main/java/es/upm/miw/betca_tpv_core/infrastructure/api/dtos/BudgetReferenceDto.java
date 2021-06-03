@@ -9,5 +9,6 @@ import java.util.List;
 @AllArgsConstructor
 public class BudgetReferenceDto {
     private List< String >references;
+    private List<String> ids;
 
 }
