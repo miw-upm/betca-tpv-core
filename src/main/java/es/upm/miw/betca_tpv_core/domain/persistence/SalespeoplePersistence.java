@@ -11,7 +11,7 @@ import java.time.LocalDate;
 public interface SalespeoplePersistence {
 
     Mono<Salespeople> creat(Salespeople salespeople);
-    Flux<Salespeople> findBySalespersonAndSalesDateBetween(String userMobile, LocalDate dateBegin, LocalDate dateEnd);
+    Flux<Salespeople> findByUserMobileAndSalesDateBetween(String userMobile, LocalDate dateBegin, LocalDate dateEnd);
 
     Flux<Salespeople> findBySalesDateBetween(LocalDate dateBegin, LocalDate dateEnd);
 }

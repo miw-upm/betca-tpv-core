@@ -35,7 +35,7 @@ public class SalespeopleResource {
     }
 
     @GetMapping(SEARCH_SALESPEOPLE)
-    public Flux<Salespeople> findBySalespersonAndSalesDate(@RequestParam(required = false) String userMobile,
+    public Flux<Salespeople> findByUserMobileAndSalesDateBetween(@RequestParam(required = false) String userMobile,
                                                            @RequestParam(required = false) String dateBeginString,
                                                            @RequestParam(required = false) String dateEndString) {
         LocalDate dateBegin = LocalDate.parse(dateBeginString, formatter);

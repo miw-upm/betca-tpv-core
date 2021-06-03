@@ -23,7 +23,7 @@ public class SalespeopleService {
     }
 
     public Flux<Salespeople> findBySalespersonAndSalesDateBetween(String userMobile, LocalDate dateBegin, LocalDate dateEnd) {
-        return this.salespeoplePersistence.findBySalespersonAndSalesDateBetween(userMobile, dateBegin, dateEnd);
+        return this.salespeoplePersistence.findByUserMobileAndSalesDateBetween(userMobile, dateBegin, dateEnd);
     }
 
     public Flux<Salespeople> findBySalesDateBetween(LocalDate dateBegin, LocalDate dateEnd) {
