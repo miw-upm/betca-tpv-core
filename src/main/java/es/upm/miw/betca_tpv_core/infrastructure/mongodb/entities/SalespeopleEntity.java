@@ -25,7 +25,7 @@ public class SalespeopleEntity {
     @Id
     private String id;
     @Indexed(unique = true)
-    private int SalespeopleId;
+    private String userMobile;
     //second commit
     private LocalDate salesDate;
 

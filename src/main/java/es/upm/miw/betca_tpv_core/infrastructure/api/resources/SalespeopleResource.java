@@ -35,12 +35,12 @@ public class SalespeopleResource {
     }
 
     @GetMapping(SEARCH_SALESPEOPLE)
-    public Flux<Salespeople> findBySalespersonAndSalesDate(@RequestParam(required = false) String salesperson,
+    public Flux<Salespeople> findBySalespersonAndSalesDate(@RequestParam(required = false) String userMobile,
                                                            @RequestParam(required = false) String dateBeginString,
                                                            @RequestParam(required = false) String dateEndString) {
         LocalDate dateBegin = LocalDate.parse(dateBeginString, formatter);
         LocalDate dateEnd = LocalDate.parse(dateEndString, formatter);
-        return this.salespeopleService.findBySalespersonAndSalesDateBetween(salesperson, dateBegin, dateEnd)
+        return this.salespeopleService.findBySalespersonAndSalesDateBetween(userMobile, dateBegin, dateEnd)
                 .map(Salespeople::ofSalespeopleSalesDateFinalValue);
     }
 

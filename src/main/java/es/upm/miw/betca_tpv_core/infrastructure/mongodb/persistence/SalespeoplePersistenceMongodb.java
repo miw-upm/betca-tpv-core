@@ -38,8 +38,8 @@ public class SalespeoplePersistenceMongodb implements SalespeoplePersistence {
     }
 
     @Override
-    public Flux<Salespeople> findBySalespersonAndSalesDateBetween(String salesperson, LocalDate dateBegin, LocalDate dateEnd) {
-        return this.salespeopleReactive.findBySalespersonAndSalesDateBetween(salesperson, dateBegin, dateEnd)
+    public Flux<Salespeople> findBySalespersonAndSalesDateBetween(String userMobile, LocalDate dateBegin, LocalDate dateEnd) {
+        return this.salespeopleReactive.findAndUserMobileAndSalesDateBetween(userMobile, dateBegin, dateEnd)
                 .map(SalespeopleEntity::toSalespeople);
     }
 

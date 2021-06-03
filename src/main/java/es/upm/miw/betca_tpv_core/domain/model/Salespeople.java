@@ -18,7 +18,7 @@ import java.time.LocalDate;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Salespeople {
     @NotBlank
-    private int salespersonId;
+    private String userMobile;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate salesDate;
     @NotBlank
@@ -29,7 +29,7 @@ public class Salespeople {
 
     public static Salespeople ofSalespeopleSalesDateFinalValue(Salespeople salespeople) {
         return Salespeople.builder()
-                .salespersonId(salespeople.getSalespersonId())
+                .userMobile(salespeople.getUserMobile())
                 .salesDate(salespeople.getSalesDate())
                 .ticketId(salespeople.getTicketId())
                 .articleBarcode(salespeople.getArticleBarcode())

@@ -22,11 +22,11 @@ public class SalespeoplePersistenceMongodbIT {
     void testCreate() {
         LocalDate localDate = LocalDate.of(2021, 5, 26);
         StepVerifier
-                .create(this.salespeoplePersistenceMongodb.creat(Salespeople.builder().salesDate(localDate).salesperson("admin").ticketId("5fa45e863d6e834d642689ac").build()))
+                .create(this.salespeoplePersistenceMongodb.creat(Salespeople.builder().salesDate(localDate).userMobile("666").ticketId("5fa45e863d6e834d642689ac").build()))
                 .expectNextMatches(salespeople -> {
                     assertEquals("5fa45e863d6e834d642689ac", salespeople.getTicketId());
                     assertEquals(localDate, salespeople.getSalesDate());
-                    assertEquals("admin", salespeople.getSalesperson());
+                    assertEquals("666", salespeople.getUserMobile());
                     return true;
                 })
                 .expectComplete()
