@@ -14,13 +14,13 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SalespeopleDto {
-    private String salesperson;
+    private String userMobile;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate localDate;
     private BigDecimal total;
 
     public SalespeopleDto(Salespeople salespeople) {
-        this.salesperson = salespeople.getSalesperson();
+        this.userMobile = salespeople.getUserMobile();
         this.localDate = salespeople.getSalesDate();
         this.total = salespeople.getTotal();
     }

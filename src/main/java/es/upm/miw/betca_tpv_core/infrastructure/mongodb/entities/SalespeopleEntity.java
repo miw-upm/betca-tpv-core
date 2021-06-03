@@ -1,7 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities;
 
 import es.upm.miw.betca_tpv_core.domain.model.Salespeople;
-import es.upm.miw.betca_tpv_core.domain.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,7 +25,6 @@ public class SalespeopleEntity {
     private String id;
     @Indexed(unique = true)
     private String userMobile;
-    //second commit
     private LocalDate salesDate;
 
     @DBRef(lazy = true)

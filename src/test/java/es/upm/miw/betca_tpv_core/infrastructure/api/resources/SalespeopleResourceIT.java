@@ -26,7 +26,7 @@ public class SalespeopleResourceIT {
     @Test
     void testCreate() {
         LocalDate localDate=LocalDate.of(2021,5,26);
-        Salespeople salespeople= Salespeople.builder().salesDate(localDate).ticketId("5fa45e863d6e834d642689ac").salesperson("admin").build();
+        Salespeople salespeople= Salespeople.builder().salesDate(localDate).ticketId("5fa45e863d6e834d642689ac").userMobile("666").build();
             this.restClientTestService.loginAdmin(webTestClient)
                     .post()
                     .uri(SalespeopleResource.SALESPEOPLE)
@@ -38,7 +38,7 @@ public class SalespeopleResourceIT {
                     .value(returnSalespeople->{
                         assertEquals(localDate,returnSalespeople.getSalesDate());
                         assertEquals("5fa45e863d6e834d642689ac",returnSalespeople.getTicketId());
-                        assertEquals("admin",returnSalespeople.getSalesperson());
+                        assertEquals("666",returnSalespeople.getUserMobile());
                     });
     }
 
@@ -46,18 +46,18 @@ public class SalespeopleResourceIT {
     void testFindBySalespersonAndSalesDate() {
         LocalDate dateBegin = LocalDate.of(2021, Month.MAY, 1);
         LocalDate dateEnd = LocalDate.of(2021, Month.MAY, 15);
-        String salesperson = "admin";
+        String userMobile = "666";
 
         String path = new DefaultUriBuilderFactory().builder()
                 .path(SalespeopleResource.SALESPEOPLE + SalespeopleResource.SEARCH_SALESPEOPLE)
-                .queryParam("salesperson", salesperson)
+                .queryParam("666", userMobile)
                 .queryParam("dateBeginString", dateBegin)
                 .queryParam("dateEndString", dateEnd)
                 .build(dateBegin, dateEnd).toString();
 
         restClientTestService.loginAdmin(webTestClient)
                 .get().uri(path)
-                .attribute("salesperson", salesperson)
+                .attribute("666", userMobile)
                 .attribute("dateBeginString", dateBegin)
                 .attribute("dateEndString", dateEnd)
                 .exchange().expectStatus().isOk()
