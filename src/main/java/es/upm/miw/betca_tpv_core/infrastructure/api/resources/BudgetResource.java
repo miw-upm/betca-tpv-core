@@ -18,6 +18,7 @@ public class BudgetResource {
     public static final String RECEIPT = "/receipt";
     public static final String ID_ID = "/{id}";
     public static final String ID = "/id";
+    public static final String Reference = "/reference";
     private final BudgetService budgetService;
 
     @Autowired
@@ -45,7 +46,11 @@ public class BudgetResource {
                 .collectList()
                 .map(BudgetReferenceDto::new);
     }
-
+    @GetMapping(Reference)
+    public Mono<BudgetReferenceDto> findByIdReference(@PathVariable String id) {
+        return this.budgetService.findByIdReference(id)
+                .map(BudgetReferenceDto::new);
+    }
 
 
 }
