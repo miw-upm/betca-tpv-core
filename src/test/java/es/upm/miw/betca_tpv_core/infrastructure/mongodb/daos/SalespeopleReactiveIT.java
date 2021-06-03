@@ -21,7 +21,7 @@ public class SalespeopleReactiveIT {
         LocalDate dateBegin = LocalDate.of(2021, Month.MAY, 1);
         LocalDate dateEnd = LocalDate.of(2021, Month.MAY, 15);
         StepVerifier
-                .create(this.salespeopleReactive.findAndUserMobileAndSalesDateBetween("admin", dateBegin, dateEnd))
+                .create(this.salespeopleReactive.findByUserMobileAndSalesDateBetween("666", dateBegin, dateEnd))
                 .expectNextMatches(salespeople -> {
                     assertTrue(salespeople.getSalesDate().isAfter(dateBegin) && salespeople.getSalesDate().isBefore(dateEnd));
                     return true;
