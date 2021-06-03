@@ -34,7 +34,7 @@ public class BudgetService {
     public Flux< String > findNullSafe(String id) {
         return this.budgetPersistence.findNullSafe(id);
     }
-    public Flux< String > findByIdReference() {
-        return this.budgetPersistence.findByIdReference();
+    public Flux< String > findByIdReference(String id) {
+        return this.budgetPersistence.findByIdReference(id);
     }
 }

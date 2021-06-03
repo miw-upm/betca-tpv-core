@@ -59,8 +59,8 @@ public class BudgetPersistenceMongodb implements BudgetPersistence {
     }
 
     @Override
-    public Flux< String > findByIdReference() {
-        return this.budgetReactive.findByIdReference()
+    public Flux< String > findByIdReference(String id) {
+        return this.budgetReactive.findByIdLike(id)
                 .map(BudgetEntity::getId);
     }
 
