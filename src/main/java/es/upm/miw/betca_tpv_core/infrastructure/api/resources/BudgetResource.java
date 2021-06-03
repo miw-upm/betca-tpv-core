@@ -47,8 +47,9 @@ public class BudgetResource {
                 .map(BudgetReferenceDto::new);
     }
     @GetMapping(Reference)
-    public Mono<BudgetReferenceDto> findByIdReference(@PathVariable String id) {
-        return this.budgetService.findByIdReference(id)
+    public Mono<BudgetReferenceDto> findIdReference() {
+        return this.budgetService.findByIdReference()
+                .collectList()
                 .map(BudgetReferenceDto::new);
     }
 

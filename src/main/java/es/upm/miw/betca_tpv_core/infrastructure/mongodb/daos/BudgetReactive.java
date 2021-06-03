@@ -13,5 +13,5 @@ public interface BudgetReactive extends ReactiveSortingRepository<BudgetEntity, 
             + "] }")
     Flux<BudgetEntity> findNullSafe(String id);
 
-    Flux<BudgetEntity> findByIdReference(String id);
+    Flux<BudgetEntity> findByIdReference();
 }
