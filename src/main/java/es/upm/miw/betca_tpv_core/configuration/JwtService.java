@@ -17,9 +17,9 @@ public class JwtService {
     private static final String NAME_CLAIM = "name";
     private static final String ROLE_CLAIM = "role";
 
-    private String secret;
-    private String issuer;
-    private int expire;
+    private final String secret;
+    private final String issuer;
+    private final int expire;
 
     @Autowired
     public JwtService(@Value("${miw.jwt.secret}") String secret, @Value("${miw.jwt.issuer}") String issuer,
@@ -42,7 +42,7 @@ public class JwtService {
                 .withIssuer(this.issuer)
                 .withIssuedAt(new Date())
                 .withNotBefore(new Date())
-                .withExpiresAt(new Date(System.currentTimeMillis() + this.expire * 1000))
+                .withExpiresAt(new Date(System.currentTimeMillis() + this.expire * 1000L))
                 .withClaim(USER_CLAIM, user)
                 .withClaim(NAME_CLAIM, name)
                 .withClaim(ROLE_CLAIM, role)

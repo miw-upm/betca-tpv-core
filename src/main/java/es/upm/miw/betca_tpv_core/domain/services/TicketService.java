@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 @Service
 public class TicketService {
 
-    private TicketPersistence ticketPersistence;
-    private UserMicroservice userMicroservice;
-    private ArticlePersistence articlePersistence;
-    private CashierService cashierService;
+    private final TicketPersistence ticketPersistence;
+    private final UserMicroservice userMicroservice;
+    private final ArticlePersistence articlePersistence;
+    private final CashierService cashierService;
 
     @Autowired
     public TicketService(TicketPersistence ticketPersistence, UserMicroservice userMicroservice, ArticlePersistence articlePersistence,

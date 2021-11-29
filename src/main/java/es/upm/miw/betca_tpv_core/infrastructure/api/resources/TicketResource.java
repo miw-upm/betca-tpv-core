@@ -17,7 +17,7 @@ public class TicketResource {
     public static final String ID_ID = "/{id}";
     public static final String RECEIPT = "/receipt";
 
-    private TicketService ticketService;
+    private final TicketService ticketService;
 
     @Autowired
     public TicketResource(TicketService ticketService) {

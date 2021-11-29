@@ -19,13 +19,13 @@ import static java.math.BigDecimal.ZERO;
 
 @Service // @Profile("dev")
 public class DatabaseSeederDev {
-    private ArticleDao articleDao;
-    private ProviderDao providerDao;
-    private ArticlesTreeDao articlesTreeDao;
-    private TicketDao ticketDao;
-    private CashierDao cashierDao;
+    private final ArticleDao articleDao;
+    private final ProviderDao providerDao;
+    private final ArticlesTreeDao articlesTreeDao;
+    private final TicketDao ticketDao;
+    private final CashierDao cashierDao;
 
-    private DatabaseStarting databaseStarting;
+    private final DatabaseStarting databaseStarting;
 
     @Autowired
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,

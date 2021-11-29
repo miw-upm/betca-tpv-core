@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 @Service
 public class ProviderService {
 
-    private ProviderPersistence providerPersistence;
+    private final ProviderPersistence providerPersistence;
 
     @Autowired
     public ProviderService(ProviderPersistence providerPersistence) {

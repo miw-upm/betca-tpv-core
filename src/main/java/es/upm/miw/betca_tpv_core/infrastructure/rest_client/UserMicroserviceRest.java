@@ -16,8 +16,8 @@ import reactor.core.publisher.Mono;
 @Service("userClient")
 public class UserMicroserviceRest implements UserMicroservice {
 
-    private String userUri;
-    private WebClient.Builder webClientBuilder;
+    private final String userUri;
+    private final WebClient.Builder webClientBuilder;
 
     @Autowired
     public UserMicroserviceRest(@Value("${miw.tpv.user}") String userUri, WebClient.Builder webClientBuilder) {
@@ -26,7 +26,7 @@ public class UserMicroserviceRest implements UserMicroservice {
     }
 
     @Override
-    public Mono< User > readByMobile(String mobile) {
+    public Mono<User> readByMobile(String mobile) {
         return ReactiveSecurityContextHolder.getContext()
                 .map(securityContext -> securityContext.getAuthentication().getCredentials())
                 .flatMap(token -> webClientBuilder.build()

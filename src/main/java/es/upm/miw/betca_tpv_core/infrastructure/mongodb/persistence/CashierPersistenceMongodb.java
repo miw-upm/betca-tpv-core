@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 @Repository
 public class CashierPersistenceMongodb implements CashierPersistence {
 
-    private CashierReactive cashierReactive;
+    private final CashierReactive cashierReactive;
 
     @Autowired
     public CashierPersistenceMongodb(CashierReactive cashierReactive) {

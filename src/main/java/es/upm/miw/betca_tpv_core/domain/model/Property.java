@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Property {
     private static Property property;
-    private String miwTpv;
+    private final String miwTpv;
 
     public Property(@Value("${miw.tpv}")String miwTpv) {
         this.miwTpv = miwTpv;

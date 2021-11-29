@@ -22,9 +22,9 @@ public class DatabaseStarting {
     private static final String VARIOUS_NAME = "Various";
     private static final String VARIOUS_PHONE = "000000000";
 
-    private ArticleDao articleDao;
-    private ProviderDao providerDao;
-    private CashierDao cashierDao;
+    private final ArticleDao articleDao;
+    private final ProviderDao providerDao;
+    private final CashierDao cashierDao;
 
     @Autowired
     public DatabaseStarting(ArticleDao articleDao, ProviderDao providerDao, CashierDao cashierDao) {

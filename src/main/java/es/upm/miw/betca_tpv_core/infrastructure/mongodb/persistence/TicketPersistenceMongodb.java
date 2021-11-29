@@ -15,8 +15,8 @@ import reactor.core.publisher.Mono;
 @Repository
 public class TicketPersistenceMongodb implements TicketPersistence {
 
-    private TicketReactive ticketReactive;
-    private ArticleReactive articleReactive;
+    private final TicketReactive ticketReactive;
+    private final ArticleReactive articleReactive;
 
     @Autowired
     public TicketPersistenceMongodb(TicketReactive ticketReactive, ArticleReactive articleReactive) {
@@ -25,7 +25,7 @@ public class TicketPersistenceMongodb implements TicketPersistence {
     }
 
     @Override
-    public Mono< Ticket > create(Ticket ticket) {
+    public Mono<Ticket> create(Ticket ticket) {
         TicketEntity ticketEntity = new TicketEntity(ticket);
         return Flux.fromStream(ticket.getShoppingList().stream())
                 .flatMap(shopping -> {

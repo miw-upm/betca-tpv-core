@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 @Repository
 public class ProviderPersistenceMongodb implements ProviderPersistence {
 
-    private ProviderReactive providerReactive;
+    private final ProviderReactive providerReactive;
 
     @Autowired
     public ProviderPersistenceMongodb(ProviderReactive providerReactive) {

@@ -20,7 +20,7 @@ public class ProviderResource {
     public static final String COMPANY = "/company";
     public static final String SEARCH = "/search";
 
-    private ProviderService providerService;
+    private final ProviderService providerService;
 
     @Autowired
     public ProviderResource(ProviderService providerService) {

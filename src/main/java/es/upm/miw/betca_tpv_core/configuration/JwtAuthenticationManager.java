@@ -12,7 +12,7 @@ import java.util.List;
 
 public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
 
-    private JwtService jwtService;
+    private final JwtService jwtService;
 
     public JwtAuthenticationManager(JwtService jwtService) {
         this.jwtService = jwtService;

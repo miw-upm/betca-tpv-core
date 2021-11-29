@@ -23,7 +23,7 @@ public class ArticleResource {
     public static final String UNFINISHED = "/unfinished";
     public static final String BARCODE = "/barcode";
 
-    private ArticleService articleService;
+    private final ArticleService articleService;
 
     @Autowired
     public ArticleResource(ArticleService articleService) {

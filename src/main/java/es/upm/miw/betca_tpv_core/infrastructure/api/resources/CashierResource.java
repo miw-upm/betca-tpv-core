@@ -21,7 +21,7 @@ public class CashierResource {
     public static final String LAST = "/last";
     public static final String STATE = "/state";
 
-    private CashierService cashierService;
+    private final CashierService cashierService;
 
     @Autowired
     public CashierResource(CashierService cashierService) {

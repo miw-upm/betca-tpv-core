@@ -16,8 +16,8 @@ import reactor.core.publisher.Mono;
 @Repository
 public class ArticlePersistenceMongodb implements ArticlePersistence {
 
-    private ProviderReactive providerReactive;
-    private ArticleReactive articleReactive;
+    private final ProviderReactive providerReactive;
+    private final ArticleReactive articleReactive;
 
     @Autowired
     public ArticlePersistenceMongodb(ProviderReactive providerReactive, ArticleReactive articleReactive) {
@@ -26,7 +26,7 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
     }
 
     @Override
-    public Mono< Article > create(Article article) {
+    public Mono<Article> create(Article article) {
         return this.assertBarcodeNotExist(article.getBarcode())
                 .then(Mono.justOrEmpty(article.getProviderCompany()))
                 .flatMap(providerCompany -> this.providerReactive.findByCompany(article.getProviderCompany())

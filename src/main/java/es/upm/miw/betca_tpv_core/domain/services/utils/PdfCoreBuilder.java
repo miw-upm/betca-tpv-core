@@ -42,9 +42,9 @@ public class PdfCoreBuilder {
     private static final float THERMAL_PAGE_WIDTH = 227;
     private static final float THERMAL_PAGE_HEIGHT = 800;
 
-    private String filename;
+    private final String filename;
 
-    private Document document;
+    private final Document document;
 
     public PdfCoreBuilder(String path, String file) {
         path = System.getProperty(USER_HOME) + path;

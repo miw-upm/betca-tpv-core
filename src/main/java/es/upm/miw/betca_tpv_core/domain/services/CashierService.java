@@ -17,7 +17,7 @@ import static java.math.BigDecimal.ZERO;
 @Service
 public class CashierService {
 
-    private CashierPersistence cashierPersistence;
+    private final CashierPersistence cashierPersistence;
 
     @Autowired
     public CashierService(CashierPersistence cashierPersistence) {
