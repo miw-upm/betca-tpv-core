@@ -53,7 +53,6 @@ class ArticleResourceIT {
                 .expectBody(Article.class)
                 .value(Assertions::assertNotNull)
                 .value(returnArticle -> {
-                    System.out.println(">>>>> Test:: returnArticle:" + returnArticle);
                     assertEquals("ta99000", returnArticle.getBarcode());
                     assertEquals("tad1", returnArticle.getDescription());
                     assertNotNull(returnArticle.getRegistrationDate());

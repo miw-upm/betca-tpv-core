@@ -53,7 +53,6 @@ class TicketServiceIT {
         StepVerifier
                 .create(this.articleService.read("8400000000093")).consumeNextWith(article -> stock.set(article.getStock()))
                 .verifyComplete();
-
         Shopping shopping1 = Shopping.builder().barcode("8400000000093").amount(1)
                 .discount(ZERO).state(ShoppingState.COMMITTED).build();
         Shopping shopping2 = Shopping.builder().barcode("8400000000093").amount(2)
@@ -72,7 +71,6 @@ class TicketServiceIT {
                 })
                 .expectComplete()
                 .verify();
-
         StepVerifier
                 .create(this.articleService.read("8400000000093"))
                 .assertNext(article -> assertEquals(stock.get() - 3, article.getStock()))
@@ -113,7 +111,7 @@ class TicketServiceIT {
     void closeCashier() {
         StepVerifier
                 .create(this.cashierService.close(new CashierClose(ZERO, ZERO, "test")))
-                .consumeNextWith(System.out::println)
+                .expectNextCount(1)
                 .verifyComplete();
     }
 }

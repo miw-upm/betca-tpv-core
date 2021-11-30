@@ -41,7 +41,6 @@ class ArticleReactiveIT {
         StepVerifier
                 .create(this.articleReactive.findByBarcodeLikeAndNotDiscontinuedNullSafe("84"))
                 .expectNextMatches(article -> {
-                    System.out.println("article: " + article);
                     assertTrue(article.getBarcode().contains("84"));
                     assertFalse(article.getDiscontinued());
                     return true;

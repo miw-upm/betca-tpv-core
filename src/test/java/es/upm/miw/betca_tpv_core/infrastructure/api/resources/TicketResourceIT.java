@@ -63,7 +63,6 @@ class TicketResourceIT {
                 .expectBody(Ticket.class)
                 .value(Assertions::assertNotNull)
                 .value(returnTicket -> {
-                    System.out.println(">>>>> ticket: " + returnTicket + " total: " + returnTicket.total());
                     assertNotNull(returnTicket.getId());
                     assertNotNull(returnTicket.getReference());
                     assertNotNull(returnTicket.getCreationDate());
