@@ -33,9 +33,10 @@
         <!-- coverage report -->
         <jacoco.version>0.8.5</jacoco.version>
         <!-- various -->
-        <jwt.version>3.18.2</jwt.version>
+        <jwt.version>4.2.1</jwt.version>
         <itextpdf.version>7.0.2</itextpdf.version>
-        <openapi.version>1.5.12</openapi.version>
+        <!-- OpenAPI -->
+        <springdoc-openapi-webflux-ui.version>1.6.13</springdoc-openapi-webflux-ui.version>
     </properties>
     <dependencies>
         <dependency>
@@ -54,7 +55,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-webflux-ui</artifactId>
-            <version>${openapi.version}</version>
+            <version>${springdoc-openapi-webflux-ui.version}</version>
         </dependency>
 		<dependency>
             <groupId>org.springframework.boot</groupId>
