@@ -1,7 +1,7 @@
 package es.upm.miw.betca_tpv_core.domain.model.validations;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import java.util.List;
 
 public class ListNotEmptyValidator implements ConstraintValidator<ListNotEmpty, List<?>> {
