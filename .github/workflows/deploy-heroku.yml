@@ -2,7 +2,7 @@ name: CD - Heroku
 on:
   push:
     branches:
-      - master
+      - NO-master
 jobs:
   deploy:
     name: Deploy on Heroku
