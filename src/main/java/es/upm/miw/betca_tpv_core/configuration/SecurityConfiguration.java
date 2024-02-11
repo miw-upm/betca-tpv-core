@@ -11,6 +11,7 @@ import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
+import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
 import reactor.core.publisher.Mono;
 
 @Configuration
@@ -28,10 +29,8 @@ public class SecurityConfiguration {
     @Bean
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
         return http
-                .httpBasic().disable()
-                .formLogin().disable()
-                .csrf().disable()
-                .logout().disable()
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
                 .addFilterAt(bearerAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
     }

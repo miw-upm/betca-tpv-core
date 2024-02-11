@@ -2,11 +2,12 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos;
 
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ArticleEntity;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.data.repository.reactive.ReactiveSortingRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface ArticleReactive extends ReactiveSortingRepository< ArticleEntity, String > {
+public interface ArticleReactive extends ReactiveMongoRepository< ArticleEntity, String > {
     Mono< ArticleEntity > findByBarcode(String barcode);
 
     @Query("{$and:[" // allow NULL: all elements

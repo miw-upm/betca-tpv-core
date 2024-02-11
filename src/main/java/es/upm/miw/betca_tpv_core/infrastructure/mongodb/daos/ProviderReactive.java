@@ -2,11 +2,12 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos;
 
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ProviderEntity;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.data.repository.reactive.ReactiveSortingRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface ProviderReactive extends ReactiveSortingRepository< ProviderEntity, String > {
+public interface ProviderReactive extends ReactiveMongoRepository< ProviderEntity, String > {
     Mono< ProviderEntity > findByCompany(String company);
 
     Mono< ProviderEntity > findByNif(String nif);
