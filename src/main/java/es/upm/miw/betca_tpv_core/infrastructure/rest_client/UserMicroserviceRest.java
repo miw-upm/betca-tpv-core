@@ -1,13 +1,10 @@
 package es.upm.miw.betca_tpv_core.infrastructure.rest_client;
 
 import es.upm.miw.betca_tpv_core.domain.exceptions.BadGatewayException;
-import es.upm.miw.betca_tpv_core.domain.exceptions.ForbiddenException;
-import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -33,19 +30,10 @@ public class UserMicroserviceRest implements UserMicroservice {
                         .mutate().defaultHeader("Authorization", "Bearer " + token).build()
                         .get()
                         .uri(userUri + "/users/" + mobile)
-                        .exchange())
-                .onErrorResume(exception ->
-                        Mono.error(new BadGatewayException("Unexpected error. User Microservice. " + exception.getMessage())))
-                .flatMap(response -> {
-                    if (HttpStatus.UNAUTHORIZED.equals(response.statusCode())) {
-                        return Mono.error(new ForbiddenException("User id: " + mobile));
-                    } else if (HttpStatus.NOT_FOUND.equals(response.statusCode())) {
-                        return Mono.error(new NotFoundException("User id: " + mobile));
-                    } else if (response.statusCode().isError()) {
-                        return Mono.error(new BadGatewayException("Unexpected error: User Microservice."));
-                    } else {
-                        return response.bodyToMono(User.class);
-                    }
-                });
+                        .retrieve()
+                        .bodyToMono(User.class)
+                        .onErrorMap(Exception.class, exception ->
+                                new BadGatewayException("Unexpected error: " + exception.getClass() + " - " + exception.getMessage()))
+                );
     }
 }
