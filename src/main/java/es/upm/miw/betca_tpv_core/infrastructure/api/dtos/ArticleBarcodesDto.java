@@ -10,5 +10,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ArticleBarcodesDto {
-    private List< String > barcodes;
+    private List<String> barcodes;
 }

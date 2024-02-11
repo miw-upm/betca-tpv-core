@@ -41,15 +41,15 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
     }
 
     @Override
-    public Mono< Article > readByBarcode(String barcode) {
+    public Mono<Article> readByBarcode(String barcode) {
         return this.articleReactive.findByBarcode(barcode)
                 .switchIfEmpty(Mono.error(new NotFoundException("Non existent article barcode: " + barcode)))
                 .map(ArticleEntity::toArticle);
     }
 
     @Override
-    public Mono< Article > update(String barcode, Article article) {
-        Mono< ArticleEntity > articleEntityMono;
+    public Mono<Article> update(String barcode, Article article) {
+        Mono<ArticleEntity> articleEntityMono;
         if (!barcode.equals(article.getBarcode())) {
             articleEntityMono = this.assertBarcodeNotExist(article.getBarcode())
                     .then(this.articleReactive.findByBarcode(barcode));
@@ -75,21 +75,21 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
     }
 
     @Override
-    public Flux< Article > findByAnyNullField() {
+    public Flux<Article> findByAnyNullField() {
         return this.articleReactive.findByProviderEntityIsNull()
                 .map(ArticleEntity::toArticle);
     }
 
     @Override
-    public Flux< Article > findByBarcodeAndDescriptionAndReferenceAndStockLessThanAndDiscontinuedNullSafe(
+    public Flux<Article> findByBarcodeAndDescriptionAndReferenceAndStockLessThanAndDiscontinuedNullSafe(
             String barcode, String description, String reference, Integer stock, Boolean discontinued) {
         return this.articleReactive.findByBarcodeAndDescriptionAndReferenceAndStockLessThanAndDiscontinuedNullSafe(
-                barcode, description, reference, stock, discontinued)
+                        barcode, description, reference, stock, discontinued)
                 .map(ArticleEntity::toArticle);
     }
 
     @Override
-    public Mono< Article > readAndWriteStockByBarcodeAssured(String barcode, Integer stockIncrement) {
+    public Mono<Article> readAndWriteStockByBarcodeAssured(String barcode, Integer stockIncrement) {
         return this.articleReactive.findByBarcode(barcode)
                 .switchIfEmpty(Mono.error(new NotFoundException("Article: " + barcode)))
                 .flatMap(article -> {
@@ -99,12 +99,12 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
     }
 
     @Override
-    public Flux< String > findByBarcodeAndNotDiscontinuedNullField(String barcode) {
+    public Flux<String> findByBarcodeAndNotDiscontinuedNullField(String barcode) {
         return this.articleReactive.findByBarcodeLikeAndNotDiscontinuedNullSafe(barcode)
                 .map(ArticleEntity::getBarcode);
     }
 
-    private Mono< Void > assertBarcodeNotExist(String barcode) {
+    private Mono<Void> assertBarcodeNotExist(String barcode) {
         return this.articleReactive.findByBarcode(barcode)
                 .flatMap(articleEntity -> Mono.error(
                         new ConflictException("Article Barcode already exists : " + barcode)

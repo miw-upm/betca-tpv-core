@@ -23,21 +23,21 @@ public class ProviderPersistenceMongodb implements ProviderPersistence {
     }
 
     @Override
-    public Mono< Provider > create(Provider provider) {
+    public Mono<Provider> create(Provider provider) {
         return this.assertCompanyAndNifNotExist(provider.getCompany(), provider.getNif())
                 .then(this.providerReactive.save(new ProviderEntity(provider)))
                 .map(ProviderEntity::toProvider);
     }
 
     @Override
-    public Mono< Provider > readByCompany(String company) {
+    public Mono<Provider> readByCompany(String company) {
         return this.providerReactive.findByCompany(company)
                 .switchIfEmpty(Mono.error(new NotFoundException("Non existent company: " + company)))
                 .map(ProviderEntity::toProvider);
     }
 
     @Override
-    public Mono< Provider > update(String company, Provider provider) {
+    public Mono<Provider> update(String company, Provider provider) {
         return this.providerReactive.findByCompany(company)
                 .switchIfEmpty(Mono.error(new NotFoundException("Non existent company: " + company)))
                 .flatMap(providerEntity -> {
@@ -48,18 +48,18 @@ public class ProviderPersistenceMongodb implements ProviderPersistence {
     }
 
     @Override
-    public Flux< String > findByCompanyAndActiveIsTrueNullSave(String company) {
+    public Flux<String> findByCompanyAndActiveIsTrueNullSave(String company) {
         return this.providerReactive.findByCompanyAndActiveIsTrueNullSave(company)
                 .map(ProviderEntity::getCompany);
     }
 
     @Override
-    public Flux< Provider > findByCompanyAndPhoneAndNoteNullSafe(String company, String phone, String note) {
+    public Flux<Provider> findByCompanyAndPhoneAndNoteNullSafe(String company, String phone, String note) {
         return this.providerReactive.findByCompanyAndPhoneAndNoteNullSafe(company, phone, note)
                 .map(ProviderEntity::toProvider);
     }
 
-    private Mono< Void > assertCompanyAndNifNotExist(String company, String nif) {
+    private Mono<Void> assertCompanyAndNifNotExist(String company, String nif) {
         return this.providerReactive.findByCompany(company)
                 .mergeWith(this.providerReactive.findByNif(nif))
                 .flatMap(provider -> Mono.error(new ConflictException

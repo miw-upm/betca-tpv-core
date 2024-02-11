@@ -8,18 +8,18 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface ArticlePersistence {
 
-    Mono< Article > create(Article article);
+    Mono<Article> create(Article article);
 
-    Mono< Article > readByBarcode(String barcode);
+    Mono<Article> readByBarcode(String barcode);
 
-    Flux< Article > findByAnyNullField();
+    Flux<Article> findByAnyNullField();
 
-    Flux< Article > findByBarcodeAndDescriptionAndReferenceAndStockLessThanAndDiscontinuedNullSafe(
+    Flux<Article> findByBarcodeAndDescriptionAndReferenceAndStockLessThanAndDiscontinuedNullSafe(
             String barcode, String description, String reference, Integer stock, Boolean discontinued);
 
-    Mono< Article > update(String barcode, Article article);
+    Mono<Article> update(String barcode, Article article);
 
-    Mono< Article > readAndWriteStockByBarcodeAssured(String barcode, Integer stockIncrement);
+    Mono<Article> readAndWriteStockByBarcodeAssured(String barcode, Integer stockIncrement);
 
-    Flux< String > findByBarcodeAndNotDiscontinuedNullField(String barcode);
+    Flux<String> findByBarcodeAndNotDiscontinuedNullField(String barcode);
 }

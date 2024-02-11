@@ -55,14 +55,14 @@ public class Cashier {
     public void deposit(BigDecimal cash, String comment) {
         this.assertIsOpened();
         this.deposit = this.deposit.add(cash);
-        this.comment += "Deposit (" + cash.setScale(2, RoundingMode.HALF_UP).toString() + "): "
+        this.comment += "Deposit (" + cash.setScale(2, RoundingMode.HALF_UP) + "): "
                 + comment + ".\n";
     }
 
     public void withdrawal(BigDecimal cash, String comment) {
         this.assertIsOpened();
         this.withdrawal = this.withdrawal.add(cash);
-        this.comment += "Withdrawal (" + cash.setScale(2, RoundingMode.HALF_UP).toString() + "): "
+        this.comment += "Withdrawal (" + cash.setScale(2, RoundingMode.HALF_UP) + "): "
                 + comment + ".\n";
     }
 

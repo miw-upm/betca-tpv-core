@@ -24,7 +24,7 @@ public class TicketEntity {
     @Id
     private String id;
     private String reference;
-    private List< ShoppingEntity > shoppingEntityList;
+    private List<ShoppingEntity> shoppingEntityList;
     private LocalDateTime creationDate;
     private BigDecimal cash;
     private BigDecimal card;

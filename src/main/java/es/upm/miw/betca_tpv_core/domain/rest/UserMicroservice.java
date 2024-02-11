@@ -5,5 +5,5 @@ import reactor.core.publisher.Mono;
 
 public interface UserMicroservice {
 
-    Mono< User > readByMobile(String mobile);
+    Mono<User> readByMobile(String mobile);
 }

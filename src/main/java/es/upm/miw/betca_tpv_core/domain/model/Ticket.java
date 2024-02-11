@@ -26,7 +26,7 @@ public class Ticket {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime creationDate;
     @ListNotEmpty
-    private List< Shopping > shoppingList;
+    private List<Shopping> shoppingList;
     @PositiveBigDecimal
     private BigDecimal cash;
     @PositiveBigDecimal

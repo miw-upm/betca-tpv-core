@@ -6,6 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-public interface CashierDao extends MongoRepository< CashierEntity, String > {
-    Optional< CashierEntity > findFirstByOrderByOpeningDateDesc();
+public interface CashierDao extends MongoRepository<CashierEntity, String> {
+    Optional<CashierEntity> findFirstByOrderByOpeningDateDesc();
 }

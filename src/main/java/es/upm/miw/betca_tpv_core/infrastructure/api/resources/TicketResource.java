@@ -25,12 +25,12 @@ public class TicketResource {
     }
 
     @PostMapping(produces = {"application/json"})
-    public Mono< Ticket > create(@Valid @RequestBody Ticket ticket) {
+    public Mono<Ticket> create(@Valid @RequestBody Ticket ticket) {
         return this.ticketService.create(ticket);
     }
 
     @GetMapping(value = ID_ID + RECEIPT, produces = {"application/pdf", "application/json"})
-    public Mono< byte[] > readReceipt(@PathVariable String id) {
+    public Mono<byte[]> readReceipt(@PathVariable String id) {
         return this.ticketService.readReceipt(id);
     }
 

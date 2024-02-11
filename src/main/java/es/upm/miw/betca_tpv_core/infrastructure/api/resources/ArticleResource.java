@@ -31,42 +31,42 @@ public class ArticleResource {
     }
 
     @PostMapping(produces = {"application/json"})
-    public Mono< Article > create(@Valid @RequestBody Article article) {
+    public Mono<Article> create(@Valid @RequestBody Article article) {
         article.doDefault();
         return this.articleService.create(article);
     }
 
     @PreAuthorize("permitAll()")
     @GetMapping(BARCODE_ID)
-    public Mono< Article > read(@PathVariable String barcode) {
+    public Mono<Article> read(@PathVariable String barcode) {
         return this.articleService.read(barcode);
     }
 
     @PutMapping(BARCODE_ID)
-    public Mono< Article > update(@PathVariable String barcode, @Valid @RequestBody Article article) {
+    public Mono<Article> update(@PathVariable String barcode, @Valid @RequestBody Article article) {
         article.doDefault();
         return this.articleService.update(barcode, article);
     }
 
     @GetMapping(SEARCH)
-    public Flux< Article > findByBarcodeAndDescriptionAndReferenceAndStockLessThanAndDiscontinuedNullSafe(
+    public Flux<Article> findByBarcodeAndDescriptionAndReferenceAndStockLessThanAndDiscontinuedNullSafe(
             @RequestParam(required = false) String barcode, @RequestParam(required = false) String description, @
             RequestParam(required = false) String reference, @RequestParam(required = false) Integer stock,
             @RequestParam(required = false) Boolean discontinued) {
         return this.articleService.findByBarcodeAndDescriptionAndReferenceAndStockLessThanAndDiscontinuedNullSafe(
-                barcode, description, reference, stock, discontinued)
+                        barcode, description, reference, stock, discontinued)
                 .map(Article::ofBarcodeDescriptionStock);
     }
 
     @GetMapping(BARCODE)
-    public Mono< ArticleBarcodesDto > findByBarcodeNullSafe(@RequestParam(required = false) String barcode) {
+    public Mono<ArticleBarcodesDto> findByBarcodeNullSafe(@RequestParam(required = false) String barcode) {
         return this.articleService.findByBarcodeAndNotDiscontinuedNullSafe(barcode)
                 .collectList()
                 .map(ArticleBarcodesDto::new);
     }
 
     @GetMapping(UNFINISHED)
-    public Flux< Article > findByUnfinished() {
+    public Flux<Article> findByUnfinished() {
         return this.articleService.findByUnfinished();
     }
 

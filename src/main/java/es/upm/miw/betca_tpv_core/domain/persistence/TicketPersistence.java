@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface TicketPersistence {
-    Mono< Ticket > create(Ticket ticket);
+    Mono<Ticket> create(Ticket ticket);
 
-    Mono< Ticket > readById(String id);
+    Mono<Ticket> readById(String id);
 }

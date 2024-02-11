@@ -17,23 +17,23 @@ public class ProviderService {
         this.providerPersistence = providerPersistence;
     }
 
-    public Mono< Provider > create(Provider provider) {
+    public Mono<Provider> create(Provider provider) {
         return this.providerPersistence.create(provider);
     }
 
-    public Mono< Provider > read(String company) {
+    public Mono<Provider> read(String company) {
         return this.providerPersistence.readByCompany(company);
     }
 
-    public Mono< Provider > update(String company, Provider provider) {
+    public Mono<Provider> update(String company, Provider provider) {
         return this.providerPersistence.update(company, provider);
     }
 
-    public Flux< String > findByCompanyAndActiveIsTrueNullSave(String company) {
+    public Flux<String> findByCompanyAndActiveIsTrueNullSave(String company) {
         return this.providerPersistence.findByCompanyAndActiveIsTrueNullSave(company);
     }
 
-    public Flux< Provider > findByCompanyAndPhoneAndNoteNullSafe(String company, String phone, String note) {
+    public Flux<Provider> findByCompanyAndPhoneAndNoteNullSafe(String company, String phone, String note) {
         return this.providerPersistence.findByCompanyAndPhoneAndNoteNullSafe(company, phone, note);
     }
 }

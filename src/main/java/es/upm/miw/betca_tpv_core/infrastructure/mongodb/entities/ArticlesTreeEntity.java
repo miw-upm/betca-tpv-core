@@ -30,5 +30,5 @@ public abstract class ArticlesTreeEntity {
 
     public abstract void remove(ArticlesTreeEntity articlesTreeEntity);
 
-    public abstract List< ArticlesTreeEntity > contents();
+    public abstract List<ArticlesTreeEntity> contents();
 }

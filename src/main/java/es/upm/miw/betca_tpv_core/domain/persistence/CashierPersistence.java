@@ -7,10 +7,10 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface CashierPersistence {
 
-    Mono< Cashier > findLast();
+    Mono<Cashier> findLast();
 
-    Mono< Cashier > create(Cashier cashier);
+    Mono<Cashier> create(Cashier cashier);
 
-    Mono< Cashier > update(String id, Cashier lastCashier);
+    Mono<Cashier> update(String id, Cashier lastCashier);
 }
 

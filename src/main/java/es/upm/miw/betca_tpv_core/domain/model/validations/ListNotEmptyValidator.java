@@ -4,7 +4,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.List;
 
-public class ListNotEmptyValidator implements ConstraintValidator< ListNotEmpty, List< ? > > {
+public class ListNotEmptyValidator implements ConstraintValidator<ListNotEmpty, List<?>> {
 
     @Override
     public void initialize(ListNotEmpty constraint) {
@@ -12,7 +12,7 @@ public class ListNotEmptyValidator implements ConstraintValidator< ListNotEmpty,
     }
 
     @Override
-    public boolean isValid(List< ? > list, ConstraintValidatorContext context) {
+    public boolean isValid(List<?> list, ConstraintValidatorContext context) {
         return list != null && !list.isEmpty();
     }
 

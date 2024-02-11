@@ -43,7 +43,7 @@ public class TicketPersistenceMongodb implements TicketPersistence {
     }
 
     @Override
-    public Mono< Ticket > readById(String id) {
+    public Mono<Ticket> readById(String id) {
         return this.ticketReactive.findById(id)
                 .map(TicketEntity::toTicket);
     }

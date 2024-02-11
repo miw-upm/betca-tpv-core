@@ -39,7 +39,7 @@ public class SingleArticleEntity extends ArticlesTreeEntity {
     }
 
     @Override
-    public List< ArticlesTreeEntity > contents() {
+    public List<ArticlesTreeEntity> contents() {
         return Collections.emptyList();
     }
 

@@ -20,19 +20,19 @@ public class CashierPersistenceMongodb implements CashierPersistence {
     }
 
     @Override
-    public Mono< Cashier > findLast() {
+    public Mono<Cashier> findLast() {
         return this.cashierReactive.findFirstByOrderByOpeningDateDesc()
                 .map(CashierEntity::toCashier);
     }
 
     @Override
-    public Mono< Cashier > create(Cashier cashier) {
+    public Mono<Cashier> create(Cashier cashier) {
         return this.cashierReactive.save(new CashierEntity(cashier))
                 .map(CashierEntity::toCashier);
     }
 
     @Override
-    public Mono< Cashier > update(String id, Cashier cashier) {
+    public Mono<Cashier> update(String id, Cashier cashier) {
         return this.cashierReactive.findById(id)
                 .switchIfEmpty(Mono.error(new NotFoundException("Non existent cashier: " + id)))
                 .map(cashierEntity -> cashierEntity.from(cashier))

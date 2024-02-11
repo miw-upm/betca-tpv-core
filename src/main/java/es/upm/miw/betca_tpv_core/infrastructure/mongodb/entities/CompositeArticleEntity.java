@@ -17,7 +17,7 @@ import java.util.List;
 public class CompositeArticleEntity extends ArticlesTreeEntity {
     private String description;
     @DBRef(lazy = true)
-    private List< ArticlesTreeEntity > articlesTreeEntityList;
+    private List<ArticlesTreeEntity> articlesTreeEntityList;
 
     public CompositeArticleEntity(String reference, TreeType treeType, String description) {
         super(reference, treeType);
@@ -41,7 +41,7 @@ public class CompositeArticleEntity extends ArticlesTreeEntity {
     }
 
     @Override
-    public List< ArticlesTreeEntity > contents() {
+    public List<ArticlesTreeEntity> contents() {
         return this.articlesTreeEntityList;
     }
 

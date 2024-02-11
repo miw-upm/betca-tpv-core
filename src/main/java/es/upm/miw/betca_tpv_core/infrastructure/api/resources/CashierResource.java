@@ -29,23 +29,23 @@ public class CashierResource {
     }
 
     @PostMapping(produces = {"application/json"})
-    public Mono< Void > createOpened() {
+    public Mono<Void> createOpened() {
         return this.cashierService.createOpened();
     }
 
     @GetMapping(value = LAST)
-    public Mono< CashierLastDto > findLast() {
+    public Mono<CashierLastDto> findLast() {
         return this.cashierService.findLast()
                 .map(CashierLastDto::new);
     }
 
     @GetMapping(value = LAST + STATE)
-    public Mono< CashierState > findLastState() {
+    public Mono<CashierState> findLastState() {
         return this.cashierService.findLastState();
     }
 
     @PatchMapping(value = LAST)
-    public Mono< Cashier > closeCashier(@Valid @RequestBody CashierClose cashierClose) {
+    public Mono<Cashier> closeCashier(@Valid @RequestBody CashierClose cashierClose) {
         return cashierService.close(cashierClose);
     }
 }

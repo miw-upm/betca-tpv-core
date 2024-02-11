@@ -10,5 +10,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProviderCompanyDto {
-    private List< String > companies;
+    private List<String> companies;
 }

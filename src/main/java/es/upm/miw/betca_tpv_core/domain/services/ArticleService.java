@@ -20,16 +20,16 @@ public class ArticleService {
         this.articlePersistence = articlePersistence;
     }
 
-    public Mono< Article > create(Article article) {
+    public Mono<Article> create(Article article) {
         article.setRegistrationDate(LocalDateTime.now());
         return this.articlePersistence.create(article);
     }
 
-    public Mono< Article > read(String barcode) {
+    public Mono<Article> read(String barcode) {
         return this.articlePersistence.readByBarcode(barcode);
     }
 
-    public Mono< Article > update(String barcode, Article article) {
+    public Mono<Article> update(String barcode, Article article) {
         return this.articlePersistence.readByBarcode(barcode)
                 .map(dataArticle -> {
                     BeanUtils.copyProperties(article, dataArticle, "registrationDate");
@@ -37,17 +37,17 @@ public class ArticleService {
                 }).flatMap(dataArticle -> this.articlePersistence.update(barcode, dataArticle));
     }
 
-    public Flux< Article > findByBarcodeAndDescriptionAndReferenceAndStockLessThanAndDiscontinuedNullSafe(
+    public Flux<Article> findByBarcodeAndDescriptionAndReferenceAndStockLessThanAndDiscontinuedNullSafe(
             String barcode, String description, String reference, Integer stock, Boolean discontinued) {
         return this.articlePersistence.findByBarcodeAndDescriptionAndReferenceAndStockLessThanAndDiscontinuedNullSafe(
                 barcode, description, reference, stock, discontinued);
     }
 
-    public Flux< Article > findByUnfinished() {
+    public Flux<Article> findByUnfinished() {
         return this.articlePersistence.findByAnyNullField();
     }
 
-    public Flux< String > findByBarcodeAndNotDiscontinuedNullSafe(String barcode) {
+    public Flux<String> findByBarcodeAndNotDiscontinuedNullSafe(String barcode) {
         return this.articlePersistence.findByBarcodeAndNotDiscontinuedNullField(barcode);
     }
 }

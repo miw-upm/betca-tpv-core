@@ -10,7 +10,7 @@ public enum Role {
     }
 
     public String withPrefix() {
-        return PREFIX + this.toString();
+        return PREFIX + this;
     }
 
 }

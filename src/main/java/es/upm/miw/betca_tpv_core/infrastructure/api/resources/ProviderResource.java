@@ -28,31 +28,31 @@ public class ProviderResource {
     }
 
     @PostMapping(produces = {"application/json"})
-    public Mono< Provider > create(@Valid @RequestBody Provider provider) {
+    public Mono<Provider> create(@Valid @RequestBody Provider provider) {
         provider.doDefault();
         return this.providerService.create(provider);
     }
 
     @GetMapping(COMPANY_ID)
-    public Mono< Provider > read(@PathVariable String company) {
+    public Mono<Provider> read(@PathVariable String company) {
         return this.providerService.read(company);
     }
 
     @PutMapping(COMPANY_ID)
-    public Mono< Provider > update(@PathVariable String company, @Valid @RequestBody Provider provider) {
+    public Mono<Provider> update(@PathVariable String company, @Valid @RequestBody Provider provider) {
         provider.doDefault();
         return this.providerService.update(company, provider);
     }
 
     @GetMapping(COMPANY)
-    public Mono< ProviderCompanyDto > findByCompanyAndActiveIsTrueNullSave(@RequestParam(required = false) String company) {
+    public Mono<ProviderCompanyDto> findByCompanyAndActiveIsTrueNullSave(@RequestParam(required = false) String company) {
         return this.providerService.findByCompanyAndActiveIsTrueNullSave(company)
                 .collectList()
                 .map(ProviderCompanyDto::new);
     }
 
     @GetMapping(SEARCH)
-    public Flux< Provider > findByCompanyAndPhoneAndNoteNullSafe(
+    public Flux<Provider> findByCompanyAndPhoneAndNoteNullSafe(
             @RequestParam(required = false) String company, @RequestParam(required = false) String phone,
             @RequestParam(required = false) String note) {
         return this.providerService.findByCompanyAndPhoneAndNoteNullSafe(company, phone, note)
