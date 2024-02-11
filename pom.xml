@@ -157,9 +157,9 @@
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.mongo.spring30x</artifactId>
             <version>4.9.3</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- Asynchronous Programming Test-->
+        <!--<scope>test</scope>-->
+    </dependency>
+    <!-- Asynchronous Programming Test-->
         <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-test</artifactId>
