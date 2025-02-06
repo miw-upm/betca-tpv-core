@@ -58,7 +58,7 @@
         <!-- pdf -->
         <itextpdf.version>7.0.2</itextpdf.version>
         <!-- OpenAPI -->
-        <springdoc-openapi-starter-webflux-ui.version>2.1.0</springdoc-openapi-starter-webflux-ui.version>
+        <springdoc-openapi-starter-webflux-ui.version>2.8.4</springdoc-openapi-starter-webflux-ui.version>
     </properties>
 
     <dependencies>

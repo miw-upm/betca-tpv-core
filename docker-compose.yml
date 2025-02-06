@@ -1,0 +1,62 @@
+services:                               # Define los servicios: son contenedores
+  database:
+    # Imagen oficial de MongoDB Community Server
+    image: mongodb/mongodb-community-server:5.0.4-ubuntu2004
+    container_name: mongo-db
+    # Siempre reinicia contenedor si falla: el host, el propio contenedor o si se para manualmente
+    # restart: unless-stopped           # Se reinicia si no se para manualmente
+    # restart: on-failure[:max-retries] # Solo si el contenedor ha fallado, opcionalmente con un número de intentos
+    restart: always
+    environment:                        # Variables de entorno para configurar MongoDB
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+      MONGO_INITDB_DATABASE: tpv
+    ports:                              # Mapea el puerto 27017 (MongoDB) al host
+      - "27017:27017"
+    # Monta un volumen (mongo-data) en la ruta indicada del contenedor, pero estan conectados con la ruta real del anfitrion
+    # Los datos se almacenan en el sistema de archivos del anfitrión en una ruta gestionada por Docker
+    # No se pierde si reinica el contenedor
+    volumes:
+      - mongo-data:/data/db
+    labels:                             # Ayuda en la organización y gestión de contenedores
+      - "es.upm.miw.betca-tpv-core=database"
+  app:
+    build: .                            # Construye el contenedor a partir del Dockerfile en el directorio actual
+    container_name: core-api
+    restart: always
+    depends_on:                         # Este servicio depende del servicio database y debe arrancar después
+      - database
+    ports:
+      - "8082:8082"
+    environment:                        # Variables de entorno de Spring para configurar la conexión a la base de datos:
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:mongo@database:27017/tpv?authSource=admin
+    labels:
+      - "es.upm.miw.betca-tpv-core=app"
+volumes:
+  mongo-data:
+    name: "mongo-data"                # Nombre amigable para el volumen
+
+# ==== COMANDOS ====
+# Comando de construcción de imágenes y ejecución de contenedores definidos
+# --build: forzar la reconstrucción de las imágenes de Docker antes de crear y ejecutar los contenedores
+# -d (Detached Mode): Ejecuta los contenedores en segundo plano, liberando la terminal para otros comandos
+# >>> docker compose up --build -d
+
+# logs: Muestra los logs de los contenedores.
+# -f (Follow): Sigue los logs en tiempo real
+# >>> docker logs [-f] user-api
+
+# Detiene la ejecución sin eliminarlos
+# >>> docker compose stop
+
+# Detiene y elimina los contenedores, redes, colúmenes
+# >>> docker compose down
+
+# Arranca la consola sobre la base de datos de Postgres
+# >>> docker exec -it mongo-db mongosh
+
+# Para todo los contenedores
+#  docker stop $(docker ps -q)
+
+# Arranca todos los contenedores
+# docker start $(docker ps -a -q)
