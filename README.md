@@ -6,7 +6,7 @@
 
 ## Estado del código
 
-[![Spring Core - Tests](https://github.com/miw-upm/betca-tpv-core/actions/workflows/test-sonar.yml/badge.svg)](https://github.com/miw-upm/betca-tpv-core/actions/workflows/test-sonar.yml)
+[![Spring Core - Tests](https://github.com/miw-upm/betca-tpv-core/actions/workflows/ci.yml/badge.svg)](https://github.com/miw-upm/betca-tpv-core/actions/workflows/ci.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?branch=develop&project=es.upm.miw%3Abetca-tpv-core&metric=alert_status)](https://sonarcloud.io/dashboard?id=es.upm.miw%3Abetca-tpv-core&branch=develop)
 
 ### Tecnologías necesarias
