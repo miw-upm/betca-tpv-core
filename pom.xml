@@ -52,7 +52,7 @@
         <!-- coverage report -->
         <jacoco.version>0.8.12</jacoco.version>
         <!-- mongodb -->
-        <embed.mongo.version>4.9.3</embed.mongo.version>
+        <de.flapdoodle.embed.mongo.spring30x.version>4.10.1</de.flapdoodle.embed.mongo.spring30x.version>
         <!-- jwt -->
         <jwt.version>4.4.0</jwt.version>
         <!-- pdf -->
@@ -69,7 +69,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>	
+        </dependency>
         <!-- Web Asynchronous -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -143,7 +143,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-		        <dependency>
+        <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
@@ -152,10 +152,10 @@
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.mongo.spring30x</artifactId>
-            <version>${embed.mongo.version}</version>
+            <version>${de.flapdoodle.embed.mongo.spring30x.version}</version>
             <scope>test</scope>
-    </dependency>
-    <!-- Asynchronous Programming Test-->
+        </dependency>
+        <!-- Asynchronous Programming Test-->
         <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-test</artifactId>
