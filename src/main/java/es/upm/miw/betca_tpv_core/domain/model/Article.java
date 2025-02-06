@@ -3,12 +3,12 @@ package es.upm.miw.betca_tpv_core.domain.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import es.upm.miw.betca_tpv_core.domain.model.validations.PositiveBigDecimal;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import jakarta.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -30,9 +30,7 @@ public class Article {
     private Integer stock;
     private Tax tax;
     private Boolean discontinued;
-    /*    @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
-        @JsonFormat(pattern="dd/MM/yyyy hh:mm")*/
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") // pattern="dd/MM/yyyy hh:mm" o iso = DateTimeFormat.ISO.TIME
     private LocalDateTime registrationDate;
     private String providerCompany;
 

@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.domain.model.validations;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+
 import java.math.BigDecimal;
 
 public class PositiveBigDecimalValidator implements ConstraintValidator<PositiveBigDecimal, BigDecimal> {

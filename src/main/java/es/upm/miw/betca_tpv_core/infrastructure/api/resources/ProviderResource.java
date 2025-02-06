@@ -4,12 +4,11 @@ import es.upm.miw.betca_tpv_core.domain.model.Provider;
 import es.upm.miw.betca_tpv_core.domain.services.ProviderService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ProviderCompanyDto;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import jakarta.validation.Valid;
 
 @Rest
 @RequestMapping(ProviderResource.PROVIDERS)

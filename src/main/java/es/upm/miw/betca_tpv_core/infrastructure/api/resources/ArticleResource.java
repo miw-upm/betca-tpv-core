@@ -5,13 +5,12 @@ import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.services.ArticleService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ArticleBarcodesDto;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import jakarta.validation.Valid;
 
 @Rest
 @RequestMapping(ArticleResource.ARTICLES)
@@ -51,7 +50,7 @@ public class ArticleResource {
     @GetMapping(SEARCH)
     public Flux<Article> findByBarcodeAndDescriptionAndReferenceAndStockLessThanAndDiscontinuedNullSafe(
             @RequestParam(required = false) String barcode, @RequestParam(required = false) String description, @
-            RequestParam(required = false) String reference, @RequestParam(required = false) Integer stock,
+                    RequestParam(required = false) String reference, @RequestParam(required = false) Integer stock,
             @RequestParam(required = false) Boolean discontinued) {
         return this.articleService.findByBarcodeAndDescriptionAndReferenceAndStockLessThanAndDiscontinuedNullSafe(
                         barcode, description, reference, stock, discontinued)

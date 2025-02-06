@@ -3,11 +3,10 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.services.TicketService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-
-import jakarta.validation.Valid;
 
 @Rest
 @RequestMapping(TicketResource.TICKETS)

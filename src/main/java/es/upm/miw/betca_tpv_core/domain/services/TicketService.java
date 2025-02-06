@@ -51,8 +51,7 @@ public class TicketService {
                         .map(shopping -> // Stream< Mono< Article > >
                                 this.articlePersistence.readAndWriteStockByBarcodeAssured(
                                         shopping.getBarcode(), -shopping.getAmount())
-                        ).collect(Collectors.toList() // List< Mono<Article> >
-                        )
+                        ).toList() // List< Mono<Article>
         ).then(); // Mono<Void>
     }
 
