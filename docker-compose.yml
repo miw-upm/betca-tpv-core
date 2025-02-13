@@ -53,10 +53,12 @@ volumes:
 # >>> docker compose down
 
 # Arranca la consola sobre la base de datos de Postgres
-# >>> docker exec -it mongo-db mongosh
+#> docker exec -it mongo-db mongosh
+#>  use admin
+#>  db.auth('mongo', 'mongo')
 
-# Para todo los contenedores
-#  docker stop $(docker ps -q)
+# con un solo comando para entrear en la bd llamada tpv... , se sale con exit
+#>  docker exec -it mongo-db mongosh "mongodb://mongo:mongo@localhost:27017/tpv?authSource=admin"
 
-# Arranca todos los contenedores
-# docker start $(docker ps -a -q)
+
+

@@ -14,11 +14,13 @@
 `Java` `Maven` `GitHub` `Spring-boot` `Sonarcloud` `Heroku`
 
 ## :gear: Ejecución en local
-
-1. Ejecutar el motor de MongoDB: `mongodb://localhost:27017/tpv`
-1. Ejecutar en consola: `./mvnw clean spring-boot:run`
+1. Arrancar Docker Desktop
+1. Ejecutar en consola: `docker compose up --build -d`
 
 * Cliente Web (OpenAPI): `http://localhost:8082/swagger-ui.html`
+* Ver los logs (con -f se queda escuchando, Ctrl+C para salir): `docker logs [-f] core-api`
+* Para parar: `docker compose stop`
+* Arrancar la consola de PostgreSQL sobre la BD: `docker exec -it mongo-db mongosh`
 
 ## :book: Documentación del proyecto
 [betca-tpv: Core](https://github.com/miw-upm/betca-tpv#back-end-core).
