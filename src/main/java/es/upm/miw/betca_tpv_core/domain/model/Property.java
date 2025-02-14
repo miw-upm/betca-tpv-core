@@ -1,23 +1,25 @@
 package es.upm.miw.betca_tpv_core.domain.model;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Property {
-    private static Property property;
+    private static String miwTpvStatic;
+
     private final String miwTpv;
 
     public Property(@Value("${miw.tpv}") String miwTpv) {
         this.miwTpv = miwTpv;
-        property = this;
     }
 
-    public static Property getProperty() {
-        return property;
+    public static String getMiwTpv() {
+        return miwTpvStatic;
     }
 
-    public String getMiwTpv() {
-        return miwTpv;
+    @PostConstruct
+    public void init() {
+        Property.miwTpvStatic = this.miwTpv;
     }
 }

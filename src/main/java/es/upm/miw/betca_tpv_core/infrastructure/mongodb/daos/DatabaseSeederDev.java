@@ -5,7 +5,7 @@ import es.upm.miw.betca_tpv_core.domain.model.Tax;
 import es.upm.miw.betca_tpv_core.domain.model.TreeType;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.synchronous.*;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.*;
-import org.apache.logging.log4j.LogManager;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +17,7 @@ import java.util.List;
 
 import static java.math.BigDecimal.ZERO;
 
+@Log4j2
 @Service // @Profile("dev")
 public class DatabaseSeederDev {
     private final ArticleDao articleDao;
@@ -52,12 +53,12 @@ public class DatabaseSeederDev {
         this.providerDao.deleteAll();
         this.cashierDao.deleteAll();
 
-        LogManager.getLogger(this.getClass()).warn("------- Delete All -----------");
+        log.warn("------- Delete All -----------");
         this.databaseStarting.initialize();
     }
 
     private void seedDataBaseJava() {
-        LogManager.getLogger(this.getClass()).warn("------- Initial Load from JAVA -----------");
+        log.warn("------- Initial Load from JAVA -----------");
         ProviderEntity[] providers = {
                 ProviderEntity.builder().company("pro1").nif("12345678b").phone("9166666601")
                         .address("C/TPV-pro, 1").email("p1@gmail.com").note("p1").active(true).build(),
@@ -69,7 +70,7 @@ public class DatabaseSeederDev {
                         .address("C/TPV-pro, 4").email("p3@gmail.com").note("p4").active(true).build(),
         };
         this.providerDao.saveAll(List.of(providers));
-        LogManager.getLogger(this.getClass()).warn("        ------- providers");
+        log.warn("        ------- providers");
         ArticleEntity[] articles = {
                 ArticleEntity.builder().barcode("8400000000017").reference("zz-falda-T2").description("Zarzuela - Falda T2")
                         .retailPrice(new BigDecimal("20")).stock(10).providerEntity(providers[0])
@@ -103,7 +104,7 @@ public class DatabaseSeederDev {
                         .discontinued(false).build(),
         };
         this.articleDao.saveAll(List.of(articles));
-        LogManager.getLogger(this.getClass()).warn("        ------- articles");
+        log.warn("        ------- articles");
         ArticlesTreeEntity[] singleList = {
                 new SingleArticleEntity(articles[0]),
                 new SingleArticleEntity(articles[1]),
@@ -139,7 +140,7 @@ public class DatabaseSeederDev {
         compositeList[2].add(singleList[4]);
         compositeList[2].add(singleList[5]);
         this.articlesTreeDao.saveAll(Arrays.asList(compositeList));
-        LogManager.getLogger(this.getClass()).warn("        ------- articles tree");
+        log.warn("        ------- articles tree");
         ShoppingEntity[] shoppingList = {
                 new ShoppingEntity(articles[0], articles[0].getDescription(), articles[0].getRetailPrice(),
                         1, ZERO, ShoppingState.COMMITTED),
@@ -170,7 +171,7 @@ public class DatabaseSeederDev {
                         new BigDecimal("5"), ZERO, "note", "666666005"),
         };
         this.ticketDao.saveAll(Arrays.asList(tickets));
-        LogManager.getLogger(this.getClass()).warn("        ------- tickets");
+        log.warn("        ------- tickets");
     }
 
 }

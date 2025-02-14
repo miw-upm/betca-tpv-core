@@ -48,7 +48,7 @@ public class PdfTicketBuilder {
             if (ticket.getUser() != null) {
                 pdf.paragraph("Contact phone: " + ticket.getUser().getMobile() + " - " + ticket.getUser().getFirstName());
             }
-            pdf.qrCode(Property.getProperty().getMiwTpv() + BOOKINGS + ticket.getReference());
+            pdf.qrCode(Property.getMiwTpv() + BOOKINGS + ticket.getReference());
         }
         return pdf.foot().build();
     }

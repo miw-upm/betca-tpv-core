@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.reactive.resource.NoResourceFoundException;
 
 @ControllerAdvice
 public class ApiExceptionHandler {
@@ -19,6 +20,17 @@ public class ApiExceptionHandler {
     @ResponseBody
     public void unauthorizedRequest(Exception exception) {
         LogManager.getLogger(this.getClass()).debug(() -> "Unauthorized: " + exception.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler({
+            NoResourceFoundException.class
+    })
+    @ResponseBody
+    public ErrorMessage noResourceFoundRequest(Exception exception) {
+        return new ErrorMessage(new NotFoundException(
+                "Ruta no encontrada. Prueba con: **/actuator/info o **/swagger-ui.html o **/v3/api-docs"),
+                HttpStatus.NOT_FOUND.value());
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -75,7 +87,8 @@ public class ApiExceptionHandler {
             Exception.class
     })
     @ResponseBody
-    public ErrorMessage exception(Exception exception) { // The error must be corrected
+    public ErrorMessage exception(Exception exception) { //WARNING. It is caught for unforeseen cases.The error must be properly handled or caught.
+        exception.printStackTrace(); //WARNING. ONLY on develop. it helps to debugging but it is a code smell
         return new ErrorMessage(exception, HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 

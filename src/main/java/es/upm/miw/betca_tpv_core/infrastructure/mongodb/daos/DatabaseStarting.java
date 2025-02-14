@@ -7,7 +7,7 @@ import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.synchronous.Provide
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ArticleEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.CashierEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ProviderEntity;
-import org.apache.logging.log4j.LogManager;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 
 import static java.math.BigDecimal.ZERO;
 
+@Log4j2
 @Repository
 public class DatabaseStarting {
     private static final String VARIOUS_CODE = "1";
@@ -42,7 +43,7 @@ public class DatabaseStarting {
                     .description(VARIOUS_NAME).retailPrice(new BigDecimal("100.00")).stock(1000)
                     .providerEntity(provider).registrationDate(LocalDateTime.now()).tax(Tax.GENERAL)
                     .discontinued(false).build());
-            LogManager.getLogger(this.getClass()).warn("------- Create Article Various -----------");
+            log.warn("------- Create Article Various -----------");
         }
 
         if (this.cashierDao.findFirstByOrderByOpeningDateDesc().isEmpty()) {
@@ -50,7 +51,7 @@ public class DatabaseStarting {
                     .cardSales(ZERO).usedVouchers(ZERO).deposit(ZERO).withdrawal(ZERO).lostCash(ZERO).lostCard(ZERO)
                     .finalCash(ZERO).comment("Initial").openingDate(LocalDateTime.now()).closureDate(LocalDateTime.now())
                     .build());
-            LogManager.getLogger(this.getClass()).warn("------- Create cashierClosure -----------");
+            log.warn("------- Create cashierClosure -----------");
         }
     }
 
