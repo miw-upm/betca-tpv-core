@@ -44,7 +44,7 @@ volumes:
 
 # logs: Muestra los logs de los contenedores.
 # -f (Follow): Sigue los logs en tiempo real
-# >>> docker logs [-f] user-api
+# >>> docker logs [-f] core-api
 
 # Detiene la ejecución sin eliminarlos
 # >>> docker compose stop
