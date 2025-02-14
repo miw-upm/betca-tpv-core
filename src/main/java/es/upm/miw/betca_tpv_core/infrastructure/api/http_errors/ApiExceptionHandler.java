@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.reactive.resource.NoResourceFoundException;
+import org.springframework.web.server.ResponseStatusException;
 
 @ControllerAdvice
 public class ApiExceptionHandler {
@@ -24,7 +25,8 @@ public class ApiExceptionHandler {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({
-            NoResourceFoundException.class
+            NoResourceFoundException.class,
+            ResponseStatusException.class
     })
     @ResponseBody
     public ErrorMessage noResourceFoundRequest(Exception exception) {
