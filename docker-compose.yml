@@ -1,4 +1,4 @@
-services:                               # Define los servicios: son contenedores
+services: # Define los servicios: son contenedores
   database:
     # Imagen oficial de MongoDB Community Server
     image: mongodb/mongodb-community-server:5.0.4-ubuntu2004
@@ -7,28 +7,28 @@ services:                               # Define los servicios: son contenedores
     # restart: unless-stopped           # Se reinicia si no se para manualmente
     # restart: on-failure[:max-retries] # Solo si el contenedor ha fallado, opcionalmente con un número de intentos
     restart: always
-    environment:                        # Variables de entorno para configurar MongoDB
+    environment: # Variables de entorno para configurar MongoDB
       MONGO_INITDB_ROOT_USERNAME: mongo
       MONGO_INITDB_ROOT_PASSWORD: mongo
       MONGO_INITDB_DATABASE: tpv
-    ports:                              # Mapea el puerto 27017 (MongoDB) al host
+    ports: # Mapea el puerto 27017 (MongoDB) al host
       - "27017:27017"
     # Monta un volumen (mongo-data) en la ruta indicada del contenedor, pero estan conectados con la ruta real del anfitrion
     # Los datos se almacenan en el sistema de archivos del anfitrión en una ruta gestionada por Docker
     # No se pierde si reinica el contenedor
     volumes:
       - mongo-data:/data/db
-    labels:                             # Ayuda en la organización y gestión de contenedores
+    labels: # Ayuda en la organización y gestión de contenedores
       - "es.upm.miw.betca-tpv-core=database"
   app:
     build: .                            # Construye el contenedor a partir del Dockerfile en el directorio actual
     container_name: core-api
     restart: always
-    depends_on:                         # Este servicio depende del servicio database y debe arrancar después
+    depends_on: # Este servicio depende del servicio database y debe arrancar después
       - database
     ports:
       - "8082:8082"
-    environment:                        # Variables de entorno de Spring para configurar la conexión a la base de datos:
+    environment: # Variables de entorno de Spring para configurar la conexión a la base de datos:
       SPRING_DATA_MONGODB_URI: mongodb://mongo:mongo@database:27017/tpv?authSource=admin
     labels:
       - "es.upm.miw.betca-tpv-core=app"

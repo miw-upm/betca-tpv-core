@@ -14,13 +14,16 @@
 `Java` `Maven` `GitHub` `Spring-boot` `Sonarcloud` `MongoDB` `Docker` `Render`
 
 ## :gear: Ejecución en local
+
 1. Arrancar Docker Desktop
 1. Ejecutar en consola: `docker compose up --build -d`
 
 * Cliente Web (OpenAPI): `http://localhost:8082/swagger-ui.html`
 * Ver los logs (con -f se queda escuchando, Ctrl+C para salir): `docker logs [-f] core-api`
 * Para parar: `docker compose stop`, aunque resulta mas práctico manejar los contenedores desde Docker Desktop
-* Arrancar la consola de MongoDB sobre la BD: `docker exec -it mongo-db mongosh "mongodb://mongo:mongo@localhost:27017/tpv?authSource=admin"`
+* Arrancar la consola de MongoDB sobre la BD:
+  `docker exec -it mongo-db mongosh "mongodb://mongo:mongo@localhost:27017/tpv?authSource=admin"`
 
 ## :book: Documentación del proyecto
+
 [betca-tpv: Core](https://github.com/miw-upm/betca-tpv#back-end-core).
