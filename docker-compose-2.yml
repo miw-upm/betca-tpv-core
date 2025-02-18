@@ -1,0 +1,20 @@
+# Monta solo el API y reutiliza el contenedor de bases de datos
+services:
+  app:
+    build: .
+    container_name: core-api
+    restart: always
+    ports:
+      - "8082:8082"
+    environment:
+      # host.docker.internal: ruta al localhost de la máquina anfitriona
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:mongo@host.docker.internal:27017/tpv?authSource=admin
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
+    external: true
+
+
+

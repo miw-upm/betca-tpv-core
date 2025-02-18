@@ -1,0 +1,343 @@
+package es.upm.miw.betca_tpv_core.domain.services.utils;
+
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.BitMatrix;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.oned.Code128Writer;
+import com.google.zxing.qrcode.QRCodeWriter;
+import org.apache.logging.log4j.LogManager;
+import org.springframework.core.io.ClassPathResource;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+public class PdfCoreBuilder {
+    // System properties
+    private static final String USER_HOME = "user.home";
+    private static final String PDF_FILE_EXT = ".pdf";
+
+    // Layout constants
+    private static final int LINE_GAP = 2;
+    private static final float LINE_WIDTH = 0.5f;
+    private static final int BARCODE_WIDTH = 100;
+    private static final int BARCODE_HEIGHT = 80;
+    private static final int QR_CODE_PERCENT = 70; // We'll use this as a percentage reference for the QR size
+    private static final int IMAGE_WIDTH = 80;
+
+    private static final int THERMAL_FONT_SIZE = 7;
+    private static final int THERMAL_FONT_SIZE_EMPHASIZED = 10;
+    private static final int THERMAL_MARGIN_LEFT = 10;
+    private static final int THERMAL_MARGIN_RIGHT = 14;
+    private static final int THERMAL_MARGIN_TOP_BOTTOM = 12;
+    private static final float THERMAL_PAGE_WIDTH = 227;
+    private static final float THERMAL_PAGE_HEIGHT = 800;
+
+    // PDFBox objects
+    private final String filename;
+    private final PDDocument document;
+    private final PDPage page;
+    private PDPageContentStream contentStream;
+
+    // We'll keep track of the current text position on the page
+    private float currentY;
+    private static final float LINE_SPACING = 12; // Additional spacing for paragraphs/lines
+
+    public PdfCoreBuilder(String path, String file) {
+        // Prepare the final file path
+        path = System.getProperty(USER_HOME) + path;
+        this.filename = path + file + PDF_FILE_EXT;
+
+        // Create directories if they do not exist
+        File fileRef = new File(this.filename);
+        if (!fileRef.exists()) {
+            try {
+                Files.createDirectories(Paths.get(path));
+            } catch (IOException e) {
+                throw new PdfException(String.format("PdfCoreBuilder::prepareDocument. Error when creating directory (%s). %s", this.filename, e));
+            }
+        }
+
+        // Create the PDDocument and a single page with a custom size
+        try {
+            this.document = new PDDocument();
+            PDRectangle rect = new PDRectangle(THERMAL_PAGE_WIDTH, THERMAL_PAGE_HEIGHT);
+            this.page = new PDPage(rect);
+            this.document.addPage(this.page);
+
+            // Initialize the content stream to draw on the page
+            this.contentStream = new PDPageContentStream(this.document, this.page);
+
+            // Set the initial Y position at the top margin
+            this.currentY = THERMAL_PAGE_HEIGHT - THERMAL_MARGIN_TOP_BOTTOM;
+
+        } catch (IOException fnfe) {
+            throw new PdfException(String.format("PdfCoreBuilder::prepareDocument. Error when creating the pdf document (%s). %s", this.filename, fnfe));
+        }
+    }
+
+    /**
+     * Adds a bold, emphasized paragraph.
+     */
+    public PdfCoreBuilder paragraphEmphasized(String text) {
+        this.addTextLine(text, PDType1Font.HELVETICA_BOLD, THERMAL_FONT_SIZE_EMPHASIZED);
+        return this;
+    }
+
+    /**
+     * Adds a normal paragraph.
+     */
+    public PdfCoreBuilder paragraph(String text) {
+        this.addTextLine(text, PDType1Font.HELVETICA, THERMAL_FONT_SIZE);
+        return this;
+    }
+
+    /**
+     * Draws a dotted line separator.
+     */
+    public PdfCoreBuilder line() {
+        try {
+            // End current text context before drawing shapes
+            this.contentStream.endText();
+
+            // We will use a dashed pattern to simulate a dotted line
+            this.contentStream.setLineDashPattern(new float[]{1, 2}, 0);
+            this.contentStream.setLineWidth(LINE_WIDTH);
+
+            // Move to left margin
+            float startX = THERMAL_MARGIN_LEFT;
+            // End at right margin
+            float endX = THERMAL_PAGE_WIDTH - THERMAL_MARGIN_RIGHT;
+
+            this.contentStream.moveTo(startX, currentY);
+            this.contentStream.lineTo(endX, currentY);
+            this.contentStream.stroke();
+
+            // Reset line dash to a solid line for subsequent drawing
+            this.contentStream.setLineDashPattern(new float[]{}, 0);
+
+            // Reduce currentY to move below the line
+            this.currentY -= LINE_SPACING;
+
+            // Re-init text context
+            this.contentStream.beginText();
+            this.contentStream.setFont(PDType1Font.HELVETICA, THERMAL_FONT_SIZE);
+        } catch (IOException e) {
+            throw new PdfException("Error drawing line separator. " + e);
+        }
+        return this;
+    }
+
+    /**
+     * Generates a Code128 barcode (trimmed to last 12 characters if longer) and inserts it as an image.
+     */
+    public PdfCoreBuilder barcode(String code) {
+        if (code.length() > 12) {
+            code = code.substring(code.length() - 12);
+        }
+        // Transform code to remove special characters
+        code = code.trim().replace('-', '/').replace('_', '?');
+
+        try {
+            this.contentStream.endText(); // End text before drawing an image
+
+            // Generate the barcode using ZXing
+            BitMatrix bitMatrix = new Code128Writer().encode(code, BarcodeFormat.CODE_128, BARCODE_WIDTH, BARCODE_HEIGHT);
+            BufferedImage barcodeImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
+
+            // Convert to a PDFBox image
+            PDImageXObject pdImage = LosslessFactory.createFromImage(this.document, barcodeImage);
+
+            // Center the image horizontally
+            float xPos = (THERMAL_PAGE_WIDTH - BARCODE_WIDTH) / 2;
+            float yPos = currentY - BARCODE_HEIGHT;
+
+            // Draw the image
+            this.contentStream.drawImage(pdImage, xPos, yPos, BARCODE_WIDTH, BARCODE_HEIGHT);
+
+            // Update currentY
+            this.currentY = yPos - LINE_SPACING;
+
+            // Re-init text context
+            this.contentStream.beginText();
+            this.contentStream.setFont(PDType1Font.HELVETICA, THERMAL_FONT_SIZE);
+        } catch (IOException | WriterException e) {
+            throw new PdfException(String.format("PdfCoreBuilder::barcode. Error generating or drawing barcode (%s). %s", code, e));
+        }
+        return this;
+    }
+
+    /**
+     * Generates a QR code and inserts it as an image, followed by the code text centered.
+     */
+    public PdfCoreBuilder qrCode(String code) {
+        code = code.trim();
+        try {
+            this.contentStream.endText(); // End text before drawing an image
+
+            // Generate the QR code using ZXing
+            int qrSize = Math.round(BARCODE_WIDTH * (QR_CODE_PERCENT / 100.0f));
+            BitMatrix bitMatrix = new QRCodeWriter().encode(code, BarcodeFormat.QR_CODE, qrSize, qrSize);
+            BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
+
+            // Convert to a PDFBox image
+            PDImageXObject pdImage = LosslessFactory.createFromImage(this.document, qrImage);
+
+            // Center the image horizontally
+            float xPos = (THERMAL_PAGE_WIDTH - qrSize) / 2;
+            float yPos = currentY - qrSize;
+
+            // Draw the image
+            this.contentStream.drawImage(pdImage, xPos, yPos, qrSize, qrSize);
+
+            // Update currentY
+            this.currentY = yPos - LINE_SPACING;
+
+            // Now draw the text centered under the QR
+            this.contentStream.beginText();
+            this.setCenteredText(code, PDType1Font.HELVETICA, THERMAL_FONT_SIZE);
+            this.contentStream.endText();
+
+            // Move down after text
+            this.currentY -= (LINE_SPACING * 2);
+
+            // Re-init text context for subsequent writing
+            this.contentStream.beginText();
+            this.contentStream.setFont(PDType1Font.HELVETICA, THERMAL_FONT_SIZE);
+
+        } catch (IOException | WriterException e) {
+            throw new PdfException(String.format("PdfCoreBuilder::qrCode. Error generating QR code (%s). %s", code, e));
+        }
+        return this;
+    }
+
+    /**
+     * Adds the header: an image plus some lines of emphasized text.
+     */
+    public PdfCoreBuilder head() {
+        this
+                .image("logo-upm.png")
+                .paragraphEmphasized("Master en Ingeniería Web. BETCA")
+                .paragraphEmphasized("Tfn: +34 913366000")
+                .paragraph("NIF: Q2818015F   -   Calle Alan Turing s/n, 28031 Madrid")
+                .paragraph("Email: miw.etsisi@upm.es   -   Web: miw.etsisi.upm.es")
+                .line();
+        return this;
+    }
+
+    /**
+     * Adds the footer.
+     */
+    public PdfCoreBuilder foot() {
+        this
+                .line()
+                .paragraph("Items can be returned within 15 days of shopping")
+                .paragraphEmphasized("Thanks for your visit and please send us your suggestions to improve this service")
+                .paragraphEmphasized(" ")
+                .line();
+        return this;
+    }
+
+    /**
+     * Adds an image from resources (imges/ directory).
+     */
+    public PdfCoreBuilder image(String fileName) {
+        try {
+            this.contentStream.endText(); // End text before drawing an image
+
+            // Load image from classpath
+            ClassPathResource resource = new ClassPathResource("imges/" + fileName);
+            BufferedImage bufferedImage = javax.imageio.ImageIO.read(resource.getInputStream());
+            PDImageXObject pdImage = LosslessFactory.createFromImage(this.document, bufferedImage);
+
+            float xPos = (THERMAL_PAGE_WIDTH - IMAGE_WIDTH) / 2;
+            float yPos = currentY - IMAGE_WIDTH; // Keep it square for simplicity (width=height)
+            this.contentStream.drawImage(pdImage, xPos, yPos, IMAGE_WIDTH, IMAGE_WIDTH);
+
+            this.currentY = yPos - LINE_SPACING;
+
+            // Re-init text context
+            this.contentStream.beginText();
+            this.contentStream.setFont(PDType1Font.HELVETICA, THERMAL_FONT_SIZE);
+        } catch (IOException e) {
+            LogManager.getLogger(this.getClass())
+                    .error(String.format("PdfCoreBuilder::image. Error when adding image to PDF (%s). %s", fileName, e));
+            throw new PdfException("Can’t add image to PDF (" + fileName + "). " + e);
+        }
+        return this;
+    }
+
+    /**
+     * Placeholder to demonstrate table structure.
+     * You'd need to implement cell drawing manually with PDFBox if you want a real table.
+     */
+    public PdfTableBuilder table(float... widths) {
+        return new PdfTableBuilder(this, this.document, this.page, this.contentStream, widths);
+    }
+
+    /**
+     * Closes the document and returns the bytes.
+     */
+    public byte[] build() {
+        try {
+            // Make sure we close the content stream properly
+            this.contentStream.endText();
+            this.contentStream.close();
+
+            // Save the document to file
+            this.document.save(this.filename);
+            this.document.close();
+
+            // Read the final PDF into a byte array
+            return Files.readAllBytes(Paths.get(this.filename));
+        } catch (IOException ioe) {
+            throw new PdfException(String.format("PdfCoreBuilder::build. Error when reading PDF bytes. %s", ioe));
+        }
+    }
+
+    /**
+     * Internal method to add a line of text at the current Y position using a given font and size.
+     */
+    private void addTextLine(String text, org.apache.pdfbox.pdmodel.font.PDFont font, float fontSize) {
+        try {
+            this.contentStream.setFont(font, fontSize);
+            // Move to left margin
+            this.contentStream.beginText();
+            this.contentStream.newLineAtOffset(THERMAL_MARGIN_LEFT, currentY);
+            this.contentStream.showText(text);
+            this.contentStream.endText();
+
+            // Decrement Y so the next line is below
+            currentY -= LINE_SPACING;
+
+            // Restart text flow with default font/size
+            this.contentStream.beginText();
+            this.contentStream.setFont(PDType1Font.HELVETICA, THERMAL_FONT_SIZE);
+            this.contentStream.newLineAtOffset(0, 0); // Position updated in subsequent calls
+        } catch (IOException e) {
+            throw new PdfException("Error writing text line: " + e);
+        }
+    }
+
+    /**
+     * Internal method to center text at the current Y position.
+     */
+    private void setCenteredText(String text, org.apache.pdfbox.pdmodel.font.PDFont font, float fontSize) throws IOException {
+        float textWidth = font.getStringWidth(text) / 1000 * fontSize;
+        float startX = (THERMAL_PAGE_WIDTH - textWidth) / 2;
+        this.contentStream.setFont(font, fontSize);
+        this.contentStream.newLineAtOffset(startX, currentY);
+        this.contentStream.showText(text);
+    }
+}

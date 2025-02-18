@@ -1,0 +1,223 @@
+package es.upm.miw.betca_tpv_core.domain.services.utils;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * A basic PDFBox-based table builder that stores rows/cells in-memory.
+ * Once buildTable() is called, it attempts to draw them on the current page,
+ * using the parent PdfCoreBuilder's positioning logic or your own.
+ *
+ * NOTE: PDFBox does not provide a high-level table layout like iText.
+ * Therefore, you must handle alignment, cell widths, borders, etc. manually.
+ */
+public class PdfTableBuilder {
+
+    private static final int FONT_SIZE_EMPHASIZED = 10;
+    private static final int DEFAULT_FONT_SIZE = 7;
+
+    // The parent builder to return to after building the table
+    private final PdfCoreBuilder parentBuilder;
+
+    // PDFBox references
+    private final PDDocument document;
+    private final PDPageContentStream contentStream;
+
+    // Column widths (including the index column)
+    private final float[] columnWidths;
+
+    // Table data
+    private final List<String[]> rows = new ArrayList<>();
+    private String[] headerRow = null;
+
+    // Keep track of an index for each added row
+    private int index = 1;
+
+    /**
+     * @param parentBuilder   The calling PdfCoreBuilder
+     * @param document        The PDDocument in use
+     * @param contentStream   The content stream where we'll draw the table
+     * @param widths          Column widths, without the index column. We will prepend a small column for row index.
+     */
+    public PdfTableBuilder(PdfCoreBuilder parentBuilder, PDDocument document,
+                           PDPageContentStream contentStream, float... widths) {
+        this.parentBuilder = parentBuilder;
+        this.document = document;
+        this.contentStream = contentStream;
+
+        // Prepend a fixed 15f column for the index
+        this.columnWidths = new float[widths.length + 1];
+        this.columnWidths[0] = 15f;
+        System.arraycopy(widths, 0, this.columnWidths, 1, widths.length);
+    }
+
+    /**
+     * Defines the header row. The first column is left as empty
+     * (it will effectively be an empty cell for the row index).
+     */
+    public PdfTableBuilder tableColumnsHeader(String... headers) {
+        // We'll store the header row with an empty cell at index 0
+        this.headerRow = new String[headers.length + 1];
+        this.headerRow[0] = " "; // empty or "#" if you prefer
+        System.arraycopy(headers, 0, this.headerRow, 1, headers.length);
+        return this;
+    }
+
+    /**
+     * Adds a row of cells, prefixed by the row index in the first column.
+     */
+    public PdfTableBuilder tableCells(String... cells) {
+        String[] row = new String[cells.length + 1];
+        row[0] = String.valueOf(index++);
+        System.arraycopy(cells, 0, row, 1, cells.length);
+        this.rows.add(row);
+        return this;
+    }
+
+    /**
+     * Adds a row that spans all columns, aligned to the right.
+     * We'll store a special marker to indicate it's a "colspan row."
+     * For simplicity, just store a single string in row[0],
+     * and use a negative value or a special flag to detect it.
+     */
+    public PdfTableBuilder tableColspanRight(String value) {
+        // Use nulls for the other columns
+        String[] row = new String[this.columnWidths.length];
+        Arrays.fill(row, null);
+        // We'll put the value in row[0], and a marker in row[1] for detection
+        row[0] = value;
+        // row[1] could be a special marker, e.g. "[COLSPAN]"
+        row[1] = "[COLSPAN]";
+        this.rows.add(row);
+        return this;
+    }
+
+    /**
+     * Draws the table on the current page using PDFBox primitives.
+     * Then returns to the parent PdfCoreBuilder.
+     */
+    public PdfCoreBuilder buildTable() {
+        // End the current text context (if open)
+        try {
+            this.contentStream.endText();
+        } catch (IOException e) {
+            // If text wasn't open, ignore
+        }
+
+        // We'll fetch the parentBuilder's currentY to draw from there.
+        float currentY = this.parentBuilder.getCurrentY();
+        float startX = this.parentBuilder.getThermalMarginLeft();
+        float cellHeight = 15f; // Fixed row height for demonstration
+        float tableSpacing = 10f; // Some extra spacing after the table
+
+        // Draw header if exists
+        if (this.headerRow != null) {
+            try {
+                currentY = drawRow(this.headerRow, startX, currentY, cellHeight, true, false);
+            } catch (IOException e) {
+                throw new PdfException("Error drawing header row in table: " + e);
+            }
+        }
+
+        // Draw normal rows
+        for (String[] row : this.rows) {
+            boolean isColspanRow = (row.length > 1 && "[COLSPAN]".equals(row[1]));
+            try {
+                currentY = drawRow(row, startX, currentY, cellHeight, false, isColspanRow);
+            } catch (IOException e) {
+                throw new PdfException("Error drawing table row: " + e);
+            }
+        }
+
+        // Update parent's currentY after the table
+        this.parentBuilder.setCurrentY(currentY - tableSpacing);
+
+        // Re-init text context for subsequent writing
+        try {
+            this.contentStream.beginText();
+            this.contentStream.setFont(PDType1Font.HELVETICA, DEFAULT_FONT_SIZE);
+            this.contentStream.newLineAtOffset(0, 0);
+        } catch (IOException e) {
+            throw new PdfException("Error re-initializing text after table: " + e);
+        }
+
+        return this.parentBuilder;
+    }
+
+    /**
+     * Draws a single row at the specified Y position.
+     *
+     * @param rowValues   Array of cell values.
+     * @param startX      Left X coordinate.
+     * @param currentY    Current Y coordinate to draw the row.
+     * @param cellHeight  Height for each row.
+     * @param isHeader    If true, draw bold text for the header.
+     * @param isColspan   If true, the row spans all columns (tableColspanRight).
+     * @return            The updated Y after drawing this row.
+     */
+    private float drawRow(String[] rowValues, float startX, float currentY, float cellHeight,
+                          boolean isHeader, boolean isColspan) throws IOException {
+
+        // We'll draw text in each cell, ignoring real border rendering.
+        // You can extend this to draw lines around each cell if desired.
+        float x = startX;
+        // Decide font
+        this.contentStream.setFont(isHeader ? PDType1Font.HELVETICA_BOLD : PDType1Font.HELVETICA,
+                                   isHeader ? FONT_SIZE_EMPHASIZED : DEFAULT_FONT_SIZE);
+
+        if (isColspan) {
+            // Merge all columns into one
+            float totalWidth = 0;
+            for (float w : this.columnWidths) {
+                totalWidth += w;
+            }
+            // The text is in rowValues[0], align to right
+            String value = rowValues[0];
+            // We'll place it with a small offset from the right edge
+            float textOffset = measureTextWidth(value, isHeader) + 5f;
+            float textX = startX + totalWidth - textOffset;
+            float textY = currentY - (cellHeight * 0.7f);
+
+            this.contentStream.beginText();
+            this.contentStream.newLineAtOffset(textX, textY);
+            this.contentStream.showText(value);
+            this.contentStream.endText();
+
+            // Return the updated Y
+            return currentY - cellHeight;
+        }
+
+        // Normal row
+        for (int i = 0; i < rowValues.length; i++) {
+            String text = rowValues[i];
+            if (text == null) text = "";
+
+            // We'll place text slightly below the top of the cell
+            float textX = x + 2f;
+            float textY = currentY - (cellHeight * 0.7f);
+
+            this.contentStream.beginText();
+            this.contentStream.newLineAtOffset(textX, textY);
+            this.contentStream.showText(text);
+            this.contentStream.endText();
+
+            // Move x by the column width
+            x += columnWidths[i];
+        }
+        return currentY - cellHeight;
+    }
+
+    /**
+     * Measures the approximate width of the text with the chosen font and size.
+     */
+    private float measureTextWidth(String text, boolean isHeader) throws IOException {
+        float fontSize = isHeader ? FONT_SIZE_EMPHASIZED : DEFAULT_FONT_SIZE;
+        return PDType1Font.HELVETICA.getStringWidth(text) / 1000f * fontSize;
+    }
+}
