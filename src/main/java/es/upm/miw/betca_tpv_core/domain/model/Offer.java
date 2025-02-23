@@ -38,6 +38,12 @@ public class Offer {
         if (Objects.isNull(reference)) {
             this.reference = UUID.randomUUID().toString();
         }
+        if (Objects.isNull(creationDate)) {
+            this.creationDate = LocalDateTime.now();
+        }
+        if (Objects.isNull(expiryDate)) {
+            this.expiryDate = LocalDateTime.now().plusDays(30);
+        }
         if (Objects.isNull(description)) {
             this.description = "Default offer description";
         }

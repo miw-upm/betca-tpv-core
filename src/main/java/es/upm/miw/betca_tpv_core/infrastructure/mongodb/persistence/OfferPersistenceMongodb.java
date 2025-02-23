@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
+import es.upm.miw.betca_tpv_core.domain.exceptions.BadRequestException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Offer;
@@ -32,6 +33,10 @@ public class OfferPersistenceMongodb implements OfferPersistence {
 
     @Override
     public Mono<Offer> create(Offer offer) {
+        if (offer.getCreationDate() != null && offer.getExpiryDate() != null &&
+                !offer.getCreationDate().isBefore(offer.getExpiryDate())) {
+            return Mono.error(new BadRequestException("The creation date must be before the expiry date."));
+        }
         return this.assertReferenceNotExist(offer.getReference())
                 .thenMany(Flux.fromIterable(offer.getArticleList()))
                 .flatMap(article -> this.articleReactive.findByBarcode(article.getBarcode())

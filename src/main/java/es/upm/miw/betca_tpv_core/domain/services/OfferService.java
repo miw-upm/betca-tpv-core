@@ -7,9 +7,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 @Service
 public class OfferService {
 
@@ -21,7 +18,6 @@ public class OfferService {
     }
 
     public Mono<Offer> create(Offer offer) {
-        offer.setCreationDate(LocalDateTime.now());
         return this.offerPersistence.create(offer);
     }
 
