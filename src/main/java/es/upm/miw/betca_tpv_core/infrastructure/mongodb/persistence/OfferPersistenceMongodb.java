@@ -51,8 +51,8 @@ public class OfferPersistenceMongodb implements OfferPersistence {
     }
 
     @Override
-    public Flux<Offer> findByReferenceAndDescriptionAndCreationDateAndExpiryDateAndDiscountNullSafe(String reference, String description) {
-        return this.offerReactive.findByReferenceAndDescriptionAndCreationDateAndExpiryDateAndDiscountNullSafe(reference, description)
+    public Flux<Offer> findByReferenceAndDescriptionNullSafe(String reference, String description) {
+        return this.offerReactive.findByReferenceAndDescriptionNullSafe(reference, description)
                 .map(OfferEntity::toOfferWithoutArticles);
     }
 

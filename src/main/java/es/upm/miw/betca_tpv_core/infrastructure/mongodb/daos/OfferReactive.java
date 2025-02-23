@@ -17,6 +17,6 @@ public interface OfferReactive extends ReactiveMongoRepository<OfferEntity, Stri
             + "?#{ [0] == null ? {_id : {$ne:null}} : { reference : {$regex:[0], $options: 'i'} } },"
             + "?#{ [1] == null ? {_id : {$ne:null}} : { description : {$regex:[1], $options: 'i'} } },"
             + "] }")
-    Flux<OfferEntity> findByReferenceAndDescriptionAndCreationDateAndExpiryDateAndDiscountNullSafe(
+    Flux<OfferEntity> findByReferenceAndDescriptionNullSafe(
             String reference, String description);
 }

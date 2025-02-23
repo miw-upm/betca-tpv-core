@@ -21,7 +21,7 @@ public class OfferService {
         return this.offerPersistence.create(offer);
     }
 
-    public Flux<Offer> findByReferenceAndDescriptionAndCreationDateAndExpiryDateAndDiscountNullSafe(String reference, String description) {
-        return this.offerPersistence.findByReferenceAndDescriptionAndCreationDateAndExpiryDateAndDiscountNullSafe(reference, description);
+    public Flux<Offer> findByReferenceAndDescriptionNullSafe(String reference, String description) {
+        return this.offerPersistence.findByReferenceAndDescriptionNullSafe(reference, description);
     }
 }

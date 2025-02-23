@@ -33,8 +33,8 @@ public class OfferResource {
     }
 
     @GetMapping(SEARCH)
-    public Flux<Offer> findByReferenceAndDescriptionAndCreationDateAndExpiryDateAndDiscountNullSafe(
+    public Flux<Offer> findByReferenceAndDescriptionNullSafe(
             @RequestParam(required = false) String reference, @RequestParam(required = false) String description) {
-        return this.offerService.findByReferenceAndDescriptionAndCreationDateAndExpiryDateAndDiscountNullSafe(reference, description);
+        return this.offerService.findByReferenceAndDescriptionNullSafe(reference, description);
     }
 }

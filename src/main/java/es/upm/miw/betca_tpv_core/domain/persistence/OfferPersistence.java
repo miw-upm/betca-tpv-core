@@ -13,5 +13,5 @@ public interface OfferPersistence {
 
     Mono<Offer> create(Offer offer);
 
-    Flux<Offer> findByReferenceAndDescriptionAndCreationDateAndExpiryDateAndDiscountNullSafe(String reference, String description);
+    Flux<Offer> findByReferenceAndDescriptionNullSafe(String reference, String description);
 }
