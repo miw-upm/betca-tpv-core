@@ -15,4 +15,3 @@ public interface OfferPersistence {
 
     Flux<Offer> findByReferenceAndDescriptionAndCreationDateAndExpiryDateAndDiscountNullSafe(String reference, String description);
 }
-q
