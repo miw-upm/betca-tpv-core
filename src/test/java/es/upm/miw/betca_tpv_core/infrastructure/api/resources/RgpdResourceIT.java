@@ -13,8 +13,10 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.util.Base64;
+import java.util.List;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.RgpdResource.RGPDS;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
@@ -57,5 +59,20 @@ class RgpdResourceIT {
                 .returnResult().getResponseBody();
 
         assertNotNull(createdRgpd);
+    }
+
+    @Test
+    void testGetAllRgpds() {
+        List<RgpdDto> rgpdDtoList = this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(RGPDS)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(RgpdDto.class)
+                .value(Assertions::assertNotNull)
+                .returnResult().getResponseBody();
+
+        assertNotNull(rgpdDtoList);
+        assertThat(rgpdDtoList.size()).isGreaterThanOrEqualTo(4);
     }
 }

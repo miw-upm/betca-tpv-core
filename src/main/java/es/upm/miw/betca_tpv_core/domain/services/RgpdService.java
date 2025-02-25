@@ -9,6 +9,7 @@ import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.RgpdDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 
@@ -30,6 +31,10 @@ public class RgpdService {
         return verifyUserExistsByMobile(userMobile)
                 .then(validateUserHasRgpdSigned(userMobile))
                 .then(this.rgpdPersistence.create(rgpd));
+    }
+
+    public Flux<Rgpd> findAllRgpds() {
+        return rgpdPersistence.findAllRgpds();
     }
 
     private Mono<Void> verifyUserExistsByMobile(String userMobile) {

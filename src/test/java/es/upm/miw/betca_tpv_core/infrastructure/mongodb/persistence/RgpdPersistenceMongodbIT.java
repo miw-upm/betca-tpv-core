@@ -6,9 +6,11 @@ import es.upm.miw.betca_tpv_core.domain.model.RgpdType;
 import es.upm.miw.betca_tpv_core.domain.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.util.ArrayList;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
@@ -55,4 +57,18 @@ class RgpdPersistenceMongodbIT {
                 .create(rgpdPersistenceMongodb.findRgpdByUserMobile(userMobile))
                 .verifyComplete();
     }
+
+    @Test
+    void testFindAllRgpds() {
+        StepVerifier.
+                create(rgpdPersistenceMongodb.findAllRgpds())
+                .recordWith(ArrayList::new)
+                .thenConsumeWhile(rgpd -> true)
+                .consumeRecordedWith(rgpdList -> {
+                    assertThat(rgpdList).isNotNull();
+                    assertThat(rgpdList.size()).isGreaterThanOrEqualTo(4);
+                })
+                .verifyComplete();
+    }
+
 }
