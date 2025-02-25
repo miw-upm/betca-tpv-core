@@ -41,8 +41,6 @@ public class OfferEntity {
     public Offer toOffer() {
         Offer offer = new Offer();
         BeanUtils.copyProperties(this, offer);
-        System.out.println("Offer:" + offer);
-        System.out.println("ArticleEntities:" + this.articleEntities);
         if (Objects.nonNull(this.articleEntities) && !this.articleEntities.isEmpty()) {
             offer.setArticleList(this.articleEntities.stream()
                     .map(ArticleEntity::toArticle)

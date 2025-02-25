@@ -28,4 +28,8 @@ public class OfferService {
     public Mono<Offer> read(String reference) {
         return this.offerPersistence.readByReference(reference);
     }
+
+    public Mono<Offer> update(String reference, Offer offer) {
+        return this.offerPersistence.update(reference, offer);
+    }
 }

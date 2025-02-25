@@ -13,4 +13,6 @@ public interface OfferPersistence {
     Flux<Offer> findByReferenceAndDescriptionNullSafe(String reference, String description);
 
     Mono<Offer> readByReference(String reference);
+
+    Mono<Offer> update(String reference, Offer offer);
 }

@@ -40,4 +40,10 @@ public class OfferResource {
     public Mono<Offer> read(@PathVariable String reference) {
         return this.offerService.read(reference);
     }
+
+    @PutMapping(REFERENCE_ID)
+    public Mono<Offer> update(@PathVariable String reference, @Valid @RequestBody Offer offer) {
+        offer.doDefault();
+        return this.offerService.update(reference, offer);
+    }
 }
