@@ -12,6 +12,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.util.ArrayList;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -34,19 +37,16 @@ class RgpdServiceIT {
 
         when(userMicroservice.readByMobile(userMobile)).thenReturn(Mono.just(User.builder().mobile(userMobile).firstName(userName).build()));
 
-        StepVerifier
-                .create(rgpdService.create(rgpd))
-                .expectNextMatches(savedRgpd -> {
-                    assertNotNull(savedRgpd);
-                    assertNotNull(savedRgpd.getUser());
-                    assertNotNull(savedRgpd.getUser().getMobile());
-                    assertEquals(RgpdType.BASIC, savedRgpd.getRgpdType());
-                    assertEquals(userMobile, savedRgpd.getUser().getMobile());
-                    assertEquals(userName, savedRgpd.getUser().getFirstName());
-                    assertArrayEquals(agreementEncoded, savedRgpd.getAgreement());
-                    return true;
-                })
-                .verifyComplete();
+        StepVerifier.create(rgpdService.create(rgpd)).expectNextMatches(savedRgpd -> {
+            assertNotNull(savedRgpd);
+            assertNotNull(savedRgpd.getUser());
+            assertNotNull(savedRgpd.getUser().getMobile());
+            assertEquals(RgpdType.BASIC, savedRgpd.getRgpdType());
+            assertEquals(userMobile, savedRgpd.getUser().getMobile());
+            assertEquals(userName, savedRgpd.getUser().getFirstName());
+            assertArrayEquals(agreementEncoded, savedRgpd.getAgreement());
+            return true;
+        }).verifyComplete();
     }
 
     @Test
@@ -59,9 +59,7 @@ class RgpdServiceIT {
 
         when(userMicroservice.readByMobile(userMobile)).thenReturn(Mono.error(new BadRequestException("User not found")));
 
-        StepVerifier.create(rgpdService.create(rgpd))
-                .expectErrorMatches(throwable -> throwable instanceof BadRequestException)
-                .verify();
+        StepVerifier.create(rgpdService.create(rgpd)).expectErrorMatches(throwable -> throwable instanceof BadRequestException).verify();
     }
 
     @Test
@@ -74,8 +72,14 @@ class RgpdServiceIT {
 
         when(userMicroservice.readByMobile(userMobile)).thenReturn(Mono.just(User.builder().mobile(userMobile).firstName(userName).build()));
 
-        StepVerifier.create(rgpdService.create(newRgpd))
-                .expectErrorMatches(throwable -> throwable instanceof BadRequestException)
-                .verify();
+        StepVerifier.create(rgpdService.create(newRgpd)).expectErrorMatches(throwable -> throwable instanceof BadRequestException).verify();
+    }
+
+    @Test
+    void testFindAllRgpds() {
+        StepVerifier.create(rgpdService.findAllRgpds()).recordWith(ArrayList::new).thenConsumeWhile(rgpd -> true).consumeRecordedWith(rgpdList -> {
+            assertThat(rgpdList).isNotNull();
+            assertThat(rgpdList.size()).isGreaterThanOrEqualTo(4);
+        }).verifyComplete();
     }
 }
