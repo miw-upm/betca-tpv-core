@@ -27,7 +27,8 @@ public class RgpdResource {
 
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping
-    public Mono<Rgpd> createRgpd(@Valid @RequestBody RgpdDto creationRgpdDto) {
-        return this.rgpdService.create(creationRgpdDto);
+    public Mono<RgpdDto> createRgpd(@Valid @RequestBody RgpdDto creationRgpdDto) {
+        return this.rgpdService.create(creationRgpdDto.toRgpd())
+                .map(Rgpd::toDto);
     }
 }

@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos;
 
+import es.upm.miw.betca_tpv_core.domain.model.RgpdType;
 import es.upm.miw.betca_tpv_core.domain.model.ShoppingState;
 import es.upm.miw.betca_tpv_core.domain.model.Tax;
 import es.upm.miw.betca_tpv_core.domain.model.TreeType;
@@ -25,6 +26,7 @@ public class DatabaseSeederDev {
     private final ArticlesTreeDao articlesTreeDao;
     private final TicketDao ticketDao;
     private final CashierDao cashierDao;
+    private final RgpdDao rgpdDao;
     private final OfferDao offerDao;
 
     private final DatabaseStarting databaseStarting;
@@ -32,13 +34,14 @@ public class DatabaseSeederDev {
     @Autowired
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
                              TicketDao ticketDao, CashierDao cashierDao, DatabaseStarting databaseStarting,
-                             OfferDao offerDao) {
+                             RgpdDao rgpdDao, OfferDao offerDao) {
         this.articleDao = articleDao;
         this.providerDao = providerDao;
         this.articlesTreeDao = articlesTreeDao;
         this.ticketDao = ticketDao;
         this.cashierDao = cashierDao;
         this.databaseStarting = databaseStarting;
+        this.rgpdDao = rgpdDao;
         this.offerDao = offerDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
@@ -175,6 +178,18 @@ public class DatabaseSeederDev {
         };
         this.ticketDao.saveAll(Arrays.asList(tickets));
         log.warn("        ------- tickets");
+
+        byte[] SampleAgreementEncoded = "SampleAgreement".getBytes();
+        byte[] newAgreementEncoded = "NewAgreement".getBytes();
+        RgpdEntity[] rgpdList = {
+                RgpdEntity.builder().agreement(SampleAgreementEncoded).rgpdType(RgpdType.BASIC).userMobile("600000001").userName("Alex").build(),
+                RgpdEntity.builder().agreement(newAgreementEncoded).rgpdType(RgpdType.AVANCE).userMobile("600000002").userName("John").build(),
+                RgpdEntity.builder().agreement(SampleAgreementEncoded).rgpdType(RgpdType.AVANCE).userMobile("600000003").userName("Stephen").build(),
+                RgpdEntity.builder().agreement(newAgreementEncoded).rgpdType(RgpdType.MEDIUM).userMobile("600000004").userName("Darius").build()
+        };
+        this.rgpdDao.saveAll(Arrays.asList(rgpdList));
+        log.warn("        ------- data-rpotection-rgpd");
+        
         LocalDateTime dateOfferCreation = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
         LocalDateTime dateOfferExpiry = LocalDateTime.of(2020, Month.JANUARY, 12, 10, 10);
         OfferEntity[] offers = {
