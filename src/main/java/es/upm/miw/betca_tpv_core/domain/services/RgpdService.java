@@ -1,12 +1,9 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.exceptions.BadRequestException;
-import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Rgpd;
-import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.persistence.RgpdPersistence;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.RgpdDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -35,6 +32,11 @@ public class RgpdService {
 
     public Flux<Rgpd> findAllRgpds() {
         return rgpdPersistence.findAllRgpds();
+    }
+
+    public Mono<Rgpd> updateRgpd(String userMobile, Rgpd updatedRgpd) {
+        return rgpdPersistence.updateRgpd(userMobile, updatedRgpd)
+                .map(rgpd -> rgpd);
     }
 
     private Mono<Void> verifyUserExistsByMobile(String userMobile) {
