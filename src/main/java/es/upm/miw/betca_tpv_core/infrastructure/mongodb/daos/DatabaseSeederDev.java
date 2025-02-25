@@ -53,12 +53,10 @@ public class DatabaseSeederDev {
 
     private void deleteAllAndInitialize() {
         this.ticketDao.deleteAll();
-
         this.articleDao.deleteAll();
-
         this.providerDao.deleteAll();
         this.cashierDao.deleteAll();
-
+        this.offerDao.deleteAll();
         log.warn("------- Delete All -----------");
         this.databaseStarting.initialize();
     }

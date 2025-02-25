@@ -9,15 +9,13 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 @Rest
 @RequestMapping(OfferResource.OFFERS)
 public class OfferResource {
 
     public static final String OFFERS = "/offers";
     public static final String SEARCH = "/search";
+    public static final String REFERENCE_ID = "/{reference}";
 
     private final OfferService offerService;
 
@@ -36,5 +34,16 @@ public class OfferResource {
     public Flux<Offer> findByReferenceAndDescriptionNullSafe(
             @RequestParam(required = false) String reference, @RequestParam(required = false) String description) {
         return this.offerService.findByReferenceAndDescriptionNullSafe(reference, description);
+    }
+
+    @GetMapping(REFERENCE_ID)
+    public Mono<Offer> read(@PathVariable String reference) {
+        return this.offerService.read(reference);
+    }
+
+    @PutMapping(REFERENCE_ID)
+    public Mono<Offer> update(@PathVariable String reference, @Valid @RequestBody Offer offer) {
+        offer.doDefault();
+        return this.offerService.update(reference, offer);
     }
 }
