@@ -6,9 +6,6 @@ import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
-import java.time.Instant;
-
 public interface OfferReactive extends ReactiveMongoRepository<OfferEntity, String> {
 
     Mono<OfferEntity> findByReference(String reference);

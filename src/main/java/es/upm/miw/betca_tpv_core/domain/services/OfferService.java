@@ -24,4 +24,8 @@ public class OfferService {
     public Flux<Offer> findByReferenceAndDescriptionNullSafe(String reference, String description) {
         return this.offerPersistence.findByReferenceAndDescriptionNullSafe(reference, description);
     }
+
+    public Mono<Offer> read(String reference) {
+        return this.offerPersistence.readByReference(reference);
+    }
 }
