@@ -56,7 +56,7 @@ public class ArticleResource {
                         barcode, description, reference, stock, discontinued)
                 .map(Article::ofBarcodeDescriptionStock);
     }
-
+    @PreAuthorize("permitAll()")
     @GetMapping(BARCODE)
     public Mono<ArticleBarcodesDto> findByBarcodeNullSafe(@RequestParam(required = false) String barcode) {
         return this.articleService.findByBarcodeAndNotDiscontinuedNullSafe(barcode)
