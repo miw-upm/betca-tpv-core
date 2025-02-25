@@ -181,8 +181,8 @@ public class DatabaseSeederDev {
         byte[] newAgreementEncoded = "NewAgreement".getBytes();
         RgpdEntity[] rgpdList = {
                 RgpdEntity.builder().agreement(SampleAgreementEncoded).rgpdType(RgpdType.BASIC).userMobile("600000001").userName("Alex").build(),
-                RgpdEntity.builder().agreement(newAgreementEncoded).rgpdType(RgpdType.AVANCE).userMobile("600000002").userName("John").build(),
-                RgpdEntity.builder().agreement(SampleAgreementEncoded).rgpdType(RgpdType.AVANCE).userMobile("600000003").userName("Stephen").build(),
+                RgpdEntity.builder().agreement(newAgreementEncoded).rgpdType(RgpdType.ADVANCED).userMobile("600000002").userName("John").build(),
+                RgpdEntity.builder().agreement(SampleAgreementEncoded).rgpdType(RgpdType.ADVANCED).userMobile("600000003").userName("Stephen").build(),
                 RgpdEntity.builder().agreement(newAgreementEncoded).rgpdType(RgpdType.MEDIUM).userMobile("600000004").userName("Darius").build()
         };
         this.rgpdDao.saveAll(Arrays.asList(rgpdList));

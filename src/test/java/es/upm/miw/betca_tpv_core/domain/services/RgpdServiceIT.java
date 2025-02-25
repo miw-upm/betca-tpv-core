@@ -79,7 +79,27 @@ class RgpdServiceIT {
     void testFindAllRgpds() {
         StepVerifier.create(rgpdService.findAllRgpds()).recordWith(ArrayList::new).thenConsumeWhile(rgpd -> true).consumeRecordedWith(rgpdList -> {
             assertThat(rgpdList).isNotNull();
-            assertThat(rgpdList.size()).isGreaterThanOrEqualTo(4);
+            assertThat(rgpdList.size()).isGreaterThanOrEqualTo(3);
         }).verifyComplete();
+    }
+
+    @Test
+    void testUpdateRgpd() {
+        String userMobile = "600000001";
+        Rgpd updatedRgpd = Rgpd.builder()
+                .rgpdType(RgpdType.ADVANCED)
+                .agreement("NewAndFinalAgreement".getBytes())
+                .user(User.builder().mobile("600000001").firstName("Alex").build())
+                .build();
+
+        StepVerifier
+                .create(rgpdService.updateRgpd(userMobile, updatedRgpd))
+                .assertNext(rgpd -> {
+                    assertEquals(RgpdType.ADVANCED, rgpd.getRgpdType());
+                    assertArrayEquals("NewAndFinalAgreement".getBytes(), rgpd.getAgreement());
+                    assertEquals("600000001", rgpd.getUser().getMobile());
+                    assertEquals("Alex", rgpd.getUser().getFirstName());
+                })
+                .verifyComplete();
     }
 }

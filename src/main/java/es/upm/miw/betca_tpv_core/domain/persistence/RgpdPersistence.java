@@ -12,4 +12,6 @@ public interface RgpdPersistence {
     Mono<Rgpd> findRgpdByUserMobile(String userMobile);
 
     Flux<Rgpd> findAllRgpds();
+
+    Mono<Rgpd> updateRgpd(String userMobile, Rgpd updatedRgpd);
 }
