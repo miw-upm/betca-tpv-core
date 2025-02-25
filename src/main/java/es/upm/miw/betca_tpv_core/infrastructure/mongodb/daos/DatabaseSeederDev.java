@@ -188,7 +188,7 @@ public class DatabaseSeederDev {
                 RgpdEntity.builder().agreement(newAgreementEncoded).rgpdType(RgpdType.MEDIUM).userMobile("600000004").userName("Darius").build()
         };
         this.rgpdDao.saveAll(Arrays.asList(rgpdList));
-        log.warn("        ------- data-rpotection-rgpd");
+        log.warn("        ------- data-protection-rgpd");
         
         LocalDateTime dateOfferCreation = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
         LocalDateTime dateOfferExpiry = LocalDateTime.of(2020, Month.JANUARY, 12, 10, 10);

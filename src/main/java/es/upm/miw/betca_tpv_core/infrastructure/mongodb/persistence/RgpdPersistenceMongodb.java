@@ -6,6 +6,7 @@ import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.RgpdReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.RgpdEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
@@ -31,5 +32,11 @@ public class RgpdPersistenceMongodb implements RgpdPersistence {
                 .map(RgpdEntity::toRgpd)
                 .next();
 
+    }
+
+    @Override
+    public Flux<Rgpd> findAllRgpds() {
+        return this.rgpdReactive.findAll()
+                .map(RgpdEntity::toRgpd);
     }
 }
