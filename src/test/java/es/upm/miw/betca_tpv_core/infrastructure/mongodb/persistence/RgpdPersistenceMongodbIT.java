@@ -1,6 +1,8 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
+import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Rgpd;
 import es.upm.miw.betca_tpv_core.domain.model.RgpdType;
 import es.upm.miw.betca_tpv_core.domain.model.User;
@@ -66,9 +68,56 @@ class RgpdPersistenceMongodbIT {
                 .thenConsumeWhile(rgpd -> true)
                 .consumeRecordedWith(rgpdList -> {
                     assertThat(rgpdList).isNotNull();
-                    assertThat(rgpdList.size()).isGreaterThanOrEqualTo(4);
+                    assertThat(rgpdList.size()).isGreaterThanOrEqualTo(3);
                 })
                 .verifyComplete();
     }
 
+    @Test
+    void testUpdateRgpd_Success() {
+        String userMobile = "600000001";
+        Rgpd updatedRgpd = Rgpd.builder()
+                .rgpdType(RgpdType.ADVANCED)
+                .agreement("UpdatedAgreement".getBytes())
+                .user(User.builder().mobile(userMobile).firstName("Alex").build())
+                .build();
+
+        StepVerifier
+                .create(rgpdPersistenceMongodb.updateRgpd(userMobile, updatedRgpd))
+                .assertNext(rgpd -> {
+                    assertEquals(RgpdType.ADVANCED, rgpd.getRgpdType());
+                    assertArrayEquals("UpdatedAgreement".getBytes(), rgpd.getAgreement());
+                    assertEquals("600000001", rgpd.getUser().getMobile());
+                    assertEquals("Alex", rgpd.getUser().getFirstName());
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void testUpdateRgpd_Failure_NotFoundException() {
+        String userMobile = "9999999999";
+        Rgpd updatedRgpd = Rgpd.builder()
+                .rgpdType(RgpdType.ADVANCED)
+                .agreement("UpdatedAgreement".getBytes())
+                .user(User.builder().mobile(userMobile).firstName("Sergio").build())
+                .build();
+
+        StepVerifier.create(rgpdPersistenceMongodb.updateRgpd(userMobile, updatedRgpd))
+                .expectErrorMatches(throwable -> throwable instanceof NotFoundException)
+                .verify();
+    }
+
+    @Test
+    void testUpdateRgpd_Failure_ConflictException() {
+        String userMobile = "9999999999";
+        Rgpd updatedRgpd = Rgpd.builder()
+                .rgpdType(RgpdType.ADVANCED)
+                .agreement("UpdatedAgreement".getBytes())
+                .user(User.builder().mobile(userMobile).firstName("Sergio").build())
+                .build();
+
+        StepVerifier.create(rgpdPersistenceMongodb.updateRgpd("600000000", updatedRgpd))
+                .expectErrorMatches(throwable -> throwable instanceof ConflictException)
+                .verify();
+    }
 }

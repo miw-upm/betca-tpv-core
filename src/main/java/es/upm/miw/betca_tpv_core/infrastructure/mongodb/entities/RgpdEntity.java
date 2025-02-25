@@ -29,7 +29,7 @@ public class RgpdEntity {
     private byte[] agreement;
 
     public RgpdEntity(Rgpd rgpd) {
-        BeanUtils.copyProperties(rgpd, this);
+        BeanUtils.copyProperties(rgpd, this, "user");
         if (Objects.nonNull(rgpd.getUser())) {
             this.userMobile = rgpd.getUser().getMobile();
             this.userName = rgpd.getUser().getFirstName();
