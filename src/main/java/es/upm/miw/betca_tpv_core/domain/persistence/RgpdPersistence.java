@@ -7,5 +7,6 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface RgpdPersistence {
     Mono<Rgpd> create(Rgpd rgpd);
-    Mono<Boolean> existsRgpdByUserMobile(String userMobile);
+
+    Mono<Rgpd> findRgpdByUserMobile(String userMobile);
 }

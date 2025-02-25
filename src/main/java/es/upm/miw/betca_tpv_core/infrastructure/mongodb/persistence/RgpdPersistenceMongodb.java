@@ -14,7 +14,9 @@ public class RgpdPersistenceMongodb implements RgpdPersistence {
     private final RgpdReactive rgpdReactive;
 
     @Autowired
-    public RgpdPersistenceMongodb(RgpdReactive rgpdReactive) {this.rgpdReactive = rgpdReactive;}
+    public RgpdPersistenceMongodb(RgpdReactive rgpdReactive) {
+        this.rgpdReactive = rgpdReactive;
+    }
 
     @Override
     public Mono<Rgpd> create(Rgpd rgpd) {
@@ -23,9 +25,11 @@ public class RgpdPersistenceMongodb implements RgpdPersistence {
     }
 
     @Override
-    public Mono<Boolean> existsRgpdByUserMobile(String userMobile) {
+    public Mono<Rgpd> findRgpdByUserMobile(String userMobile) {
         return this.rgpdReactive.findAll()
-                .map(RgpdEntity::getUserMobile)
-                .any(mobile -> mobile.equals(userMobile));
+                .filter(rgpd -> rgpd.getUserMobile().equals(userMobile))
+                .map(RgpdEntity::toRgpd)
+                .next();
+
     }
 }

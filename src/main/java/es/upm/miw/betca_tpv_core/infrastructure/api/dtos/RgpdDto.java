@@ -15,16 +15,19 @@ import java.util.Base64;
 @AllArgsConstructor
 public class RgpdDto {
     @NotNull
-    private String userMobile;
-    @NotNull
     private RgpdType rgpdType;
     @NonNull
     private String agreement;
+    @NotNull
+    private String userMobile;
+    @NotNull
+    private String userName;
 
     public RgpdDto(Rgpd rgpd) {
         BeanUtils.copyProperties(rgpd, this, "user");
         this.agreement = Base64.getEncoder().encodeToString(rgpd.getAgreement());
         this.userMobile = rgpd.getUser().getMobile();
+        this.userName = rgpd.getUser().getFirstName();
     }
 
     public Rgpd toRgpd() {
@@ -32,7 +35,7 @@ public class RgpdDto {
         BeanUtils.copyProperties(this, rgpd, "user");
 
         if (this.getUserMobile() != null) {
-            rgpd.setUser(User.builder().mobile(this.getUserMobile()).build());
+            rgpd.setUser(User.builder().mobile(this.getUserMobile()).firstName(this.getUserName()).build());
         }
         rgpd.setAgreement(Base64.getDecoder().decode(this.getAgreement()));
         return rgpd;
