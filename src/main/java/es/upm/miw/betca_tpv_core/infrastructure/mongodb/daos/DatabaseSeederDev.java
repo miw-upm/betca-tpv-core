@@ -1,10 +1,9 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos;
 
-import es.upm.miw.betca_tpv_core.domain.model.CustomerPoints;
+import es.upm.miw.betca_tpv_core.domain.model.RgpdType;
 import es.upm.miw.betca_tpv_core.domain.model.ShoppingState;
 import es.upm.miw.betca_tpv_core.domain.model.Tax;
 import es.upm.miw.betca_tpv_core.domain.model.TreeType;
-import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.synchronous.*;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.*;
 import lombok.extern.log4j.Log4j2;
@@ -27,21 +26,23 @@ public class DatabaseSeederDev {
     private final ArticlesTreeDao articlesTreeDao;
     private final TicketDao ticketDao;
     private final CashierDao cashierDao;
-    private final CustomerPointsDao customerPointsDao;
+    private final RgpdDao rgpdDao;
+    private final OfferDao offerDao;
 
     private final DatabaseStarting databaseStarting;
 
     @Autowired
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
-                             TicketDao ticketDao, CashierDao cashierDao, CustomerPointsDao customerPointsDao,
-                             DatabaseStarting databaseStarting) {
+                             TicketDao ticketDao, CashierDao cashierDao, DatabaseStarting databaseStarting,
+                             RgpdDao rgpdDao, OfferDao offerDao) {
         this.articleDao = articleDao;
         this.providerDao = providerDao;
         this.articlesTreeDao = articlesTreeDao;
         this.ticketDao = ticketDao;
         this.cashierDao = cashierDao;
-        this.customerPointsDao = customerPointsDao;
         this.databaseStarting = databaseStarting;
+        this.rgpdDao = rgpdDao;
+        this.offerDao = offerDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -52,13 +53,10 @@ public class DatabaseSeederDev {
 
     private void deleteAllAndInitialize() {
         this.ticketDao.deleteAll();
-
         this.articleDao.deleteAll();
-
         this.providerDao.deleteAll();
         this.cashierDao.deleteAll();
-        this.customerPointsDao.deleteAll();
-
+        this.offerDao.deleteAll();
         log.warn("------- Delete All -----------");
         this.databaseStarting.initialize();
     }
@@ -179,16 +177,38 @@ public class DatabaseSeederDev {
         this.ticketDao.saveAll(Arrays.asList(tickets));
         log.warn("        ------- tickets");
 
-        this.customerPointsDao.saveAll(List.of(
-                CustomerPointsEntity.builder().value(0).lastDate(LocalDateTime.now()).userMobileNumber("6").build(),
-                CustomerPointsEntity.builder().value(100).lastDate(LocalDateTime.now()).userMobileNumber("66").build(),
-                CustomerPointsEntity.builder().value(20).lastDate(LocalDateTime.now()).userMobileNumber("666666003").build(),
-                CustomerPointsEntity.builder().value(50).lastDate(LocalDateTime.now()).userMobileNumber("666666004").build(),
-                CustomerPointsEntity.builder().value(10).lastDate(LocalDateTime.now()).userMobileNumber("666666005").build()
-        ));
-
-        log.warn("------- seeded customer points for users");
-
-
+        byte[] SampleAgreementEncoded = "SampleAgreement".getBytes();
+        byte[] newAgreementEncoded = "NewAgreement".getBytes();
+        RgpdEntity[] rgpdList = {
+                RgpdEntity.builder().agreement(SampleAgreementEncoded).rgpdType(RgpdType.BASIC).userMobile("600000001").userName("Alex").build(),
+                RgpdEntity.builder().agreement(newAgreementEncoded).rgpdType(RgpdType.ADVANCED).userMobile("600000002").userName("John").build(),
+                RgpdEntity.builder().agreement(SampleAgreementEncoded).rgpdType(RgpdType.ADVANCED).userMobile("600000003").userName("Stephen").build(),
+                RgpdEntity.builder().agreement(newAgreementEncoded).rgpdType(RgpdType.MEDIUM).userMobile("600000004").userName("Darius").build()
+        };
+        this.rgpdDao.saveAll(Arrays.asList(rgpdList));
+        log.warn("        ------- data-protection-rgpd");
+        
+        LocalDateTime dateOfferCreation = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
+        LocalDateTime dateOfferExpiry = LocalDateTime.of(2020, Month.JANUARY, 12, 10, 10);
+        OfferEntity[] offers = {
+                OfferEntity.builder().reference("to1").description("td1").discount(BigDecimal.ONE)
+                        .articleEntities(List.of(articles[0], articles[1])).creationDate(dateOfferCreation)
+                        .expiryDate(dateOfferExpiry).build(),
+                OfferEntity.builder().reference("to2").description("td2").discount(BigDecimal.TEN)
+                        .articleEntities(List.of(articles[0], articles[1])).creationDate(dateOfferCreation)
+                        .expiryDate(dateOfferExpiry).build(),
+                OfferEntity.builder().reference("to3").description("td3").discount(BigDecimal.ONE)
+                        .articleEntities(List.of(articles[0], articles[1])).creationDate(dateOfferCreation)
+                        .expiryDate(dateOfferExpiry).build(),
+                OfferEntity.builder().reference("to4").description("td4").discount(BigDecimal.TEN)
+                        .articleEntities(List.of(articles[0], articles[1])).creationDate(dateOfferCreation)
+                        .expiryDate(dateOfferExpiry).build(),
+        };
+        this.offerDao.saveAll(Arrays.asList(offers));
+        log.warn("        ------- offers");
     }
+
 }
+
+
+
