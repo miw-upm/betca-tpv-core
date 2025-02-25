@@ -28,13 +28,14 @@ public class DatabaseSeederDev {
     private final CashierDao cashierDao;
     private final RgpdDao rgpdDao;
     private final OfferDao offerDao;
+    private final CustomerPointsDao customerPointsDao;
 
     private final DatabaseStarting databaseStarting;
 
     @Autowired
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
                              TicketDao ticketDao, CashierDao cashierDao, DatabaseStarting databaseStarting,
-                             RgpdDao rgpdDao, OfferDao offerDao) {
+                             RgpdDao rgpdDao, OfferDao offerDao, CustomerPointsDao customerPointsDao) {
         this.articleDao = articleDao;
         this.providerDao = providerDao;
         this.articlesTreeDao = articlesTreeDao;
@@ -43,6 +44,7 @@ public class DatabaseSeederDev {
         this.databaseStarting = databaseStarting;
         this.rgpdDao = rgpdDao;
         this.offerDao = offerDao;
+        this.customerPointsDao = customerPointsDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -57,6 +59,7 @@ public class DatabaseSeederDev {
         this.providerDao.deleteAll();
         this.cashierDao.deleteAll();
         this.offerDao.deleteAll();
+        this.customerPointsDao.deleteAll();
         log.warn("------- Delete All -----------");
         this.databaseStarting.initialize();
     }
@@ -206,6 +209,16 @@ public class DatabaseSeederDev {
         };
         this.offerDao.saveAll(Arrays.asList(offers));
         log.warn("        ------- offers");
+
+        this.customerPointsDao.saveAll(List.of(
+                CustomerPointsEntity.builder().value(0).lastDate(LocalDateTime.now()).userMobileNumber("6").build(),
+                CustomerPointsEntity.builder().value(100).lastDate(LocalDateTime.now()).userMobileNumber("66").build(),
+                CustomerPointsEntity.builder().value(20).lastDate(LocalDateTime.now()).userMobileNumber("666666003").build(),
+                CustomerPointsEntity.builder().value(50).lastDate(LocalDateTime.now()).userMobileNumber("666666004").build(),
+                CustomerPointsEntity.builder().value(10).lastDate(LocalDateTime.now()).userMobileNumber("666666005").build()
+        ));
+
+        log.warn("------- seeded customer points for users");
     }
 
 }
