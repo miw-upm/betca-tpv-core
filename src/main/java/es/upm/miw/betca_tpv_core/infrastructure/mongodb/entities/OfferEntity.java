@@ -30,7 +30,7 @@ public class OfferEntity {
     private LocalDateTime creationDate;
     private LocalDateTime expiryDate;
     private BigDecimal discount;
-    @DBRef(lazy = true)
+    @DBRef
     private List<ArticleEntity> articleEntities;
 
     public OfferEntity(Offer offer, List<ArticleEntity> articleEntities) {
@@ -41,7 +41,7 @@ public class OfferEntity {
     public Offer toOffer() {
         Offer offer = new Offer();
         BeanUtils.copyProperties(this, offer);
-        if (Objects.nonNull(this.articleEntities)) {
+        if (Objects.nonNull(this.articleEntities) && !this.articleEntities.isEmpty()) {
             offer.setArticleList(this.articleEntities.stream()
                     .map(ArticleEntity::toArticle)
                     .toList());

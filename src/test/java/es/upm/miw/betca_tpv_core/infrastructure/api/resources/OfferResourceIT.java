@@ -12,9 +12,8 @@ import reactor.core.publisher.Mono;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ArticleResource.SEARCH;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.OfferResource.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @RestTestConfig
 class OfferResourceIT {
@@ -29,7 +28,7 @@ class OfferResourceIT {
         Offer offer = Offer.builder().reference("to11123213").description("td1").discount(BigDecimal.ONE).articleList(null).build();
         this.restClientTestService.loginAdmin(webTestClient)
                 .post()
-                .uri(OfferResource.OFFERS)
+                .uri(OFFERS)
                 .body(Mono.just(offer), Offer.class)
                 .exchange()
                 .expectStatus().isOk()
@@ -49,7 +48,7 @@ class OfferResourceIT {
         Offer offer = Offer.builder().reference("to11").description("td1").discount(BigDecimal.ONE).articleList(List.of(article)).build();
         this.restClientTestService.loginAdmin(webTestClient)
                 .post()
-                .uri(OfferResource.OFFERS)
+                .uri(OFFERS)
                 .body(Mono.just(offer), Offer.class)
                 .exchange()
                 .expectStatus().isNotFound();
@@ -60,7 +59,7 @@ class OfferResourceIT {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .path(OfferResource.OFFERS + SEARCH)
+                        .path(OFFERS + SEARCH)
                         .queryParam("reference", "polo")
                         .build())
                 .exchange()
@@ -69,5 +68,70 @@ class OfferResourceIT {
                 .value(Assertions::assertNotNull)
                 .value(offers -> assertTrue(offers
                         .stream().allMatch(offer -> offer.getDescription().toLowerCase().contains("polo"))));
+    }
+
+    @Test
+    void testReadByReference() {
+        Offer offer = this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(OFFERS + REFERENCE_ID, "to1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Offer.class)
+                .value(Assertions::assertNotNull)
+                .value(returnOffer -> {
+                    assertEquals("to1", returnOffer.getReference());
+                    assertEquals("td1", returnOffer.getDescription());
+                })
+                .returnResult()
+                .getResponseBody();
+        assertNotNull(offer);
+    }
+
+    @Test
+    void testReadByReferenceNotFoundException() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(OFFERS + REFERENCE_ID, "kk")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testReadByReferenceAndUpdate() {
+        Offer offer = this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(OFFERS + REFERENCE_ID, "to1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Offer.class)
+                .value(Assertions::assertNotNull)
+                .value(returnOffer -> {
+                    assertEquals("to1", returnOffer.getReference());
+                    assertEquals("td1", returnOffer.getDescription());
+                })
+                .returnResult()
+                .getResponseBody();
+        assertNotNull(offer);
+        offer.setReference("other");
+        offer = this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(OFFERS + REFERENCE_ID, "to1")
+                .body(Mono.just(offer), Offer.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Offer.class)
+                .value(Assertions::assertNotNull)
+                .value(returnoffer -> assertEquals("other", returnoffer.getReference()))
+                .returnResult()
+                .getResponseBody();
+        assertNotNull(offer);
+        offer.setReference("other2");
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(OFFERS + REFERENCE_ID, "other")
+                .body(Mono.just(offer), Offer.class)
+                .exchange()
+                .expectStatus().isOk();
     }
 }
