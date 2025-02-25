@@ -27,13 +27,14 @@ public class DatabaseSeederDev {
     private final TicketDao ticketDao;
     private final CashierDao cashierDao;
     private final RgpdDao rgpdDao;
+    private final OfferDao offerDao;
 
     private final DatabaseStarting databaseStarting;
 
     @Autowired
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
                              TicketDao ticketDao, CashierDao cashierDao, DatabaseStarting databaseStarting,
-                             RgpdDao rgpdDao) {
+                             RgpdDao rgpdDao, OfferDao offerDao) {
         this.articleDao = articleDao;
         this.providerDao = providerDao;
         this.articlesTreeDao = articlesTreeDao;
@@ -41,6 +42,7 @@ public class DatabaseSeederDev {
         this.cashierDao = cashierDao;
         this.databaseStarting = databaseStarting;
         this.rgpdDao = rgpdDao;
+        this.offerDao = offerDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -187,6 +189,25 @@ public class DatabaseSeederDev {
         };
         this.rgpdDao.saveAll(Arrays.asList(rgpdList));
         log.warn("        ------- data-rpotection-rgpd");
+        
+        LocalDateTime dateOfferCreation = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
+        LocalDateTime dateOfferExpiry = LocalDateTime.of(2020, Month.JANUARY, 12, 10, 10);
+        OfferEntity[] offers = {
+                OfferEntity.builder().reference("to1").description("td1").discount(BigDecimal.ONE)
+                        .articleEntities(List.of(articles[0], articles[1])).creationDate(dateOfferCreation)
+                        .expiryDate(dateOfferExpiry).build(),
+                OfferEntity.builder().reference("to2").description("td2").discount(BigDecimal.TEN)
+                        .articleEntities(List.of(articles[0], articles[1])).creationDate(dateOfferCreation)
+                        .expiryDate(dateOfferExpiry).build(),
+                OfferEntity.builder().reference("to3").description("td3").discount(BigDecimal.ONE)
+                        .articleEntities(List.of(articles[0], articles[1])).creationDate(dateOfferCreation)
+                        .expiryDate(dateOfferExpiry).build(),
+                OfferEntity.builder().reference("to4").description("td4").discount(BigDecimal.TEN)
+                        .articleEntities(List.of(articles[0], articles[1])).creationDate(dateOfferCreation)
+                        .expiryDate(dateOfferExpiry).build(),
+        };
+        this.offerDao.saveAll(Arrays.asList(offers));
+        log.warn("        ------- offers");
     }
 
 }
