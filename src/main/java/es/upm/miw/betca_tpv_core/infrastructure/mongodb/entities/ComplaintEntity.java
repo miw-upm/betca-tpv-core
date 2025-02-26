@@ -21,7 +21,7 @@ public class ComplaintEntity {
     @Id
     private String id;
 
-    @DBRef
+    @DBRef(lazy = true)
     private ArticleEntity article;
 
     private LocalDateTime registrationDate;
@@ -30,7 +30,7 @@ public class ComplaintEntity {
 
     private String reply;
 
-    private Number mobile;
+    private String userMobile;
     @Enumerated(EnumType.STRING)
     private ComplaintState state;
 

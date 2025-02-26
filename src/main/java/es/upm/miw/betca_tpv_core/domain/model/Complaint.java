@@ -30,7 +30,7 @@ public class Complaint {
     private String reply;
 
     @NotBlank
-    private Number mobile;
+    private String mobile;
 
     @Enumerated(EnumType.STRING)
     private ComplaintState state;
