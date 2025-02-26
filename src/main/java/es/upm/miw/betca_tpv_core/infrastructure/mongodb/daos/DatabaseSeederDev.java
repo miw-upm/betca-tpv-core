@@ -201,7 +201,7 @@ public class DatabaseSeederDev {
                 OfferEntity.builder().reference("SAVE20FIUAUWJK").description("Offer code 20% discount").discount(BigDecimal.valueOf(20))
                         .articleEntities(Collections.emptyList()).creationDate(dateOfferCreation)
                         .expiryDate(dateOfferExpiry).build(),
-                OfferEntity.builder().reference("SAVE10LKAUJNRN").description("Offer code 10% discount").discount(BigDecimal.ONE)
+                OfferEntity.builder().reference("SAVE10LKAUJNRN").description("Offer code 10% discount").discount(BigDecimal.TEN)
                         .articleEntities(List.of(articles[4])).creationDate(dateOfferCreation)
                         .expiryDate(dateOfferExpiry).build(),
                 OfferEntity.builder().reference("SAVE5IAKMWKIAO").description("Offer code 5% discount").discount(BigDecimal.valueOf(5))
