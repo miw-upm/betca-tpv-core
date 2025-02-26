@@ -3,7 +3,6 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 import es.upm.miw.betca_tpv_core.domain.exceptions.BadRequestException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
-import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.model.Offer;
 import es.upm.miw.betca_tpv_core.domain.persistence.OfferPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
@@ -60,7 +59,7 @@ public class OfferPersistenceMongodb implements OfferPersistence {
     @Override
     public Mono<Offer> readByReference(String reference) {
         return this.offerReactive.findByReference(reference)
-                .switchIfEmpty(Mono.error(new NotFoundException("Non existent article barcode: " + reference)))
+                .switchIfEmpty(Mono.error(new NotFoundException("Non existent offer reference: " + reference)))
                 .map(OfferEntity::toOffer);
     }
 

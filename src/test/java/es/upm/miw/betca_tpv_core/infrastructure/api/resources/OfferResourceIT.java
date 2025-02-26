@@ -74,14 +74,14 @@ class OfferResourceIT {
     void testReadByReference() {
         Offer offer = this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(OFFERS + REFERENCE_ID, "to1")
+                .uri(OFFERS + REFERENCE_ID, "SAVE15AJSHUIKAD")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Offer.class)
                 .value(Assertions::assertNotNull)
                 .value(returnOffer -> {
-                    assertEquals("to1", returnOffer.getReference());
-                    assertEquals("td1", returnOffer.getDescription());
+                    assertEquals("SAVE15AJSHUIKAD", returnOffer.getReference());
+                    assertEquals("Offer code 15% discount", returnOffer.getDescription());
                 })
                 .returnResult()
                 .getResponseBody();
@@ -101,14 +101,14 @@ class OfferResourceIT {
     void testReadByReferenceAndUpdate() {
         Offer offer = this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(OFFERS + REFERENCE_ID, "to1")
+                .uri(OFFERS + REFERENCE_ID, "SAVE5IAKMWKIAO")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Offer.class)
                 .value(Assertions::assertNotNull)
                 .value(returnOffer -> {
-                    assertEquals("to1", returnOffer.getReference());
-                    assertEquals("td1", returnOffer.getDescription());
+                    assertEquals("SAVE5IAKMWKIAO", returnOffer.getReference());
+                    assertEquals("Offer code 5% discount", returnOffer.getDescription());
                 })
                 .returnResult()
                 .getResponseBody();
@@ -116,7 +116,7 @@ class OfferResourceIT {
         offer.setReference("other");
         offer = this.restClientTestService.loginAdmin(webTestClient)
                 .put()
-                .uri(OFFERS + REFERENCE_ID, "to1")
+                .uri(OFFERS + REFERENCE_ID, "SAVE5IAKMWKIAO")
                 .body(Mono.just(offer), Offer.class)
                 .exchange()
                 .expectStatus().isOk()

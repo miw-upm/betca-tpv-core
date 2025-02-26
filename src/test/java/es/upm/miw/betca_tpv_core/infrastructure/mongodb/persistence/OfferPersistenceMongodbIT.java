@@ -15,7 +15,6 @@ import java.util.List;
 
 import static java.math.BigDecimal.TEN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestConfig
 public class OfferPersistenceMongodbIT {
@@ -85,10 +84,10 @@ public class OfferPersistenceMongodbIT {
     @Test
     void testReadByReference() {
         StepVerifier
-                .create(this.offerPersistenceMongodb.readByReference("to1"))
+                .create(this.offerPersistenceMongodb.readByReference("SAVE15AJSHUIKAD"))
                 .expectNextMatches(offer -> {
-                    assertEquals("to1", offer.getReference());
-                    assertEquals("td1", offer.getDescription());
+                    assertEquals("SAVE15AJSHUIKAD", offer.getReference());
+                    assertEquals("Offer code 15% discount", offer.getDescription());
                     return true;
                 })
                 .expectComplete()
@@ -107,10 +106,10 @@ public class OfferPersistenceMongodbIT {
     void testFindByReferenceAndDescriptionNullSafe() {
         StepVerifier
                 .create(this.offerPersistenceMongodb.findByReferenceAndDescriptionNullSafe(
-                        "to1", null))
+                        "SAVE15AJSHUIKAD", null))
                 .expectNextMatches(offer -> {
-                    assertEquals("to1", offer.getReference());
-                    assertEquals("td1", offer.getDescription());
+                    assertEquals("SAVE15AJSHUIKAD", offer.getReference());
+                    assertEquals("Offer code 15% discount", offer.getDescription());
                     return true;
                 })
                 .thenCancel()
@@ -129,7 +128,7 @@ public class OfferPersistenceMongodbIT {
                 .articleList(List.of(article))
                 .build();
         StepVerifier
-                .create(this.offerPersistenceMongodb.update("to4", offer))
+                .create(this.offerPersistenceMongodb.update("SAVE15AJSHUIKAD", offer))
                 .expectNextMatches(returnOffer -> {
                     assertEquals("ref2", returnOffer.getReference());
                     return true;
