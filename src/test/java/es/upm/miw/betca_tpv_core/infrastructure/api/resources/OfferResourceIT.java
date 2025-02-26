@@ -101,14 +101,14 @@ class OfferResourceIT {
     void testReadByReferenceAndUpdate() {
         Offer offer = this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(OFFERS + REFERENCE_ID, "SAVE5IAKMWKIAO")
+                .uri(OFFERS + REFERENCE_ID, "SAVE20FIUAUWJK")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Offer.class)
                 .value(Assertions::assertNotNull)
                 .value(returnOffer -> {
-                    assertEquals("SAVE5IAKMWKIAO", returnOffer.getReference());
-                    assertEquals("Offer code 5% discount", returnOffer.getDescription());
+                    assertEquals("SAVE20FIUAUWJK", returnOffer.getReference());
+                    assertEquals("Offer code 20% discount", returnOffer.getDescription());
                 })
                 .returnResult()
                 .getResponseBody();
@@ -116,7 +116,7 @@ class OfferResourceIT {
         offer.setReference("other");
         offer = this.restClientTestService.loginAdmin(webTestClient)
                 .put()
-                .uri(OFFERS + REFERENCE_ID, "SAVE5IAKMWKIAO")
+                .uri(OFFERS + REFERENCE_ID, "SAVE20FIUAUWJK")
                 .body(Mono.just(offer), Offer.class)
                 .exchange()
                 .expectStatus().isOk()
