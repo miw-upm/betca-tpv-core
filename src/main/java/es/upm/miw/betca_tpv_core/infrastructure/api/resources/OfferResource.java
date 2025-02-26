@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_core.domain.services.OfferService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -36,6 +37,7 @@ public class OfferResource {
         return this.offerService.findByReferenceAndDescriptionNullSafe(reference, description);
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping(REFERENCE_ID)
     public Mono<Offer> read(@PathVariable String reference) {
         return this.offerService.read(reference);
