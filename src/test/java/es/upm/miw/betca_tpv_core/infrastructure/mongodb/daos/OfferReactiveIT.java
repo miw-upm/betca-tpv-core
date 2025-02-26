@@ -19,7 +19,7 @@ class OfferReactiveIT {
                 .create(this.offerReactive.findByReferenceAndDescriptionNullSafe(
                         null, null))
                 .expectNextMatches(offer -> {
-                    assertTrue(offer.getDescription().contains("td"));
+                    assertTrue(offer.getDescription().contains("code"));
                     return true;
                 })
                 .thenCancel()

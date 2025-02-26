@@ -7,6 +7,7 @@ import es.upm.miw.betca_tpv_core.domain.model.TreeType;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.synchronous.*;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.*;
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static java.math.BigDecimal.ZERO;
@@ -28,13 +30,15 @@ public class DatabaseSeederDev {
     private final CashierDao cashierDao;
     private final RgpdDao rgpdDao;
     private final OfferDao offerDao;
+    private final CustomerPointsDao customerPointsDao;
+    private final InvoiceDao invoiceDao;
 
     private final DatabaseStarting databaseStarting;
 
     @Autowired
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
                              TicketDao ticketDao, CashierDao cashierDao, DatabaseStarting databaseStarting,
-                             RgpdDao rgpdDao, OfferDao offerDao) {
+                             RgpdDao rgpdDao, OfferDao offerDao, CustomerPointsDao customerPointsDao, InvoiceDao invoiceDao) {
         this.articleDao = articleDao;
         this.providerDao = providerDao;
         this.articlesTreeDao = articlesTreeDao;
@@ -43,6 +47,9 @@ public class DatabaseSeederDev {
         this.databaseStarting = databaseStarting;
         this.rgpdDao = rgpdDao;
         this.offerDao = offerDao;
+        this.customerPointsDao = customerPointsDao;
+        this.invoiceDao = invoiceDao;
+
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -57,6 +64,9 @@ public class DatabaseSeederDev {
         this.providerDao.deleteAll();
         this.cashierDao.deleteAll();
         this.offerDao.deleteAll();
+        this.customerPointsDao.deleteAll();
+        this.invoiceDao.deleteAll();
+
         log.warn("------- Delete All -----------");
         this.databaseStarting.initialize();
     }
@@ -191,24 +201,39 @@ public class DatabaseSeederDev {
         LocalDateTime dateOfferCreation = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
         LocalDateTime dateOfferExpiry = LocalDateTime.of(2020, Month.JANUARY, 12, 10, 10);
         OfferEntity[] offers = {
-                OfferEntity.builder().reference("to1").description("td1").discount(BigDecimal.ONE)
+                OfferEntity.builder().reference("SAVE15AJSHUIKAD").description("Offer code 15% discount").discount(BigDecimal.valueOf(15))
                         .articleEntities(List.of(articles[0], articles[1])).creationDate(dateOfferCreation)
                         .expiryDate(dateOfferExpiry).build(),
-                OfferEntity.builder().reference("to2").description("td2").discount(BigDecimal.TEN)
-                        .articleEntities(List.of(articles[0], articles[1])).creationDate(dateOfferCreation)
+                OfferEntity.builder().reference("SAVE20FIUAUWJK").description("Offer code 20% discount").discount(BigDecimal.valueOf(20))
+                        .articleEntities(Collections.emptyList()).creationDate(dateOfferCreation)
                         .expiryDate(dateOfferExpiry).build(),
-                OfferEntity.builder().reference("to3").description("td3").discount(BigDecimal.ONE)
-                        .articleEntities(List.of(articles[0], articles[1])).creationDate(dateOfferCreation)
+                OfferEntity.builder().reference("SAVE10LKAUJNRN").description("Offer code 10% discount").discount(BigDecimal.TEN)
+                        .articleEntities(List.of(articles[4])).creationDate(dateOfferCreation)
                         .expiryDate(dateOfferExpiry).build(),
-                OfferEntity.builder().reference("to4").description("td4").discount(BigDecimal.TEN)
-                        .articleEntities(List.of(articles[0], articles[1])).creationDate(dateOfferCreation)
+                OfferEntity.builder().reference("SAVE5IAKMWKIAO").description("Offer code 5% discount").discount(BigDecimal.valueOf(5))
+                        .articleEntities(List.of(articles[5], articles[7])).creationDate(dateOfferCreation)
                         .expiryDate(dateOfferExpiry).build(),
         };
         this.offerDao.saveAll(Arrays.asList(offers));
         log.warn("        ------- offers");
+
+        this.customerPointsDao.saveAll(List.of(
+                CustomerPointsEntity.builder().value(0).lastDate(LocalDateTime.now()).userMobileNumber("6").build(),
+                CustomerPointsEntity.builder().value(100).lastDate(LocalDateTime.now()).userMobileNumber("66").build(),
+                CustomerPointsEntity.builder().value(20).lastDate(LocalDateTime.now()).userMobileNumber("666666003").build(),
+                CustomerPointsEntity.builder().value(50).lastDate(LocalDateTime.now()).userMobileNumber("666666004").build(),
+                CustomerPointsEntity.builder().value(10).lastDate(LocalDateTime.now()).userMobileNumber("666666005").build()
+        ));
+
+        log.warn("------- seeded customer points for users");
+
+        InvoiceEntity[] invoice = {
+                InvoiceEntity.builder().id("1").identity(20241).baseTax(new BigDecimal("22.1")).taxValue(new BigDecimal("17"))
+                        .ticketId("916214312l123456789f4e1b").userMobile("666666003").build(),
+                InvoiceEntity.builder().id("2").identity(20245).baseTax(new BigDecimal("10")).taxValue(new BigDecimal("17.2"))
+                        .ticketId("916214312l123456789f4e1c").userMobile("666666002").build()
+        };
+        this.invoiceDao.saveAll(Arrays.asList(invoice));
+        LogManager.getLogger(this.getClass()).warn("        ------- invoices");
     }
-
 }
-
-
-
