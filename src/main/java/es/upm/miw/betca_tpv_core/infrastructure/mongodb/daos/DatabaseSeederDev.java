@@ -7,6 +7,7 @@ import es.upm.miw.betca_tpv_core.domain.model.TreeType;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.synchronous.*;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.*;
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,13 +31,14 @@ public class DatabaseSeederDev {
     private final RgpdDao rgpdDao;
     private final OfferDao offerDao;
     private final CustomerPointsDao customerPointsDao;
+    private final InvoiceDao invoiceDao;
 
     private final DatabaseStarting databaseStarting;
 
     @Autowired
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
                              TicketDao ticketDao, CashierDao cashierDao, DatabaseStarting databaseStarting,
-                             RgpdDao rgpdDao, OfferDao offerDao, CustomerPointsDao customerPointsDao) {
+                             RgpdDao rgpdDao, OfferDao offerDao, CustomerPointsDao customerPointsDao, InvoiceDao invoiceDao) {
         this.articleDao = articleDao;
         this.providerDao = providerDao;
         this.articlesTreeDao = articlesTreeDao;
@@ -46,6 +48,8 @@ public class DatabaseSeederDev {
         this.rgpdDao = rgpdDao;
         this.offerDao = offerDao;
         this.customerPointsDao = customerPointsDao;
+        this.invoiceDao = invoiceDao;
+
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -61,6 +65,8 @@ public class DatabaseSeederDev {
         this.cashierDao.deleteAll();
         this.offerDao.deleteAll();
         this.customerPointsDao.deleteAll();
+        this.invoiceDao.deleteAll();
+
         log.warn("------- Delete All -----------");
         this.databaseStarting.initialize();
     }
@@ -220,9 +226,14 @@ public class DatabaseSeederDev {
         ));
 
         log.warn("------- seeded customer points for users");
+
+        InvoiceEntity[] invoice = {
+                InvoiceEntity.builder().id("1").identity(20241).baseTax(new BigDecimal("22.1")).taxValue(new BigDecimal("17"))
+                        .ticketId("916214312l123456789f4e1b").userMobile("666666003").build(),
+                InvoiceEntity.builder().id("2").identity(20245).baseTax(new BigDecimal("10")).taxValue(new BigDecimal("17.2"))
+                        .ticketId("916214312l123456789f4e1c").userMobile("666666002").build()
+        };
+        this.invoiceDao.saveAll(Arrays.asList(invoice));
+        LogManager.getLogger(this.getClass()).warn("        ------- invoices");
     }
-
 }
-
-
-
