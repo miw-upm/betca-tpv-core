@@ -134,4 +134,15 @@ class OfferResourceIT {
                 .exchange()
                 .expectStatus().isOk();
     }
+
+    @Test
+    void testPdf() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(OFFERS + REFERENCE_ID + PDF, "SAVE5IAKMWKIAO")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(byte[].class)
+                .value(Assertions::assertNotNull);
+    }
 }
