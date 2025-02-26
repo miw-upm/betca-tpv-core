@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static java.math.BigDecimal.ZERO;
@@ -194,17 +195,17 @@ public class DatabaseSeederDev {
         LocalDateTime dateOfferCreation = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
         LocalDateTime dateOfferExpiry = LocalDateTime.of(2020, Month.JANUARY, 12, 10, 10);
         OfferEntity[] offers = {
-                OfferEntity.builder().reference("to1").description("td1").discount(BigDecimal.ONE)
+                OfferEntity.builder().reference("SAVE15AJSHUIKAD").description("Offer code 15% discount").discount(BigDecimal.valueOf(15))
                         .articleEntities(List.of(articles[0], articles[1])).creationDate(dateOfferCreation)
                         .expiryDate(dateOfferExpiry).build(),
-                OfferEntity.builder().reference("to2").description("td2").discount(BigDecimal.TEN)
-                        .articleEntities(List.of(articles[0], articles[1])).creationDate(dateOfferCreation)
+                OfferEntity.builder().reference("SAVE20FIUAUWJK").description("Offer code 20% discount").discount(BigDecimal.valueOf(20))
+                        .articleEntities(Collections.emptyList()).creationDate(dateOfferCreation)
                         .expiryDate(dateOfferExpiry).build(),
-                OfferEntity.builder().reference("to3").description("td3").discount(BigDecimal.ONE)
-                        .articleEntities(List.of(articles[0], articles[1])).creationDate(dateOfferCreation)
+                OfferEntity.builder().reference("SAVE10LKAUJNRN").description("Offer code 10% discount").discount(BigDecimal.ONE)
+                        .articleEntities(List.of(articles[4])).creationDate(dateOfferCreation)
                         .expiryDate(dateOfferExpiry).build(),
-                OfferEntity.builder().reference("to4").description("td4").discount(BigDecimal.TEN)
-                        .articleEntities(List.of(articles[0], articles[1])).creationDate(dateOfferCreation)
+                OfferEntity.builder().reference("SAVE5IAKMWKIAO").description("Offer code 5% discount").discount(BigDecimal.valueOf(5))
+                        .articleEntities(List.of(articles[5], articles[7])).creationDate(dateOfferCreation)
                         .expiryDate(dateOfferExpiry).build(),
         };
         this.offerDao.saveAll(Arrays.asList(offers));
