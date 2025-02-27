@@ -17,6 +17,7 @@ public class OfferResource {
     public static final String OFFERS = "/offers";
     public static final String SEARCH = "/search";
     public static final String REFERENCE_ID = "/{reference}";
+    public static final String PDF = "/pdf";
 
     private final OfferService offerService;
 
@@ -47,5 +48,10 @@ public class OfferResource {
     public Mono<Offer> update(@PathVariable String reference, @Valid @RequestBody Offer offer) {
         offer.doDefault();
         return this.offerService.update(reference, offer);
+    }
+
+    @GetMapping(value = REFERENCE_ID + PDF, produces = {"application/pdf", "application/json"})
+    public Mono<byte[]> readPdf(@PathVariable String reference) {
+        return this.offerService.readPdf(reference);
     }
 }

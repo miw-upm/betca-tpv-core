@@ -45,7 +45,7 @@ public class OfferPersistenceMongodbIT {
         StepVerifier
                 .create(this.offerPersistenceMongodb.create(
                                 Offer.builder()
-                                        .reference("ref1")
+                                        .reference("ref123")
                                         .description("error")
                                         .discount(TEN)
                                         .creationDate(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10))
