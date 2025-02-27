@@ -30,6 +30,10 @@ public class InvoiceEntity {
     @Indexed(unique = true)
     private String ticketId;
 
+    @Indexed(unique = true)
+    private String ticketReference;
+
+    @Indexed(unique = true)
     private String userMobile;
 
     private LocalDateTime creationDate;
@@ -37,6 +41,10 @@ public class InvoiceEntity {
     private BigDecimal baseTax;
 
     private BigDecimal taxValue;
+
+    public InvoiceEntity(Invoice invoice) {
+        BeanUtils.copyProperties(invoice, this);
+    }
 
     public Invoice toInvoice() {
         Invoice invoice = new Invoice();
