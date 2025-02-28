@@ -1,5 +1,5 @@
 package es.upm.miw.betca_tpv_core.domain.model;
-
+import es.upm.miw.betca_tpv_core.domain.model.Article;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import es.upm.miw.betca_tpv_core.domain.model.validations.PositiveBigDecimal;
