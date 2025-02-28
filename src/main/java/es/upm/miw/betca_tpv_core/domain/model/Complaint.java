@@ -34,4 +34,8 @@ public class Complaint {
 
     @Enumerated(EnumType.STRING)
     private ComplaintState state;
+
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
+    }
 }
