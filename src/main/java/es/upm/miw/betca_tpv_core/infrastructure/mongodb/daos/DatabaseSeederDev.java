@@ -27,12 +27,14 @@ public class DatabaseSeederDev {
     private final CashierDao cashierDao;
     private final OfferDao offerDao;
 
+    private final ComplaintDao complaintDao;
+
     private final DatabaseStarting databaseStarting;
 
     @Autowired
     public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
                              TicketDao ticketDao, CashierDao cashierDao, DatabaseStarting databaseStarting,
-                             OfferDao offerDao) {
+                             OfferDao offerDao,ComplaintDao complaintDao) {
         this.articleDao = articleDao;
         this.providerDao = providerDao;
         this.articlesTreeDao = articlesTreeDao;
@@ -193,6 +195,25 @@ public class DatabaseSeederDev {
         };
         this.offerDao.saveAll(Arrays.asList(offers));
         log.warn("        ------- offers");
+
+        LocalDateTime dateComplaintCreationArticle1 = LocalDateTime.of(2021, Month.JANUARY, 1, 20, 56);
+        LocalDateTime dateComplaintCreationArticle2 = LocalDateTime.of(2022, Month.MAY, 31, 1, 34);
+        LocalDateTime dateComplaintCreationArticle3 = LocalDateTime.of(2021, Month.JULY, 15, 10, 4);
+
+        ComplaintEntity[] complaints = {
+                ComplaintEntity.builder().description("Queja aleatoria").reply("")
+                        .article(articles[0]).registrationDate(dateComplaintCreationArticle1).state("OPEN")
+                        .expiryDate(dateOfferExpiry).userMobile("6").build(),
+                ComplaintEntity.builder().description("Queja MIW").reply("").state("CLOSED")
+                        .article(articles[1]).registrationDate(dateComplaintCreationArticle2)
+                        .expiryDate(dateOfferExpiry).userMobile("6").build(),
+                ComplaintEntity.builder().description("Queja Grado").reply("").state("OPEN")
+                        .article(articles[2]).registrationDate(dateComplaintCreationArticle3)
+                        .expiryDate(dateOfferExpiry).userMobile("6").build(),
+        };
+        this.complaintDao.saveAll(Arrays.asList(complaints));
+        log.warn("        ------- complaints");
+
     }
 
 }
