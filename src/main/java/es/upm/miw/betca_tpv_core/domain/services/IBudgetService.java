@@ -5,4 +5,6 @@ import reactor.core.publisher.Mono;
 
 public interface IBudgetService {
     Mono<Budget> create(Budget budget);
+
+    Mono<Budget> read(String id);
 }

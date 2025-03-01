@@ -7,4 +7,6 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface BudgetPersistence {
     Mono<Budget> create(Budget budget);
+
+    Mono<Budget> readById(String id);
 }

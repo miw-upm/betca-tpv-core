@@ -1,9 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos;
 
-import es.upm.miw.betca_tpv_core.domain.model.RgpdType;
-import es.upm.miw.betca_tpv_core.domain.model.ShoppingState;
-import es.upm.miw.betca_tpv_core.domain.model.Tax;
-import es.upm.miw.betca_tpv_core.domain.model.TreeType;
+import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.synchronous.*;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.*;
 import lombok.extern.log4j.Log4j2;
@@ -32,13 +29,24 @@ public class DatabaseSeederDev {
     private final OfferDao offerDao;
     private final CustomerPointsDao customerPointsDao;
     private final InvoiceDao invoiceDao;
+    private final BudgetDao budgetDao;
 
     private final DatabaseStarting databaseStarting;
 
     @Autowired
-    public DatabaseSeederDev(ArticleDao articleDao, ProviderDao providerDao, ArticlesTreeDao articlesTreeDao,
-                             TicketDao ticketDao, CashierDao cashierDao, DatabaseStarting databaseStarting,
-                             RgpdDao rgpdDao, OfferDao offerDao, CustomerPointsDao customerPointsDao, InvoiceDao invoiceDao) {
+    public DatabaseSeederDev(
+            ArticleDao articleDao,
+            ProviderDao providerDao,
+            ArticlesTreeDao articlesTreeDao,
+            TicketDao ticketDao,
+            CashierDao cashierDao,
+            DatabaseStarting databaseStarting,
+            RgpdDao rgpdDao,
+            OfferDao offerDao,
+            CustomerPointsDao customerPointsDao,
+            InvoiceDao invoiceDao,
+            BudgetDao budgetDao
+    ) {
         this.articleDao = articleDao;
         this.providerDao = providerDao;
         this.articlesTreeDao = articlesTreeDao;
@@ -49,6 +57,7 @@ public class DatabaseSeederDev {
         this.offerDao = offerDao;
         this.customerPointsDao = customerPointsDao;
         this.invoiceDao = invoiceDao;
+        this.budgetDao = budgetDao;
 
         this.deleteAllAndInitializeAndSeedDataBase();
     }
@@ -66,6 +75,7 @@ public class DatabaseSeederDev {
         this.offerDao.deleteAll();
         this.customerPointsDao.deleteAll();
         this.invoiceDao.deleteAll();
+        this.budgetDao.deleteAll();
 
         log.warn("------- Delete All -----------");
         this.databaseStarting.initialize();
@@ -237,5 +247,14 @@ public class DatabaseSeederDev {
         };
                 this.invoiceDao.saveAll(Arrays.asList(invoice));
         LogManager.getLogger(this.getClass()).warn("        ------- invoices");
+
+        LocalDateTime budgetCreationDate = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
+        BudgetEntity[] budgets = {
+            BudgetEntity.builder().id("1").reference("1").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build()
+        };
+
+
+        this.budgetDao.saveAll(Arrays.asList(budgets));
+        log.warn("        ------- budgets");
     }
 }
