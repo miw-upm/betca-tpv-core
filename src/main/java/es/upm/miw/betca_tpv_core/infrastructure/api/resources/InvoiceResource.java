@@ -25,6 +25,7 @@ public class InvoiceResource {
     public Mono<Invoice> create(@Valid @RequestBody Invoice invoice) {
         return this.invoiceService.create(invoice);
     }
+
     @GetMapping(TICKET_SEARCH)
     public Mono<Invoice> findByTicket(@RequestParam() String ticketId) {
         return this.invoiceService.findByTicketId(ticketId);

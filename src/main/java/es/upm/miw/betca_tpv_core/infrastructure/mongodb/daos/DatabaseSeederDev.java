@@ -238,12 +238,14 @@ public class DatabaseSeederDev {
         log.warn("------- seeded customer points for users");
 
         InvoiceEntity[] invoice = {
-                InvoiceEntity.builder().id("1").identity(20241).baseTax(new BigDecimal("22.1")).taxValue(new BigDecimal("17"))
-                        .ticketId("916214312l123456789f4e1b").userMobile("666666003").build(),
-                InvoiceEntity.builder().id("2").identity(20245).baseTax(new BigDecimal("10")).taxValue(new BigDecimal("17.2"))
-                        .ticketId("916214312l123456789f4e1c").userMobile("666666002").build()
+                InvoiceEntity.builder().id("1").identity(20251).baseTax(new BigDecimal("14.5")).taxValue(new BigDecimal("34"))
+                        .ticketId("5fa4608f4928560ef59856e").userMobile("666666000").creationDate(LocalDateTime.now()).build(),
+                InvoiceEntity.builder().id("1").identity(20251).baseTax(new BigDecimal("65.3")).taxValue(new BigDecimal("16"))
+                        .ticketId("5fa4608f4928560ef59856b").userMobile("666666004").creationDate(LocalDateTime.now()).build(),
+                InvoiceEntity.builder().id("1").identity(20252).baseTax(new BigDecimal("5.9")).taxValue(new BigDecimal("85"))
+                        .ticketId("5fa4608f4928560ef59856a").userMobile("666666004").creationDate(LocalDateTime.now()).build(),
         };
-        this.invoiceDao.saveAll(Arrays.asList(invoice));
+                this.invoiceDao.saveAll(Arrays.asList(invoice));
         LogManager.getLogger(this.getClass()).warn("        ------- invoices");
 
         LocalDateTime budgetCreationDate = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
