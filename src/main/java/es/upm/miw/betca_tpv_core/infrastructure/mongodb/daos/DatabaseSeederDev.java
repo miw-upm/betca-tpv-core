@@ -42,6 +42,7 @@ public class DatabaseSeederDev {
         this.cashierDao = cashierDao;
         this.databaseStarting = databaseStarting;
         this.offerDao = offerDao;
+        this.complaintDao =complaintDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -53,6 +54,7 @@ public class DatabaseSeederDev {
     private void deleteAllAndInitialize() {
         this.ticketDao.deleteAll();
 
+        this.complaintDao.deleteAll();
         this.articleDao.deleteAll();
 
         this.providerDao.deleteAll();
@@ -202,14 +204,14 @@ public class DatabaseSeederDev {
 
         ComplaintEntity[] complaints = {
                 ComplaintEntity.builder().description("Queja aleatoria").reply("")
-                        .article(articles[0]).registrationDate(dateComplaintCreationArticle1).state("OPEN")
-                        .expiryDate(dateOfferExpiry).userMobile("6").build(),
-                ComplaintEntity.builder().description("Queja MIW").reply("").state("CLOSED")
+                        .article(articles[0]).registrationDate(dateComplaintCreationArticle1).state(ComplaintState.OPEN)
+                        .registrationDate(dateComplaintCreationArticle1).userMobile("6").build(),
+                ComplaintEntity.builder().description("Queja MIW").reply("Respuesta MIW").state(ComplaintState.CLOSED)
                         .article(articles[1]).registrationDate(dateComplaintCreationArticle2)
-                        .expiryDate(dateOfferExpiry).userMobile("6").build(),
-                ComplaintEntity.builder().description("Queja Grado").reply("").state("OPEN")
+                        .registrationDate(dateComplaintCreationArticle2).userMobile("6").build(),
+                ComplaintEntity.builder().description("Queja Grado").reply("").state(ComplaintState.OPEN)
                         .article(articles[2]).registrationDate(dateComplaintCreationArticle3)
-                        .expiryDate(dateOfferExpiry).userMobile("6").build(),
+                        .userMobile("6").build(),
         };
         this.complaintDao.saveAll(Arrays.asList(complaints));
         log.warn("        ------- complaints");
