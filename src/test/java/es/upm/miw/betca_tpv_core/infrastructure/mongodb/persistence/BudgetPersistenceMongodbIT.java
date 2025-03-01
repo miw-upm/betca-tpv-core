@@ -13,8 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
 public class BudgetPersistenceMongodbIT {
@@ -56,6 +55,14 @@ public class BudgetPersistenceMongodbIT {
                     assertEquals(2, dbBudget.getShoppingList().size());
                     return true;
                 })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testReadNotFound() {
+        StepVerifier
+                .create(this.budgetPersistenceMongodb.readById("3434"))
                 .expectComplete()
                 .verify();
 

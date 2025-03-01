@@ -70,4 +70,13 @@ public class BudgetResourceIT {
                     assertEquals(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10), budget.getCreationDate());
                 });
     }
+
+    @Test
+    void testReadNotFound() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(BUDGETS + BUDGET_ID, "454545")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
 }

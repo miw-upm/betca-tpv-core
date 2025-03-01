@@ -59,4 +59,12 @@ public class BudgetServiceIT {
                 .expectComplete()
                 .verify();
     }
+
+    @Test
+    void testReadNotFound() {
+        StepVerifier
+                .create(this.budgetService.read("44545"))
+                .expectComplete()
+                .verify();
+    }
 }

@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_core.domain.services.IBudgetService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -23,8 +24,10 @@ public class BudgetResource {
     }
 
     @GetMapping(BUDGET_ID)
-    public Mono<Budget> read(@PathVariable String id) {
-        return this.budgetService.read(id);
+    public Mono<ResponseEntity<Budget>> read(@PathVariable String id) {
+        return this.budgetService.read(id)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
 }
