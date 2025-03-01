@@ -9,4 +9,6 @@ public interface BudgetPersistence {
     Mono<Budget> create(Budget budget);
 
     Mono<Budget> readById(String id);
+
+    Mono<Void> deleteById(String id);
 }

@@ -2,7 +2,6 @@ package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
 import es.upm.miw.betca_tpv_core.domain.model.*;
-import es.upm.miw.betca_tpv_core.domain.services.utils.UUIDBase64;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
@@ -66,5 +65,24 @@ public class BudgetServiceIT {
                 .create(this.budgetService.read("44545"))
                 .expectComplete()
                 .verify();
+    }
+
+    @Test
+    void testDelete() {
+        Shopping shopping1 = Shopping.builder().barcode("8400000000017").amount(2)
+                .discount(BigDecimal.ZERO).state(ShoppingState.COMMITTED).build();
+        Shopping shopping2 = Shopping.builder().barcode("8400000000024").amount(3)
+                .discount(BigDecimal.TEN).state(ShoppingState.NOT_COMMITTED).build();
+
+        Budget budget = Budget.builder().id("3545").creationDate(LocalDateTime.now()).shoppingList(List.of(shopping1, shopping2)).build();
+
+        StepVerifier
+                .create(this.budgetService.create(budget)
+                        .flatMap(savedBudget -> this.budgetService.delete(savedBudget.getId())))
+                .verifyComplete();
+
+        StepVerifier
+                .create(this.budgetService.read("3545"))
+                .verifyComplete();
     }
 }

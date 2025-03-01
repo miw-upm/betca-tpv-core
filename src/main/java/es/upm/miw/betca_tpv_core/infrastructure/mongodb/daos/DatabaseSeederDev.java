@@ -250,7 +250,8 @@ public class DatabaseSeederDev {
 
         LocalDateTime budgetCreationDate = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
         BudgetEntity[] budgets = {
-            BudgetEntity.builder().id("1").reference("1").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build()
+            BudgetEntity.builder().id("1").reference("1").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
+            BudgetEntity.builder().id("2").reference("2").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build()
         };
 
 

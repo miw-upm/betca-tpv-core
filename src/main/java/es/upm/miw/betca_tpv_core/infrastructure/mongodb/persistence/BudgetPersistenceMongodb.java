@@ -47,4 +47,9 @@ public class BudgetPersistenceMongodb implements BudgetPersistence {
         return this.budgetReactive.findById(id)
                 .map(BudgetEntity::toBudget);
     }
+
+    @Override
+    public Mono<Void> deleteById(String id) {
+        return this.budgetReactive.deleteById(id);
+    }
 }

@@ -30,4 +30,9 @@ public class BudgetResource {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    @DeleteMapping(BUDGET_ID)
+    public Mono<Void> delete(@PathVariable String id) {
+        return this.budgetService.delete(id);
+    }
+
 }
