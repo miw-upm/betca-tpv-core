@@ -241,9 +241,11 @@ public class DatabaseSeederDev {
                 InvoiceEntity.builder().id("1").identity(20251).baseTax(new BigDecimal("14.5")).taxValue(new BigDecimal("34"))
                         .ticketId("5fa4608f4928560ef59856e").userMobile("666666000").creationDate(LocalDateTime.now()).build(),
                 InvoiceEntity.builder().id("1").identity(20251).baseTax(new BigDecimal("65.3")).taxValue(new BigDecimal("16"))
-                        .ticketId("5fa4608f4928560ef59856b").userMobile("666666004").creationDate(LocalDateTime.now()).build(),
-                InvoiceEntity.builder().id("1").identity(20252).baseTax(new BigDecimal("5.9")).taxValue(new BigDecimal("85"))
-                        .ticketId("5fa4608f4928560ef59856a").userMobile("666666004").creationDate(LocalDateTime.now()).build(),
+                        .ticketId("5fa4608f4928560ef59856b").userMobile("666666001").creationDate(LocalDateTime.now()).build(),
+                InvoiceEntity.builder().id("2").identity(20252).baseTax(new BigDecimal("5.9")).taxValue(new BigDecimal("85"))
+                        .ticketId("5fa4603b7513a164c99677ac").userMobile("666666004").creationDate(LocalDateTime.now()).build(),
+                InvoiceEntity.builder().id("3").identity(20253).baseTax(new BigDecimal("27.1")).taxValue(new BigDecimal("20"))
+                        .ticketId("5fa4608f4928560ef59856c").userMobile("666666003").creationDate(LocalDateTime.now()).build(),
         };
                 this.invoiceDao.saveAll(Arrays.asList(invoice));
         LogManager.getLogger(this.getClass()).warn("        ------- invoices");

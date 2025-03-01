@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities;
 
 import es.upm.miw.betca_tpv_core.domain.model.Invoice;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
+import es.upm.miw.betca_tpv_core.domain.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +21,6 @@ import java.time.LocalDateTime;
 @Builder
 @Document
 public class InvoiceEntity {
-
     @Id
     private String id;
 
@@ -33,18 +33,10 @@ public class InvoiceEntity {
     @Indexed(unique = true)
     private String ticketReference;
 
-    @Indexed(unique = true)
     private String userMobile;
-
     private LocalDateTime creationDate;
-
     private BigDecimal baseTax;
-
     private BigDecimal taxValue;
-
-    public InvoiceEntity(Invoice invoice) {
-        BeanUtils.copyProperties(invoice, this);
-    }
 
     public Invoice toInvoice() {
         Invoice invoice = new Invoice();
@@ -54,6 +46,11 @@ public class InvoiceEntity {
                 .id(ticketId)
                 .build();
         invoice.setTicket(ticket);
+
+        User user = User.builder()
+                .mobile(userMobile)
+                .build();
+        invoice.setUser(user);
         return invoice;
     }
 }

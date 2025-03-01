@@ -15,8 +15,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.InvoiceResource.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @RestTestConfig
 public class InvoiceResourceIT {
@@ -28,16 +27,12 @@ public class InvoiceResourceIT {
 
     @Test
     void testCreate(){
-        Shopping shopping1 = Shopping.builder().barcode("8400000000055").build();
-        Shopping shopping2 = Shopping.builder().barcode("8400000000093").build();
-
         User user = User.builder()
                 .mobile("666666000")
                 .build();
 
         Ticket ticket = Ticket.builder()
                 .id("5fa45e863d6e834d642689ac")
-                .shoppingList(List.of(shopping1, shopping2))
                 .user(user)
                 .build();
 
@@ -57,8 +52,8 @@ public class InvoiceResourceIT {
                 .value(returnInvoice -> {
                     assertNotNull(returnInvoice.getCreationDate());
                     assertNotNull(returnInvoice.getIdentity());
-                    assertEquals(new BigDecimal("14.85"), returnInvoice.getBaseTax());
-                    assertEquals(new BigDecimal("3.08"), returnInvoice.getTaxValue());
+                    assertEquals(new BigDecimal("39.51"), returnInvoice.getBaseTax());
+                    assertEquals(new BigDecimal("8.29"), returnInvoice.getTaxValue());
                 }).returnResult().getResponseBody();
         assertNotNull(dbInvoice);
     }
@@ -82,5 +77,61 @@ public class InvoiceResourceIT {
                 .body(Mono.just(invoice), Invoice.class)
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testRead(){
+        Invoice invoice = this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(INVOICES + IDENTITY_ID, 20253)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Invoice.class)
+                .value(Assertions::assertNotNull)
+                .value(invoice1 -> {
+                    assertEquals(20253, invoice1.getIdentity());
+                    assertNotNull(invoice1.getTicket());
+                })
+                .returnResult()
+                .getResponseBody();
+        assertNotNull(invoice);
+    }
+
+    @Test
+    void testReceipt(){
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get().uri(INVOICES + IDENTITY_ID + RECEIPT, 20252)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(byte[].class)
+                .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void testFindByTicketId(){
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get().uri(uriBuilder -> uriBuilder.path(INVOICES + TICKET_SEARCH)
+                        .queryParam("ticketId", "5fa4603b7513a164c99677ac").build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Invoice.class)
+                .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void testFindByUserMobile() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(INVOICES + MOBILE_SEARCH)
+                        .queryParam("mobile", "666666004")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Invoice.class)
+                .value(Assertions::assertNotNull)
+                .value(invoices -> assertTrue(invoices
+                        .stream().allMatch(invoice ->
+                                invoice.getIdentity().equals(20252))));
     }
 }
