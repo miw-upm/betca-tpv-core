@@ -9,6 +9,7 @@ import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,6 +40,20 @@ public class BudgetServiceIT {
                     assertNotNull(dbBudget.getCreationDate());
                     assertNotNull(dbBudget.getReference());
                     assertEquals(2, dbBudget.getShoppingList().size());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testRead() {
+        StepVerifier
+                .create(this.budgetService.read("1"))
+                .expectNextMatches(dbBudget -> {
+                    assertEquals("1", dbBudget.getId());
+                    assertEquals("1", dbBudget.getReference());
+                    assertEquals(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10), dbBudget.getCreationDate());
                     return true;
                 })
                 .expectComplete()

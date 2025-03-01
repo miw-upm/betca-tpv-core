@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities;
 
 import es.upm.miw.betca_tpv_core.domain.model.Budget;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Document
 public class BudgetEntity {
     @Id

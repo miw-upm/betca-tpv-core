@@ -25,4 +25,8 @@ public class BudgetService implements IBudgetService {
         budget.setCreationDate(LocalDateTime.now());
         return this.budgetPersistence.create(budget);
     }
+
+    public Mono<Budget> read(String id) {
+        return this.budgetPersistence.readById(id);
+    }
 }

@@ -13,9 +13,11 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.BudgetResource.BUDGETS;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.BudgetResource.BUDGET_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -52,5 +54,20 @@ public class BudgetResourceIT {
                     assertEquals(0, new BigDecimal("5").compareTo(returnBudget.total()));
                 }).returnResult().getResponseBody();
         assertNotNull(dbBudget);
+    }
+
+    @Test
+    void testRead() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(BUDGETS + BUDGET_ID, "1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Budget.class)
+                .value(budget -> {
+                    assertEquals("1", budget.getId());
+                    assertEquals("1", budget.getReference());
+                    assertEquals(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10), budget.getCreationDate());
+                });
     }
 }

@@ -44,4 +44,20 @@ public class BudgetPersistenceMongodbIT {
                 .expectComplete()
                 .verify();
     }
+
+    @Test
+    void testRead() {
+        StepVerifier
+                .create(this.budgetPersistenceMongodb.readById("1"))
+                .expectNextMatches(dbBudget -> {
+                    assertNotNull(dbBudget.getId());
+                    assertNotNull(dbBudget.getCreationDate());
+                    assertNotNull(dbBudget.getReference());
+                    assertEquals(2, dbBudget.getShoppingList().size());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+
+    }
 }
