@@ -52,7 +52,6 @@ public class InvoiceServiceIT {
 
     @Test
     void testGetTotalTaxes() {
-
         Shopping shopping1 = Shopping.builder().barcode("8400000000055").amount(1)
                 .discount(ZERO).state(ShoppingState.COMMITTED).build();
         Shopping shopping2 = Shopping.builder().barcode("8400000000093").amount(1)
@@ -80,5 +79,34 @@ public class InvoiceServiceIT {
                     assertEquals(new BigDecimal("3.08"), result.getTaxValue());
                 })
                 .verifyComplete();
+    }
+
+    @Test
+    void testReceipt(){
+        StepVerifier.create(this.invoiceService.readReceipt(20252)).expectNextCount(1).verifyComplete();
+    }
+
+    @Test
+    void testFindByTicketId(){
+        StepVerifier
+                .create(this.invoiceService.findByTicketId("5fa4603b7513a164c99677ac"))
+                .expectNextMatches(invoice1 ->{
+                    assertEquals("5fa4603b7513a164c99677ac", invoice1.getTicket().getId());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testFindByUserMobile() {
+        StepVerifier
+                .create(this.invoiceService.findByUserMobile("666666001"))
+                .expectNextMatches(invoice1 -> {
+                    assertEquals("666666001", invoice1.getUser().getMobile());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
     }
 }

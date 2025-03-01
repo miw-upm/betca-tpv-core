@@ -8,6 +8,7 @@ import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
 import es.upm.miw.betca_tpv_core.domain.persistence.InvoicePersistence;
 import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
+import es.upm.miw.betca_tpv_core.domain.services.utils.PdfInvoiceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -34,22 +35,32 @@ public class InvoiceService {
         return invoicePersistence.findByTicketId(ticketId);
     }
 
+    public Flux<Invoice> findByUserMobile(String mobile) {
+        return this.invoicePersistence.findByUserMobile(mobile);
+    }
+
+    public Flux<Invoice> findAll(){
+        return this.invoicePersistence.findAll();
+    }
+
+    public Mono<Invoice> read(Integer identity){
+        return this.invoicePersistence.readByIdentity(identity);
+    }
+
     private Mono<Void> validateExistingInvoice(Ticket ticket) {
-        return this.findByTicketId(ticket.getId()).flatMap(exists -> Mono.error(new ConflictException("Invoice already exists in database")));
+        return this.findByTicketId(ticket.getId())
+                .onErrorResume(NotFoundException.class, e -> Mono.empty())
+                .flatMap(exists -> Mono.error(new ConflictException("Invoice already exists in database")));
     }
 
     public Mono<Invoice> create(Invoice invoice) {
-        List<Shopping> shoppingList = invoice.getTicket().getShoppingList();
-
         return ticketPersistence.readById(invoice.getTicket().getId())
                 .switchIfEmpty(Mono.error(new NotFoundException("Ticket not found")))
                 .flatMap(ticket -> validateExistingInvoice(ticket)
-                        .then(getTotalTaxes(shoppingList, invoice)
-                                .flatMap(invoice1 -> {
-                                    invoice1.setCreationDate(LocalDateTime.now());
-                                    return invoicePersistence.create(invoice1);
-                                })));
-
+                                .then(getTotalTaxes(ticket.getShoppingList(), invoice)
+                                        .flatMap(invoice1 -> {invoice1.setCreationDate(LocalDateTime.now());
+                                            return invoicePersistence.create(invoice1);
+                                        })));
     }
 
     public Mono<Invoice> getTotalTaxes(List<Shopping> shoppingList, Invoice invoice) {
@@ -64,5 +75,13 @@ public class InvoiceService {
                             return invoice;
                         }))
                 .last();
+    }
+
+    public Mono<byte[]> readReceipt (Integer identity){
+        return this.invoicePersistence.readByIdentity(identity)
+                .flatMap(invoice -> ticketPersistence.readById(invoice.getTicket().getId())
+                        .doOnNext(invoice::setTicket)
+                        .thenReturn(invoice))
+                .map(new PdfInvoiceBuilder()::generateInvoice);
     }
 }
