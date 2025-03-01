@@ -29,4 +29,8 @@ public class BudgetService implements IBudgetService {
     public Mono<Budget> read(String id) {
         return this.budgetPersistence.readById(id);
     }
+
+    public Mono<Void> delete(String id) {
+        return this.budgetPersistence.deleteById(id);
+    }
 }

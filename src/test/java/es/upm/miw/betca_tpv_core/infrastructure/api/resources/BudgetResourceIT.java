@@ -79,4 +79,42 @@ public class BudgetResourceIT {
                 .exchange()
                 .expectStatus().isNotFound();
     }
+
+    @Test
+    void testDelete() {
+        Shopping shopping1 = Shopping.builder().barcode("8400000000017").amount(1).retailPrice(new BigDecimal("2"))
+                .discount(BigDecimal.ZERO).state(ShoppingState.COMMITTED).build();
+        Shopping shopping2 = Shopping.builder().barcode("8400000000024").amount(1).retailPrice(new BigDecimal("3"))
+                .discount(BigDecimal.ZERO).state(ShoppingState.NOT_COMMITTED).build();
+
+        Budget budget = Budget.builder().creationDate(LocalDateTime.now()).shoppingList(List.of(shopping1, shopping2)).build();
+
+        Budget dbBudget = this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(BUDGETS)
+                .body(Mono.just(budget), Budget.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Budget.class)
+                .value(Assertions::assertNotNull)
+                .value(returnBudget -> {
+                    assertNotNull(returnBudget.getId());
+                    assertNotNull(returnBudget.getReference());
+                    assertNotNull(returnBudget.getCreationDate());
+                    assertEquals(0, new BigDecimal("5").compareTo(returnBudget.total()));
+                }).returnResult().getResponseBody();
+        assertNotNull(dbBudget);
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .delete()
+                .uri(BUDGETS + BUDGET_ID, dbBudget.getId())
+                .exchange()
+                .expectStatus().isOk();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(BUDGETS + BUDGET_ID, dbBudget.getId())
+                .exchange()
+                .expectStatus().isNotFound();
+    }
 }
