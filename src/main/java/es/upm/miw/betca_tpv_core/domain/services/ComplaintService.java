@@ -10,7 +10,6 @@ import reactor.core.publisher.Flux;
 public class ComplaintService {
     private final ComplaintPersistence complaintPersistence;
     @Autowired
-
     public ComplaintService (ComplaintPersistence complaintPersistence){
         this.complaintPersistence=complaintPersistence;
     }
@@ -19,4 +18,7 @@ public class ComplaintService {
         return this.complaintPersistence.findByUserMobileNullSafe(userMobile);
     }
 
+    public  Flux<Complaint> findByUserMobile(String userMobile){
+        return this.complaintPersistence.findByUserMobile(userMobile);
+    }
 }

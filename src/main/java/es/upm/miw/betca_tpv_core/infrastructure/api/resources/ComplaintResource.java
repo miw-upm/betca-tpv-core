@@ -15,6 +15,7 @@ import reactor.core.publisher.Flux;
 public class ComplaintResource {
     public static final String COMPLAINTS = "/complaints";
     public static final String SEARCH = "/search";
+    public static final String USER_MOBILE = "/{userMobile}";
     private final ComplaintService complaintService;
     @Autowired
     public ComplaintResource(ComplaintService complaintService){
@@ -26,6 +27,11 @@ public class ComplaintResource {
         return this.complaintService.findByUserMobileNullSafe(userMobile);
     }
 
+    @PreAuthorize("authenticated")
+    @GetMapping(USER_MOBILE)
+    public Flux<Complaint> findByUserMobile(String userMobile){
+        return this.complaintService.findByUserMobile(userMobile);
+    }
 
 
 }

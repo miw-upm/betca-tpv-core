@@ -12,4 +12,6 @@ public interface ComplaintReactive extends ReactiveMongoRepository<ComplaintEnti
             + "] }")
     Flux<ComplaintEntity> findByUserMobileNullSafe(String userMobile);
 
+    Flux<ComplaintEntity> findByUserMobile(String userMobile);
+
 }

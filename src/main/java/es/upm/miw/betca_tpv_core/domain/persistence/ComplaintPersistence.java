@@ -8,4 +8,6 @@ import reactor.core.publisher.Flux;
 public interface ComplaintPersistence {
 
     Flux<Complaint> findByUserMobileNullSafe(String userMobile);
+
+    Flux<Complaint> findByUserMobile(String userMobile);
 }
