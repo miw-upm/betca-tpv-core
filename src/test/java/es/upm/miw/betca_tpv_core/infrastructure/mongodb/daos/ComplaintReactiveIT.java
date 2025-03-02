@@ -37,14 +37,13 @@ class ComplaintReactiveIT {
         StepVerifier
                 .create(this.complaintReactive.findByUserMobileNullSafe("6"))
                 .expectNextCount(0)
-                .thenCancel()
-                .verify();
+                .verifyComplete();
     }
 
     @Test
     void testFindByUserMobileNullSafe_NullMobile(){
         StepVerifier
-                .create(this.complaintReactive.findByUserMobileNullSafe(""))
+                .create(this.complaintReactive.findByUserMobileNullSafe(null))
                 .assertNext(complaint -> assertNotNull(complaint.getDescription()))
                 .thenCancel()
                 .verify();
