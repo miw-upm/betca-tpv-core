@@ -7,7 +7,10 @@ import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.CashierReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.CashierEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.time.LocalDateTime;
 
 @Repository
 public class CashierPersistenceMongodb implements CashierPersistence {
@@ -37,6 +40,12 @@ public class CashierPersistenceMongodb implements CashierPersistence {
                 .switchIfEmpty(Mono.error(new NotFoundException("Non existent cashier: " + id)))
                 .map(cashierEntity -> cashierEntity.from(cashier))
                 .flatMap(this.cashierReactive::save)
+                .map(CashierEntity::toCashier);
+    }
+
+    @Override
+    public Flux<Cashier> findAllByClosureDateBetween(LocalDateTime from, LocalDateTime to) {
+        return this.cashierReactive.findAllByClosureDateBetween(from, to)
                 .map(CashierEntity::toCashier);
     }
 }

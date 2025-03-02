@@ -272,5 +272,35 @@ public class DatabaseSeederDev {
 
         this.voucherDao.saveAll(Arrays.asList(vouchers));
         log.warn("        ------- vouchers");
+
+        CashierEntity[] cashiers = {
+                CashierEntity.builder().id("00010b300000000000000000").cardSales(BigDecimal.valueOf(100)).cashSales(BigDecimal.valueOf(1)).withdrawal(BigDecimal.valueOf(20)).deposit(BigDecimal.valueOf(20))
+                        .initialCash(BigDecimal.valueOf(0)).finalCash(BigDecimal.valueOf(1)).comment("Demo cashier closure Jan 1970 (1)")
+                        .openingDate(LocalDateTime.of(1970,1,1,8,0)).closureDate(LocalDateTime.of(1970,1,1,20,0)).build(),
+                CashierEntity.builder().id("00025cb00000000000000000").cardSales(BigDecimal.valueOf(200)).cashSales(BigDecimal.valueOf(10)).withdrawal(BigDecimal.valueOf(9)).deposit(BigDecimal.valueOf(0))
+                        .initialCash(BigDecimal.valueOf(1)).finalCash(BigDecimal.valueOf(2)).comment("Demo cashier closure Jan 1970 (2)")
+                        .openingDate(LocalDateTime.of(1970,1,2,8,0)).closureDate(LocalDateTime.of(1970,1,2,20,0)).build(),
+                CashierEntity.builder().id("002898300000000000000000").cardSales(BigDecimal.valueOf(20)).cashSales(BigDecimal.valueOf(100)).withdrawal(BigDecimal.valueOf(100)).deposit(BigDecimal.valueOf(3))
+                        .initialCash(BigDecimal.valueOf(2)).finalCash(BigDecimal.valueOf(5)).comment("Demo cashier closure Jan 1970 (3)")
+                        .openingDate(LocalDateTime.of(1970,1,31,8,0)).closureDate(LocalDateTime.of(1970,1,31,20,0)).build(),
+                CashierEntity.builder().id("0029e9b00000000000000000").cardSales(BigDecimal.valueOf(25)).cashSales(BigDecimal.valueOf(25)).withdrawal(BigDecimal.valueOf(20)).deposit(BigDecimal.valueOf(3))
+                        .initialCash(BigDecimal.valueOf(5)).finalCash(BigDecimal.valueOf(13)).comment("Demo cashier closure Feb 1970 (1)")
+                        .openingDate(LocalDateTime.of(1970,2,1,8,0)).closureDate(LocalDateTime.of(1970,2,1,20,0)).build(),
+                CashierEntity.builder().id("003c5eb00000000000000000").cardSales(BigDecimal.valueOf(100)).cashSales(BigDecimal.valueOf(27)).withdrawal(BigDecimal.valueOf(30)).deposit(BigDecimal.valueOf(0))
+                        .initialCash(BigDecimal.valueOf(13)).finalCash(BigDecimal.valueOf(10)).comment("Demo cashier closure Feb 1970 (2)")
+                        .openingDate(LocalDateTime.of(1970,2,15,8,0)).closureDate(LocalDateTime.of(1970,2,15,20,0)).build(),
+                CashierEntity.builder().id("00cea7200000000000000000").cardSales(BigDecimal.valueOf(0)).cashSales(BigDecimal.valueOf(40)).withdrawal(BigDecimal.valueOf(25)).deposit(BigDecimal.valueOf(50))
+                        .initialCash(BigDecimal.valueOf(10)).finalCash(BigDecimal.valueOf(75)).comment("Demo cashier closure Jun 1970 (1)")
+                        .openingDate(LocalDateTime.of(1970,6,6,8,0)).closureDate(LocalDateTime.of(1970,6,6,20,0)).build(),
+                CashierEntity.builder().id("01e0ed300000000000000000").cardSales(BigDecimal.valueOf(75)).cashSales(BigDecimal.valueOf(25)).withdrawal(BigDecimal.valueOf(50)).deposit(BigDecimal.valueOf(0))
+                        .initialCash(BigDecimal.valueOf(75)).finalCash(BigDecimal.valueOf(50)).comment("Demo cashier closure Dec 1970 (1)")
+                        .openingDate(LocalDateTime.of(1970,12,31,8,0)).closureDate(LocalDateTime.of(1970,12,31,20,0)).build(),
+                CashierEntity.builder().id("01e23eb00000000000000000").cardSales(BigDecimal.valueOf(15)).cashSales(BigDecimal.valueOf(100)).withdrawal(BigDecimal.valueOf(0)).deposit(BigDecimal.valueOf(50))
+                        .initialCash(BigDecimal.valueOf(50)).finalCash(BigDecimal.valueOf(200)).comment("Demo cashier closure Jan 1971 (1)")
+                        .openingDate(LocalDateTime.of(1971,1,1,8,0)).closureDate(LocalDateTime.of(1971,1,1,20,0)).build()
+        };
+
+        this.cashierDao.saveAll(Arrays.asList(cashiers));
+        log.warn("        ------- cashierClosure");
     }
 }
