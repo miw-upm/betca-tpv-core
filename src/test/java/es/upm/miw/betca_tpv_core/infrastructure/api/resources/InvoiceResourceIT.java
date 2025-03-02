@@ -4,10 +4,15 @@ import es.upm.miw.betca_tpv_core.domain.model.Invoice;
 import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.model.User;
+import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
@@ -16,6 +21,7 @@ import java.util.List;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.InvoiceResource.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
 @RestTestConfig
 public class InvoiceResourceIT {
@@ -24,6 +30,14 @@ public class InvoiceResourceIT {
     private WebTestClient webTestClient;
     @Autowired
     private RestClientTestService restClientTestService;
+    @MockBean
+    private UserMicroservice userMicroservice;
+
+    @BeforeEach
+    void onStartMobileForUser() {
+        BDDMockito.given(this.userMicroservice.readByMobile(any(String.class)))
+                .willAnswer(arguments -> Mono.just(User.builder().mobile(arguments.getArgument(0)).build()));
+    }
 
     @Test
     void testCreate(){
@@ -133,5 +147,25 @@ public class InvoiceResourceIT {
                 .value(invoices -> assertTrue(invoices
                         .stream().allMatch(invoice ->
                                 invoice.getIdentity().equals(20252))));
+    }
+
+    @Test
+    void testUpdateUser(){
+        this.restClientTestService.loginAdmin(webTestClient)
+                .patch()
+                .uri(INVOICES + "/{identity}", 20253).contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(User.builder().mobile("600000012").build()), User.class).exchange()
+                .expectStatus().isOk();
+        Invoice invoice = this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(INVOICES + IDENTITY_ID, 20253).exchange()
+                .expectStatus().isOk()
+                .expectBody(Invoice.class).value(Assertions::assertNotNull)
+                .value(invoice1 -> {
+                    assertNotNull(invoice1);
+                    assertEquals("600000012", invoice1.getUser().getMobile());
+                    assertEquals(20253, invoice1.getIdentity());})
+                .returnResult().getResponseBody();
+        assertNotNull(invoice);
     }
 }
