@@ -1,4 +1,4 @@
-package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
+package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ComplaintState;
@@ -9,14 +9,15 @@ import reactor.test.StepVerifier;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
-class ComplaintPersistenceMongodbIT {
+class ComplaintServiceIT {
+
     @Autowired
-    private ComplaintPersistenceMongodb complaintPersistenceMongodb;
+    private ComplaintService complaintService;
 
     @Test
     void testFindByUserMobileNullSafe_MobileWithComplaintsAssociated(){
         StepVerifier
-                .create(this.complaintPersistenceMongodb.findByUserMobileNullSafe("66"))
+                .create(this.complaintService.findByUserMobileNullSafe("66"))
                 .expectNextMatches( complaint ->{
                     assertTrue(complaint.getDescription().contains("Queja aleatoria"));
                     return true;
@@ -33,7 +34,7 @@ class ComplaintPersistenceMongodbIT {
     @Test
     void testFindByUserMobileNullSafe_MobileWithNoComplaintsAssociated(){
         StepVerifier
-                .create(this.complaintPersistenceMongodb.findByUserMobileNullSafe("6"))
+                .create(this.complaintService.findByUserMobileNullSafe("6"))
                 .expectNextCount(0)
                 .verifyComplete();
     }
@@ -41,7 +42,7 @@ class ComplaintPersistenceMongodbIT {
     @Test
     void testFindByUserMobileNullSafe_NullMobile(){
         StepVerifier
-                .create(this.complaintPersistenceMongodb.findByUserMobileNullSafe(null))
+                .create(this.complaintService.findByUserMobileNullSafe(null))
                 .assertNext(complaint -> assertNotNull(complaint.getDescription()))
                 .thenCancel()
                 .verify();
