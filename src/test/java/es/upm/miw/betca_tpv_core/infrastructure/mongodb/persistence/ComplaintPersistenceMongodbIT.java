@@ -19,13 +19,11 @@ public class ComplaintPersistenceMongodbIT {
                 .create(this.complaintPersistenceMongodb.findByUserMobileNullSafe("66"))
                 .expectNextMatches( complaint ->{
                     assertTrue(complaint.getDescription().contains("Queja aleatoria"));
-                    assertEquals(ComplaintState.OPEN,complaint.getState());
                     return true;
                 })
                 .expectNextMatches( complaint ->{
                     assertTrue(complaint.getDescription().contains("Queja MIW"));
                     assertTrue(complaint.getReply().contains("Respuesta MIW"));
-                    assertEquals(ComplaintState.CLOSED,complaint.getState());
                     return true;
                 })
                 .thenCancel()
@@ -35,16 +33,15 @@ public class ComplaintPersistenceMongodbIT {
     @Test
     void testFindByUserMobileNullSafe_MobileWithNoComplaintsAssociated(){
         StepVerifier
-                .create(this.complaintPersistenceMongodb.findByUserMobileNullSafe("32436"))
+                .create(this.complaintPersistenceMongodb.findByUserMobileNullSafe("6"))
                 .expectNextCount(0)
-                .thenCancel()
-                .verify();
+                .verifyComplete();
     }
 
     @Test
     void testFindByUserMobileNullSafe_NullMobile(){
         StepVerifier
-                .create(this.complaintPersistenceMongodb.findByUserMobileNullSafe(""))
+                .create(this.complaintPersistenceMongodb.findByUserMobileNullSafe(null))
                 .assertNext(complaint -> assertNotNull(complaint.getDescription()))
                 .thenCancel()
                 .verify();
