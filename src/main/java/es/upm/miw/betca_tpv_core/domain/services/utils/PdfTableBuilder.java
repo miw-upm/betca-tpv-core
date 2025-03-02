@@ -50,8 +50,12 @@ public class PdfTableBuilder {
     }
 
     public PdfTableBuilder tableColspanRight(String value) {
+        return this.tableColspanRight(value, FONT_SIZE_EMPHASIZED);
+    }
+
+    public PdfTableBuilder tableColspanRight(String value, int fontSize) {
         Cell cell = new Cell(1, this.table.getNumberOfColumns());
-        cell.setTextAlignment(TextAlignment.RIGHT).setBold().setFontSize(FONT_SIZE_EMPHASIZED);
+        cell.setTextAlignment(TextAlignment.RIGHT).setBold().setFontSize(fontSize);
         cell.add(value);
         this.table.addCell(cell);
         return this;

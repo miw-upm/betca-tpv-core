@@ -66,8 +66,17 @@ class CustomerPointsServiceIT {
 
     @Test
     void testReadCustomerPointsByMobile() {
+        CustomerPoints customerPoints = new CustomerPoints();
+        customerPoints.setValue(100);
+        customerPoints.setLastDate(LocalDateTime.now().minusYears(2));
+        User user = new User();
+        user.setMobile(TEST_MOBILE);
+        customerPoints.setUser(user);
+
+        given(this.customerPointsPersistence.readCustomerPointsByMobile(TEST_MOBILE, user)).willReturn(Mono.just(customerPoints));
+
         StepVerifier.create(this.customerPointsService.readCustomerPointsByMobile(TEST_MOBILE))
-                .expectNextMatches(cp -> cp.getUser().getMobile().equals(TEST_MOBILE))
+                .expectNextMatches(cp -> cp.getUser().getMobile().equals(TEST_MOBILE) && cp.getValue() == 0)
                 .verifyComplete();
     }
 
@@ -96,6 +105,42 @@ class CustomerPointsServiceIT {
 
         StepVerifier.create(this.customerPointsService.useCustomerPoints(TEST_MOBILE, pointsToUse))
                 .expectNextMatches(cp -> cp.getValue() == 90)
+                .verifyComplete();
+    }
+
+    @Test
+    void testAddCustomerPointsWithExpiredPoints() {
+        int pointsToAdd = 50;
+        CustomerPoints customerPoints = new CustomerPoints();
+        customerPoints.setValue(100);
+        customerPoints.setLastDate(LocalDateTime.now().minusYears(2));
+        User user = new User();
+        user.setMobile(TEST_MOBILE);
+        customerPoints.setUser(user);
+
+        given(this.customerPointsPersistence.readCustomerPointsByMobile(TEST_MOBILE, user)).willReturn(Mono.just(customerPoints));
+        given(this.customerPointsPersistence.updateCustomerPoints(any(String.class), any(CustomerPoints.class))).willReturn(Mono.just(customerPoints));
+
+        StepVerifier.create(this.customerPointsService.addCustomerPoints(TEST_MOBILE, pointsToAdd))
+                .expectNextMatches(cp -> cp.getValue() == pointsToAdd && cp.getLastDate() != null)
+                .verifyComplete();
+    }
+
+    @Test
+    void testUseCustomerPointsWithExpiredPoints() {
+        int pointsToUse = 10;
+        CustomerPoints customerPoints = new CustomerPoints();
+        customerPoints.setValue(100);
+        customerPoints.setLastDate(LocalDateTime.now().minusYears(2));
+        User user = new User();
+        user.setMobile(TEST_MOBILE);
+        customerPoints.setUser(user);
+
+        given(this.customerPointsPersistence.readCustomerPointsByMobile(TEST_MOBILE, user)).willReturn(Mono.just(customerPoints));
+        given(this.customerPointsPersistence.updateCustomerPoints(any(String.class), any(CustomerPoints.class))).willReturn(Mono.just(customerPoints));
+
+        StepVerifier.create(this.customerPointsService.useCustomerPoints(TEST_MOBILE, pointsToUse))
+                .expectNextMatches(cp -> cp.getValue() == 0 && cp.getLastDate() != null)
                 .verifyComplete();
     }
 }
