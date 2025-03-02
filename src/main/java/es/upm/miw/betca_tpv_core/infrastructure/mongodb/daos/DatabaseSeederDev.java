@@ -231,8 +231,8 @@ public class DatabaseSeederDev {
                 CustomerPointsEntity.builder().value(0).lastDate(LocalDateTime.now()).userMobileNumber("6").build(),
                 CustomerPointsEntity.builder().value(100).lastDate(LocalDateTime.now()).userMobileNumber("66").build(),
                 CustomerPointsEntity.builder().value(20).lastDate(LocalDateTime.now()).userMobileNumber("666666003").build(),
-                CustomerPointsEntity.builder().value(50).lastDate(LocalDateTime.now()).userMobileNumber("666666004").build(),
-                CustomerPointsEntity.builder().value(10).lastDate(LocalDateTime.now()).userMobileNumber("666666005").build()
+                CustomerPointsEntity.builder().value(50).lastDate(LocalDateTime.of(2024, Month.SEPTEMBER, 1, 0, 0)).userMobileNumber("666666004").build(),
+                CustomerPointsEntity.builder().value(10).lastDate(LocalDateTime.of(2023, Month.JANUARY, 1, 0, 0)).userMobileNumber("666666005").build()
         ));
 
         log.warn("------- seeded customer points for users");
