@@ -6,6 +6,7 @@ import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Flux;
@@ -22,14 +23,15 @@ public class ComplaintResource {
         this.complaintService=complaintService;
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(SEARCH)
     public Flux<Complaint> findByUserMobileNullSafe(@RequestParam(required = false) String userMobile){
         return this.complaintService.findByUserMobileNullSafe(userMobile);
     }
 
-    @PreAuthorize("authenticated")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #userMobile == authentication.principal")
     @GetMapping(USER_MOBILE)
-    public Flux<Complaint> findByUserMobile(String userMobile){
+    public Flux<Complaint> findByUserMobile(@PathVariable String userMobile){
         return this.complaintService.findByUserMobile(userMobile);
     }
 
