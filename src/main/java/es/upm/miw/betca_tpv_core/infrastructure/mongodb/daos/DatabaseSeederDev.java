@@ -186,16 +186,16 @@ public class DatabaseSeederDev {
         TicketEntity[] tickets = {
                 new TicketEntity("5fa45e863d6e834d642689ac", "nUs81zZ4R_iuoq0_zCRm6A",
                         List.of(shoppingList[0], shoppingList[1]), date, new BigDecimal("20.0"),
-                        ZERO, ZERO, "note", "666666000"),
+                        ZERO, ZERO, "note", "666666000", ZERO),
                 new TicketEntity("5fa45f6f3a61083cb241289c", "lpiHOlsoS_WkkEyWeFNJtg",
                         List.of(shoppingList[2]), date, new BigDecimal("25.0"),
-                        ZERO, ZERO, "note", "666666004"),
+                        ZERO, ZERO, "note", "666666004", ZERO),
                 new TicketEntity("5fa4603b7513a164c99677ac", "FGhfvfMORj6iKmzp5aERAA",
                         List.of(shoppingList[3], shoppingList[4]), date, new BigDecimal("18.0"),
-                        ZERO, ZERO, "note", "666666004"),
+                        ZERO, ZERO, "note", "666666004", ZERO),
                 new TicketEntity("5fa4608f4928694ef5980e4c", "WB9-e8xQT4ejb74r1vLrCw",
                         List.of(shoppingList[5]), date, new BigDecimal("20"),
-                        new BigDecimal("5"), ZERO, "note", "666666005"),
+                        new BigDecimal("5"), ZERO, "note", "666666005", ZERO),
         };
         this.ticketDao.saveAll(Arrays.asList(tickets));
         log.warn("        ------- tickets");
@@ -234,8 +234,8 @@ public class DatabaseSeederDev {
                 CustomerPointsEntity.builder().value(0).lastDate(LocalDateTime.now()).userMobileNumber("6").build(),
                 CustomerPointsEntity.builder().value(100).lastDate(LocalDateTime.now()).userMobileNumber("66").build(),
                 CustomerPointsEntity.builder().value(20).lastDate(LocalDateTime.now()).userMobileNumber("666666003").build(),
-                CustomerPointsEntity.builder().value(50).lastDate(LocalDateTime.now()).userMobileNumber("666666004").build(),
-                CustomerPointsEntity.builder().value(10).lastDate(LocalDateTime.now()).userMobileNumber("666666005").build()
+                CustomerPointsEntity.builder().value(50).lastDate(LocalDateTime.of(2024, Month.SEPTEMBER, 1, 0, 0)).userMobileNumber("666666004").build(),
+                CustomerPointsEntity.builder().value(10).lastDate(LocalDateTime.of(2023, Month.JANUARY, 1, 0, 0)).userMobileNumber("666666005").build()
         ));
 
         log.warn("------- seeded customer points for users");

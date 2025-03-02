@@ -37,11 +37,13 @@ public class Ticket {
     @NotBlank
     private String note;
     private User user;
+    private BigDecimal pointsDiscount = BigDecimal.ZERO;
 
     public BigDecimal total() {
-        return this.shoppingList.stream()
+        BigDecimal originalTotal = this.shoppingList.stream()
                 .map(Shopping::totalShopping)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return originalTotal.subtract(this.pointsDiscount);
     }
 
     public BigDecimal pay() {

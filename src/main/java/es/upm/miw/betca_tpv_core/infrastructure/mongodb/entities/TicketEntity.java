@@ -31,6 +31,7 @@ public class TicketEntity {
     private BigDecimal voucher;
     private String note;
     private String userMobile;
+    private BigDecimal pointsDiscount = BigDecimal.ZERO;
 
     public TicketEntity(Ticket ticket) {
         BeanUtils.copyProperties(ticket, this);
