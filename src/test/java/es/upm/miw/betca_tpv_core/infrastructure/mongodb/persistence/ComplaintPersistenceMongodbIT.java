@@ -1,4 +1,4 @@
-package es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos;
+package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ComplaintState;
@@ -9,14 +9,14 @@ import reactor.test.StepVerifier;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
-class ComplaintReactiveIT {
+public class ComplaintPersistenceMongodbIT {
     @Autowired
-    public ComplaintReactive complaintReactive;
+    private ComplaintPersistenceMongodb complaintPersistenceMongodb;
 
     @Test
     void testFindByUserMobileNullSafe_MobileWithComplaintsAssociated(){
         StepVerifier
-                .create(this.complaintReactive.findByUserMobileNullSafe("66"))
+                .create(this.complaintPersistenceMongodb.findByUserMobileNullSafe("66"))
                 .expectNextMatches( complaint ->{
                     assertTrue(complaint.getDescription().contains("Queja aleatoria"));
                     assertEquals(ComplaintState.OPEN,complaint.getState());
@@ -35,7 +35,7 @@ class ComplaintReactiveIT {
     @Test
     void testFindByUserMobileNullSafe_MobileWithNoComplaintsAssociated(){
         StepVerifier
-                .create(this.complaintReactive.findByUserMobileNullSafe("6"))
+                .create(this.complaintPersistenceMongodb.findByUserMobileNullSafe("32436"))
                 .expectNextCount(0)
                 .thenCancel()
                 .verify();
@@ -44,7 +44,7 @@ class ComplaintReactiveIT {
     @Test
     void testFindByUserMobileNullSafe_NullMobile(){
         StepVerifier
-                .create(this.complaintReactive.findByUserMobileNullSafe(""))
+                .create(this.complaintPersistenceMongodb.findByUserMobileNullSafe(""))
                 .assertNext(complaint -> assertNotNull(complaint.getDescription()))
                 .thenCancel()
                 .verify();

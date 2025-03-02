@@ -6,8 +6,8 @@ import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;
 
 public interface ComplaintReactive extends ReactiveMongoRepository<ComplaintEntity,String> {
-    @Query("{$and:[" // allow NULL: all elements
-            + "?#{ [0] == null ? {_id : {$ne:null}} : { userMobile : {$regex:[0], $options: 'i'} } },"
+    @Query("{$and:["
+            + "?#{ [0] == null ? {} : { userMobile : {$eq : [0]} } }"
             + "] }")
     Flux<ComplaintEntity> findByUserMobileNullSafe(String userMobile);
 
