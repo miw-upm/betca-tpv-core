@@ -30,6 +30,7 @@ public class DatabaseSeederDev {
     private final CustomerPointsDao customerPointsDao;
     private final InvoiceDao invoiceDao;
     private final BudgetDao budgetDao;
+    private final VoucherDao voucherDao;
 
     private final DatabaseStarting databaseStarting;
 
@@ -45,7 +46,8 @@ public class DatabaseSeederDev {
             OfferDao offerDao,
             CustomerPointsDao customerPointsDao,
             InvoiceDao invoiceDao,
-            BudgetDao budgetDao
+            BudgetDao budgetDao,
+            VoucherDao voucherDao
     ) {
         this.articleDao = articleDao;
         this.providerDao = providerDao;
@@ -58,6 +60,7 @@ public class DatabaseSeederDev {
         this.customerPointsDao = customerPointsDao;
         this.invoiceDao = invoiceDao;
         this.budgetDao = budgetDao;
+        this.voucherDao = voucherDao;
 
         this.deleteAllAndInitializeAndSeedDataBase();
     }
@@ -259,5 +262,15 @@ public class DatabaseSeederDev {
 
         this.budgetDao.saveAll(Arrays.asList(budgets));
         log.warn("        ------- budgets");
+
+        LocalDateTime creationDate = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
+        Voucher[] vouchers = {
+                Voucher.builder().reference("VOUCHER001").value(BigDecimal.valueOf(50)).creationDate(creationDate).dateOfUse(null).user(User.builder().mobile("635635635").build()).build(),
+                Voucher.builder().reference("VOUCHER002").value(BigDecimal.valueOf(30)).creationDate(creationDate).dateOfUse(creationDate.plusDays(10)).user(User.builder().mobile("635635635").build()).build(),
+                Voucher.builder().reference("VOUCHER003").value(BigDecimal.valueOf(100)).creationDate(creationDate).dateOfUse(null).user(User.builder().mobile("635635635").build()).build()
+        };
+
+        this.voucherDao.saveAll(Arrays.asList(vouchers));
+        log.warn("        ------- vouchers");
     }
 }
