@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.Invoice;
+import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.services.InvoiceService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import jakarta.validation.Valid;
@@ -53,5 +54,10 @@ public class InvoiceResource {
     @GetMapping
     public Flux<Invoice> findAll() {
         return this.invoiceService.findAll();
+    }
+
+    @PatchMapping(IDENTITY_ID)
+    public Mono<Invoice> updateUser(@PathVariable Integer identity, @Valid @RequestBody User user) {
+        return this.invoiceService.updateUser(identity, user.getMobile());
     }
 }
