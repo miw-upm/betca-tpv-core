@@ -57,8 +57,4 @@ public class Article {
         }
     }
 
-    public String getBarcode(){
-        return this.barcode;
-    }
-
 }
