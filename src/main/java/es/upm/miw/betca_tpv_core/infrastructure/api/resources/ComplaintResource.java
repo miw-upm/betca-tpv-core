@@ -21,7 +21,6 @@ public class ComplaintResource {
         this.complaintService=complaintService;
     }
 
-    @PreAuthorize("permitAll()")
     @GetMapping(SEARCH)
     public Flux<Complaint> findByUserMobileNullSafe(@RequestParam(required = false) String userMobile){
         return this.complaintService.findByUserMobileNullSafe(userMobile);

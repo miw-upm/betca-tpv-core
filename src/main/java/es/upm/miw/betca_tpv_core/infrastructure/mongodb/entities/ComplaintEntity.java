@@ -41,6 +41,7 @@ public class ComplaintEntity {
 
         BeanUtils.copyProperties(this,complaint);
         complaint.setBarcode(this.article.getBarcode());
+        complaint.setState(state.toString());
         return complaint;
 
     }

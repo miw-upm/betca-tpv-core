@@ -31,7 +31,6 @@ public class Complaint {
 
     @NotBlank
     private String mobile;
-
-    @Enumerated(EnumType.STRING)
-    private ComplaintState state;
+    @NotBlank
+    private String state;
 }
