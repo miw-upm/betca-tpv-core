@@ -14,20 +14,38 @@ class ComplaintReactiveIT {
     public ComplaintReactive complaintReactive;
 
     @Test
-    void testFindByUserMobileNullSafe(){
+    void testFindByUserMobileNullSafe_MobileWithComplaintsAssociated(){
         StepVerifier
                 .create(this.complaintReactive.findByUserMobileNullSafe("6"))
                 .expectNextMatches( complaint ->{
                     assertTrue(complaint.getDescription().contains("Queja aleatoria"));
-                    assertEquals(ComplaintState.OPEN,complaint.getReply());
+                    assertEquals(ComplaintState.OPEN,complaint.getState());
                     return true;
                 })
                 .expectNextMatches( complaint ->{
                     assertTrue(complaint.getDescription().contains("Queja MIW"));
                     assertTrue(complaint.getReply().contains("Respuesta MIW"));
-                    assertEquals(ComplaintState.CLOSED,complaint.getReply());
+                    assertEquals(ComplaintState.CLOSED,complaint.getState());
                     return true;
                 })
+                .thenCancel()
+                .verify();
+    }
+
+    @Test
+    void testFindByUserMobileNullSafe_MobileWithNoComplaintsAssociated(){
+        StepVerifier
+                .create(this.complaintReactive.findByUserMobileNullSafe("32436"))
+                .expectNextCount(0)
+                .thenCancel()
+                .verify();
+    }
+
+    @Test
+    void testFindByUserMobileNullSafe_NullMobile(){
+        StepVerifier
+                .create(this.complaintReactive.findByUserMobileNullSafe(""))
+                .assertNext(complaint -> assertNotNull(complaint.getDescription()))
                 .thenCancel()
                 .verify();
     }
