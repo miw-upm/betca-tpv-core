@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
+import es.upm.miw.betca_tpv_core.domain.model.Cashier;
 import es.upm.miw.betca_tpv_core.domain.model.CashierClose;
 import es.upm.miw.betca_tpv_core.domain.model.CashierState;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
@@ -11,6 +12,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.*;
 import static java.math.BigDecimal.ZERO;
@@ -92,5 +94,30 @@ class CashierResourceIT {
                 .expectBody(CashierLastDto.class)
                 .value(Assertions::assertNotNull)
                 .value(cashier -> assertTrue(cashier.getClosed()));
+    }
+
+    @Test
+    void testFindAllClosedBetween(){
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get().uri(CASHIERS + CLOSED_BETWEEN +"?from=1970-01-01&to=1970-01-01")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Cashier.class).hasSize(0);
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get().uri(CASHIERS + CLOSED_BETWEEN +"?from=1970-01-01&to=1970-02-01")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Cashier.class).value( cashiers -> cashiers.forEach( cashier -> {
+                    Assertions.assertTrue( cashier.getClosureDate().isAfter(LocalDateTime.of(1970,1,1, 0, 0)));
+                    Assertions.assertTrue( cashier.getClosureDate().isBefore(LocalDateTime.of(1970,2,1, 0, 0)));
+                }));
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get().uri(CASHIERS + CLOSED_BETWEEN +"?from=1971-01-01&to=1972-01-01")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Cashier.class).value( cashiers -> cashiers.forEach( cashier -> {
+                    Assertions.assertTrue( cashier.getClosureDate().isAfter(LocalDateTime.of(1971,1,1, 0, 0)));
+                    Assertions.assertTrue( cashier.getClosureDate().isBefore(LocalDateTime.of(1972,1,1, 0, 0)));
+                }));
     }
 }
