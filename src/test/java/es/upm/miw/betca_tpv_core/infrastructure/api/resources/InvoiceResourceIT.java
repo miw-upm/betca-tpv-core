@@ -42,11 +42,11 @@ public class InvoiceResourceIT {
     @Test
     void testCreate(){
         User user = User.builder()
-                .mobile("666666000")
+                .mobile("666666005")
                 .build();
 
         Ticket ticket = Ticket.builder()
-                .id("5fa45e863d6e834d642689ac")
+                .id("5fa4608f4928694ef5980e4d")
                 .user(user)
                 .build();
 
@@ -66,8 +66,8 @@ public class InvoiceResourceIT {
                 .value(returnInvoice -> {
                     assertNotNull(returnInvoice.getCreationDate());
                     assertNotNull(returnInvoice.getIdentity());
-                    assertEquals(new BigDecimal("39.51"), returnInvoice.getBaseTax());
-                    assertEquals(new BigDecimal("8.29"), returnInvoice.getTaxValue());
+                    assertEquals(new BigDecimal("0.01"), returnInvoice.getBaseTax());
+                    assertEquals(new BigDecimal("0.00"), returnInvoice.getTaxValue());
                 }).returnResult().getResponseBody();
         assertNotNull(dbInvoice);
     }
