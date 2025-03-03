@@ -29,7 +29,7 @@ public class InvoiceServiceIT {
                 .build();
 
         Ticket ticket = Ticket.builder()
-                .id("5fa45e863d6e834d642689ac")
+                .id("5fa4608f4928694ef5980e4d")
                 .user(user)
                 .shoppingList(List.of(shopping1))
                 .build();
@@ -101,9 +101,9 @@ public class InvoiceServiceIT {
     @Test
     void testFindByUserMobile() {
         StepVerifier
-                .create(this.invoiceService.findByUserMobile("666666001"))
+                .create(this.invoiceService.findByUserMobile("666666000"))
                 .expectNextMatches(invoice1 -> {
-                    assertEquals("666666001", invoice1.getUser().getMobile());
+                    assertEquals("666666000", invoice1.getUser().getMobile());
                     return true;
                 })
                 .expectComplete()

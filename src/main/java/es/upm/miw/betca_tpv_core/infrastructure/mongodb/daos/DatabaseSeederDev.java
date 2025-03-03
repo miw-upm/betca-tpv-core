@@ -196,6 +196,9 @@ public class DatabaseSeederDev {
                 new TicketEntity("5fa4608f4928694ef5980e4c", "WB9-e8xQT4ejb74r1vLrCw",
                         List.of(shoppingList[5]), date, new BigDecimal("20"),
                         new BigDecimal("5"), ZERO, "note", "666666005", ZERO),
+                new TicketEntity("5fa4608f4928694ef5980e4d", "WB9-e8xQT4ejb74r1vLrCw",
+                        List.of(shoppingList[5]), date, new BigDecimal("20"),
+                        new BigDecimal("5"), ZERO, "note", "666666005", ZERO),
         };
         this.ticketDao.saveAll(Arrays.asList(tickets));
         log.warn("        ------- tickets");
@@ -242,13 +245,13 @@ public class DatabaseSeederDev {
 
         InvoiceEntity[] invoice = {
                 InvoiceEntity.builder().id("1").identity(20251).baseTax(new BigDecimal("14.5")).taxValue(new BigDecimal("34"))
-                        .ticketId("5fa4608f4928560ef59856e").userMobile("666666000").creationDate(LocalDateTime.now()).build(),
-                InvoiceEntity.builder().id("1").identity(20251).baseTax(new BigDecimal("65.3")).taxValue(new BigDecimal("16"))
-                        .ticketId("5fa4608f4928560ef59856b").userMobile("666666001").creationDate(LocalDateTime.now()).build(),
+                        .ticketId("5fa45e863d6e834d642689ac").userMobile("666666000").creationDate(LocalDateTime.now()).build(),
                 InvoiceEntity.builder().id("2").identity(20252).baseTax(new BigDecimal("5.9")).taxValue(new BigDecimal("85"))
                         .ticketId("5fa4603b7513a164c99677ac").userMobile("666666004").creationDate(LocalDateTime.now()).build(),
                 InvoiceEntity.builder().id("3").identity(20253).baseTax(new BigDecimal("27.1")).taxValue(new BigDecimal("20"))
-                        .ticketId("5fa4608f4928560ef59856c").userMobile("666666003").creationDate(LocalDateTime.now()).build(),
+                        .ticketId("5fa4608f4928694ef5980e4c").userMobile("666666003").creationDate(LocalDateTime.now()).build(),
+                InvoiceEntity.builder().id("4").identity(20254).baseTax(new BigDecimal("16.3")).taxValue(new BigDecimal("15"))
+                        .ticketId("5fa45f6f3a61083cb241289c").userMobile("666666002").creationDate(LocalDateTime.now()).build(),
         };
                 this.invoiceDao.saveAll(Arrays.asList(invoice));
         LogManager.getLogger(this.getClass()).warn("        ------- invoices");
