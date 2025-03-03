@@ -32,6 +32,8 @@ public class DatabaseSeederDev {
     private final BudgetDao budgetDao;
     private final VoucherDao voucherDao;
 
+    private final ComplaintDao complaintDao;
+
     private final DatabaseStarting databaseStarting;
 
     @Autowired
@@ -47,8 +49,10 @@ public class DatabaseSeederDev {
             CustomerPointsDao customerPointsDao,
             InvoiceDao invoiceDao,
             BudgetDao budgetDao,
-            VoucherDao voucherDao
+            VoucherDao voucherDao,
+            ComplaintDao complaintDao
     ) {
+
         this.articleDao = articleDao;
         this.providerDao = providerDao;
         this.articlesTreeDao = articlesTreeDao;
@@ -57,10 +61,12 @@ public class DatabaseSeederDev {
         this.databaseStarting = databaseStarting;
         this.rgpdDao = rgpdDao;
         this.offerDao = offerDao;
+
         this.customerPointsDao = customerPointsDao;
         this.invoiceDao = invoiceDao;
         this.budgetDao = budgetDao;
         this.voucherDao = voucherDao;
+        this.complaintDao =complaintDao;
 
         this.deleteAllAndInitializeAndSeedDataBase();
     }
@@ -72,6 +78,8 @@ public class DatabaseSeederDev {
 
     private void deleteAllAndInitialize() {
         this.ticketDao.deleteAll();
+
+        this.complaintDao.deleteAll();
         this.articleDao.deleteAll();
         this.providerDao.deleteAll();
         this.cashierDao.deleteAll();
@@ -306,5 +314,24 @@ public class DatabaseSeederDev {
 
         this.cashierDao.saveAll(Arrays.asList(cashiers));
         log.warn("        ------- cashierClosure");
+
+            LocalDateTime dateComplaintCreationArticle1 = LocalDateTime.of(2021, Month.JANUARY, 1, 20, 56);
+            LocalDateTime dateComplaintCreationArticle2 = LocalDateTime.of(2022, Month.MAY, 31, 1, 34);
+            LocalDateTime dateComplaintCreationArticle3 = LocalDateTime.of(2021, Month.JULY, 15, 10, 4);
+
+            ComplaintEntity[] complaints = {
+                    ComplaintEntity.builder().description("Queja aleatoria").reply("")
+                            .article(articles[0]).registrationDate(dateComplaintCreationArticle1).state(ComplaintState.OPEN)
+                            .registrationDate(dateComplaintCreationArticle1).userMobile("66").build(),
+                    ComplaintEntity.builder().description("Queja MIW").reply("Respuesta MIW").state(ComplaintState.CLOSED)
+                            .article(articles[1]).registrationDate(dateComplaintCreationArticle2)
+                            .registrationDate(dateComplaintCreationArticle2).userMobile("66").build(),
+                    ComplaintEntity.builder().description("Queja Grado").reply("").state(ComplaintState.OPEN)
+                            .article(articles[2]).registrationDate(dateComplaintCreationArticle3)
+                            .userMobile("66").build(),
+            };
+            this.complaintDao.saveAll(Arrays.asList(complaints));
+            log.warn("        ------- complaints");
+
     }
 }
