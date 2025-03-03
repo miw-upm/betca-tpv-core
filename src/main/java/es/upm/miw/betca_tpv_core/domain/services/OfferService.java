@@ -23,8 +23,8 @@ public class OfferService {
         return this.offerPersistence.create(offer);
     }
 
-    public Flux<Offer> findByReferenceAndDescriptionNullSafe(String reference, String description) {
-        return this.offerPersistence.findByReferenceAndDescriptionNullSafe(reference, description);
+    public Flux<Offer> findByReferenceAndDescriptionAndDiscountNullSafe(String reference, String description, Integer discount) {
+        return this.offerPersistence.findByReferenceAndDescriptionAndDiscountNullSafe(reference, description, discount);
     }
 
     public Mono<Offer> read(String reference) {
