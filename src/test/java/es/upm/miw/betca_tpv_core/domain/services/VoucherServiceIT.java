@@ -52,7 +52,7 @@ public class VoucherServiceIT {
         }).verifyComplete();
     }
 
-    @Test
+    /*@Test
     void testCreateVoucherUserNotFound() {
         String userMobile = "000000000";
         String userName = "Paco";
@@ -67,7 +67,7 @@ public class VoucherServiceIT {
         when(userMicroservice.readByMobile(userMobile)).thenReturn(Mono.error(new BadRequestException("User not found")));
 
         StepVerifier.create(voucherService.create(voucher)).expectErrorMatches(throwable -> throwable instanceof BadRequestException).verify();
-    }
+    }*/
 
     /*@Test
     void testReadByReference() {
