@@ -72,12 +72,11 @@ public class OfferPersistenceMongodb implements OfferPersistence {
             return Mono.error(new BadRequestException("The creation date must be before the expiry date."));
         }
 
-        if (!reference.equals(offer.getReference())) {
-            offerEntityMono = this.assertReferenceNotExist(offer.getReference())
-                    .then(this.offerReactive.findByReference(reference));
-        } else {
-            offerEntityMono = this.offerReactive.findByReference(reference);
+        if (offer.getReference() != null && !offer.getReference().equals(reference)) {
+           offer.setReference(reference);
         }
+
+        offerEntityMono = this.offerReactive.findByReference(reference);
 
         return offerEntityMono
                 .switchIfEmpty(Mono.error(new NotFoundException("Non existent offer reference: " + reference)))

@@ -214,16 +214,16 @@ public class DatabaseSeederDev {
         LocalDateTime dateOfferCreation = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
         LocalDateTime dateOfferExpiry = LocalDateTime.of(2020, Month.JANUARY, 12, 10, 10);
         OfferEntity[] offers = {
-                OfferEntity.builder().reference("SAVE15AJSHUIKAD").description("Offer code 15% discount").discount(15)
+                OfferEntity.builder().reference("SrIZGD09QayXFbeplhQi9A").description("Offer code 15% discount").discount(15)
                         .articleEntities(List.of(articles[0], articles[1])).creationDate(dateOfferCreation)
                         .expiryDate(dateOfferExpiry).build(),
-                OfferEntity.builder().reference("SAVE20FIUAUWJK").description("Offer code 20% discount").discount(20)
+                OfferEntity.builder().reference("R_hRxaoeQuyEDdZpmpboVg").description("Offer code 20% discount").discount(20)
                         .articleEntities(Collections.emptyList()).creationDate(dateOfferCreation)
                         .expiryDate(dateOfferExpiry).build(),
-                OfferEntity.builder().reference("SAVE10LKAUJNRN").description("Offer code 10% discount").discount(10)
+                OfferEntity.builder().reference("zbtBZtcRQJGCR4ULwslweg").description("Offer code 10% discount").discount(10)
                         .articleEntities(List.of(articles[4])).creationDate(dateOfferCreation)
                         .expiryDate(dateOfferExpiry).build(),
-                OfferEntity.builder().reference("SAVE5IAKMWKIAO").description("Offer code 5% discount").discount(5)
+                OfferEntity.builder().reference("cjmJNO_2R8CVRq031FRKTQ").description("Offer code 5% discount").discount(5)
                         .articleEntities(List.of(articles[5], articles[7])).creationDate(dateOfferCreation)
                         .expiryDate(dateOfferExpiry).build(),
         };
