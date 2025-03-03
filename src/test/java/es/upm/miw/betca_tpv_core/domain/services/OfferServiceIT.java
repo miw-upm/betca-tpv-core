@@ -82,9 +82,9 @@ public class OfferServiceIT {
     @Test
     void testReadByReference() {
         StepVerifier
-                .create(this.offerService.read("SAVE10LKAUJNRN"))
+                .create(this.offerService.read("zbtBZtcRQJGCR4ULwslweg"))
                 .expectNextMatches(offer -> {
-                    assertEquals("SAVE10LKAUJNRN", offer.getReference());
+                    assertEquals("zbtBZtcRQJGCR4ULwslweg", offer.getReference());
                     assertEquals("Offer code 10% discount", offer.getDescription());
                     return true;
                 })
@@ -104,9 +104,9 @@ public class OfferServiceIT {
     void testFindByReferenceAndDescriptionNullSafe() {
         StepVerifier
                 .create(this.offerService.findByReferenceAndDescriptionAndDiscountNullSafe(
-                        "SAVE10LKAUJNRN", null, null))
+                        "zbtBZtcRQJGCR4ULwslweg", null, null))
                 .expectNextMatches(offer -> {
-                    assertEquals("SAVE10LKAUJNRN", offer.getReference());
+                    assertEquals("zbtBZtcRQJGCR4ULwslweg", offer.getReference());
                     assertEquals("Offer code 10% discount", offer.getDescription());
                     return true;
                 })
@@ -118,7 +118,6 @@ public class OfferServiceIT {
     void testUpdate() {
         Article article = Article.builder().barcode("1").description("OK").retailPrice(TEN).build();
         Offer offer = Offer.builder()
-                .reference("ref23")
                 .description("OK")
                 .discount(10)
                 .creationDate(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10))
@@ -126,9 +125,10 @@ public class OfferServiceIT {
                 .articleList(List.of(article))
                 .build();
         StepVerifier
-                .create(this.offerService.update("SAVE10LKAUJNRN", offer))
+                .create(this.offerService.update("zbtBZtcRQJGCR4ULwslweg", offer))
                 .expectNextMatches(returnOffer -> {
-                    assertEquals("ref23", returnOffer.getReference());
+                    assertNotNull(returnOffer);
+                    assertEquals("OK", returnOffer.getDescription());
                     return true;
                 })
                 .verifyComplete();
@@ -137,7 +137,7 @@ public class OfferServiceIT {
     @Test
     void testPdf() {
         StepVerifier
-                .create(this.offerService.readPdf("SAVE5IAKMWKIAO"))
+                .create(this.offerService.readPdf("cjmJNO_2R8CVRq031FRKTQ"))
                 .expectNextCount(1)
                 .verifyComplete();
     }
