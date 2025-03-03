@@ -22,8 +22,7 @@ public class VoucherService {
 
     public Mono<Voucher> create(Voucher voucher) {
         String userMobile = voucher.getUser().getMobile();
-        return verifyUserExistsByMobile(userMobile)
-                .then(this.voucherPersistence.create(voucher));
+        return this.voucherPersistence.create(voucher);
     }
 
     public Mono<Voucher> read(String reference) {
