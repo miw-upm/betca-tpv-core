@@ -51,8 +51,8 @@ public class OfferPersistenceMongodb implements OfferPersistence {
     }
 
     @Override
-    public Flux<Offer> findByReferenceAndDescriptionNullSafe(String reference, String description) {
-        return this.offerReactive.findByReferenceAndDescriptionNullSafe(reference, description)
+    public Flux<Offer> findByReferenceAndDescriptionAndDiscountNullSafe(String reference, String description, Integer discount) {
+        return this.offerReactive.findByReferenceAndDescriptionAndDiscountNullSafe(reference, description, discount)
                 .map(OfferEntity::toOfferWithoutArticles);
     }
 

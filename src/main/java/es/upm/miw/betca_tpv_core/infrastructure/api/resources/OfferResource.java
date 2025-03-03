@@ -33,9 +33,10 @@ public class OfferResource {
     }
 
     @GetMapping(SEARCH)
-    public Flux<Offer> findByReferenceAndDescriptionNullSafe(
-            @RequestParam(required = false) String reference, @RequestParam(required = false) String description) {
-        return this.offerService.findByReferenceAndDescriptionNullSafe(reference, description);
+    public Flux<Offer> findByReferenceAndDescriptionAndDiscountNullSafe(
+            @RequestParam(required = false) String reference, @RequestParam(required = false) String description,
+            @RequestParam(required = false) Integer discount) {
+        return this.offerService.findByReferenceAndDescriptionAndDiscountNullSafe(reference, description, discount);
     }
 
     @PreAuthorize("permitAll()")

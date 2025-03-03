@@ -105,8 +105,8 @@ public class OfferPersistenceMongodbIT {
     @Test
     void testFindByReferenceAndDescriptionNullSafe() {
         StepVerifier
-                .create(this.offerPersistenceMongodb.findByReferenceAndDescriptionNullSafe(
-                        "SAVE15AJSHUIKAD", null))
+                .create(this.offerPersistenceMongodb.findByReferenceAndDescriptionAndDiscountNullSafe(
+                        "SAVE15AJSHUIKAD", null, null))
                 .expectNextMatches(offer -> {
                     assertEquals("SAVE15AJSHUIKAD", offer.getReference());
                     assertEquals("Offer code 15% discount", offer.getDescription());

@@ -103,8 +103,8 @@ public class OfferServiceIT {
     @Test
     void testFindByReferenceAndDescriptionNullSafe() {
         StepVerifier
-                .create(this.offerService.findByReferenceAndDescriptionNullSafe(
-                        "SAVE10LKAUJNRN", null))
+                .create(this.offerService.findByReferenceAndDescriptionAndDiscountNullSafe(
+                        "SAVE10LKAUJNRN", null, null))
                 .expectNextMatches(offer -> {
                     assertEquals("SAVE10LKAUJNRN", offer.getReference());
                     assertEquals("Offer code 10% discount", offer.getDescription());

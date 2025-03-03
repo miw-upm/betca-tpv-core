@@ -14,10 +14,10 @@ class OfferReactiveIT {
     private OfferReactive offerReactive;
 
     @Test
-    void testFindByReferenceAndDescriptionNullSafe() {
+    void testFindByReferenceAndDescriptionAndDiscountNullSafe() {
         StepVerifier
-                .create(this.offerReactive.findByReferenceAndDescriptionNullSafe(
-                        null, null))
+                .create(this.offerReactive.findByReferenceAndDescriptionAndDiscountNullSafe(
+                        null, null, null))
                 .expectNextMatches(offer -> {
                     assertNotNull(offer);
                     assertNotNull(offer.getDescription());
