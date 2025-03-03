@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Collections;
@@ -31,7 +30,7 @@ public class OfferServiceIT {
         Offer offer = Offer.builder()
                 .reference("ref1")
                 .description("offer1")
-                .discount(BigDecimal.ONE)
+                .discount(1)
                 .articleList(Collections.emptyList())
                 .build();
 
@@ -50,7 +49,7 @@ public class OfferServiceIT {
         Offer offer = Offer.builder()
                 .reference("ref1")
                 .description("offer1")
-                .discount(BigDecimal.ONE)
+                .discount(1)
                 .articleList(Collections.emptyList())
                 .creationDate(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10))
                 .expiryDate(LocalDateTime.of(2018, Month.JANUARY, 12, 10, 10))
@@ -68,7 +67,7 @@ public class OfferServiceIT {
         Offer offer = Offer.builder()
                 .reference("ref22")
                 .description("offer1")
-                .discount(BigDecimal.ONE)
+                .discount(1)
                 .articleList(Collections.emptyList())
                 .creationDate(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10))
                 .expiryDate(LocalDateTime.of(2020, Month.JANUARY, 12, 10, 10))
@@ -121,7 +120,7 @@ public class OfferServiceIT {
         Offer offer = Offer.builder()
                 .reference("ref23")
                 .description("OK")
-                .discount(TEN)
+                .discount(10)
                 .creationDate(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10))
                 .expiryDate(LocalDateTime.of(2020, Month.JANUARY, 12, 10, 10))
                 .articleList(List.of(article))
