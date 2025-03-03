@@ -20,6 +20,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class Voucher {
     @NotBlank
     private String reference;
