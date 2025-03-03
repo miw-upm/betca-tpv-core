@@ -21,9 +21,4 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
     public Flux<Complaint> findByUserMobileNullSafe(String userMobile) {
         return complaintReactive.findByUserMobileNullSafe(userMobile).map(ComplaintEntity::toComplaint);
     }
-
-    @Override
-    public  Flux<Complaint> findByUserMobile(String userMobile){
-        return  complaintReactive.findByUserMobile(userMobile).map(ComplaintEntity::toComplaint);
-    }
 }

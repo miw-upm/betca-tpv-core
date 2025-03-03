@@ -23,17 +23,9 @@ public class ComplaintResource {
         this.complaintService=complaintService;
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #userMobile == authentication.principal")
     @GetMapping(SEARCH)
     public Flux<Complaint> findByUserMobileNullSafe(@RequestParam(required = false) String userMobile){
         return this.complaintService.findByUserMobileNullSafe(userMobile);
     }
-
-    @PreAuthorize("hasRole('ROLE_ADMIN') or #userMobile == authentication.principal")
-    @GetMapping(USER_MOBILE)
-    public Flux<Complaint> findByUserMobile(@PathVariable String userMobile){
-        return this.complaintService.findByUserMobile(userMobile);
-    }
-
-
 }

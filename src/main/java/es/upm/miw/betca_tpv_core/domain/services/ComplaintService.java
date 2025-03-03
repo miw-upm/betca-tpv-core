@@ -17,8 +17,4 @@ public class ComplaintService {
     public Flux<Complaint> findByUserMobileNullSafe(String userMobile){
         return this.complaintPersistence.findByUserMobileNullSafe(userMobile);
     }
-
-    public  Flux<Complaint> findByUserMobile(String userMobile){
-        return this.complaintPersistence.findByUserMobile(userMobile);
-    }
 }
