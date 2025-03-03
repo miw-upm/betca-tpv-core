@@ -7,9 +7,8 @@ import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.RgpdDto;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 
@@ -17,6 +16,7 @@ import reactor.core.publisher.Mono;
 @RequestMapping(RgpdResource.RGPDS)
 public class RgpdResource {
     public static final String RGPDS = "/rgpds";
+    public static final String USER_MOBILE = "/{userMobile}";
 
     private final RgpdService rgpdService;
 
@@ -26,8 +26,24 @@ public class RgpdResource {
     }
 
     @SecurityRequirement(name = "bearerAuth")
-    @PostMapping
-    public Mono<Rgpd> createRgpd(@Valid @RequestBody RgpdDto creationRgpdDto) {
-        return this.rgpdService.create(creationRgpdDto);
+    @PostMapping(produces = {"application/json"})
+    public Mono<RgpdDto> createRgpd(@Valid @RequestBody RgpdDto creationRgpdDto) {
+        return this.rgpdService.create(creationRgpdDto.toRgpd())
+                .map(Rgpd::toDto);
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping
+    public Flux<RgpdDto> getAllRgpds() {
+        return this.rgpdService.findAllRgpds()
+                .map(Rgpd::toDto);
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @PutMapping(USER_MOBILE)
+    public Mono<RgpdDto> updateRgpd(@PathVariable String userMobile, @Valid @RequestBody RgpdDto updatedRgpdDto) {
+        return this.rgpdService
+                .updateRgpd( userMobile, updatedRgpdDto.toRgpd())
+                .map(Rgpd::toDto);
     }
 }

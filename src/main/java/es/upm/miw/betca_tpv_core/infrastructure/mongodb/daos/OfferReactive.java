@@ -6,9 +6,6 @@ import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
-import java.time.Instant;
-
 public interface OfferReactive extends ReactiveMongoRepository<OfferEntity, String> {
 
     Mono<OfferEntity> findByReference(String reference);
@@ -16,7 +13,8 @@ public interface OfferReactive extends ReactiveMongoRepository<OfferEntity, Stri
     @Query("{$and:["
             + "?#{ [0] == null ? {_id : {$ne:null}} : { reference : {$regex:[0], $options: 'i'} } },"
             + "?#{ [1] == null ? {_id : {$ne:null}} : { description : {$regex:[1], $options: 'i'} } },"
+            + "?#{ [2] == null ? {_id : {$ne:null}} : { discount : {$lt:[2]} } },"
             + "] }")
-    Flux<OfferEntity> findByReferenceAndDescriptionNullSafe(
-            String reference, String description);
+    Flux<OfferEntity> findByReferenceAndDescriptionAndDiscountNullSafe(
+            String reference, String description, Integer discount);
 }

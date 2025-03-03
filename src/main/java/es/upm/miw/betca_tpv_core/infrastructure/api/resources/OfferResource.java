@@ -5,12 +5,10 @@ import es.upm.miw.betca_tpv_core.domain.services.OfferService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Rest
 @RequestMapping(OfferResource.OFFERS)
@@ -18,6 +16,8 @@ public class OfferResource {
 
     public static final String OFFERS = "/offers";
     public static final String SEARCH = "/search";
+    public static final String REFERENCE_ID = "/{reference}";
+    public static final String PDF = "/pdf";
 
     private final OfferService offerService;
 
@@ -33,8 +33,26 @@ public class OfferResource {
     }
 
     @GetMapping(SEARCH)
-    public Flux<Offer> findByReferenceAndDescriptionNullSafe(
-            @RequestParam(required = false) String reference, @RequestParam(required = false) String description) {
-        return this.offerService.findByReferenceAndDescriptionNullSafe(reference, description);
+    public Flux<Offer> findByReferenceAndDescriptionAndDiscountNullSafe(
+            @RequestParam(required = false) String reference, @RequestParam(required = false) String description,
+            @RequestParam(required = false) Integer discount) {
+        return this.offerService.findByReferenceAndDescriptionAndDiscountNullSafe(reference, description, discount);
+    }
+
+    @PreAuthorize("permitAll()")
+    @GetMapping(REFERENCE_ID)
+    public Mono<Offer> read(@PathVariable String reference) {
+        return this.offerService.read(reference);
+    }
+
+    @PutMapping(REFERENCE_ID)
+    public Mono<Offer> update(@PathVariable String reference, @Valid @RequestBody Offer offer) {
+        offer.doDefault();
+        return this.offerService.update(reference, offer);
+    }
+
+    @GetMapping(value = REFERENCE_ID + PDF, produces = {"application/pdf", "application/json"})
+    public Mono<byte[]> readPdf(@PathVariable String reference) {
+        return this.offerService.readPdf(reference);
     }
 }

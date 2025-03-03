@@ -1,9 +1,11 @@
 package es.upm.miw.betca_tpv_core.domain.services.utils;
 
+import es.upm.miw.betca_tpv_core.domain.model.CustomerPoints;
 import es.upm.miw.betca_tpv_core.domain.model.Property;
 import es.upm.miw.betca_tpv_core.domain.model.ShoppingState;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.format.DateTimeFormatter;
 
@@ -16,8 +18,7 @@ public class PdfTicketBuilder {
     private static final String FILE = "ticket-";
     private static final String BOOKINGS = "/home/bookings/";
 
-    public byte[] generateTicket(Ticket ticket) {
-
+    public byte[] generateTicket(Ticket ticket, CustomerPoints customerPoints) {
         PdfCoreBuilder pdf = new PdfCoreBuilder(PATH, FILE + ticket.getId());
         pdf.head();
         if (ticket.hasDebt()) {
@@ -40,8 +41,14 @@ public class PdfTicketBuilder {
             table.tableCells(shopping.getDescription(), "" + shopping.getAmount(), discount,
                     shopping.totalShopping().setScale(2, RoundingMode.HALF_UP) + "€", state);
         });
-        table.tableColspanRight(ticket.total().setScale(2, RoundingMode.HALF_UP) + "€").buildTable();
+        if (ticket.getUser() != null && customerPoints != null && ticket.getPointsDiscount().compareTo(BigDecimal.ZERO) > 0) {
+            table.tableColspanRight("CP Discount: -" + ticket.getPointsDiscount().setScale(2, RoundingMode.HALF_UP) + "€", 6);
+        }
+        table.tableColspanRight("Total: " + ticket.total().setScale(2, RoundingMode.HALF_UP) + "€").buildTable();
 
+        if (ticket.getUser() != null && customerPoints != null) {
+            pdf.paragraph("Customer: " + ticket.getUser().getMobile() + " | Remaining CP: " + customerPoints.getValue());
+        }
         pdf.paragraph(ticket.getNote());
         if (ticket.itemsNotCommitted() > 0) {
             pdf.paragraphEmphasized("Items pending delivery: " + ticket.itemsNotCommitted());

@@ -21,6 +21,7 @@ import static java.math.BigDecimal.ZERO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 
 @TestConfig
 class TicketServiceIT {
@@ -34,6 +35,9 @@ class TicketServiceIT {
 
     @MockBean
     private UserMicroservice userMicroservice;
+
+    @MockBean
+    private CustomerPointsService customerPointsService;
 
     @BeforeEach
     void openCashier() {
@@ -101,6 +105,9 @@ class TicketServiceIT {
 
     @Test
     void testReceipt() {
+        BDDMockito.given(this.customerPointsService.readCustomerPointsByMobile(anyString()))
+                .willReturn(Mono.just(new CustomerPoints()));
+
         StepVerifier
                 .create(this.ticketService.readReceipt("5fa45e863d6e834d642689ac"))
                 .expectNextCount(1)

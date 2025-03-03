@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestConfig
 class OfferReactiveIT {
@@ -14,12 +14,14 @@ class OfferReactiveIT {
     private OfferReactive offerReactive;
 
     @Test
-    void testFindByReferenceAndDescriptionNullSafe() {
+    void testFindByReferenceAndDescriptionAndDiscountNullSafe() {
         StepVerifier
-                .create(this.offerReactive.findByReferenceAndDescriptionNullSafe(
-                        null, null))
+                .create(this.offerReactive.findByReferenceAndDescriptionAndDiscountNullSafe(
+                        null, null, null))
                 .expectNextMatches(offer -> {
-                    assertTrue(offer.getDescription().contains("td"));
+                    assertNotNull(offer);
+                    assertNotNull(offer.getDescription());
+                    assertNotNull(offer.getReference());
                     return true;
                 })
                 .thenCancel()

@@ -7,9 +7,11 @@ import es.upm.miw.betca_tpv_core.domain.model.CashierState;
 import es.upm.miw.betca_tpv_core.domain.persistence.CashierPersistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static java.math.BigDecimal.ZERO;
@@ -49,6 +51,10 @@ public class CashierService {
 
     public Mono<Cashier> findLast() {
         return this.cashierPersistence.findLast();
+    }
+
+    public Flux<Cashier> findAllByClosureDateBetween(LocalDate from, LocalDate to) {
+        return this.cashierPersistence.findAllByClosureDateBetween(from.atStartOfDay(), to.atStartOfDay());
     }
 
     public Mono<CashierState> findLastState() {
