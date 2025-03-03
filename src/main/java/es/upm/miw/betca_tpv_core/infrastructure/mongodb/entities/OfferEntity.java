@@ -29,7 +29,7 @@ public class OfferEntity {
     private String description;
     private LocalDateTime creationDate;
     private LocalDateTime expiryDate;
-    private BigDecimal discount;
+    private Integer discount;
     @DBRef
     private List<ArticleEntity> articleEntities;
 

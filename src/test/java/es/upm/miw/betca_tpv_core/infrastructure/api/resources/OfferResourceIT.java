@@ -25,7 +25,7 @@ class OfferResourceIT {
 
     @Test
     void testCreate() {
-        Offer offer = Offer.builder().reference("to11123213").description("td1").discount(BigDecimal.ONE).articleList(null).build();
+        Offer offer = Offer.builder().reference("to11123213").description("td1").discount(1).articleList(null).build();
         this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(OFFERS)
@@ -37,7 +37,7 @@ class OfferResourceIT {
                 .value(returnOffer -> {
                     assertEquals("to11123213", returnOffer.getReference());
                     assertEquals("td1", returnOffer.getDescription());
-                    assertEquals(BigDecimal.ONE, returnOffer.getDiscount());
+                    assertEquals(1, returnOffer.getDiscount());
                 });
     }
 
@@ -45,7 +45,7 @@ class OfferResourceIT {
     void testCreateNotFoundArticleException() {
         Article article = Article.builder().barcode("not_found").description("tad1").retailPrice(BigDecimal.ONE)
                 .providerCompany(null).tax(null).build();
-        Offer offer = Offer.builder().reference("to11").description("td1").discount(BigDecimal.ONE).articleList(List.of(article)).build();
+        Offer offer = Offer.builder().reference("to11").description("td1").discount(1).articleList(List.of(article)).build();
         this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(OFFERS)
