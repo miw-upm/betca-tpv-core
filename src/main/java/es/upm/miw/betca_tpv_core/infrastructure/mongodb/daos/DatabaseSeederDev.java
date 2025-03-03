@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos;
 import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.synchronous.*;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.*;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ArticleLossEntity;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class DatabaseSeederDev {
     private final InvoiceDao invoiceDao;
     private final BudgetDao budgetDao;
     private final VoucherDao voucherDao;
-
+    private final StockAuditDao stockAuditDao;
     private final ComplaintDao complaintDao;
 
     private final DatabaseStarting databaseStarting;
@@ -50,9 +51,9 @@ public class DatabaseSeederDev {
             InvoiceDao invoiceDao,
             BudgetDao budgetDao,
             VoucherDao voucherDao,
+            StockAuditDao stockAuditDao,
             ComplaintDao complaintDao
     ) {
-
         this.articleDao = articleDao;
         this.providerDao = providerDao;
         this.articlesTreeDao = articlesTreeDao;
@@ -61,11 +62,11 @@ public class DatabaseSeederDev {
         this.databaseStarting = databaseStarting;
         this.rgpdDao = rgpdDao;
         this.offerDao = offerDao;
-
         this.customerPointsDao = customerPointsDao;
         this.invoiceDao = invoiceDao;
         this.budgetDao = budgetDao;
         this.voucherDao = voucherDao;
+        this.stockAuditDao = stockAuditDao;
         this.complaintDao =complaintDao;
 
         this.deleteAllAndInitializeAndSeedDataBase();
@@ -78,7 +79,6 @@ public class DatabaseSeederDev {
 
     private void deleteAllAndInitialize() {
         this.ticketDao.deleteAll();
-
         this.complaintDao.deleteAll();
         this.articleDao.deleteAll();
         this.providerDao.deleteAll();
@@ -88,7 +88,7 @@ public class DatabaseSeederDev {
         this.invoiceDao.deleteAll();
         this.budgetDao.deleteAll();
         this.voucherDao.deleteAll();
-
+        this.stockAuditDao.deleteAll();
         log.warn("------- Delete All -----------");
         this.databaseStarting.initialize();
     }
@@ -333,5 +333,62 @@ public class DatabaseSeederDev {
             this.complaintDao.saveAll(Arrays.asList(complaints));
             log.warn("        ------- complaints");
 
+
+        log.warn("------- seeded customer points for users");
+
+        this.createStockAudits();
+        log.warn("        ------- stockAudits");
+
     }
+
+    public void createStockAudits() {
+        LocalDateTime creationDate = LocalDateTime.of(2025, Month.FEBRUARY, 12, 10, 10);
+
+        List<StockAuditEntity> stockAudits = Arrays.asList(
+                createStockAudit("AUDIT001", creationDate, 5),
+                createStockAudit("AUDIT002", creationDate.plusDays(1), 3),
+                createStockAudit("AUDIT003", creationDate.plusDays(2), 7),
+                createStockAudit("AUDIT004", creationDate.plusDays(3), 4),
+                createStockAudit("AUDIT005", creationDate.plusDays(4), 6)
+        );
+
+        stockAuditDao.saveAll(stockAudits);
+        log.warn("------- Stock audits insertados");
+    }
+
+    private StockAuditEntity createStockAudit(String id, LocalDateTime creationDate, int numArticles) {
+        List<ArticleEntity> articles = Arrays.asList(
+                createArticle("BARCODE001", "REF001", "Artículo 1", BigDecimal.valueOf(50), 100),
+                createArticle("BARCODE002", "REF002", "Artículo 2", BigDecimal.valueOf(30), 200)
+        );
+
+        List<ArticleLossEntity> losses = Arrays.asList(
+                new ArticleLossEntity("BARCODE001", 2.0),
+                new ArticleLossEntity("BARCODE002", 1.5)
+        );
+
+        StockAuditEntity stockAudit = new StockAuditEntity();
+        stockAudit.setId(id);
+        stockAudit.setCreationDate(creationDate);
+        stockAudit.setCloseDate(creationDate.plusDays(15));
+        stockAudit.setArticlesWithoutAudit(articles);
+        stockAudit.setLossValue(numArticles * 10);
+        stockAudit.setLosses(losses);
+
+        return stockAudit;
+    }
+
+    private ArticleEntity createArticle(String barcode, String reference, String description, BigDecimal price, int stock) {
+        ArticleEntity article = new ArticleEntity();
+        article.setId(barcode);
+        article.setBarcode(barcode);
+        article.setReference(reference);
+        article.setDescription(description);
+        article.setRetailPrice(price);
+        article.setStock(stock);
+        article.setRegistrationDate(LocalDateTime.now());
+        article.setDiscontinued(false);
+        return article;
+    }
+
 }
