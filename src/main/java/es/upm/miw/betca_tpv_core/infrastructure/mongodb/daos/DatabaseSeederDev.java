@@ -79,6 +79,7 @@ public class DatabaseSeederDev {
         this.customerPointsDao.deleteAll();
         this.invoiceDao.deleteAll();
         this.budgetDao.deleteAll();
+        this.voucherDao.deleteAll();
 
         log.warn("------- Delete All -----------");
         this.databaseStarting.initialize();
@@ -267,10 +268,10 @@ public class DatabaseSeederDev {
         log.warn("        ------- budgets");
 
         LocalDateTime creationDate = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
-        Voucher[] vouchers = {
-                Voucher.builder().reference("VOUCHER001").value(BigDecimal.valueOf(50)).creationDate(creationDate).dateOfUse(null).user(User.builder().mobile("635635635").build()).build(),
-                Voucher.builder().reference("VOUCHER002").value(BigDecimal.valueOf(30)).creationDate(creationDate).dateOfUse(creationDate.plusDays(10)).user(User.builder().mobile("635635635").build()).build(),
-                Voucher.builder().reference("VOUCHER003").value(BigDecimal.valueOf(100)).creationDate(creationDate).dateOfUse(null).user(User.builder().mobile("635635635").build()).build()
+        VoucherEntity[] vouchers = {
+                VoucherEntity.builder().reference("VOUCHER001").value(BigDecimal.valueOf(50)).creationDate(creationDate).dateOfUse(null).user(User.builder().mobile("635635635").build()).build(),
+                VoucherEntity.builder().reference("VOUCHER002").value(BigDecimal.valueOf(30)).creationDate(creationDate).dateOfUse(creationDate.plusDays(10)).user(User.builder().mobile("635635635").build()).build(),
+                VoucherEntity.builder().reference("VOUCHER003").value(BigDecimal.valueOf(100)).creationDate(creationDate).dateOfUse(null).user(User.builder().mobile("635635635").build()).build()
         };
 
         this.voucherDao.saveAll(Arrays.asList(vouchers));

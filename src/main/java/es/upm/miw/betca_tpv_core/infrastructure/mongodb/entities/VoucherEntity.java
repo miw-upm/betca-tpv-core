@@ -30,16 +30,11 @@ public class VoucherEntity {
     private LocalDateTime creationDate;
     private LocalDateTime dateOfUse;
     @Indexed(unique = true)
-    private String userMobile;
-    private String userName;
+    private User user;
 
     public VoucherEntity(Voucher voucher) {
         voucher.setReference(UUID.randomUUID().toString());
-        BeanUtils.copyProperties(voucher, this, "user");
-        if (Objects.nonNull(voucher.getUser())) {
-            this.userMobile = voucher.getUser().getMobile();
-            this.userName = voucher.getUser().getFirstName();
-        }
+        BeanUtils.copyProperties(voucher, this);
     }
 
     public Voucher toVoucher(){
@@ -48,9 +43,7 @@ public class VoucherEntity {
                 .value(value)
                 .creationDate(creationDate)
                 .dateOfUse(dateOfUse)
-                .user(Objects.nonNull(this.userMobile)
-                        ? User.builder().mobile(this.userMobile).firstName(this.userName).build()
-                        : new User())
+                .user(user)
                 .build();
     }
 }
