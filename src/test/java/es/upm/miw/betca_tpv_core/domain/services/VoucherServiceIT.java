@@ -82,6 +82,20 @@ public class VoucherServiceIT {
                 .verify();
     }*/
 
+    /*@Test
+    void testFindByReferenceAndValueNullSafe() {
+        StepVerifier
+                .create(this.voucherService.findByReferenceAndValueNullSafe(
+                        "a8ebf3a0-158a-4d77-91d8-709a9eb9fd40", null))
+                .expectNextMatches(voucher -> {
+                    assertEquals("a8ebf3a0-158a-4d77-91d8-709a9eb9fd40", voucher.getReference());
+                    assertEquals(new BigDecimal(50), voucher.getValue());
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }*/
+
     @Test
     void testReadByReferenceNotFRound() {
         StepVerifier

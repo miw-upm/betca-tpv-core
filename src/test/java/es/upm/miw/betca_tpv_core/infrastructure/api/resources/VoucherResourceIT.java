@@ -13,10 +13,10 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.VoucherResource.SEARCH;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.VoucherResource.REFERENCE_ID;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.VoucherResource.VOUCHERS;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @RestTestConfig
@@ -75,5 +75,19 @@ public class VoucherResourceIT {
                 .uri(VOUCHERS + REFERENCE_ID, "INVALID_REF")
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testFindByReferenceAndValueNullSafe() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(VOUCHERS + SEARCH)
+                        .queryParam("reference", "a8ebf3a0-158a-4d77-91d8-709a9eb9fd40")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Voucher.class)
+                .value(Assertions::assertNotNull);
     }
 }
