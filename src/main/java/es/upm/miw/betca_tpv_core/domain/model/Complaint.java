@@ -20,6 +20,8 @@ import java.time.LocalDateTime;
 public class Complaint {
 
     @NotBlank
+    private String id;
+    @NotBlank
     private String barcode;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") // pattern="dd/MM/yyyy hh:mm" o iso = DateTimeFormat.ISO.TIME
     private LocalDateTime registrationDate;
