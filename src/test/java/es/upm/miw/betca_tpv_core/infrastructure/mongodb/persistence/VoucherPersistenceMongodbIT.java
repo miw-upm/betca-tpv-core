@@ -42,17 +42,17 @@ public class VoucherPersistenceMongodbIT {
                 .verify();
     }
 
-    /*@Test
+    @Test
     void testReadByReference() {
         StepVerifier
-                .create(this.voucherPersistenceMongodb.readByReference("VOUCHER001"))
+                .create(this.voucherPersistenceMongodb.readByReference("MaDQasauQzq6musYPK_Dra"))
                 .expectNextMatches(returnVoucher -> {
-                    assertEquals("VOUCHER001", returnVoucher.getReference());
+                    assertEquals("MaDQasauQzq6musYPK_Dra", returnVoucher.getReference());
                     return true;
                 })
                 .expectComplete()
                 .verify();
-    }*/
+    }
 
     @Test
     void testReadByReferenceNotFound() {
@@ -62,17 +62,17 @@ public class VoucherPersistenceMongodbIT {
                 .verify();
     }
 
-    /*@Test
+    @Test
     void testFindByReferenceValueNullSafe() {
         StepVerifier
                 .create(this.voucherPersistenceMongodb.findByReferenceAndValueNullSafe(
-                        "a8ebf3a0-158a-4d77-91d8-709a9eb9fd40", null))
+                        "EkDQ6LauQzq6musYPK_Icg", null))
                 .expectNextMatches(voucher -> {
-                    assertEquals("a8ebf3a0-158a-4d77-91d8-709a9eb9fd40", voucher.getReference());
-                    assertEquals(new BigDecimal(50), voucher.getValue());
+                    assertEquals("EkDQ6LauQzq6musYPK_Icg", voucher.getReference());
+                    assertEquals(BigDecimal.valueOf(50.30), voucher.getValue());
                     return true;
                 })
                 .thenCancel()
                 .verify();
-    }*/
+    }
 }

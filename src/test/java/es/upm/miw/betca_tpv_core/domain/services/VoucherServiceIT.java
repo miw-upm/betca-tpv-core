@@ -69,32 +69,32 @@ public class VoucherServiceIT {
         StepVerifier.create(voucherService.create(voucher)).expectErrorMatches(throwable -> throwable instanceof BadRequestException).verify();
     }*/
 
-    /*@Test
+    @Test
     void testReadByReference() {
         StepVerifier
-                .create(this.voucherService.read("VOUCHER001"))
+                .create(this.voucherService.read("MaDQasauQzq6musYPK_Dra"))
                 .expectNextMatches(offer -> {
-                    assertEquals("VOUCHER001", offer.getReference());
-                    assertEquals(new BigDecimal(50), offer.getValue());
+                    assertEquals("MaDQasauQzq6musYPK_Dra", offer.getReference());
+                    assertEquals(BigDecimal.valueOf(30.15), offer.getValue());
                     return true;
                 })
                 .expectComplete()
                 .verify();
-    }*/
+    }
 
-    /*@Test
+    @Test
     void testFindByReferenceAndValueNullSafe() {
         StepVerifier
                 .create(this.voucherService.findByReferenceAndValueNullSafe(
-                        "a8ebf3a0-158a-4d77-91d8-709a9eb9fd40", null))
+                        "MaDQasauQzq6musYPK_Dra", null))
                 .expectNextMatches(voucher -> {
-                    assertEquals("a8ebf3a0-158a-4d77-91d8-709a9eb9fd40", voucher.getReference());
-                    assertEquals(new BigDecimal(50), voucher.getValue());
+                    assertEquals("MaDQasauQzq6musYPK_Dra", voucher.getReference());
+                    assertEquals(BigDecimal.valueOf(30.15), voucher.getValue());
                     return true;
                 })
                 .thenCancel()
                 .verify();
-    }*/
+    }
 
     @Test
     void testReadByReferenceNotFRound() {
