@@ -2,12 +2,13 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.StockAudit;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.StockAuditResource.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @RestTestConfig
 class StockAuditResourceIT {
@@ -22,7 +23,7 @@ class StockAuditResourceIT {
     void testFindAll() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(StockAuditResource.STOCK_AUDIT)
+                .uri(STOCK_AUDIT)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBodyList(StockAudit.class)
@@ -38,5 +39,26 @@ class StockAuditResourceIT {
                     });
                 });
     }
+
+    @Test
+    void testRead(){
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(STOCK_AUDIT + STOCK_AUDIT_ID, "AUDIT001")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(StockAudit.class)
+                .value(Assertions::assertNotNull)
+                .value(stockAudit -> {
+                    assertEquals("AUDIT001", stockAudit.getId());
+                    assertNotNull(stockAudit.getCloseDate());
+                    assertNotNull(stockAudit.getCreationDate());
+                    assertEquals(50, stockAudit.getLossValue());
+                    assertEquals("BARCODE001", stockAudit.getLosses().getFirst().getBarcode());
+                    assertEquals("BARCODE001", stockAudit.getArticlesWithoutAudit().getFirst().getBarcode());
+                });
+    }
+
+
 
 }

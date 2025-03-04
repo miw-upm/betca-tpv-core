@@ -7,6 +7,7 @@ import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.StockAuditEntit
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 public class StockAuditPersistenceMongodb implements StockAuditPersistence {
@@ -21,5 +22,10 @@ public class StockAuditPersistenceMongodb implements StockAuditPersistence {
     @Override
     public Flux<StockAudit> findAll() {
         return this.stockAuditReactive.findAll().map(StockAuditEntity::toStockAudit);
+    }
+
+    @Override
+    public Mono<StockAudit> read(String id) {
+        return this.stockAuditReactive.findById(id).map(StockAuditEntity::toStockAudit);
     }
 }

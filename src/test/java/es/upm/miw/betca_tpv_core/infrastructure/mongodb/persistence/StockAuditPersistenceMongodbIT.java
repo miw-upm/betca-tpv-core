@@ -29,4 +29,21 @@ public class StockAuditPersistenceMongodbIT {
                 .verifyComplete();
     }
 
+    @Test
+    void testRead(){
+        StepVerifier
+                .create(this.stockAuditPersistenceMongodb.read("AUDIT001"))
+                .expectNextMatches(stockAudit -> {
+                    assertEquals("AUDIT001", stockAudit.getId());
+                    assertNotNull(stockAudit.getCloseDate());
+                    assertNotNull(stockAudit.getCreationDate());
+                    assertEquals(50, stockAudit.getLossValue());
+                    assertEquals("BARCODE001", stockAudit.getLosses().getFirst().getBarcode());
+                    assertEquals("BARCODE001", stockAudit.getArticlesWithoutAudit().getFirst().getBarcode());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
+
 }

@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_core.domain.model.StockAudit;
 import es.upm.miw.betca_tpv_core.domain.persistence.StockAuditPersistence;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 public class StockAuditService {
@@ -16,5 +17,9 @@ public class StockAuditService {
 
     public Flux<StockAudit> findAll() {
         return stockAuditPersistence.findAll();
+    }
+
+    public Mono<StockAudit> read(String id){
+        return stockAuditPersistence.read(id);
     }
 }
