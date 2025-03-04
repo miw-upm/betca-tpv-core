@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_core.domain.persistence.ComplaintPersistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 public class ComplaintService {
@@ -16,5 +17,9 @@ public class ComplaintService {
 
     public Flux<Complaint> findByUserMobileNullSafe(String userMobile){
         return this.complaintPersistence.findByUserMobileNullSafe(userMobile);
+    }
+
+    public Mono<Complaint> read(String id){
+        return this.complaintPersistence.read(id);
     }
 }
