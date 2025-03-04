@@ -6,7 +6,10 @@ import es.upm.miw.betca_tpv_core.domain.persistence.VoucherPersistence;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.math.BigDecimal;
 
 @Service
 public class VoucherService {
@@ -33,5 +36,9 @@ public class VoucherService {
         return userMicroservice.readByMobile(userMobile)
                 .onErrorResume(BadRequestException.class, Mono::error)
                 .then();
+    }
+
+    public Flux<Voucher> findByReferenceAndValueNullSafe(String reference, BigDecimal value) {
+        return this.voucherPersistence.findByReferenceAndValueNullSafe(reference, value);
     }
 }
