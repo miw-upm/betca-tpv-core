@@ -10,14 +10,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Rest
 @RequestMapping(ComplaintResource.COMPLAINTS)
 public class ComplaintResource {
     public static final String COMPLAINTS = "/complaints";
     public static final String SEARCH = "/search";
-    public static final String USER_MOBILE = "/{userMobile}";
+    public static final String COMPLAINT_ID = "/{id}";
     private final ComplaintService complaintService;
+
     @Autowired
     public ComplaintResource(ComplaintService complaintService){
         this.complaintService=complaintService;
@@ -27,5 +29,11 @@ public class ComplaintResource {
     @GetMapping(SEARCH)
     public Flux<Complaint> findByUserMobileNullSafe(@RequestParam(required = false) String userMobile){
         return this.complaintService.findByUserMobileNullSafe(userMobile);
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #userMobile == authentication.principal")
+    @GetMapping(COMPLAINT_ID)
+    public Mono<Complaint> read(@PathVariable String id){
+        return this.complaintService.read(id);
     }
 }
