@@ -51,22 +51,22 @@ public class VoucherResourceIT {
                 });
     }
 
-    /*@Test
+    @Test
     void testReadByReference() {
         Voucher voucher = this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(VOUCHERS + REFERENCE_ID, "VOUCHER123")
+                .uri(VOUCHERS + REFERENCE_ID, "EkDQ6LauQzq6musYPK_Icg")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Voucher.class)
                 .value(Assertions::assertNotNull)
                 .value(returnVoucher -> {
-                    assertEquals("VOUCHER123", returnVoucher.getReference());
+                    assertEquals("EkDQ6LauQzq6musYPK_Icg", returnVoucher.getReference());
                 })
                 .returnResult()
                 .getResponseBody();
         assertNotNull(voucher);
-    }*/
+    }
 
     @Test
     void testReadByReferenceNotFoundException() {
@@ -83,7 +83,7 @@ public class VoucherResourceIT {
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path(VOUCHERS + SEARCH)
-                        .queryParam("reference", "a8ebf3a0-158a-4d77-91d8-709a9eb9fd40")
+                        .queryParam("reference", "EkDQ6LauQzq6musYPK_Icg")
                         .build())
                 .exchange()
                 .expectStatus().isOk()
