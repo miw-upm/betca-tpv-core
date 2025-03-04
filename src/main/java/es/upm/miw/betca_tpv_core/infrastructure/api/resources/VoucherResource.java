@@ -28,7 +28,6 @@ public class VoucherResource {
         this.voucherService = voucherService;
     }
 
-    @SecurityRequirement(name = "bearerAuth")
     @PostMapping(produces = {"application/json"})
     public Mono<Voucher> create(@Valid @RequestBody Voucher voucher) {
         voucher.doDefault();

@@ -33,17 +33,12 @@ public class VoucherEntity {
     private User user;
 
     public VoucherEntity(Voucher voucher) {
-        voucher.setReference(UUID.randomUUID().toString());
         BeanUtils.copyProperties(voucher, this);
     }
 
     public Voucher toVoucher(){
-        return Voucher.builder()
-                .reference(UUID.randomUUID().toString())
-                .value(value)
-                .creationDate(creationDate)
-                .dateOfUse(dateOfUse)
-                .user(user)
-                .build();
+        Voucher voucher = new Voucher();
+        BeanUtils.copyProperties(this, voucher);
+        return voucher;
     }
 }

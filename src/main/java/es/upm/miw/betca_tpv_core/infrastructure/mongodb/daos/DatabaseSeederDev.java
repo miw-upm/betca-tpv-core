@@ -277,9 +277,9 @@ public class DatabaseSeederDev {
 
         LocalDateTime creationDate = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
         VoucherEntity[] vouchers = {
-                VoucherEntity.builder().reference("VOUCHER001").value(BigDecimal.valueOf(50)).creationDate(creationDate).dateOfUse(null).user(User.builder().mobile("635635635").build()).build(),
-                VoucherEntity.builder().reference("VOUCHER002").value(BigDecimal.valueOf(30)).creationDate(creationDate).dateOfUse(creationDate.plusDays(10)).user(User.builder().mobile("635635635").build()).build(),
-                VoucherEntity.builder().reference("VOUCHER003").value(BigDecimal.valueOf(100)).creationDate(creationDate).dateOfUse(null).user(User.builder().mobile("635635635").build()).build()
+                VoucherEntity.builder().reference("EkDQ6LauQzq6musYPK_Icg").value(BigDecimal.valueOf(50.30)).creationDate(creationDate).dateOfUse(null).user(User.builder().mobile("666666000").build()).build(),
+                VoucherEntity.builder().reference("MaDQasauQzq6musYPK_Dra").value(BigDecimal.valueOf(30.15)).creationDate(creationDate).dateOfUse(creationDate.plusDays(10)).user(User.builder().mobile("666666000").build()).build(),
+                VoucherEntity.builder().reference("PeDQ6LauQzq6musYPK_Ven").value(BigDecimal.valueOf(99.99)).creationDate(creationDate).dateOfUse(null).user(User.builder().mobile("666666000").build()).build()
         };
 
         this.voucherDao.saveAll(Arrays.asList(vouchers));
