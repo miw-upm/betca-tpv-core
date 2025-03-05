@@ -1,10 +1,8 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
-import es.upm.miw.betca_tpv_core.domain.model.Offer;
 import es.upm.miw.betca_tpv_core.domain.model.Voucher;
 import es.upm.miw.betca_tpv_core.domain.services.VoucherService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +18,7 @@ public class VoucherResource {
     public static final String VOUCHERS = "/vouchers";
     public static final String SEARCH = "/search";
     public static final String REFERENCE_ID = "/{reference}";
+    public static final String PDF = "/pdf";
 
     private final VoucherService voucherService;
 
@@ -45,6 +44,11 @@ public class VoucherResource {
             @RequestParam(required = false) String reference,
             @RequestParam(required = false)BigDecimal value) {
         return this.voucherService.findByReferenceAndValueNullSafe(reference, value);
+    }
+
+    @GetMapping(value = REFERENCE_ID + PDF, produces = {"application/pdf", "application/json"})
+    public Mono<byte[]> readPdf(@PathVariable String reference) {
+        return this.voucherService.readPdf(reference);
     }
 
 }
