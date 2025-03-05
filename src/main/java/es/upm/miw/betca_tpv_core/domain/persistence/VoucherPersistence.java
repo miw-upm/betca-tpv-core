@@ -14,5 +14,7 @@ public interface VoucherPersistence {
 
     Mono<Voucher> readByReference(String reference);
 
+    Mono<Voucher> update(String reference, Voucher voucher);
+
     Flux<Voucher> findByReferenceAndValueNullSafe(String reference, BigDecimal value);
 }
