@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.domain.services.utils;
 
 import es.upm.miw.betca_tpv_core.domain.model.Voucher;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class PdfVoucherBuilder {
@@ -18,7 +19,10 @@ public class PdfVoucherBuilder {
         pdf.paragraphEmphasized("VOUCHER - " + voucher.getReference());
         pdf.paragraph("Value: " + voucher.getValue() + "€");
         pdf.paragraph("Creation date: " + voucher.getCreationDate().format(DateTimeFormatter.ISO_LOCAL_DATE));
-        pdf.paragraph("Date of user: " + voucher.getDateOfUse().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        LocalDateTime dateOfUse = voucher.getDateOfUse();
+        if (dateOfUse != null) {
+            pdf.paragraph("Date of use: " + dateOfUse.format(DateTimeFormatter.ISO_LOCAL_DATE));
+        }
         pdf.paragraph("User mobile: " + voucher.getUser().getMobile());
 
         pdf.line();

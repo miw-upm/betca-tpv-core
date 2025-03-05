@@ -96,7 +96,7 @@ public class VoucherResourceIT {
     void testPdf() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(VOUCHERS + VoucherResource.REFERENCE_ID + PDF, "MaDQasauQzq6musYPK_Dra")
+                .uri(VOUCHERS + VoucherResource.REFERENCE_ID + PDF, "EkDQ6LauQzq6musYPK_Icg")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(byte[].class)
