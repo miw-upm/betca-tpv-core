@@ -10,6 +10,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -26,6 +28,7 @@ public class VoucherEntity {
     private String id;
     @Indexed(unique = true)
     private String reference;
+    @Field(targetType = FieldType.DECIMAL128)
     private BigDecimal value;
     private LocalDateTime creationDate;
     private LocalDateTime dateOfUse;

@@ -1,9 +1,11 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.exceptions.BadRequestException;
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Voucher;
 import es.upm.miw.betca_tpv_core.domain.persistence.VoucherPersistence;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
+import es.upm.miw.betca_tpv_core.domain.services.utils.PdfVoucherBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -40,5 +42,12 @@ public class VoucherService {
 
     public Flux<Voucher> findByReferenceAndValueNullSafe(String reference, BigDecimal value) {
         return this.voucherPersistence.findByReferenceAndValueNullSafe(reference, value);
+    }
+
+    public Mono<byte[]> readPdf(String reference) {
+        return this.voucherPersistence.readByReference(reference)
+                .switchIfEmpty(Mono.error(new NotFoundException("Voucher not found with reference: " + reference)))
+                .map(new PdfVoucherBuilder()::generateVoucher);
+
     }
 }
