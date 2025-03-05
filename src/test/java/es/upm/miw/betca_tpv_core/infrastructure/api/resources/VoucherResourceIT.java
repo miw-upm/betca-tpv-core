@@ -13,6 +13,7 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.VoucherResource.PDF;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.VoucherResource.SEARCH;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.VoucherResource.REFERENCE_ID;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.VoucherResource.VOUCHERS;
@@ -88,6 +89,17 @@ public class VoucherResourceIT {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBodyList(Voucher.class)
+                .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void testPdf() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(VOUCHERS + VoucherResource.REFERENCE_ID + PDF, "MaDQasauQzq6musYPK_Dra")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(byte[].class)
                 .value(Assertions::assertNotNull);
     }
 }

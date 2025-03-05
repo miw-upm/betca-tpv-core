@@ -103,4 +103,12 @@ public class VoucherServiceIT {
                 .expectError(NotFoundException.class)
                 .verify();
     }
+
+    @Test
+    void testPdf() {
+        StepVerifier
+                .create(this.voucherService.readPdf("MaDQasauQzq6musYPK_Dra"))
+                .expectNextCount(1)
+                .verifyComplete();
+    }
 }
