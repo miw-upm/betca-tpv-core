@@ -1,7 +1,6 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
-import es.upm.miw.betca_tpv_core.domain.exceptions.BadRequestException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.model.Voucher;
@@ -14,7 +13,9 @@ import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.Month;
 
+import static java.math.BigDecimal.TEN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
@@ -102,6 +103,25 @@ public class VoucherServiceIT {
                 .create(this.voucherService.read("badreference"))
                 .expectError(NotFoundException.class)
                 .verify();
+    }
+
+    @Test
+    void testUpdate() {
+        User user = User.builder().mobile("123456789").firstName("Martxel").build();
+        Voucher voucher = Voucher.builder()
+                .value(TEN)
+                .creationDate(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10))
+                .dateOfUse(LocalDateTime.now())
+                .user(user)
+                .build();
+        StepVerifier
+                .create(this.voucherService.update("MaDQasauQzq6musYPK_Dra", voucher))
+                .expectNextMatches(returnVoucher -> {
+                    assertNotNull(returnVoucher);
+                    assertEquals(TEN, returnVoucher.getValue());
+                    return true;
+                })
+                .verifyComplete();
     }
 
     @Test
