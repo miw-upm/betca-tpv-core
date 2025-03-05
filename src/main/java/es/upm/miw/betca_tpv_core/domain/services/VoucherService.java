@@ -34,6 +34,10 @@ public class VoucherService {
         return this.voucherPersistence.readByReference(reference);
     }
 
+    public Mono<Voucher> update(String reference, Voucher voucher) {
+        return this.voucherPersistence.update(reference, voucher);
+    }
+
     private Mono<Void> verifyUserExistsByMobile(String userMobile) {
         return userMicroservice.readByMobile(userMobile)
                 .onErrorResume(BadRequestException.class, Mono::error)

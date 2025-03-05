@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_core.domain.model.Voucher;
 import es.upm.miw.betca_tpv_core.domain.persistence.VoucherPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.VoucherReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.VoucherEntity;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
@@ -32,6 +33,21 @@ public class VoucherPersistenceMongodb implements VoucherPersistence {
     public Mono<Voucher> readByReference(String reference) {
         return this.voucherReactive.findByReference(reference)
                 .switchIfEmpty(Mono.error(new NotFoundException("Non existent voucher reference: " + reference)))
+                .map(VoucherEntity::toVoucher);
+    }
+
+    @Override
+    public Mono<Voucher> update(String reference, Voucher voucher) {
+        if (voucher.getReference() != null && !voucher.getReference().equals(reference)) {
+            voucher.setReference(reference);
+        }
+
+        return this.voucherReactive.findByReference(reference)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non existent voucher reference: " + reference)))
+                .flatMap(existingVoucherEntity -> {
+                    BeanUtils.copyProperties(voucher, existingVoucherEntity);
+                    return this.voucherReactive.save(existingVoucherEntity);
+                })
                 .map(VoucherEntity::toVoucher);
     }
 

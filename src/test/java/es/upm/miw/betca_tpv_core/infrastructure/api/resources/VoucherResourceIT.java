@@ -12,11 +12,14 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.Month;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.VoucherResource.PDF;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.VoucherResource.SEARCH;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.VoucherResource.REFERENCE_ID;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.VoucherResource.VOUCHERS;
+import static java.math.BigDecimal.TEN;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -90,6 +93,34 @@ public class VoucherResourceIT {
                 .expectStatus().isOk()
                 .expectBodyList(Voucher.class)
                 .value(Assertions::assertNotNull);
+    }
+
+    @Test
+    void testUpdateVoucher() {
+        User user = User.builder().mobile("123456789").firstName("Martxel").build();
+        Voucher voucher = Voucher.builder()
+                .reference("MaDQasauQzq6musYPK_Dra")
+                .value(TEN)
+                .creationDate(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10))
+                .dateOfUse(LocalDateTime.now())
+                .user(user)
+                .build();
+
+        Voucher responseVoucher = this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(VOUCHERS + "/" + "MaDQasauQzq6musYPK_Dra")
+                .bodyValue(voucher)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Voucher.class)
+                .value(Assertions::assertNotNull)
+                .value(returnVoucher -> {
+                    assertEquals(TEN, returnVoucher.getValue());
+                })
+                .returnResult()
+                .getResponseBody();
+
+        assertNotNull(responseVoucher);
     }
 
     @Test

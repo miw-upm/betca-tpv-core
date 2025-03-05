@@ -39,6 +39,11 @@ public class VoucherResource {
         return this.voucherService.read(reference);
     }
 
+    @PutMapping(REFERENCE_ID)
+    public Mono<Voucher> update(@PathVariable String reference, @Valid @RequestBody Voucher voucher) {
+        return this.voucherService.update(reference, voucher);
+    }
+
     @GetMapping(SEARCH)
     public Flux<Voucher> findByReferenceAndValueNullSafe(
             @RequestParam(required = false) String reference,

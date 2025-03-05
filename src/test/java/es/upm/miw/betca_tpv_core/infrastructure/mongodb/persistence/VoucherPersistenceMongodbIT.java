@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
 
+import static java.math.BigDecimal.TEN;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
@@ -74,5 +75,25 @@ public class VoucherPersistenceMongodbIT {
                 })
                 .thenCancel()
                 .verify();
+    }
+
+    @Test
+    void testUpdate() {
+        User user = User.builder().mobile("123456789").firstName("Martxel").build();
+        Voucher voucher = Voucher.builder()
+                .reference("PeDQ6LauQzq6musYPK_Ven")
+                .value(TEN)
+                .creationDate(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10))
+                .dateOfUse(LocalDateTime.now())
+                .user(user)
+                .build();
+        StepVerifier
+                .create(this.voucherPersistenceMongodb.update("PeDQ6LauQzq6musYPK_Ven", voucher))
+                .expectNextMatches(returnVoucher -> {
+                    assertNotNull(returnVoucher);
+                    assertEquals(TEN, returnVoucher.getValue());
+                    return true;
+                })
+                .verifyComplete();
     }
 }
