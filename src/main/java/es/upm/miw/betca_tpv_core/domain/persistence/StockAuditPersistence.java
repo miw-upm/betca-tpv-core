@@ -10,4 +10,6 @@ public interface StockAuditPersistence {
     Flux<StockAudit> findAll();
 
     Mono<StockAudit> read(String id);
+
+    Mono<Void> save(StockAudit stockAudit);
 }
