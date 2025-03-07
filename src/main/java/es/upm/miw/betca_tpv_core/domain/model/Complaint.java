@@ -32,7 +32,7 @@ public class Complaint {
     private String reply;
 
     @NotBlank
-    private String mobile;
+    private String userMobile;
     @NotBlank
     private String state;
 }
