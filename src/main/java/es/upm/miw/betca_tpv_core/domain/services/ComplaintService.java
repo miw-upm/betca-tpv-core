@@ -26,7 +26,12 @@ public class ComplaintService {
     public Mono<Complaint> read(String id,String userLoggedMobile){
         return this.userMicroservice.readByMobile(userLoggedMobile)
                 .flatMap(user -> {
-
+                    return this.complaintPersistence.read(id)
+                            .filter(complaint -> (
+                                    "ADMIN".equals(user.getRole()) || "MANAGER".equals(user.getRole())||
+                                            "OPERATOR".equals(user.getRole()) || user.getMobile().equals(complaint.getUserMobile())
+                                    )
+                            );
                 });
 
     }
