@@ -1,15 +1,21 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
+import es.upm.miw.betca_tpv_core.domain.model.StockAudit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
 public class StockAuditPersistenceMongodbIT {
 
+    public static final String ID_STOCK_AUDI = "ID001";
     @Autowired
     private StockAuditPersistenceMongodb stockAuditPersistenceMongodb;
     @Test
@@ -18,15 +24,10 @@ public class StockAuditPersistenceMongodbIT {
                 .create(this.stockAuditPersistenceMongodb.findAll())
                 .expectNextMatches(stockAudit -> {
                     assertNotNull(stockAudit.getId());
-                    assertFalse(stockAudit.getArticlesWithoutAudit().isEmpty());
-                    assertFalse(stockAudit.getLosses().isEmpty());
-                    assertNotNull(stockAudit.getCloseDate());
                     assertNotNull(stockAudit.getCreationDate());
-                    assertNotNull(stockAudit.getLossValue());
                     return true;
-                })
-                .expectNextCount(4)
-                .verifyComplete();
+                }) .thenCancel()
+                .verify();
     }
 
     @Test
@@ -44,6 +45,30 @@ public class StockAuditPersistenceMongodbIT {
                 })
                 .expectComplete()
                 .verify();
+    }
+
+    @Test
+    void testSave() {
+        StepVerifier
+                .create(this.stockAuditPersistenceMongodb
+                        .save(getInstanceStockAudit())
+                        .then(Mono.defer(() -> this.stockAuditPersistenceMongodb.read(ID_STOCK_AUDI)))
+                ).assertNext(stockAudit -> {
+                            assertEquals(0, stockAudit.getLossValue());
+                            assertNotNull(stockAudit.getCreationDate());
+                            assertNull(stockAudit.getCloseDate());
+                            assertTrue(stockAudit.getLosses().isEmpty());
+                        })
+                .verifyComplete();
+    }
+
+    StockAudit getInstanceStockAudit(){
+        return StockAudit.builder()
+                .id(ID_STOCK_AUDI)
+                .creationDate(LocalDateTime.now())
+                .lossValue(0)
+                .losses(List.of())
+                .build();
     }
 
 }

@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @Service
 public class StockAuditService {
 
@@ -21,5 +24,21 @@ public class StockAuditService {
 
     public Mono<StockAudit> read(String id){
         return stockAuditPersistence.read(id);
+    }
+
+    public Mono<Void> create() {
+        return this.crearStockAudit()
+                .flatMap(stockAuditPersistence::save)
+                .then();
+    }
+
+    private Mono<StockAudit> crearStockAudit() {
+        StockAudit stockAudit = new StockAudit();
+        stockAudit.setId("AUDIT" + System.currentTimeMillis());
+        stockAudit.setCreationDate(LocalDate.now().atStartOfDay());
+        stockAudit.setCloseDate(null);
+        stockAudit.setLossValue(0);
+        stockAudit.setLosses(List.of());
+        return Mono.just(stockAudit);
     }
 }

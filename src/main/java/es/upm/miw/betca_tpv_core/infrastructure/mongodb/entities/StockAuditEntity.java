@@ -12,6 +12,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Data
@@ -29,6 +30,11 @@ public class StockAuditEntity {
     private Integer lossValue;
     private List<ArticleLossEntity> losses;
 
+    public StockAuditEntity(StockAudit stockAudit, List<ArticleEntity> articles) {
+        BeanUtils.copyProperties(stockAudit, this);
+        this.articlesWithoutAudit = articles;
+    }
+
     public StockAudit toStockAudit() {
         StockAudit stockAudit = new StockAudit();
         BeanUtils.copyProperties(this, stockAudit);
@@ -39,7 +45,7 @@ public class StockAuditEntity {
 
     private List<ArticleLoss> toLosses() {
         if (losses == null)
-            return null;
+            return Collections.emptyList();
         return losses.stream()
                 .map(ArticleLossEntity::toArticleLoss)
                 .toList();
@@ -47,7 +53,7 @@ public class StockAuditEntity {
 
     private List<Article> toArticlesWithoutAudit() {
         if (articlesWithoutAudit == null)
-            return null;
+            return Collections.emptyList();
         return articlesWithoutAudit.stream()
                 .map(ArticleEntity::toArticle)
                 .toList();

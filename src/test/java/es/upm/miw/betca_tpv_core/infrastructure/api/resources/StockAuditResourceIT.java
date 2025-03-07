@@ -41,7 +41,7 @@ class StockAuditResourceIT {
     }
 
     @Test
-    void testRead(){
+    void testRead() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(STOCK_AUDIT + STOCK_AUDIT_ID, "AUDIT001")
@@ -59,6 +59,14 @@ class StockAuditResourceIT {
                 });
     }
 
+    @Test
+    void testCreate() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(STOCK_AUDIT)
+                .exchange()
+                .expectStatus().isCreated();
+    }
 
 
 }
