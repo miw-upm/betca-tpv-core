@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
+import es.upm.miw.betca_tpv_core.domain.exceptions.ForbiddenException;
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
 import es.upm.miw.betca_tpv_core.domain.persistence.ComplaintPersistence;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
@@ -31,7 +32,8 @@ public class ComplaintService {
                                     "ADMIN".equals(user.getRole()) || "MANAGER".equals(user.getRole())||
                                             "OPERATOR".equals(user.getRole()) || user.getMobile().equals(complaint.getUserMobile())
                                     )
-                            );
+                            )
+                            .switchIfEmpty(Mono.error(new ForbiddenException("You are not allowed to read this complaint")));
                 });
 
     }
