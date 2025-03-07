@@ -9,32 +9,22 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+
 @Service
 public class ComplaintService {
     private final ComplaintPersistence complaintPersistence;
 
-    private final UserMicroservice userMicroservice;
     @Autowired
     public ComplaintService (ComplaintPersistence complaintPersistence,UserMicroservice userMicroservice){
         this.complaintPersistence=complaintPersistence;
-        this.userMicroservice=userMicroservice;
     }
 
     public Flux<Complaint> findByUserMobileNullSafe(String userMobile){
         return this.complaintPersistence.findByUserMobileNullSafe(userMobile);
     }
 
-    public Mono<Complaint> read(String id,String userLoggedMobile){
-        return this.userMicroservice.readByMobile(userLoggedMobile)
-                .flatMap(user -> {
-                    return this.complaintPersistence.read(id)
-                            .filter(complaint -> (
-                                    "ADMIN".equals(user.getRole()) || "MANAGER".equals(user.getRole())||
-                                            "OPERATOR".equals(user.getRole()) || user.getMobile().equals(complaint.getUserMobile())
-                                    )
-                            )
-                            .switchIfEmpty(Mono.error(new ForbiddenException("You are not allowed to read this complaint")));
-                });
-
+    public Mono<Complaint> read(String id, String userLoggedMobile) {
+        return this.complaintPersistence.read(id);
     }
+
 }
