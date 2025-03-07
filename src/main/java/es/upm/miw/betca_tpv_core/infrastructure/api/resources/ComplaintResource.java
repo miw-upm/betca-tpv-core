@@ -27,18 +27,15 @@ public class ComplaintResource {
         this.complaintService=complaintService;
     }
 
+    @PreAuthorize("permitAll()")
+    @GetMapping(COMPLAINT_ID)
+    public Mono<Complaint> read(@PathVariable String id ,Authentication authentication){
+        return this.complaintService.read(id,authentication);
+    }
+
     @PreAuthorize("hasRole('ROLE_ADMIN') or #userMobile == authentication.principal")
     @GetMapping(SEARCH)
     public Flux<Complaint> findByUserMobileNullSafe(@RequestParam(required = false) String userMobile){
-
         return this.complaintService.findByUserMobileNullSafe(userMobile);
     }
-
-    @GetMapping(COMPLAINT_ID)
-    public Mono<Complaint> read(@PathVariable String id, Authentication authentication ){
-        System.out.println(authentication);
-        return this.complaintService.read(id,authentication.getPrincipal().toString());
-    }
-
-
 }
