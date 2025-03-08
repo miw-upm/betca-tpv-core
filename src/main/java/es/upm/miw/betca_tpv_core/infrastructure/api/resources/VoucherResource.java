@@ -11,6 +11,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Rest
 @RequestMapping(VoucherResource.VOUCHERS)
@@ -44,11 +45,19 @@ public class VoucherResource {
         return this.voucherService.update(reference, voucher);
     }
 
-    @GetMapping(SEARCH)
+    /*@GetMapping(SEARCH)
     public Flux<Voucher> findByReferenceAndValueNullSafe(
             @RequestParam(required = false) String reference,
             @RequestParam(required = false)BigDecimal value) {
         return this.voucherService.findByReferenceAndValueNullSafe(reference, value);
+    }*/
+
+    @GetMapping(SEARCH)
+    public Flux<Voucher> findVouchersWithFilters(
+            @RequestParam(required = false) LocalDateTime startDate,
+            @RequestParam(required = false) LocalDateTime endDate,
+            @RequestParam Boolean consumed){
+        return this.voucherService.findVouchersWithFilters(startDate, endDate, consumed);
     }
 
     @GetMapping(value = REFERENCE_ID + PDF, produces = {"application/pdf", "application/json"})

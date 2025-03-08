@@ -12,6 +12,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Service
 public class VoucherService {
@@ -46,6 +47,10 @@ public class VoucherService {
 
     public Flux<Voucher> findByReferenceAndValueNullSafe(String reference, BigDecimal value) {
         return this.voucherPersistence.findByReferenceAndValueNullSafe(reference, value);
+    }
+
+    public Flux<Voucher> findVouchersWithFilters(LocalDateTime startDate, LocalDateTime endDate, Boolean consumed){
+        return this.voucherPersistence.findVouchersWithFilters(startDate, endDate, consumed);
     }
 
     public Mono<byte[]> readPdf(String reference) {

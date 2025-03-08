@@ -276,10 +276,14 @@ public class DatabaseSeederDev {
         log.warn("        ------- budgets");
 
         LocalDateTime creationDate = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
+        LocalDateTime todayDate = LocalDateTime.of(2025, Month.MARCH, 8, 9, 30);
         VoucherEntity[] vouchers = {
                 VoucherEntity.builder().reference("EkDQ6LauQzq6musYPK_Icg").value(BigDecimal.valueOf(50.30)).creationDate(creationDate).dateOfUse(null).user(User.builder().mobile("666666000").build()).build(),
                 VoucherEntity.builder().reference("MaDQasauQzq6musYPK_Dra").value(BigDecimal.valueOf(30.15)).creationDate(creationDate).dateOfUse(creationDate.plusDays(10)).user(User.builder().mobile("666666000").build()).build(),
-                VoucherEntity.builder().reference("PeDQ6LauQzq6musYPK_Ven").value(BigDecimal.valueOf(99.99)).creationDate(creationDate).dateOfUse(null).user(User.builder().mobile("666666000").build()).build()
+                VoucherEntity.builder().reference("PeDQ6LauQzq6musYPK_Ven").value(BigDecimal.valueOf(99.99)).creationDate(creationDate).dateOfUse(null).user(User.builder().mobile("666666000").build()).build(),
+                VoucherEntity.builder().reference("AlDQ6PauQzq6musYPK_Ven").value(BigDecimal.valueOf(24.05)).creationDate(todayDate.plusDays(10)).dateOfUse(null).user(User.builder().mobile("666666000").build()).build(),
+                VoucherEntity.builder().reference("JuDQ6NaiQzq6musYPK_Ven").value(BigDecimal.valueOf(9.9)).creationDate(todayDate.plusDays(20)).dateOfUse(null).user(User.builder().mobile("666666000").build()).build(),
+                VoucherEntity.builder().reference("MaDQ6FerQzq6musYPK_Ven").value(BigDecimal.valueOf(135.99)).creationDate(todayDate.plusDays(25)).dateOfUse(todayDate.plusDays(30)).user(User.builder().mobile("666666000").build()).build()
         };
 
         this.voucherDao.saveAll(Arrays.asList(vouchers));
