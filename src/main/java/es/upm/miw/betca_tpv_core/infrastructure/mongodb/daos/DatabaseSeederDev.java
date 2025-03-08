@@ -222,7 +222,7 @@ public class DatabaseSeederDev {
         };
         this.rgpdDao.saveAll(Arrays.asList(rgpdList));
         log.warn("        ------- data-protection-rgpd");
-        
+
         LocalDateTime dateOfferCreation = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
         LocalDateTime dateOfferExpiry = LocalDateTime.of(2020, Month.JANUARY, 12, 10, 10);
         OfferEntity[] offers = {
@@ -262,13 +262,14 @@ public class DatabaseSeederDev {
                 InvoiceEntity.builder().id("4").identity(20254).baseTax(new BigDecimal("16.3")).taxValue(new BigDecimal("15"))
                         .ticketId("5fa45f6f3a61083cb241289c").userMobile("666666002").creationDate(LocalDateTime.now()).build(),
         };
-                this.invoiceDao.saveAll(Arrays.asList(invoice));
+        this.invoiceDao.saveAll(Arrays.asList(invoice));
         LogManager.getLogger(this.getClass()).warn("        ------- invoices");
 
         LocalDateTime budgetCreationDate = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
         BudgetEntity[] budgets = {
-            BudgetEntity.builder().id("1").reference("1").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
-            BudgetEntity.builder().id("2").reference("2").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build()
+                BudgetEntity.builder().id("1").reference("1").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
+                BudgetEntity.builder().id("2").reference("2").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
+                BudgetEntity.builder().id("3").reference("3").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build()
         };
 
 

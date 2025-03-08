@@ -35,4 +35,9 @@ public class BudgetResource {
         return this.budgetService.delete(id);
     }
 
+    @PutMapping(BUDGET_ID)
+    public Mono<Budget> update(@PathVariable String id, @Valid @RequestBody Budget budget) {
+        return this.budgetService.update(id, budget);
+    }
+
 }

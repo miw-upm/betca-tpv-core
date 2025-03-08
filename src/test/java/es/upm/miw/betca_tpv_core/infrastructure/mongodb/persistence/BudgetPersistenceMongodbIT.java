@@ -88,4 +88,39 @@ public class BudgetPersistenceMongodbIT {
                 .expectComplete()
                 .verify();
     }
+
+    @Test
+    void testUpdate() {
+        Shopping shopping1 = Shopping.builder().barcode("8400000000017").amount(2)
+                .discount(BigDecimal.ZERO).state(ShoppingState.COMMITTED).build();
+        Shopping shopping2 = Shopping.builder().barcode("8400000000024").amount(3)
+                .discount(BigDecimal.TEN).state(ShoppingState.NOT_COMMITTED).build();
+
+        String reference = UUIDBase64.URL.encode();
+        Budget budget = Budget.builder().id("5665").reference(reference).creationDate(LocalDateTime.now()).shoppingList(List.of(shopping1, shopping2)).build();
+
+        StepVerifier
+                .create(this.budgetPersistenceMongodb.create(budget))
+                .expectNextMatches(dbBudget -> {
+                    assertNotNull(dbBudget.getId());
+                    assertNotNull(dbBudget.getCreationDate());
+                    assertEquals(reference, dbBudget.getReference());
+                    assertEquals(2, dbBudget.getShoppingList().size());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+
+        Budget updatedBudget = Budget.builder().id("5665").shoppingList(List.of(shopping1)).build();
+        StepVerifier
+                .create(this.budgetPersistenceMongodb.update("5665", updatedBudget))
+                .expectNextMatches(dbBudget -> {
+                    assertNotNull(dbBudget.getId());
+                    assertNotNull(dbBudget.getCreationDate());
+                    assertEquals(1, dbBudget.getShoppingList().size());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
 }
