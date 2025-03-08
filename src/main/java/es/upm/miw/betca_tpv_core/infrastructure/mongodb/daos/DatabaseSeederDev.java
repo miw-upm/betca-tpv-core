@@ -318,6 +318,7 @@ public class DatabaseSeederDev {
             LocalDateTime dateComplaintCreationArticle1 = LocalDateTime.of(2021, Month.JANUARY, 1, 20, 56);
             LocalDateTime dateComplaintCreationArticle2 = LocalDateTime.of(2022, Month.MAY, 31, 1, 34);
             LocalDateTime dateComplaintCreationArticle3 = LocalDateTime.of(2021, Month.JULY, 15, 10, 4);
+            LocalDateTime dateComplaintCreationArticle4 = LocalDateTime.of(2022, Month.AUGUST, 15, 10, 4);
 
             ComplaintEntity[] complaints = {
                     ComplaintEntity.builder().description("Queja aleatoria").reply("")
@@ -329,6 +330,12 @@ public class DatabaseSeederDev {
                     ComplaintEntity.builder().description("Queja Grado").reply("").state(ComplaintState.OPEN)
                             .article(articles[2]).registrationDate(dateComplaintCreationArticle3)
                             .userMobile("66").build(),
+                    ComplaintEntity.builder().description("Queja Asignatura").reply("Solucionado").state(ComplaintState.CLOSED)
+                            .article(articles[2]).registrationDate(dateComplaintCreationArticle4)
+                            .userMobile("666666005").build(),
+                    ComplaintEntity.builder().description("Queja articulo").reply("").state(ComplaintState.OPEN)
+                            .article(articles[1]).registrationDate(dateComplaintCreationArticle1)
+                            .userMobile("666666005").build(),
             };
             this.complaintDao.saveAll(Arrays.asList(complaints));
             log.warn("        ------- complaints");
