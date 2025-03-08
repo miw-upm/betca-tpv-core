@@ -8,6 +8,7 @@ import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
 import es.upm.miw.betca_tpv_core.domain.persistence.InvoicePersistence;
 import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
+import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.domain.services.utils.PdfInvoiceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,12 +24,14 @@ public class InvoiceService {
     private final InvoicePersistence invoicePersistence;
     private final ArticlePersistence articlePersistence;
     private final TicketPersistence ticketPersistence;
+    private final UserMicroservice userMicroservice;
 
     @Autowired
-    public InvoiceService(InvoicePersistence invoicePersistence, ArticlePersistence articlePersistence, TicketPersistence ticketPersistence) {
+    public InvoiceService(InvoicePersistence invoicePersistence, ArticlePersistence articlePersistence, TicketPersistence ticketPersistence, UserMicroservice userMicroservice) {
         this.invoicePersistence = invoicePersistence;
         this.articlePersistence = articlePersistence;
         this.ticketPersistence = ticketPersistence;
+        this.userMicroservice = userMicroservice;
     }
 
     public Mono<Invoice> findByTicketId(String ticketId) {
@@ -83,5 +86,10 @@ public class InvoiceService {
                         .doOnNext(invoice::setTicket)
                         .thenReturn(invoice))
                 .map(new PdfInvoiceBuilder()::generateInvoice);
+    }
+
+    public Mono<Invoice> updateUser(Integer identity, String mobile) {
+        return this.userMicroservice.readByMobile(mobile)
+                .flatMap(user -> invoicePersistence.updateUser(identity, user));
     }
 }

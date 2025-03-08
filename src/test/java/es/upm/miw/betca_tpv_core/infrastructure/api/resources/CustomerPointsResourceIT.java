@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CustomerPointsResource.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @RestTestConfig
@@ -109,7 +108,7 @@ class CustomerPointsResourceIT {
                 .expectBody(CustomerPoints.class)
                 .value(Assertions::assertNotNull)
                 .value(returnCustomerPoints -> {
-                    assertEquals(20, returnCustomerPoints.getValue());
+                    assertEquals(10, returnCustomerPoints.getValue());
                 });
     }
 

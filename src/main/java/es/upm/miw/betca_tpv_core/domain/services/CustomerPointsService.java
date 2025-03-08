@@ -30,7 +30,13 @@ public class CustomerPointsService {
 
     public Mono<CustomerPoints> readCustomerPointsByMobile(String mobile) {
         return this.userMicroservice.readByMobile(mobile)
-                .flatMap(user -> this.customerPointsPersistence.readCustomerPointsByMobile(mobile, user));
+                .flatMap(user -> this.customerPointsPersistence.readCustomerPointsByMobile(mobile, user))
+                .map(cp -> {
+                    if (java.time.Duration.between(cp.getLastDate(), LocalDateTime.now()).toMillis() > ONE_YEAR_MILLIS) {
+                        cp.setValue(0);
+                    }
+                    return cp;
+                });
     }
 
     public Mono<CustomerPoints> updateCustomerPoints(String mobile, CustomerPoints customerPoints) {

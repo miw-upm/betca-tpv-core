@@ -75,4 +75,15 @@ public class InvoicePersistenceMongodb implements InvoicePersistence {
     public Flux<Invoice> findAll() {
         return this.invoiceReactive.findAll().map(InvoiceEntity::toInvoice);
     }
+
+    @Override
+    public Mono<Invoice> updateUser(Integer identity, User user) {
+        return this.invoiceReactive.findByIdentity(identity)
+                .switchIfEmpty(Mono.error(new NotFoundException("Identity not found: " + identity)))
+                .map(invoiceEntity -> {invoiceEntity.setUserMobile(user.getMobile());
+                    return invoiceEntity;
+                })
+                .flatMap(this.invoiceReactive::save)
+                .map(InvoiceEntity::toInvoice);
+    }
 }

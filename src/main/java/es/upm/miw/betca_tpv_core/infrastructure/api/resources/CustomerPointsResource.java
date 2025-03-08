@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_core.domain.services.CustomerPointsService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -30,6 +31,7 @@ public class CustomerPointsResource {
     }
 
     @GetMapping(MOBILE)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #mobile == authentication.principal")
     public Mono<CustomerPoints> readCustomerPointsByMobile(@PathVariable String mobile) {
         return this.customerPointsService.readCustomerPointsByMobile(mobile);
     }

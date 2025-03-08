@@ -1,0 +1,124 @@
+package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
+
+import es.upm.miw.betca_tpv_core.TestConfig;
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
+import es.upm.miw.betca_tpv_core.domain.model.User;
+import es.upm.miw.betca_tpv_core.domain.model.Voucher;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import reactor.test.StepVerifier;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.Month;
+
+import static java.math.BigDecimal.TEN;
+import static org.junit.jupiter.api.Assertions.*;
+
+@TestConfig
+public class VoucherPersistenceMongodbIT {
+
+    @Autowired
+    private VoucherPersistenceMongodb voucherPersistenceMongodb;
+
+    @Test
+    void testCreate() {
+        String userMobile = "600600610";
+        String userName = "Juan";
+        Voucher voucher = Voucher.builder()
+                .value(new BigDecimal(50))
+                .creationDate(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10))
+                .user(User.builder().mobile(userMobile).firstName(userName).build())
+                .build();
+        voucher.doDefault();
+        StepVerifier
+                .create(this.voucherPersistenceMongodb.create(voucher))
+                .expectNextMatches(returnVoucher -> {
+                    assertEquals(new BigDecimal(50), returnVoucher.getValue());
+                    assertNotNull(returnVoucher.getCreationDate());
+                    assertNull(returnVoucher.getDateOfUse());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testReadByReference() {
+        StepVerifier
+                .create(this.voucherPersistenceMongodb.readByReference("MaDQasauQzq6musYPK_Dra"))
+                .expectNextMatches(returnVoucher -> {
+                    assertEquals("MaDQasauQzq6musYPK_Dra", returnVoucher.getReference());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testReadByReferenceNotFound() {
+        StepVerifier
+                .create(this.voucherPersistenceMongodb.readByReference("INVALID_REF"))
+                .expectError(NotFoundException.class)
+                .verify();
+    }
+
+    @Test
+    void testFindByReferenceValueNullSafe() {
+        StepVerifier
+                .create(this.voucherPersistenceMongodb.findByReferenceAndValueNullSafe(
+                        "EkDQ6LauQzq6musYPK_Icg", null))
+                .expectNextMatches(voucher -> {
+                    assertEquals("EkDQ6LauQzq6musYPK_Icg", voucher.getReference());
+                    assertEquals(BigDecimal.valueOf(50.30), voucher.getValue());
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }
+    @Test
+    void testFindConsumed() {
+        StepVerifier
+                .create(this.voucherPersistenceMongodb.findVouchersWithFilters(
+                        null, null, true))
+                .expectNextMatches(voucher -> {
+                    assertNotNull(voucher.getDateOfUse());
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }
+
+    @Test
+    void testFindNotConsumedVouchers() {
+        StepVerifier
+                .create(this.voucherPersistenceMongodb.findVouchersWithFilters(
+                        null, null, false))
+                .expectNextMatches(voucher -> {
+                    assertNull(voucher.getDateOfUse());
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }
+
+    @Test
+    void testUpdate() {
+        User user = User.builder().mobile("123456789").firstName("Martxel").build();
+        Voucher voucher = Voucher.builder()
+                .reference("PeDQ6LauQzq6musYPK_Ven")
+                .value(TEN)
+                .creationDate(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10))
+                .dateOfUse(LocalDateTime.now())
+                .user(user)
+                .build();
+        StepVerifier
+                .create(this.voucherPersistenceMongodb.update("PeDQ6LauQzq6musYPK_Ven", voucher))
+                .expectNextMatches(returnVoucher -> {
+                    assertNotNull(returnVoucher);
+                    assertEquals(TEN, returnVoucher.getValue());
+                    return true;
+                })
+                .verifyComplete();
+    }
+}

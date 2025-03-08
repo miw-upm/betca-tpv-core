@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Collections;
@@ -31,7 +30,7 @@ public class OfferServiceIT {
         Offer offer = Offer.builder()
                 .reference("ref1")
                 .description("offer1")
-                .discount(BigDecimal.ONE)
+                .discount(1)
                 .articleList(Collections.emptyList())
                 .build();
 
@@ -50,7 +49,7 @@ public class OfferServiceIT {
         Offer offer = Offer.builder()
                 .reference("ref1")
                 .description("offer1")
-                .discount(BigDecimal.ONE)
+                .discount(1)
                 .articleList(Collections.emptyList())
                 .creationDate(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10))
                 .expiryDate(LocalDateTime.of(2018, Month.JANUARY, 12, 10, 10))
@@ -68,7 +67,7 @@ public class OfferServiceIT {
         Offer offer = Offer.builder()
                 .reference("ref22")
                 .description("offer1")
-                .discount(BigDecimal.ONE)
+                .discount(1)
                 .articleList(Collections.emptyList())
                 .creationDate(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10))
                 .expiryDate(LocalDateTime.of(2020, Month.JANUARY, 12, 10, 10))
@@ -83,9 +82,9 @@ public class OfferServiceIT {
     @Test
     void testReadByReference() {
         StepVerifier
-                .create(this.offerService.read("SAVE10LKAUJNRN"))
+                .create(this.offerService.read("zbtBZtcRQJGCR4ULwslweg"))
                 .expectNextMatches(offer -> {
-                    assertEquals("SAVE10LKAUJNRN", offer.getReference());
+                    assertEquals("zbtBZtcRQJGCR4ULwslweg", offer.getReference());
                     assertEquals("Offer code 10% discount", offer.getDescription());
                     return true;
                 })
@@ -104,10 +103,10 @@ public class OfferServiceIT {
     @Test
     void testFindByReferenceAndDescriptionNullSafe() {
         StepVerifier
-                .create(this.offerService.findByReferenceAndDescriptionNullSafe(
-                        "SAVE10LKAUJNRN", null))
+                .create(this.offerService.findByReferenceAndDescriptionAndDiscountNullSafe(
+                        "zbtBZtcRQJGCR4ULwslweg", null, null))
                 .expectNextMatches(offer -> {
-                    assertEquals("SAVE10LKAUJNRN", offer.getReference());
+                    assertEquals("zbtBZtcRQJGCR4ULwslweg", offer.getReference());
                     assertEquals("Offer code 10% discount", offer.getDescription());
                     return true;
                 })
@@ -119,17 +118,17 @@ public class OfferServiceIT {
     void testUpdate() {
         Article article = Article.builder().barcode("1").description("OK").retailPrice(TEN).build();
         Offer offer = Offer.builder()
-                .reference("ref23")
                 .description("OK")
-                .discount(TEN)
+                .discount(10)
                 .creationDate(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10))
                 .expiryDate(LocalDateTime.of(2020, Month.JANUARY, 12, 10, 10))
                 .articleList(List.of(article))
                 .build();
         StepVerifier
-                .create(this.offerService.update("SAVE10LKAUJNRN", offer))
+                .create(this.offerService.update("zbtBZtcRQJGCR4ULwslweg", offer))
                 .expectNextMatches(returnOffer -> {
-                    assertEquals("ref23", returnOffer.getReference());
+                    assertNotNull(returnOffer);
+                    assertEquals("OK", returnOffer.getDescription());
                     return true;
                 })
                 .verifyComplete();
@@ -138,7 +137,7 @@ public class OfferServiceIT {
     @Test
     void testPdf() {
         StepVerifier
-                .create(this.offerService.readPdf("SAVE5IAKMWKIAO"))
+                .create(this.offerService.readPdf("cjmJNO_2R8CVRq031FRKTQ"))
                 .expectNextCount(1)
                 .verifyComplete();
     }

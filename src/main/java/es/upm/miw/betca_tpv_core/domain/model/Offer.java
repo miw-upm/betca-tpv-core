@@ -2,19 +2,20 @@ package es.upm.miw.betca_tpv_core.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import es.upm.miw.betca_tpv_core.domain.model.validations.PositiveBigDecimal;
+import es.upm.miw.betca_tpv_core.domain.services.utils.UUIDBase64;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -22,7 +23,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Offer {
-    @NotBlank
     private String reference;
     @NotBlank
     private String description;
@@ -30,14 +30,14 @@ public class Offer {
     private LocalDateTime creationDate;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime expiryDate;
-    @PositiveBigDecimal
-    private BigDecimal discount;
+    @NotNull
+    @Min(0)
+    @Max(100)
+    private Integer discount;
     private List<Article> articleList;
 
     public void doDefault() {
-        if (Objects.isNull(reference)) {
-            this.reference = UUID.randomUUID().toString();
-        }
+        this.reference = UUIDBase64.URL.encode();
         if (Objects.isNull(creationDate)) {
             this.creationDate = LocalDateTime.now();
         }
@@ -48,7 +48,7 @@ public class Offer {
             this.description = "Default offer description";
         }
         if (Objects.isNull(discount)) {
-            this.discount = BigDecimal.valueOf(10);
+            this.discount = 10;
         }
         if (Objects.isNull(articleList)) {
             this.articleList = new ArrayList<>();

@@ -51,8 +51,8 @@ public class OfferPersistenceMongodb implements OfferPersistence {
     }
 
     @Override
-    public Flux<Offer> findByReferenceAndDescriptionNullSafe(String reference, String description) {
-        return this.offerReactive.findByReferenceAndDescriptionNullSafe(reference, description)
+    public Flux<Offer> findByReferenceAndDescriptionAndDiscountNullSafe(String reference, String description, Integer discount) {
+        return this.offerReactive.findByReferenceAndDescriptionAndDiscountNullSafe(reference, description, discount)
                 .map(OfferEntity::toOfferWithoutArticles);
     }
 
@@ -72,12 +72,11 @@ public class OfferPersistenceMongodb implements OfferPersistence {
             return Mono.error(new BadRequestException("The creation date must be before the expiry date."));
         }
 
-        if (!reference.equals(offer.getReference())) {
-            offerEntityMono = this.assertReferenceNotExist(offer.getReference())
-                    .then(this.offerReactive.findByReference(reference));
-        } else {
-            offerEntityMono = this.offerReactive.findByReference(reference);
+        if (offer.getReference() != null && !offer.getReference().equals(reference)) {
+           offer.setReference(reference);
         }
+
+        offerEntityMono = this.offerReactive.findByReference(reference);
 
         return offerEntityMono
                 .switchIfEmpty(Mono.error(new NotFoundException("Non existent offer reference: " + reference)))
