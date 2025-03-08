@@ -28,8 +28,17 @@ public class ComplaintService {
     }
 
     public Mono<Complaint> read(String id, Authentication authentication) {
+
+        Set<String> PRIVILEGED_ROLES = Arrays.stream(PrivilegedRoles.values())
+                .map(Enum::name)
+                .collect(Collectors.toSet());
+
+        boolean hasPriviligedRoles= authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(PRIVILEGED_ROLES::contains);
+
         return this.complaintPersistence.read(id)
-                .filter(complaint -> ( hasPriviligedRoles(authentication)
+                .filter(complaint -> ( hasPriviligedRoles
                         || complaint.getUserMobile().equals(authentication.getPrincipal()))
                 )
                 .switchIfEmpty(Mono.error(new ForbiddenException("You do not have permission to read this complaint")));
@@ -39,14 +48,4 @@ public class ComplaintService {
         return this.complaintPersistence.findByUserMobileNullSafe(userMobile);
     }
 
-    private Mono<Boolean> hasPriviligedRoles(Authentication authentication){
-        Set<String> PRIVILEGED_ROLES = Arrays.stream(PrivilegedRoles.values())
-                .map(Enum::name)
-                .collect(Collectors.toSet());
-
-        return Mono.just(authentication)
-                .map(auth -> auth.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .anyMatch(PRIVILEGED_ROLES::contains));
-    }
 }
