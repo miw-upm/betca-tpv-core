@@ -10,8 +10,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import org.springframework.security.core.GrantedAuthority;
 
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -24,10 +27,19 @@ public class ComplaintService {
     }
 
     public Mono<Complaint> read(String id, Authentication authentication) {
+        Set<String> PRIVILEGED_ROLES = Arrays.stream(PrivilegedRoles.values())
+                .map(Enum::name)
+                .collect(Collectors.toSet());
 
+        boolean hasPrivilegedRole = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(PRIVILEGED_ROLES::contains);
+
+        System.out.println(hasPrivilegedRole);
+        System.out.println(PRIVILEGED_ROLES);
         System.out.println(authentication.getAuthorities());
         return this.complaintPersistence.read(id)
-                .filter(complaint -> ( true
+                .filter(complaint -> ( hasPrivilegedRole
                         || complaint.getUserMobile().equals(authentication.getPrincipal()))
                 )
                 .switchIfEmpty(Mono.error(new ForbiddenException("You do not have permission to read this complaint")));
