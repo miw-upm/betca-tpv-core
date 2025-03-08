@@ -35,9 +35,6 @@ public class ComplaintService {
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch(PRIVILEGED_ROLES::contains);
 
-        System.out.println(hasPrivilegedRole);
-        System.out.println(PRIVILEGED_ROLES);
-        System.out.println(authentication.getAuthorities());
         return this.complaintPersistence.read(id)
                 .filter(complaint -> ( hasPrivilegedRole
                         || complaint.getUserMobile().equals(authentication.getPrincipal()))
