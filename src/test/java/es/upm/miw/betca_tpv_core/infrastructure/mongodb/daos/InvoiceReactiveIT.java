@@ -39,8 +39,8 @@ public class InvoiceReactiveIT {
     @Test
     void testFindByTicketId(){
         StepVerifier
-                .create(this.invoiceReactive.findByTicketId("5fa45e863d6e834d642689ac"))
-                .assertNext(invoice -> assertTrue(invoice.getTicketId().contains("5fa45e863d6e834d642689ac")))
+                .create(this.invoiceReactive.findByTicketId("5fa4608f4928694ef5980e4c"))
+                .assertNext(invoice -> assertTrue(invoice.getTicketId().contains("5fa4608f4928694ef5980e4c")))
                 .thenCancel()
                 .verify();
     }
