@@ -76,6 +76,31 @@ public class VoucherPersistenceMongodbIT {
                 .thenCancel()
                 .verify();
     }
+    @Test
+    void testFindConsumed() {
+        StepVerifier
+                .create(this.voucherPersistenceMongodb.findVouchersWithFilters(
+                        null, null, true))
+                .expectNextMatches(voucher -> {
+                    assertNotNull(voucher.getDateOfUse());
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }
+
+    @Test
+    void testFindNotConsumedVouchers() {
+        StepVerifier
+                .create(this.voucherPersistenceMongodb.findVouchersWithFilters(
+                        null, null, false))
+                .expectNextMatches(voucher -> {
+                    assertNull(voucher.getDateOfUse());
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }
 
     @Test
     void testUpdate() {
