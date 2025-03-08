@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.exceptions.ForbiddenException;
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
+import es.upm.miw.betca_tpv_core.domain.model.PrivilegedRoles;
 import es.upm.miw.betca_tpv_core.domain.persistence.ComplaintPersistence;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +24,10 @@ public class ComplaintService {
     }
 
     public Mono<Complaint> read(String id, Authentication authentication) {
-        Set<String> notAllowedRoles = Set.of("CUSTOMER","AUTHENTICATED");
+
+        System.out.println(authentication.getAuthorities());
         return this.complaintPersistence.read(id)
-                .filter(complaint -> (!notAllowedRoles.contains(authentication.getAuthorities().toString())
+                .filter(complaint -> ( true
                         || complaint.getUserMobile().equals(authentication.getPrincipal()))
                 )
                 .switchIfEmpty(Mono.error(new ForbiddenException("You do not have permission to read this complaint")));
