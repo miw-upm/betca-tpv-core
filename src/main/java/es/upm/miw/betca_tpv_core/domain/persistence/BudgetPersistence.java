@@ -10,5 +10,7 @@ public interface BudgetPersistence {
 
     Mono<Budget> readById(String id);
 
+    Mono<Budget> update(String id, Budget budget);
+
     Mono<Void> deleteById(String id);
 }

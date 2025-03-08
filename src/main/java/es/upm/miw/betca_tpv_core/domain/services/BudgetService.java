@@ -33,4 +33,9 @@ public class BudgetService implements IBudgetService {
     public Mono<Void> delete(String id) {
         return this.budgetPersistence.deleteById(id);
     }
+
+    @Override
+    public Mono<Budget> update(String id, Budget budget) {
+        return this.budgetPersistence.update(id, budget);
+    }
 }

@@ -9,4 +9,6 @@ public interface IBudgetService {
     Mono<Budget> read(String id);
 
     Mono<Void> delete(String id);
+
+    Mono<Budget> update(String id, Budget budget);
 }
