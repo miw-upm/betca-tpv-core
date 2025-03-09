@@ -9,6 +9,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static com.mongodb.assertions.Assertions.*;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ComplaintResource.*;
+import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @RestTestConfig
 class ComplaintResourceIT {
@@ -111,5 +112,45 @@ class ComplaintResourceIT {
                 .exchange()
                 .expectStatus()
                 .isUnauthorized();
+    }
+    @Test
+    void testReadById_UserNotLogged(){
+        this.webTestClient
+                .get()
+                .uri(COMPLAINTS+"/dasd")
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
+    }
+    @Test
+    void testReadById_UserIsAdmin(){
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(COMPLAINTS+"/dfun8ecm9cd")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Complaint.class)
+                .value(Assertions::assertNotNull)
+                .value(complaint -> assertEquals("Éxito en readById","66", complaint.getUserMobile().toString()));
+    }
+
+    @Test
+    void testReadById_WhenUserIsNotOwnerOfComplaint(){
+        this.restClientTestService.loginCustomer(webTestClient)
+                .get()
+                .uri(COMPLAINTS+"/frieourfncw0")
+                .exchange()
+                .expectStatus()
+                .isForbidden();
+    }
+
+    @Test
+    void testReadById_NotFound(){
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(COMPLAINTS+"/sdnieufsudn843")
+                .exchange()
+                .expectStatus()
+                .isNotFound();
     }
 }

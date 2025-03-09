@@ -26,7 +26,8 @@ public class ComplaintResource {
     public ComplaintResource(ComplaintService complaintService){
         this.complaintService=complaintService;
     }
-    @SecurityRequirement(name = "bearerAuth")
+
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','CUSTOMER','OPERATOR')")
     @GetMapping(COMPLAINT_ID)
     public Mono<Complaint> readById(@PathVariable String id ,Authentication authentication){
         return this.complaintService.readById(id,authentication);
