@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static com.mongodb.assertions.Assertions.*;
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ComplaintResource.COMPLAINTS;
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ComplaintResource.SEARCH;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ComplaintResource.*;
 
 @RestTestConfig
 class ComplaintResourceIT {
