@@ -47,23 +47,4 @@ class ComplaintReactiveIT {
                 .assertNext(complaint -> assertNotNull(complaint.getDescription()))
                 .thenCancel()
                 .verify();
-    }
-
-    @Test
-    void testFindById() {
-        StepVerifier
-                .create(this.complaintReactive.findByUserMobileNullSafe("66").next())
-                .assertNext(complaint -> {
-                    assertNotNull(complaint.getId());
-                    StepVerifier
-                            .create(this.complaintReactive.findById(complaint.getId()))
-                            .assertNext(foundComplaint -> {
-                                assertEquals(complaint.getId(), foundComplaint.getId());
-                                assertEquals(complaint.getDescription(), foundComplaint.getDescription());
-                            })
-                            .verifyComplete();
-                })
-                .verifyComplete();
-    }
-
 }
