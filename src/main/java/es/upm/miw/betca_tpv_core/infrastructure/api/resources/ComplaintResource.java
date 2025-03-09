@@ -30,7 +30,7 @@ public class ComplaintResource {
     @PreAuthorize("permitAll()")
     @GetMapping(COMPLAINT_ID)
     public Mono<Complaint> read(@PathVariable String id ,Authentication authentication){
-        return this.complaintService.read(id,authentication);
+        return this.complaintService.readById(id,authentication);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or #userMobile == authentication.principal")

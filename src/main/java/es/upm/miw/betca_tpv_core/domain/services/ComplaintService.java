@@ -27,7 +27,7 @@ public class ComplaintService {
         this.complaintPersistence=complaintPersistence;
     }
 
-    public Mono<Complaint> read(String id, Authentication authentication) {
+    public Mono<Complaint> readById(String id, Authentication authentication) {
 
         Set<String> PRIVILEGED_ROLES = Arrays.stream(PrivilegedRoles.values())
                 .map(Enum::name)
@@ -37,7 +37,7 @@ public class ComplaintService {
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch(PRIVILEGED_ROLES::contains);
 
-        return this.complaintPersistence.read(id)
+        return this.complaintPersistence.readById(id)
                 .filter(complaint -> ( hasPriviligedRoles
                         || complaint.getUserMobile().equals(authentication.getPrincipal()))
                 )

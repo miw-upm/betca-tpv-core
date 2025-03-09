@@ -11,5 +11,5 @@ public interface ComplaintPersistence {
 
     Flux<Complaint> findByUserMobileNullSafe(String userMobile);
 
-    Mono<Complaint> read(String id);
+    Mono<Complaint> readById(String id);
 }
