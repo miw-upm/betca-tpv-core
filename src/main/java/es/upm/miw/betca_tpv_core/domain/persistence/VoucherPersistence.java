@@ -6,6 +6,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Repository
 public interface VoucherPersistence {
@@ -14,5 +15,9 @@ public interface VoucherPersistence {
 
     Mono<Voucher> readByReference(String reference);
 
+    Mono<Voucher> update(String reference, Voucher voucher);
+
     Flux<Voucher> findByReferenceAndValueNullSafe(String reference, BigDecimal value);
+
+    Flux<Voucher> findVouchersWithFilters(LocalDateTime startDate, LocalDateTime endDate, Boolean consumed);
 }

@@ -10,6 +10,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -33,17 +35,12 @@ public class VoucherEntity {
     private User user;
 
     public VoucherEntity(Voucher voucher) {
-        voucher.setReference(UUID.randomUUID().toString());
         BeanUtils.copyProperties(voucher, this);
     }
 
     public Voucher toVoucher(){
-        return Voucher.builder()
-                .reference(UUID.randomUUID().toString())
-                .value(value)
-                .creationDate(creationDate)
-                .dateOfUse(dateOfUse)
-                .user(user)
-                .build();
+        Voucher voucher = new Voucher();
+        BeanUtils.copyProperties(this, voucher);
+        return voucher;
     }
 }

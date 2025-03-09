@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_core.domain.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import es.upm.miw.betca_tpv_core.domain.model.validations.PositiveBigDecimal;
+import es.upm.miw.betca_tpv_core.domain.services.utils.UUIDBase64;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,6 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -34,9 +34,7 @@ public class Voucher {
     private User user;
 
     public void doDefault(){
-        if (Objects.isNull(reference)) {
-            this.reference = UUID.randomUUID().toString();
-        }
+        this.reference = UUIDBase64.URL.encode();
         if (Objects.isNull(creationDate)) {
             this.creationDate = LocalDateTime.now();
         }
@@ -44,7 +42,7 @@ public class Voucher {
             this.value = BigDecimal.valueOf(60);
         }
         if (Objects.isNull(user)) {
-            this.user = new User();
+            this.user = User.builder().mobile("666666000").build();
         }
     }
 }

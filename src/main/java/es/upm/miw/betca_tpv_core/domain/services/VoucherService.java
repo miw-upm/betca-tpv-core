@@ -1,15 +1,18 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.exceptions.BadRequestException;
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Voucher;
 import es.upm.miw.betca_tpv_core.domain.persistence.VoucherPersistence;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
+import es.upm.miw.betca_tpv_core.domain.services.utils.PdfVoucherBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Service
 public class VoucherService {
@@ -32,6 +35,10 @@ public class VoucherService {
         return this.voucherPersistence.readByReference(reference);
     }
 
+    public Mono<Voucher> update(String reference, Voucher voucher) {
+        return this.voucherPersistence.update(reference, voucher);
+    }
+
     private Mono<Void> verifyUserExistsByMobile(String userMobile) {
         return userMicroservice.readByMobile(userMobile)
                 .onErrorResume(BadRequestException.class, Mono::error)
@@ -40,5 +47,16 @@ public class VoucherService {
 
     public Flux<Voucher> findByReferenceAndValueNullSafe(String reference, BigDecimal value) {
         return this.voucherPersistence.findByReferenceAndValueNullSafe(reference, value);
+    }
+
+    public Flux<Voucher> findVouchersWithFilters(LocalDateTime startDate, LocalDateTime endDate, Boolean consumed){
+        return this.voucherPersistence.findVouchersWithFilters(startDate, endDate, consumed);
+    }
+
+    public Mono<byte[]> readPdf(String reference) {
+        return this.voucherPersistence.readByReference(reference)
+                .switchIfEmpty(Mono.error(new NotFoundException("Voucher not found with reference: " + reference)))
+                .map(new PdfVoucherBuilder()::generateVoucher);
+
     }
 }

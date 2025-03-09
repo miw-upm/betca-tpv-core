@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
 
+import static java.math.BigDecimal.TEN;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
@@ -42,17 +43,17 @@ public class VoucherPersistenceMongodbIT {
                 .verify();
     }
 
-    /*@Test
+    @Test
     void testReadByReference() {
         StepVerifier
-                .create(this.voucherPersistenceMongodb.readByReference("VOUCHER001"))
+                .create(this.voucherPersistenceMongodb.readByReference("MaDQasauQzq6musYPK_Dra"))
                 .expectNextMatches(returnVoucher -> {
-                    assertEquals("VOUCHER001", returnVoucher.getReference());
+                    assertEquals("MaDQasauQzq6musYPK_Dra", returnVoucher.getReference());
                     return true;
                 })
                 .expectComplete()
                 .verify();
-    }*/
+    }
 
     @Test
     void testReadByReferenceNotFound() {
@@ -62,17 +63,62 @@ public class VoucherPersistenceMongodbIT {
                 .verify();
     }
 
-    /*@Test
+    @Test
     void testFindByReferenceValueNullSafe() {
         StepVerifier
                 .create(this.voucherPersistenceMongodb.findByReferenceAndValueNullSafe(
-                        "a8ebf3a0-158a-4d77-91d8-709a9eb9fd40", null))
+                        "EkDQ6LauQzq6musYPK_Icg", null))
                 .expectNextMatches(voucher -> {
-                    assertEquals("a8ebf3a0-158a-4d77-91d8-709a9eb9fd40", voucher.getReference());
-                    assertEquals(new BigDecimal(50), voucher.getValue());
+                    assertEquals("EkDQ6LauQzq6musYPK_Icg", voucher.getReference());
+                    assertEquals(BigDecimal.valueOf(50.30), voucher.getValue());
                     return true;
                 })
                 .thenCancel()
                 .verify();
-    }*/
+    }
+    @Test
+    void testFindConsumed() {
+        StepVerifier
+                .create(this.voucherPersistenceMongodb.findVouchersWithFilters(
+                        null, null, true))
+                .expectNextMatches(voucher -> {
+                    assertNotNull(voucher.getDateOfUse());
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }
+
+    @Test
+    void testFindNotConsumedVouchers() {
+        StepVerifier
+                .create(this.voucherPersistenceMongodb.findVouchersWithFilters(
+                        null, null, false))
+                .expectNextMatches(voucher -> {
+                    assertNull(voucher.getDateOfUse());
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }
+
+    @Test
+    void testUpdate() {
+        User user = User.builder().mobile("123456789").firstName("Martxel").build();
+        Voucher voucher = Voucher.builder()
+                .reference("PeDQ6LauQzq6musYPK_Ven")
+                .value(TEN)
+                .creationDate(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10))
+                .dateOfUse(LocalDateTime.now())
+                .user(user)
+                .build();
+        StepVerifier
+                .create(this.voucherPersistenceMongodb.update("PeDQ6LauQzq6musYPK_Ven", voucher))
+                .expectNextMatches(returnVoucher -> {
+                    assertNotNull(returnVoucher);
+                    assertEquals(TEN, returnVoucher.getValue());
+                    return true;
+                })
+                .verifyComplete();
+    }
 }

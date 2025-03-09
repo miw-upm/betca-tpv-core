@@ -49,4 +49,16 @@ class ArticleReactiveIT {
                 .verify();
 
     }
+
+    @Test
+    void testFindByDiscontinuedIsFalse(){
+        StepVerifier
+                .create(this.articleReactive.findByDiscontinuedIsFalse())
+                .expectNextMatches(article -> {
+                    assertFalse(article.getDiscontinued());
+                    return true;
+                })
+                .thenCancel()
+                .verify();
+    }
 }
