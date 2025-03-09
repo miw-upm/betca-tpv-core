@@ -29,7 +29,7 @@ public class ComplaintResource {
 
     @PreAuthorize("permitAll()")
     @GetMapping(COMPLAINT_ID)
-    public Mono<Complaint> read(@PathVariable String id ,Authentication authentication){
+    public Mono<Complaint> readById(@PathVariable String id ,Authentication authentication){
         return this.complaintService.readById(id,authentication);
     }
 
