@@ -15,7 +15,8 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CustomerPoints {
+public class
+CustomerPoints {
 
     @NotNull
     private Integer value;
