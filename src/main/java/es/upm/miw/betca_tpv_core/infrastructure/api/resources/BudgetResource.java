@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Rest
@@ -14,6 +15,7 @@ import reactor.core.publisher.Mono;
 public class BudgetResource {
     public static final String BUDGETS = "/budgets";
     public static final String BUDGET_ID = "/{id}";
+    public static final String BUDGET_SEARCH = "/search";
 
     @Autowired
     IBudgetService budgetService;
@@ -38,6 +40,11 @@ public class BudgetResource {
     @PutMapping(BUDGET_ID)
     public Mono<Budget> update(@PathVariable String id, @Valid @RequestBody Budget budget) {
         return this.budgetService.update(id, budget);
+    }
+
+    @GetMapping(BUDGET_SEARCH)
+    public Flux<Budget> findByReferenceLike(@RequestParam String reference) {
+        return this.budgetService.findByReferenceLike(reference);
     }
 
 }

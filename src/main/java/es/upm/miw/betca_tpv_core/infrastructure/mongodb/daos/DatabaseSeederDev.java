@@ -269,7 +269,10 @@ public class DatabaseSeederDev {
         BudgetEntity[] budgets = {
                 BudgetEntity.builder().id("1").reference("1").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
                 BudgetEntity.builder().id("2").reference("2").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
-                BudgetEntity.builder().id("3").reference("3").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build()
+                BudgetEntity.builder().id("3").reference("3").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
+                BudgetEntity.builder().id("4").reference("2323558888").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
+                BudgetEntity.builder().id("5").reference("8323558811").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
+                BudgetEntity.builder().id("6").reference("2323553433").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build()
         };
 
 

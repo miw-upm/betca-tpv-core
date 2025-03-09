@@ -8,6 +8,7 @@ import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
@@ -15,11 +16,11 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.BudgetResource.BUDGETS;
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.BudgetResource.BUDGET_ID;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.BudgetResource.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @RestTestConfig
 public class BudgetResourceIT {
@@ -158,8 +159,27 @@ public class BudgetResourceIT {
                     assertNotNull(returnBudget.getCreationDate());
                     assertEquals(1, returnBudget.getShoppingList().size());
                 });
+    }
 
-
-
+    @Test
+    void testSearch() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(BUDGETS + BUDGET_SEARCH + "?reference=55")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Budget.class)
+                .hasSize(3)
+                .value(budgets -> {
+                    List<String> references = budgets.stream()
+                            .map(Budget::getReference)
+                            .toList();
+                    assertTrue(references.stream()
+                            .anyMatch(reference -> reference.equals("2323558888")));
+                    assertTrue(references.stream()
+                            .anyMatch(reference -> reference.equals("8323558811")));
+                    assertTrue(references.stream()
+                            .anyMatch(reference -> reference.equals("2323553433")));
+                });
     }
 }
