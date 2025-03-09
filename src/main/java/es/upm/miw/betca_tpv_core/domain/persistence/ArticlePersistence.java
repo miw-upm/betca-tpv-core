@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.domain.persistence;
 
 import es.upm.miw.betca_tpv_core.domain.model.Article;
+import es.upm.miw.betca_tpv_core.domain.model.Provider;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -22,4 +23,6 @@ public interface ArticlePersistence {
     Mono<Article> readAndWriteStockByBarcodeAssured(String barcode, Integer stockIncrement);
 
     Flux<String> findByBarcodeAndNotDiscontinuedNullField(String barcode);
+
+    Flux<Article> findByProviderCompany(String company);
 }
