@@ -8,16 +8,12 @@ import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.BudgetReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.BudgetEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ShoppingEntity;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 public class BudgetPersistenceMongodb implements BudgetPersistence {
@@ -96,5 +92,11 @@ public class BudgetPersistenceMongodb implements BudgetPersistence {
     @Override
     public Mono<Void> deleteById(String id) {
         return this.budgetReactive.deleteById(id);
+    }
+
+    @Override
+    public Flux<Budget> findByReferenceLike(String reference) {
+        return this.budgetReactive.findByReferenceLike(reference)
+                .map(BudgetEntity::toBudget);
     }
 }
