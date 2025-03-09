@@ -135,13 +135,25 @@ class ComplaintResourceIT {
     }
 
     @Test
-    void testReadById_WhenUserIsNotOwnerOfComplaint(){
+    void testReadById_WhenCustomerIsNotOwnerOfComplaint(){
         this.restClientTestService.loginCustomer(webTestClient)
                 .get()
                 .uri(COMPLAINTS+"/frieourfncw0")
                 .exchange()
                 .expectStatus()
                 .isForbidden();
+    }
+
+    @Test
+    void testReadById_WhenCustomerIsOwnerOfComplaint(){
+        this.restClientTestService.loginCustomer(webTestClient)
+                .get()
+                .uri(COMPLAINTS+"/dfun8ecm9cd")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Complaint.class)
+                .value(Assertions::assertNotNull)
+                .value(complaint -> assertEquals("Éxito en readById","66", complaint.getUserMobile().toString()));
     }
 
     @Test
