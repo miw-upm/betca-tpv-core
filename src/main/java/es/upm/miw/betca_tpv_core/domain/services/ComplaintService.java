@@ -27,6 +27,9 @@ public class ComplaintService {
         this.complaintPersistence=complaintPersistence;
     }
 
+    public Mono<Complaint> create(Complaint complaint){
+        return this.complaintPersistence.create(complaint);
+    }
     public Mono<Complaint> readById(String id, Authentication authentication) {
 
         Set<String> PRIVILEGED_ROLES = Arrays.stream(PrivilegedRoles.values())
