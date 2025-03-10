@@ -7,10 +7,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -27,12 +24,14 @@ public class ComplaintResource {
         this.complaintService=complaintService;
     }
 
+    public Mono<Complaint> create(@RequestBody Complaint complaint){
+        return this.complaintService.create(complaint);
+    }
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','CUSTOMER','OPERATOR')")
     @GetMapping(COMPLAINT_ID)
     public Mono<Complaint> readById(@PathVariable String id ,Authentication authentication){
         return this.complaintService.readById(id,authentication);
     }
-
     @PreAuthorize("hasRole('ROLE_ADMIN') or #userMobile == authentication.principal")
     @GetMapping(SEARCH)
     public Flux<Complaint> findByUserMobileNullSafe(@RequestParam(required = false) String userMobile){
