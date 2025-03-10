@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+
 @Service
 public class OrderService {
 
@@ -17,6 +19,7 @@ public class OrderService {
     }
 
     public Mono<Order> create(Order order) {
+        order.setOpeningDate(LocalDateTime.now());
         return this.orderPersistence.create(order);
     }
 

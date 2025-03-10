@@ -30,7 +30,6 @@ public class OrderEntity {
     private String description;
     private LocalDateTime openingDate;
     private LocalDateTime closingDate;
-    @DBRef
     private List<OrderLineEntity> orderLineEntities;
 
     public OrderEntity(Order order, List<OrderLineEntity> orderLineEntities) {
