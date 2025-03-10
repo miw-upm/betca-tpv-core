@@ -28,4 +28,6 @@ public interface ArticleReactive extends ReactiveMongoRepository<ArticleEntity, 
             + "{discontinued : false}"
             + "] }")
     Flux<ArticleEntity> findByBarcodeLikeAndNotDiscontinuedNullSafe(String barcode);
+
+    Flux<ArticleEntity> findByDiscontinuedIsFalse();
 }

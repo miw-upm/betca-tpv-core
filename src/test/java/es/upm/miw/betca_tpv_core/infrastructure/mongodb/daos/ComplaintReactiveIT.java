@@ -41,7 +41,7 @@ class ComplaintReactiveIT {
     }
 
     @Test
-    void testFindByUserMobileNullSafe_NullMobile(){
+    void testFindByUserMobileNullSafe_NullMobile() {
         StepVerifier
                 .create(this.complaintReactive.findByUserMobileNullSafe(null))
                 .assertNext(complaint -> assertNotNull(complaint.getDescription()))

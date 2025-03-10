@@ -226,7 +226,7 @@ public class DatabaseSeederDev {
         };
         this.rgpdDao.saveAll(Arrays.asList(rgpdList));
         log.warn("        ------- data-protection-rgpd");
-        
+
         LocalDateTime dateOfferCreation = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
         LocalDateTime dateOfferExpiry = LocalDateTime.of(2020, Month.JANUARY, 12, 10, 10);
         OfferEntity[] offers = {
@@ -266,13 +266,17 @@ public class DatabaseSeederDev {
                 InvoiceEntity.builder().id("4").identity(20254).baseTax(new BigDecimal("16.3")).taxValue(new BigDecimal("15"))
                         .ticketId("5fa45f6f3a61083cb241289c").userMobile("666666002").creationDate(LocalDateTime.now()).build(),
         };
-                this.invoiceDao.saveAll(Arrays.asList(invoice));
+        this.invoiceDao.saveAll(Arrays.asList(invoice));
         LogManager.getLogger(this.getClass()).warn("        ------- invoices");
 
         LocalDateTime budgetCreationDate = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
         BudgetEntity[] budgets = {
-            BudgetEntity.builder().id("1").reference("1").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
-            BudgetEntity.builder().id("2").reference("2").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build()
+                BudgetEntity.builder().id("1").reference("1").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
+                BudgetEntity.builder().id("2").reference("2").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
+                BudgetEntity.builder().id("3").reference("3").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
+                BudgetEntity.builder().id("4").reference("2323558888").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
+                BudgetEntity.builder().id("5").reference("8323558811").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
+                BudgetEntity.builder().id("6").reference("2323553433").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build()
         };
 
 
@@ -280,10 +284,14 @@ public class DatabaseSeederDev {
         log.warn("        ------- budgets");
 
         LocalDateTime creationDate = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
+        LocalDateTime todayDate = LocalDateTime.of(2025, Month.MARCH, 8, 9, 30);
         VoucherEntity[] vouchers = {
                 VoucherEntity.builder().reference("EkDQ6LauQzq6musYPK_Icg").value(BigDecimal.valueOf(50.30)).creationDate(creationDate).dateOfUse(null).user(User.builder().mobile("666666000").build()).build(),
                 VoucherEntity.builder().reference("MaDQasauQzq6musYPK_Dra").value(BigDecimal.valueOf(30.15)).creationDate(creationDate).dateOfUse(creationDate.plusDays(10)).user(User.builder().mobile("666666000").build()).build(),
-                VoucherEntity.builder().reference("PeDQ6LauQzq6musYPK_Ven").value(BigDecimal.valueOf(99.99)).creationDate(creationDate).dateOfUse(null).user(User.builder().mobile("666666000").build()).build()
+                VoucherEntity.builder().reference("PeDQ6LauQzq6musYPK_Ven").value(BigDecimal.valueOf(99.99)).creationDate(creationDate).dateOfUse(null).user(User.builder().mobile("666666000").build()).build(),
+                VoucherEntity.builder().reference("AlDQ6PauQzq6musYPK_Ven").value(BigDecimal.valueOf(24.05)).creationDate(todayDate.plusDays(10)).dateOfUse(null).user(User.builder().mobile("666666000").build()).build(),
+                VoucherEntity.builder().reference("JuDQ6NaiQzq6musYPK_Ven").value(BigDecimal.valueOf(9.9)).creationDate(todayDate.plusDays(20)).dateOfUse(null).user(User.builder().mobile("666666000").build()).build(),
+                VoucherEntity.builder().reference("MaDQ6FerQzq6musYPK_Ven").value(BigDecimal.valueOf(135.99)).creationDate(todayDate.plusDays(25)).dateOfUse(todayDate.plusDays(30)).user(User.builder().mobile("666666000").build()).build()
         };
 
         this.voucherDao.saveAll(Arrays.asList(vouchers));
@@ -322,9 +330,10 @@ public class DatabaseSeederDev {
             LocalDateTime dateComplaintCreationArticle1 = LocalDateTime.of(2021, Month.JANUARY, 1, 20, 56);
             LocalDateTime dateComplaintCreationArticle2 = LocalDateTime.of(2022, Month.MAY, 31, 1, 34);
             LocalDateTime dateComplaintCreationArticle3 = LocalDateTime.of(2021, Month.JULY, 15, 10, 4);
+            LocalDateTime dateComplaintCreationArticle4 = LocalDateTime.of(2022, Month.AUGUST, 15, 10, 4);
 
             ComplaintEntity[] complaints = {
-                    ComplaintEntity.builder().description("Queja aleatoria").reply("")
+                    ComplaintEntity.builder().id("dfun8ecm9cd").description("Queja aleatoria").reply("")
                             .article(articles[0]).registrationDate(dateComplaintCreationArticle1).state(ComplaintState.OPEN)
                             .registrationDate(dateComplaintCreationArticle1).userMobile("66").build(),
                     ComplaintEntity.builder().description("Queja MIW").reply("Respuesta MIW").state(ComplaintState.CLOSED)
@@ -333,6 +342,12 @@ public class DatabaseSeederDev {
                     ComplaintEntity.builder().description("Queja Grado").reply("").state(ComplaintState.OPEN)
                             .article(articles[2]).registrationDate(dateComplaintCreationArticle3)
                             .userMobile("66").build(),
+                    ComplaintEntity.builder().description("Queja Asignatura").reply("Solucionado").state(ComplaintState.CLOSED)
+                            .article(articles[2]).registrationDate(dateComplaintCreationArticle4)
+                            .userMobile("666666005").build(),
+                    ComplaintEntity.builder().id("frieourfncw0").description("Queja articulo").reply("").state(ComplaintState.OPEN)
+                            .article(articles[1]).registrationDate(dateComplaintCreationArticle1)
+                            .userMobile("666666005").build(),
             };
             this.complaintDao.saveAll(Arrays.asList(complaints));
             log.warn("        ------- complaints");

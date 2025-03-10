@@ -28,7 +28,6 @@ public class VoucherEntity {
     private String id;
     @Indexed(unique = true)
     private String reference;
-    @Field(targetType = FieldType.DECIMAL128)
     private BigDecimal value;
     private LocalDateTime creationDate;
     private LocalDateTime dateOfUse;

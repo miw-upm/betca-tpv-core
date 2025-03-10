@@ -12,6 +12,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 @Repository
 public class VoucherPersistenceMongodb implements VoucherPersistence {
@@ -55,5 +58,27 @@ public class VoucherPersistenceMongodb implements VoucherPersistence {
     public Flux<Voucher> findByReferenceAndValueNullSafe(String reference, BigDecimal value) {
         return this.voucherReactive.findByReferenceAndValueNullSafe(reference,value)
                 .map(VoucherEntity::toVoucher);
+    }
+
+    @Override
+    public Flux<Voucher> findVouchersWithFilters(LocalDateTime startDate, LocalDateTime endDate, Boolean consumed) {
+
+        if (startDate != null && endDate != null) {
+            if (consumed) {
+                return voucherReactive.findConsumedVouchersByDateRange(startDate, endDate)
+                        .map(VoucherEntity::toVoucher);
+            } else {
+                return voucherReactive.findNonConsumedVouchersByDateRange(startDate, endDate)
+                        .map(VoucherEntity::toVoucher);
+            }
+        } else {
+            if (consumed) {
+                return voucherReactive.findConsumedVouchers()
+                        .map(VoucherEntity::toVoucher);
+            } else {
+                return voucherReactive.findNonConsumedVouchers()
+                        .map(VoucherEntity::toVoucher);
+            }
+        }
     }
 }

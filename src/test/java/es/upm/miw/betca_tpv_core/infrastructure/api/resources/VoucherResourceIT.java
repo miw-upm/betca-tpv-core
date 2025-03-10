@@ -81,13 +81,27 @@ public class VoucherResourceIT {
                 .expectStatus().isNotFound();
     }
 
-    @Test
+    /*@Test
     void testFindByReferenceAndValueNullSafe() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path(VOUCHERS + SEARCH)
                         .queryParam("reference", "EkDQ6LauQzq6musYPK_Icg")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Voucher.class)
+                .value(Assertions::assertNotNull);
+    }*/
+
+    @Test
+    void testFindWithFilters() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(VOUCHERS + SEARCH)
+                        .queryParam("consumed", "true")
                         .build())
                 .exchange()
                 .expectStatus().isOk()

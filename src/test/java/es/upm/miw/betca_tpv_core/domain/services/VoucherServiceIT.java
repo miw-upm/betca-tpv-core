@@ -98,6 +98,15 @@ public class VoucherServiceIT {
     }
 
     @Test
+    void testFindVouchersWithFilters(){
+
+        StepVerifier.create(voucherService.findVouchersWithFilters(null, null, true))
+                .expectNextMatches(voucher -> voucher.getDateOfUse()!=null)
+                .thenCancel()
+                .verify();
+    }
+
+    @Test
     void testReadByReferenceNotFRound() {
         StepVerifier
                 .create(this.voucherService.read("badreference"))
