@@ -9,6 +9,8 @@ import reactor.core.publisher.Mono;
 public interface ArticleReactive extends ReactiveMongoRepository<ArticleEntity, String> {
     Mono<ArticleEntity> findByBarcode(String barcode);
 
+    Flux<ArticleEntity> findByProviderEntityId(String providerEntityId);
+
     @Query("{$and:[" // allow NULL: all elements
             + "?#{ [0] == null ? {_id : {$ne:null}} : { barcode : {$regex:[0], $options: 'i'} } },"
             + "?#{ [1] == null ? {_id : {$ne:null}} : { description : {$regex:[1], $options: 'i'} } },"

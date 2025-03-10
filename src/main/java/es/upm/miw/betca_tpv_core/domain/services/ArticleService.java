@@ -50,4 +50,8 @@ public class ArticleService {
     public Flux<String> findByBarcodeAndNotDiscontinuedNullSafe(String barcode) {
         return this.articlePersistence.findByBarcodeAndNotDiscontinuedNullField(barcode);
     }
+
+    public Flux<Article> findByProviderCompany(String company) {
+        return this.articlePersistence.findByProviderCompany(company);
+    }   
 }
