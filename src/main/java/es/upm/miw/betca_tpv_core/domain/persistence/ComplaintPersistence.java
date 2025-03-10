@@ -8,6 +8,7 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface ComplaintPersistence {
+    Mono<Complaint> create(Complaint complaint);
 
     Flux<Complaint> findByUserMobileNullSafe(String userMobile);
 

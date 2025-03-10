@@ -22,6 +22,12 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
     public ComplaintPersistenceMongodb(ComplaintReactive complaintReactive){
         this.complaintReactive=complaintReactive;
     }
+
+    @Override
+    public Mono<Complaint> create(Complaint complaint) {
+        return this.complaintReactive.create(complaint);
+    }
+
     @Override
     public Flux<Complaint> findByUserMobileNullSafe(String userMobile) {
         return complaintReactive.findByUserMobileNullSafe(userMobile).map(ComplaintEntity::toComplaint);
