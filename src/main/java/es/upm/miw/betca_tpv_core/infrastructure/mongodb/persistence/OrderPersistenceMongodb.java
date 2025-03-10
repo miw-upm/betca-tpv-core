@@ -58,6 +58,14 @@ public class OrderPersistenceMongodb implements OrderPersistence {
                 .switchIfEmpty(Mono.error(new NotFoundException("Non existent Order reference: " + reference)))
                 .flatMap(existingOrderEntity -> {
                     existingOrderEntity.setClosingDate(LocalDateTime.now());
+                    List<OrderLineEntity> orderLineEntities = order.getOrderLinesList().stream()
+                            .map(orderLine -> {
+                                OrderLineEntity orderLineEntity = new OrderLineEntity();
+                                BeanUtils.copyProperties(orderLine, orderLineEntity);
+                                return orderLineEntity;
+                            })
+                            .toList();
+                    existingOrderEntity.setOrderLineEntities(orderLineEntities);
                     return this.orderReactive.save(existingOrderEntity);
                 })
                 .map(OrderEntity::toOrder);
