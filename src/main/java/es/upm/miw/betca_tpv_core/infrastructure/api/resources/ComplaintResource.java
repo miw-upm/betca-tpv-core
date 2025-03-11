@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_core.domain.services.ComplaintService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintCreationDto;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -27,7 +28,7 @@ public class ComplaintResource {
 
     @PreAuthorize("hasRole('CUSTOMER') and #complaintCreationDto.userMobile == authentication.principal")
     @PostMapping(produces = {"application/json"})
-    public Mono<Complaint> create(@RequestBody ComplaintCreationDto complaintCreationDto){
+    public Mono<Complaint> create(@Valid @RequestBody ComplaintCreationDto complaintCreationDto){
         return this.complaintService.create(complaintCreationDto.toComplaint());
     }
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','CUSTOMER','OPERATOR')")
