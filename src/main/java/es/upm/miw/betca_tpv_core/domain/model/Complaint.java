@@ -38,9 +38,4 @@ public class Complaint {
     @NotBlank
     private String state;
 
-    public ComplaintCreationDto toCreationDto(){
-        ComplaintCreationDto complaintCreationDto = new ComplaintCreationDto();
-        BeanUtils.copyProperties(this,complaintCreationDto);
-        return complaintCreationDto;
-    }
 }

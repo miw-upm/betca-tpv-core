@@ -28,8 +28,7 @@ public class ComplaintResource {
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','CUSTOMER','OPERATOR')")
     @PostMapping(produces = {"application/json"})
     public Mono<Complaint> create(@RequestBody ComplaintCreationDto complaintCreationDto){
-        return this.complaintService.create(complaintCreationDto.toComplaint())
-                .map(Complaint::);
+        return this.complaintService.create(complaintCreationDto.toComplaint());
     }
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','CUSTOMER','OPERATOR')")
     @GetMapping(COMPLAINT_ID)
