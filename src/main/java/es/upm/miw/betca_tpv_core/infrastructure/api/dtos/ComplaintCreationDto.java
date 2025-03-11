@@ -19,14 +19,14 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ComplaintCreationDto {
 
-    @NotBlank
-    @NotNull
+    @NotBlank(message = "Barcode is required")
+    @NotNull(message = "Barcode is required")
     private String barcode;
-    @NotBlank
-    @NotNull
+    @NotBlank(message = "Description is required")
+    @NotNull(message = "Description is required")
     private String description;
-    @NotNull
-    @NotBlank
+    @NotNull(message = "UserMobile is required")
+    @NotBlank(message = "UserMobile is required")
     private String userMobile;
 
     public Complaint toComplaint(){
