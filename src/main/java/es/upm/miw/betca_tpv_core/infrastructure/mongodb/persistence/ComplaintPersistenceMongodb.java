@@ -9,6 +9,7 @@ import es.upm.miw.betca_tpv_core.domain.persistence.ComplaintPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ComplaintReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ComplaintEntity;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ComplaintState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
                 .switchIfEmpty(Mono.error(new NotFoundException("The article does not exist with the barcode provided.")))
                 .map(articleEntity -> {
                     complaintEntity.setArticle(articleEntity);
+                    complaintEntity.setState(ComplaintState.OPEN);
                     return complaintEntity;
                 })
                 .flatMap(this.complaintReactive::save)
