@@ -25,7 +25,7 @@ public class ComplaintResource {
         this.complaintService=complaintService;
     }
 
-    @PreAuthorize("hasRole('CUSTOMER') and #userMobile == authentication.principal")
+    @PreAuthorize("hasRole('CUSTOMER') and #complaintCreationDto.userMobile == authentication.principal")
     @PostMapping(produces = {"application/json"})
     public Mono<Complaint> create(@RequestBody ComplaintCreationDto complaintCreationDto){
         return this.complaintService.create(complaintCreationDto.toComplaint());
