@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
 import es.upm.miw.betca_tpv_core.domain.services.ComplaintService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintCreationDto;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,8 +27,9 @@ public class ComplaintResource {
 
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','CUSTOMER','OPERATOR')")
     @PostMapping(produces = {"application/json"})
-    public Mono<Complaint> create(@RequestBody Complaint complaint){
-        return this.complaintService.create(complaint);
+    public Mono<Complaint> create(@RequestBody ComplaintCreationDto complaintCreationDto){
+        return this.complaintService.create(complaintCreationDto.toComplaint())
+                .map(Complaint::);
     }
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','CUSTOMER','OPERATOR')")
     @GetMapping(COMPLAINT_ID)
