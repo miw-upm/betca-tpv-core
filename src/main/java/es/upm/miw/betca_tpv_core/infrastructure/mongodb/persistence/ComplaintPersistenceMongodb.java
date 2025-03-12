@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 import com.fasterxml.jackson.databind.util.BeanUtil;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ForbiddenException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
+import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
 import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.persistence.ComplaintPersistence;
@@ -60,7 +61,15 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
 
     @Override
     public Mono<Complaint> findByUserMobileAndBarcode(String userMobile, String barcode) {
-        return this.complaintReactive.findByUserMobileAndBarcode(userMobile,barcode)
-                .map(ComplaintEntity::toComplaint);
+        return  this.articleReactive.findByBarcode(complaint.getBarcode())
+                .switchIfEmpty(Mono.error(new NotFoundException("The article does not exist with the barcode provided.")))
+                .map(articleEntity -> {
+                    complaintEntity.setArticle(articleEntity);
+                    complaintEntity.setState(ComplaintState.OPEN);
+                    return this.complaintReactive.findByUserMobileAndArticle(userMobile,articleEntity)
+                            .map(ComplaintEntity::toComplaint);
+                });
+
     }
+
 }
