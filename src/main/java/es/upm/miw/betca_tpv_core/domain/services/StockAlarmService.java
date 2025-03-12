@@ -3,8 +3,10 @@ package es.upm.miw.betca_tpv_core.domain.services;
 import es.upm.miw.betca_tpv_core.domain.model.StockAlarm;
 import es.upm.miw.betca_tpv_core.domain.persistence.StockAlarmPersistence;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+@Service
 public class StockAlarmService {
 
     private final StockAlarmPersistence stockAlarmPersistence;
