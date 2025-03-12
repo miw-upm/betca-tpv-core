@@ -34,6 +34,8 @@ public class DatabaseSeederDev {
     private final VoucherDao voucherDao;
     private final StockAuditDao stockAuditDao;
     private final ComplaintDao complaintDao;
+    private final OrderDao orderDao;
+    private final StockAlarmDao stockAlarmDao;
 
     private final DatabaseStarting databaseStarting;
 
@@ -52,7 +54,9 @@ public class DatabaseSeederDev {
             BudgetDao budgetDao,
             VoucherDao voucherDao,
             StockAuditDao stockAuditDao,
-            ComplaintDao complaintDao
+            ComplaintDao complaintDao,
+            OrderDao orderDao,
+            StockAlarmDao stockAlarmDao
     ) {
         this.articleDao = articleDao;
         this.providerDao = providerDao;
@@ -67,7 +71,9 @@ public class DatabaseSeederDev {
         this.budgetDao = budgetDao;
         this.voucherDao = voucherDao;
         this.stockAuditDao = stockAuditDao;
-        this.complaintDao =complaintDao;
+        this.complaintDao = complaintDao;
+        this.orderDao = orderDao;
+        this.stockAlarmDao = stockAlarmDao;
 
         this.deleteAllAndInitializeAndSeedDataBase();
     }
@@ -89,6 +95,8 @@ public class DatabaseSeederDev {
         this.budgetDao.deleteAll();
         this.voucherDao.deleteAll();
         this.stockAuditDao.deleteAll();
+        this.orderDao.deleteAll();
+        this.stockAlarmDao.deleteAll();
         log.warn("------- Delete All -----------");
         this.databaseStarting.initialize();
     }
@@ -353,6 +361,56 @@ public class DatabaseSeederDev {
 
         this.createStockAudits();
         log.warn("        ------- stockAudits");
+
+        LocalDateTime providerOrderOpeningDate1 = LocalDateTime.of(2020, Month.MARCH, 13, 22, 52);
+        LocalDateTime providerOrderOpeningDate2 = LocalDateTime.of(2022, Month.MAY, 12, 10, 36);
+
+        List<OrderLineEntity> orderLinesEntity1 = Arrays.asList(
+                new OrderLineEntity("barcode1", 1,null),
+                new OrderLineEntity("barcode2", 0, null)
+        );
+
+        List<OrderLineEntity> orderLinesEntity2 = Arrays.asList(
+                new OrderLineEntity("barcode3", 1,null),
+                new OrderLineEntity("barcode4", 4, null)
+        );
+
+        OrderEntity[] orders = {
+            OrderEntity.builder().id("65674521222")
+                    .reference("ref1")
+                    .description("desc1")
+                    .providerCompany("pro1")
+                    .openingDate(providerOrderOpeningDate1)
+                    .closingDate(null)
+                    .orderLineEntities(orderLinesEntity1).build(),
+            OrderEntity.builder().id("23123")
+                    .reference("ref2")
+                    .description("desc2")
+                    .providerCompany("pro2")
+                    .openingDate(providerOrderOpeningDate2)
+                    .closingDate(null)
+                    .orderLineEntities(orderLinesEntity2).build()
+        };
+
+
+        this.orderDao.saveAll(Arrays.asList(orders));
+        log.warn("        ------- providerOrders");
+
+        StockAlarmEntity[] stockAlarms = {
+                StockAlarmEntity.builder().name("Alarma1")
+                        .description("Descripcion 1")
+                        .warning(5)
+                        .critical(3)
+                        .build(),
+                StockAlarmEntity.builder().name("Alarma2")
+                        .description("Descripcion 2")
+                        .warning(8)
+                        .critical(5)
+                        .build(),
+        };
+
+        this.stockAlarmDao.saveAll(Arrays.asList(stockAlarms));
+        log.warn("        ------- stockAlarms");
 
     }
 
