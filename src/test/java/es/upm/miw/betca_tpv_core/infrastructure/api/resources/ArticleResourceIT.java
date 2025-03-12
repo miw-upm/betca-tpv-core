@@ -166,4 +166,21 @@ class ArticleResourceIT {
                         .allMatch(barcode -> barcode.contains("100"))
                 ));
     }
+
+    @Test
+    void testFindByProviderCompany() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(ARTICLES + SEARCH_PROVIDER_COMPANY)
+                        .queryParam("providerCompany", "pro1")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Article.class)
+                .value(Assertions::assertNotNull)
+                .value(articles ->
+                        assertTrue(articles
+                        .stream().allMatch(article -> article.getProviderCompany().toLowerCase().contains("pro1"))));
+    }
 }

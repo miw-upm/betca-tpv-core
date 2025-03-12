@@ -43,7 +43,7 @@ public class RestClientTestService {
     }
 
     public WebTestClient loginCustomer(WebTestClient webTestClient) {
-        return this.login(Role.OPERATOR, "66", "customer", webTestClient);
+        return this.login(Role.CUSTOMER, "66", "customer", webTestClient);
     }
 
     public void logout() {
