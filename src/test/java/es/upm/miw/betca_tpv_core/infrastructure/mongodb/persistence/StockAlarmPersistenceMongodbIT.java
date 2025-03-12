@@ -34,22 +34,11 @@ public class StockAlarmPersistenceMongodbIT {
 
     @Test
     void testCreateExistingName() {
-        StockAlarm stockAlarm = StockAlarm.builder()
-                .name("AlarmaDuplicada")
-                .description("Descripcion inicial")
-                .warning(5)
-                .critical(3)
-                .build();
-
-        StepVerifier
-                .create(this.stockAlarmPersistenceMongodb.create(stockAlarm)) // Primero, creamos la alarma
-                .expectNextCount(1) // Verificamos que se creó correctamente
-                .verifyComplete();
-
         StepVerifier
                 .create(this.stockAlarmPersistenceMongodb.create(
-                        StockAlarm.builder().name("AlarmaDuplicada").description("error").warning(7).critical(9).build())) // Segundo intento
-                .expectError(ConflictException.class) // Debe lanzar la excepción
+                        StockAlarm.builder().name("Alarma1").description("error")
+                                .warning(7).critical(9).build()))
+                .expectError(ConflictException.class)
                 .verify();
     }
 }
