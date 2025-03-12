@@ -57,4 +57,10 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
                 .switchIfEmpty(Mono.error(new NotFoundException("Non Existent Complaint id:"+id)))
                 .map(ComplaintEntity::toComplaint);
     }
+
+    @Override
+    public Mono<Complaint> findByUserMobileAndBarcode(String userMobile, String barcode) {
+        return this.complaintReactive.findByUserMobileAndBarcode(userMobile,barcode)
+                .map(ComplaintEntity::toComplaint);
+    }
 }

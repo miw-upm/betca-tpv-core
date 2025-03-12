@@ -8,7 +8,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface ComplaintReactive extends ReactiveMongoRepository<ComplaintEntity,String> {
-
+    Mono<ComplaintEntity> findByUserMobileAndBarcode(String userMobile,String barcode);
     @Query("{$and:["
             + "?#{ [0] == null ? {_id : {$ne:null}} : { userMobile : {$eq : [0]}  } },"
             + "] }")

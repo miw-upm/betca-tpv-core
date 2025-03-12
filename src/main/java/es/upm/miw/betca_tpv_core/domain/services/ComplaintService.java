@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
+import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ForbiddenException;
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
 import es.upm.miw.betca_tpv_core.domain.model.PrivilegedRoles;
@@ -28,7 +29,8 @@ public class ComplaintService {
     }
 
     public Mono<Complaint> create(Complaint complaint){
-        return this.complaintPersistence.create(complaint);
+        return this.assertComplaintWithBarcodeAndUserMobileNotExists(complaint.getUserMobile(),complaint.getBarcode())
+                .then(this.complaintPersistence.create(complaint));
     }
     public Mono<Complaint> readById(String id, Authentication authentication) {
 
@@ -51,4 +53,8 @@ public class ComplaintService {
         return this.complaintPersistence.findByUserMobileNullSafe(userMobile);
     }
 
+    private Mono<Void> assertComplaintWithBarcodeAndUserMobileNotExists(String userMobile,String barcode){
+        return this.complaintPersistence.findByUserMobileAndBarcode(userMobile,barcode)
+                .flatMap(complaint -> Mono.error(new ConflictException("There is already a complaint for the article and the user provided")));
+    }
 }
