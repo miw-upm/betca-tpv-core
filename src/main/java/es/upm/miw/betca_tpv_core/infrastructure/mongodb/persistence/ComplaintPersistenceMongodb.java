@@ -61,11 +61,9 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
 
     @Override
     public Mono<Complaint> findByUserMobileAndBarcode(String userMobile, String barcode) {
-        return  this.articleReactive.findByBarcode(complaint.getBarcode())
+        return  this.articleReactive.findByBarcode(barcode)
                 .switchIfEmpty(Mono.error(new NotFoundException("The article does not exist with the barcode provided.")))
-                .map(articleEntity -> {
-                    complaintEntity.setArticle(articleEntity);
-                    complaintEntity.setState(ComplaintState.OPEN);
+                .flatMap(articleEntity -> {
                     return this.complaintReactive.findByUserMobileAndArticle(userMobile,articleEntity)
                             .map(ComplaintEntity::toComplaint);
                 });
