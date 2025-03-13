@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ComplaintState;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,14 @@ class ComplaintPersistenceMongodbIT {
                 .create(this.complaintPersistenceMongodb.findByUserMobileNullSafe(null))
                 .assertNext(complaint -> assertNotNull(complaint.getDescription()))
                 .thenCancel()
+                .verify();
+    }
+
+    @Test
+    void testFindByUserMobileAndBarcode_NotExistsBarcode(){
+        StepVerifier
+                .create(this.complaintPersistenceMongodb.findByUserMobileAndBarcode("66","y"))
+                .expectError(NotFoundException.class)
                 .verify();
     }
 }
