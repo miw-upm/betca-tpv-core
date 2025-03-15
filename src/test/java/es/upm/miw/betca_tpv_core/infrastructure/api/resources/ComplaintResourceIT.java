@@ -183,10 +183,10 @@ class ComplaintResourceIT {
                 .value(Assertions::assertNotNull)
                 .value(complaint -> {
                     assertNotNull(complaint.getId());
-                    assertEquals("Nueva descripcion de test resource",complaint.getDescription());
-                    assertEquals("OPEN",complaint.getState());
-                    assertEquals("66",complaint.getUserMobile());
-                    assertEquals("8400000000100",complaint.getBarcode());
+                    assertEquals("","Nueva descripcion de test resource",complaint.getDescription());
+                    assertEquals("","OPEN",complaint.getState());
+                    assertEquals("","66",complaint.getUserMobile());
+                    assertEquals("","8400000000100",complaint.getBarcode());
                 });
     }
 
