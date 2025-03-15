@@ -38,14 +38,10 @@ public class ComplaintService {
         if(!complaint.getUserMobile().equals(authentication.getPrincipal())){
             return Mono.error(new ForbiddenException("You do not have permission to create a complaint for other user"));
         }
-        return this.userMicroservice.readByMobile(complaint.getUserMobile())
-                .switchIfEmpty(Mono.error(new NotFoundException("The user provided not exists")))
-                .then(
-                        this.articlePersistence.readByBarcode(complaint.getBarcode())
-                                .switchIfEmpty(Mono.error(new NotFoundException("The article provided not exists")))
-                                .then(this.assertComplaintWithBarcodeAndUserMobileNotExists(complaint.getUserMobile(),complaint.getBarcode())
-                                        .then(this.complaintPersistence.create(complaint)))
-                );
+        return this.articlePersistence.readByBarcode(complaint.getBarcode())
+                .switchIfEmpty(Mono.error(new NotFoundException("The article provided not exists")))
+                .then(this.assertComplaintWithBarcodeAndUserMobileNotExists(complaint.getUserMobile(),complaint.getBarcode())
+                                        .then(this.complaintPersistence.create(complaint)));
 
     }
     public Mono<Complaint> readById(String id, Authentication authentication) {
