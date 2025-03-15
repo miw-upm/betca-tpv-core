@@ -100,8 +100,8 @@ public class VoucherServiceIT {
     @Test
     void testFindVouchersWithFilters(){
 
-        StepVerifier.create(voucherService.findVouchersWithFilters(null, null, true))
-                .expectNextMatches(voucher -> voucher.getDateOfUse()!=null)
+        StepVerifier.create(voucherService.findByDateRangeAndConsumedNullSafe(null, null, false))
+                .expectNextMatches(voucher -> voucher.getDateOfUse()==null)
                 .thenCancel()
                 .verify();
     }

@@ -79,7 +79,7 @@ public class VoucherPersistenceMongodbIT {
     @Test
     void testFindConsumed() {
         StepVerifier
-                .create(this.voucherPersistenceMongodb.findVouchersWithFilters(
+                .create(this.voucherPersistenceMongodb.findByDateRangeAndConsumedNullSafe(
                         null, null, true))
                 .expectNextMatches(voucher -> {
                     assertNotNull(voucher.getDateOfUse());
@@ -92,7 +92,7 @@ public class VoucherPersistenceMongodbIT {
     @Test
     void testFindNotConsumedVouchers() {
         StepVerifier
-                .create(this.voucherPersistenceMongodb.findVouchersWithFilters(
+                .create(this.voucherPersistenceMongodb.findByDateRangeAndConsumedNullSafe(
                         null, null, false))
                 .expectNextMatches(voucher -> {
                     assertNull(voucher.getDateOfUse());
