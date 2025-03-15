@@ -61,24 +61,9 @@ public class VoucherPersistenceMongodb implements VoucherPersistence {
     }
 
     @Override
-    public Flux<Voucher> findVouchersWithFilters(LocalDateTime startDate, LocalDateTime endDate, Boolean consumed) {
+    public Flux<Voucher> findByDateRangeAndConsumedNullSafe(LocalDateTime startDate, LocalDateTime endDate, Boolean consumed) {
+        return voucherReactive.findByDateRangeAndConsumedNullSafe(startDate,endDate,consumed)
+                .map(VoucherEntity::toVoucher);
 
-        if (startDate != null && endDate != null) {
-            if (consumed) {
-                return voucherReactive.findConsumedVouchersByDateRange(startDate, endDate)
-                        .map(VoucherEntity::toVoucher);
-            } else {
-                return voucherReactive.findNonConsumedVouchersByDateRange(startDate, endDate)
-                        .map(VoucherEntity::toVoucher);
-            }
-        } else {
-            if (consumed) {
-                return voucherReactive.findConsumedVouchers()
-                        .map(VoucherEntity::toVoucher);
-            } else {
-                return voucherReactive.findNonConsumedVouchers()
-                        .map(VoucherEntity::toVoucher);
-            }
-        }
     }
 }

@@ -49,8 +49,8 @@ public class VoucherService {
         return this.voucherPersistence.findByReferenceAndValueNullSafe(reference, value);
     }
 
-    public Flux<Voucher> findVouchersWithFilters(LocalDateTime startDate, LocalDateTime endDate, Boolean consumed){
-        return this.voucherPersistence.findVouchersWithFilters(startDate, endDate, consumed);
+    public Flux<Voucher> findByDateRangeAndConsumedNullSafe(LocalDateTime startDate, LocalDateTime endDate, Boolean consumed){
+        return this.voucherPersistence.findByDateRangeAndConsumedNullSafe(startDate, endDate, consumed);
     }
 
     public Mono<byte[]> readPdf(String reference) {
