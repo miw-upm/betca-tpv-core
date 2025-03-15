@@ -170,7 +170,7 @@ class ComplaintResourceIT {
     }
 
     @Test
-    void testCreate_Successful(){
+    void testCreateComplaintResource_Successful(){
         ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
                 .barcode("8400000000100").userMobile("66").description("Nueva descripcion de test resource").build();
         this.restClientTestService.loginCustomer(webTestClient)
@@ -191,7 +191,7 @@ class ComplaintResourceIT {
     }
 
     @Test
-    void testCreate_ForbidenWhileTryingToCreateAComplainForOtherUser(){
+    void testCreateComplaintResource_ForbidenWhileTryingToCreateAComplainForOtherUser(){
         ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
                 .barcode("8400000000100")
                 .userMobile("666666005")
@@ -207,7 +207,7 @@ class ComplaintResourceIT {
     }
 
     @Test
-    void testCreate_NotAuthorizeAsOperator(){
+    void testCreateComplaintResource_NotAuthorizeAsOperator(){
         ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
                 .barcode("8400000000100").userMobile("666666005").description("Nueva descripcion de test resource").build();
         this.restClientTestService.loginOperator(webTestClient)
@@ -219,7 +219,7 @@ class ComplaintResourceIT {
                 .isUnauthorized();
     }
     @Test
-    void testCreate_NotAuthorizeAsOperator(){
+    void testCreateComplaintResource_NotAuthorizeAsOperator(){
         ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
                 .barcode("8400000000100").userMobile("666666005").description("Nueva descripcion de test resource").build();
         this.restClientTestService.loginOperator(webTestClient)
@@ -231,7 +231,7 @@ class ComplaintResourceIT {
                 .isUnauthorized();
     }
     @Test
-    void testCreate_NotAuthorizeAsAdmin(){
+    void testCreateComplaintResource_NotAuthorizeAsAdmin(){
         ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
                 .barcode("8400000000100").userMobile("666666005").description("Nueva descripcion de test resource").build();
         this.restClientTestService.loginAdmin(webTestClient)
@@ -243,7 +243,7 @@ class ComplaintResourceIT {
                 .isUnauthorized();
     }
     @Test
-    void testCreate_NotFoundBarcode(){
+    void testCreateComplaintResource_NotFoundBarcode(){
         ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
                 .barcode("fr8h3nif4hu8n ru8eucn938cj3")
                 .userMobile("66")
@@ -258,9 +258,9 @@ class ComplaintResourceIT {
                 .isNotFound();
     }
     @Test
-    void testCreate_AlreadyExistsComplaintWith(){
+    void testCreateComplaintResource_AlreadyExistsComplaintWith(){
         ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
-                .barcode("fr8h3nif4hu8n ru8eucn938cj3")
+                .barcode("8400000000017")
                 .userMobile("66")
                 .description("Nueva descripcion de test resource")
                 .build();
