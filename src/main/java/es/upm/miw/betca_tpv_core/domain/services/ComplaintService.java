@@ -34,7 +34,10 @@ public class ComplaintService {
         this.articlePersistence = articlePersistence;
     }
 
-    public Mono<Complaint> create(Complaint complaint){
+    public Mono<Complaint> create(Complaint complaint,Authentication authentication){
+        if(!complaint.getUserMobile().equals(authentication.getPrincipal())){
+            return Mono.error(new ForbiddenException("You do not have permission to create a complaint for other user"));
+        }
         return this.userMicroservice.readByMobile(complaint.getUserMobile())
                 .switchIfEmpty(Mono.error(new NotFoundException("The user provided not exists")))
                 .then(

@@ -26,10 +26,10 @@ public class ComplaintResource {
         this.complaintService=complaintService;
     }
 
-    @PreAuthorize("hasRole('CUSTOMER') and #complaintCreationDto.userMobile == authentication.principal")
+    @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping(produces = {"application/json"})
-    public Mono<Complaint> create(@Valid @RequestBody ComplaintCreationDto complaintCreationDto){
-        return this.complaintService.create(complaintCreationDto.toComplaint());
+    public Mono<Complaint> create(@Valid @RequestBody ComplaintCreationDto complaintCreationDto,Authentication authentication){
+        return this.complaintService.create(complaintCreationDto.toComplaint(),authentication);
     }
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','CUSTOMER','OPERATOR')")
     @GetMapping(COMPLAINT_ID)

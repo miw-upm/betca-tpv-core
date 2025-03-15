@@ -2,10 +2,13 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintCreationDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
 
 import static com.mongodb.assertions.Assertions.*;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.ComplaintResource.*;
@@ -164,5 +167,109 @@ class ComplaintResourceIT {
                 .exchange()
                 .expectStatus()
                 .isNotFound();
+    }
+
+    @Test
+    void testCreate_Successful(){
+        ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
+                .barcode("8400000000100").userMobile("66").description("Nueva descripcion de test resource").build();
+        this.restClientTestService.loginCustomer(webTestClient)
+                .post()
+                .uri(COMPLAINTS)
+                .body(Mono.just(complaintCreationDto),ComplaintCreationDto.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Complaint.class)
+                .value(Assertions::assertNotNull)
+                .value(complaint -> {
+                    assertNotNull(complaint.getId());
+                    assertEquals("Nueva descripcion de test resource",complaint.getDescription());
+                    assertEquals("OPEN",complaint.getState());
+                    assertEquals("66",complaint.getUserMobile());
+                    assertEquals("8400000000100",complaint.getBarcode());
+                });
+    }
+
+    @Test
+    void testCreate_ForbidenWhileTryingToCreateAComplainForOtherUser(){
+        ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
+                .barcode("8400000000100")
+                .userMobile("666666005")
+                .description("Nueva descripcion de test resource")
+                .build();
+        this.restClientTestService.loginCustomer(webTestClient)
+                .post()
+                .uri(COMPLAINTS)
+                .body(Mono.just(complaintCreationDto),ComplaintCreationDto.class)
+                .exchange()
+                .expectStatus()
+                .isForbidden();
+    }
+
+    @Test
+    void testCreate_NotAuthorizeAsOperator(){
+        ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
+                .barcode("8400000000100").userMobile("666666005").description("Nueva descripcion de test resource").build();
+        this.restClientTestService.loginOperator(webTestClient)
+                .post()
+                .uri(COMPLAINTS)
+                .body(Mono.just(complaintCreationDto),ComplaintCreationDto.class)
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
+    }
+    @Test
+    void testCreate_NotAuthorizeAsOperator(){
+        ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
+                .barcode("8400000000100").userMobile("666666005").description("Nueva descripcion de test resource").build();
+        this.restClientTestService.loginOperator(webTestClient)
+                .post()
+                .uri(COMPLAINTS)
+                .body(Mono.just(complaintCreationDto),ComplaintCreationDto.class)
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
+    }
+    @Test
+    void testCreate_NotAuthorizeAsAdmin(){
+        ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
+                .barcode("8400000000100").userMobile("666666005").description("Nueva descripcion de test resource").build();
+        this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(COMPLAINTS)
+                .body(Mono.just(complaintCreationDto),ComplaintCreationDto.class)
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
+    }
+    @Test
+    void testCreate_NotFoundBarcode(){
+        ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
+                .barcode("fr8h3nif4hu8n ru8eucn938cj3")
+                .userMobile("66")
+                .description("Nueva descripcion de test resource")
+                .build();
+        this.restClientTestService.loginCustomer(webTestClient)
+                .post()
+                .uri(COMPLAINTS)
+                .body(Mono.just(complaintCreationDto),ComplaintCreationDto.class)
+                .exchange()
+                .expectStatus()
+                .isNotFound();
+    }
+    @Test
+    void testCreate_AlreadyExistsComplaintWith(){
+        ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
+                .barcode("fr8h3nif4hu8n ru8eucn938cj3")
+                .userMobile("66")
+                .description("Nueva descripcion de test resource")
+                .build();
+        this.restClientTestService.loginCustomer(webTestClient)
+                .post()
+                .uri(COMPLAINTS)
+                .body(Mono.just(complaintCreationDto),ComplaintCreationDto.class)
+                .exchange()
+                .expectStatus()
+                .isEqualTo(HttpStatus.CONFLICT);
     }
 }

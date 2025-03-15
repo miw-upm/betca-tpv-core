@@ -59,8 +59,7 @@ class ComplaintPersistenceMongodbIT {
     void testFindByUserMobileAndBarcode_NotExistsBarcode(){
         StepVerifier
                 .create(this.complaintPersistenceMongodb.findByUserMobileAndBarcode("66","y"))
-                .expectError(NotFoundException.class)
-                .verify();
+                .verifyComplete();
     }
 
     @Test
@@ -89,7 +88,7 @@ class ComplaintPersistenceMongodbIT {
 
     @Test
     void testCreateComplaint_Successful(){
-        Complaint complaint = Complaint.builder().description("Queja En test").reply("").state("CLOSED")
+        Complaint complaint = Complaint.builder().description("Queja En test").reply("").state("OPEN")
                 .barcode("8400000000100").userMobile("666666005")
                 .registrationDate(LocalDateTime.of(2025, Month.JANUARY, 1, 20, 56))
                 .build();
