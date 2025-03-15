@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
+import es.upm.miw.betca_tpv_core.domain.exceptions.ForbiddenException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
 import org.junit.jupiter.api.Test;
@@ -62,7 +63,7 @@ class ComplaintServiceIT {
         when(authentication.getPrincipal()).thenReturn("66");
 
         Complaint complaint = Complaint.builder().description("Queja de cliente enfadado").reply("").state("OPEN")
-                .barcode("8400000000100").userMobile("666666005")
+                .barcode("8400000000100").userMobile("66")
                 .registrationDate(LocalDateTime.of(2025, Month.JANUARY, 1, 20, 56))
                 .build();
 
@@ -79,14 +80,13 @@ class ComplaintServiceIT {
         when(authentication.getPrincipal()).thenReturn("66");
 
         Complaint complaint = Complaint.builder().description("Queja de cliente enfadado").reply("").state("OPEN")
-                .barcode("8400000000100").userMobile("93862482342034234234324")
+                .barcode("8400000000100").userMobile("6")
                 .registrationDate(LocalDateTime.of(2025, Month.JANUARY, 1, 20, 56))
                 .build();
 
         StepVerifier
                 .create(this.complaintService.create(complaint,authentication))
-                .expectError(ConflictException.class)
-                .verify();
+                .expectError(ForbiddenException.class);
     }
 
     @Test
