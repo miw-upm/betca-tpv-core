@@ -9,6 +9,7 @@ import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.persistence.ComplaintPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ComplaintReactive;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ArticleEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ComplaintEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ComplaintState;
 import lombok.extern.log4j.Log4j2;
@@ -62,7 +63,7 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
     @Override
     public Mono<Complaint> findByUserMobileAndBarcode(String userMobile, String barcode) {
         return  this.articleReactive.findByBarcode(barcode)
-                .switchIfEmpty(Mono.error(new NotFoundException("The article does not exist with the barcode provided.")))
+                .switchIfEmpty(Mono.empty())
                 .flatMap(articleEntity -> {
                     return this.complaintReactive.findByUserMobileAndArticle(userMobile,articleEntity)
                             .map(ComplaintEntity::toComplaint);

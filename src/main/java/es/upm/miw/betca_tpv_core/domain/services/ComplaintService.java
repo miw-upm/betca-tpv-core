@@ -2,8 +2,10 @@ package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ForbiddenException;
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
 import es.upm.miw.betca_tpv_core.domain.model.PrivilegedRoles;
+import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
 import es.upm.miw.betca_tpv_core.domain.persistence.ComplaintPersistence;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +24,26 @@ import java.util.stream.Collectors;
 public class ComplaintService {
     private final ComplaintPersistence complaintPersistence;
 
+    private final ArticlePersistence articlePersistence;
 
+    private final UserMicroservice userMicroservice;
     @Autowired
-    public ComplaintService (ComplaintPersistence complaintPersistence,UserMicroservice userMicroservice){
+    public ComplaintService (ComplaintPersistence complaintPersistence,UserMicroservice userMicroservice,ArticlePersistence articlePersistence){
         this.complaintPersistence=complaintPersistence;
+        this.userMicroservice=userMicroservice;
+        this.articlePersistence = articlePersistence;
     }
 
     public Mono<Complaint> create(Complaint complaint){
-        return this.assertComplaintWithBarcodeAndUserMobileNotExists(complaint.getUserMobile(),complaint.getBarcode())
-                .then(this.complaintPersistence.create(complaint));
+        return this.userMicroservice.readByMobile(complaint.getUserMobile())
+                .switchIfEmpty(Mono.error(new NotFoundException("The user provided not exists")))
+                .then(
+                        this.articlePersistence.readByBarcode(complaint.getBarcode())
+                                .switchIfEmpty(Mono.error(new NotFoundException("The article provided not exists")))
+                                .then(this.assertComplaintWithBarcodeAndUserMobileNotExists(complaint.getUserMobile(),complaint.getBarcode())
+                                        .then(this.complaintPersistence.create(complaint)))
+                );
+
     }
     public Mono<Complaint> readById(String id, Authentication authentication) {
 

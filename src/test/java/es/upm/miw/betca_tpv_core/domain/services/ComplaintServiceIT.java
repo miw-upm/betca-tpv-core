@@ -47,4 +47,9 @@ class ComplaintServiceIT {
                 .thenCancel()
                 .verify();
     }
+
+    @Test
+    void testCreateComplaint(){
+
+    }
 }
