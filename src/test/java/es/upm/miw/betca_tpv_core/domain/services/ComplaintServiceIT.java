@@ -67,7 +67,7 @@ class ComplaintServiceIT {
                 .build();
 
         StepVerifier
-                .create(this.complaintService.create(complaint),authentication)
+                .create(this.complaintService.create(complaint,authentication)
                 .assertNext(complaint1 -> complaint1.getDescription().contains("Queja de cliente enfadado"))
                 .thenCancel()
                 .verify();
