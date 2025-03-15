@@ -219,10 +219,10 @@ class ComplaintResourceIT {
                 .isUnauthorized();
     }
     @Test
-    void testCreateComplaintResource_NotAuthorizeAsOperator(){
+    void testCreateComplaintResource_NotAuthorizeAsManager(){
         ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
                 .barcode("8400000000100").userMobile("666666005").description("Nueva descripcion de test resource").build();
-        this.restClientTestService.loginOperator(webTestClient)
+        this.restClientTestService.loginManager(webTestClient)
                 .post()
                 .uri(COMPLAINTS)
                 .body(Mono.just(complaintCreationDto),ComplaintCreationDto.class)
