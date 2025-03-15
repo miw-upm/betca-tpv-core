@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
+import es.upm.miw.betca_tpv_core.domain.services.CustomerPointsService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -32,6 +33,8 @@ class TicketResourceIT {
     @Autowired
     private RestClientTestService restClientTestService;
     @MockBean
+    private CustomerPointsService customerPointsService;
+    @MockBean
     private UserMicroservice userMicroservice;
 
     @BeforeEach
@@ -40,6 +43,12 @@ class TicketResourceIT {
                 .post().uri(CASHIERS)
                 .exchange()
                 .expectStatus().isOk();
+        BDDMockito.given(this.customerPointsService.readCustomerPointsByMobile(anyString()))
+                .willAnswer(arguments -> {
+                    String mobile = arguments.getArgument(0);
+                    User user = User.builder().mobile(mobile).build();
+                    return Mono.just(CustomerPoints.builder().user(user).value(100).build());
+                });
         BDDMockito.given(this.userMicroservice.readByMobile(anyString()))
                 .willAnswer(arguments ->
                         Mono.just(User.builder().mobile(arguments.getArgument(0)).firstName("mock").build()));
@@ -53,7 +62,9 @@ class TicketResourceIT {
                 .discount(BigDecimal.TEN).state(ShoppingState.NOT_COMMITTED).build();
         Ticket ticket = Ticket.builder().cash(new BigDecimal("200"))
                 .card(BigDecimal.ZERO).voucher(BigDecimal.ZERO).note("note")
-                .shoppingList(List.of(shopping1, shopping2)).user(User.builder().mobile("666666004").build()).build();
+                .shoppingList(List.of(shopping1, shopping2)).user(User.builder().mobile("666666004").build())
+                .pointsDiscount(BigDecimal.ZERO)
+                .build();
         Ticket dbTicket = this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(TICKETS)

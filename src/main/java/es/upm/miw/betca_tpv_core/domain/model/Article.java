@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -55,6 +56,20 @@ public class Article {
         if (Objects.isNull(discontinued)) {
             this.discontinued = false;
         }
+        if (Objects.isNull(retailPrice)) {
+            this.retailPrice = BigDecimal.ZERO;
+        }
     }
 
+    public BigDecimal getArticleBaseTax() {
+        doDefault();
+        return this.retailPrice
+                .divide(BigDecimal.ONE.add(tax.getRate()
+                                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)), 2, RoundingMode.HALF_UP);
+    }
+
+    public BigDecimal getArticleTaxValue() {
+        doDefault();
+        return this.retailPrice.subtract(getArticleBaseTax());
+    }
 }

@@ -111,4 +111,11 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
                 ));
     }
 
+    @Override
+    public Flux<Article> findByProviderCompany(String providerCompany) {
+        return this.providerReactive.findByCompany(providerCompany)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non existent company: " + providerCompany)))
+                .flatMapMany(providerEntity -> this.articleReactive.findByProviderEntityId(providerEntity.getId()))
+                .map(ArticleEntity::toArticle);
+    }
 }

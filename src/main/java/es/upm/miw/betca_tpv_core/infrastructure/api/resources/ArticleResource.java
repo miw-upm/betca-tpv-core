@@ -21,6 +21,7 @@ public class ArticleResource {
     public static final String SEARCH = "/search";
     public static final String UNFINISHED = "/unfinished";
     public static final String BARCODE = "/barcode";
+    public static final String SEARCH_PROVIDER_COMPANY = "/search-by-provider";
 
     private final ArticleService articleService;
 
@@ -67,6 +68,11 @@ public class ArticleResource {
     @GetMapping(UNFINISHED)
     public Flux<Article> findByUnfinished() {
         return this.articleService.findByUnfinished();
+    }
+
+    @GetMapping(SEARCH_PROVIDER_COMPANY)
+    public Flux<Article> findByProviderCompany(@RequestParam String providerCompany) {
+        return this.articleService.findByProviderCompany(providerCompany);
     }
 
 }

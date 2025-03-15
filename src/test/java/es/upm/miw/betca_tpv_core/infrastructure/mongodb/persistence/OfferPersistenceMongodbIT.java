@@ -14,8 +14,7 @@ import java.time.Month;
 import java.util.List;
 
 import static java.math.BigDecimal.TEN;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestConfig
 public class OfferPersistenceMongodbIT {
@@ -30,7 +29,7 @@ public class OfferPersistenceMongodbIT {
                         Offer.builder()
                                 .reference("to1")
                                 .description("error")
-                                .discount(TEN)
+                                .discount(10)
                                 .creationDate(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10))
                                 .expiryDate(LocalDateTime.of(2018, Month.JANUARY, 12, 10, 10))
                                 .build()
@@ -46,9 +45,9 @@ public class OfferPersistenceMongodbIT {
         StepVerifier
                 .create(this.offerPersistenceMongodb.create(
                                 Offer.builder()
-                                        .reference("ref1")
+                                        .reference("ref123")
                                         .description("error")
-                                        .discount(TEN)
+                                        .discount(10)
                                         .creationDate(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10))
                                         .expiryDate(LocalDateTime.of(2020, Month.JANUARY, 12, 10, 10))
                                         .articleList(List.of(article))
@@ -67,7 +66,7 @@ public class OfferPersistenceMongodbIT {
                                 Offer.builder()
                                         .reference("to11")
                                         .description("OK")
-                                        .discount(TEN)
+                                        .discount(10)
                                         .creationDate(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10))
                                         .expiryDate(LocalDateTime.of(2020, Month.JANUARY, 12, 10, 10))
                                         .articleList(List.of(article))
@@ -85,10 +84,10 @@ public class OfferPersistenceMongodbIT {
     @Test
     void testReadByReference() {
         StepVerifier
-                .create(this.offerPersistenceMongodb.readByReference("to1"))
+                .create(this.offerPersistenceMongodb.readByReference("R_hRxaoeQuyEDdZpmpboVg"))
                 .expectNextMatches(offer -> {
-                    assertEquals("to1", offer.getReference());
-                    assertEquals("td1", offer.getDescription());
+                    assertEquals("R_hRxaoeQuyEDdZpmpboVg", offer.getReference());
+                    assertEquals("Offer code 20% discount", offer.getDescription());
                     return true;
                 })
                 .expectComplete()
@@ -106,11 +105,11 @@ public class OfferPersistenceMongodbIT {
     @Test
     void testFindByReferenceAndDescriptionNullSafe() {
         StepVerifier
-                .create(this.offerPersistenceMongodb.findByReferenceAndDescriptionNullSafe(
-                        "to1", null))
+                .create(this.offerPersistenceMongodb.findByReferenceAndDescriptionAndDiscountNullSafe(
+                        "R_hRxaoeQuyEDdZpmpboVg", null, null))
                 .expectNextMatches(offer -> {
-                    assertEquals("to1", offer.getReference());
-                    assertEquals("td1", offer.getDescription());
+                    assertEquals("R_hRxaoeQuyEDdZpmpboVg", offer.getReference());
+                    assertEquals("Offer code 20% discount", offer.getDescription());
                     return true;
                 })
                 .thenCancel()
@@ -121,17 +120,17 @@ public class OfferPersistenceMongodbIT {
     void testUpdate() {
         Article article = Article.builder().barcode("1").description("OK").retailPrice(TEN).build();
         Offer offer = Offer.builder()
-                .reference("ref2")
                 .description("OK")
-                .discount(TEN)
+                .discount(10)
                 .creationDate(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10))
                 .expiryDate(LocalDateTime.of(2020, Month.JANUARY, 12, 10, 10))
                 .articleList(List.of(article))
                 .build();
         StepVerifier
-                .create(this.offerPersistenceMongodb.update("to4", offer))
+                .create(this.offerPersistenceMongodb.update("R_hRxaoeQuyEDdZpmpboVg", offer))
                 .expectNextMatches(returnOffer -> {
-                    assertEquals("ref2", returnOffer.getReference());
+                    assertNotNull(returnOffer);
+                    assertEquals("OK", returnOffer.getDescription());
                     return true;
                 })
                 .verifyComplete();

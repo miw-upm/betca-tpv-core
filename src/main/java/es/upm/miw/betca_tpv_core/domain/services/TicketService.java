@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
+import es.upm.miw.betca_tpv_core.domain.model.CustomerPoints;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
@@ -7,10 +8,12 @@ import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.domain.services.utils.PdfTicketBuilder;
 import es.upm.miw.betca_tpv_core.domain.services.utils.UUIDBase64;
+import es.upm.miw.betca_tpv_core.domain.services.CustomerPointsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuples;
 
 import java.time.LocalDateTime;
 
@@ -21,14 +24,16 @@ public class TicketService {
     private final UserMicroservice userMicroservice;
     private final ArticlePersistence articlePersistence;
     private final CashierService cashierService;
+    private final CustomerPointsService customerPointsService;
 
     @Autowired
     public TicketService(TicketPersistence ticketPersistence, UserMicroservice userMicroservice, ArticlePersistence articlePersistence,
-                         CashierService cashierService) {
+                         CashierService cashierService, CustomerPointsService customerPointsService) {
         this.ticketPersistence = ticketPersistence;
         this.userMicroservice = userMicroservice;
         this.articlePersistence = articlePersistence;
         this.cashierService = cashierService;
+        this.customerPointsService = customerPointsService;
     }
 
     public Mono<Ticket> create(Ticket ticket) {
@@ -55,15 +60,22 @@ public class TicketService {
     }
 
     public Mono<byte[]> readReceipt(String id) {
-        return this.ticketPersistence.readById(id)
-                .flatMap(ticket -> this.readUserByUserMobileNullSafe(ticket.getUser())
-                        .map(user -> {
-                            ticket.setUser(user);
-                            return ticket;
-                        })
-                        .switchIfEmpty(Mono.just(ticket)))
-                .map(new PdfTicketBuilder()::generateTicket);
-
+        return ticketPersistence.readById(id)
+                .flatMap(ticket -> {
+                    if (ticket.getUser() != null) {
+                        return Mono.zip(
+                                Mono.just(ticket),
+                                customerPointsService.readCustomerPointsByMobile(ticket.getUser().getMobile())
+                                        .defaultIfEmpty(new CustomerPoints())
+                        );
+                    }
+                    return Mono.just(Tuples.of(ticket, new CustomerPoints()));
+                })
+                .map(tuple -> {
+                    Ticket ticket = tuple.getT1();
+                    CustomerPoints customerPoints = (CustomerPoints) tuple.getT2();
+                    return new PdfTicketBuilder().generateTicket(ticket, customerPoints);
+                });
     }
 
     private Mono<User> readUserByUserMobileNullSafe(User user) {
