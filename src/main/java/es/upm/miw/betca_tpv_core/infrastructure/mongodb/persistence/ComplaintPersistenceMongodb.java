@@ -1,13 +1,19 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
+import com.fasterxml.jackson.databind.util.BeanUtil;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ForbiddenException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
+import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
 import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.persistence.ComplaintPersistence;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ComplaintReactive;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ArticleEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ComplaintEntity;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ComplaintState;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
@@ -18,10 +24,30 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
 
     private final ComplaintReactive complaintReactive;
 
+    private final ArticleReactive articleReactive;
+
     @Autowired
-    public ComplaintPersistenceMongodb(ComplaintReactive complaintReactive){
+    public ComplaintPersistenceMongodb(ComplaintReactive complaintReactive,ArticleReactive articleReactive){
         this.complaintReactive=complaintReactive;
+        this.articleReactive=articleReactive;
     }
+
+    @Override
+    public Mono<Complaint> create(Complaint complaint) {
+        ComplaintEntity complaintEntity = new ComplaintEntity();
+        BeanUtils.copyProperties(complaint,complaintEntity);
+
+        return this.articleReactive.findByBarcode(complaint.getBarcode())
+                .switchIfEmpty(Mono.error(new NotFoundException("The article does not exist with the barcode provided.")))
+                .map(articleEntity -> {
+                    complaintEntity.setArticle(articleEntity);
+                    complaintEntity.setState(ComplaintState.OPEN);
+                    return complaintEntity;
+                })
+                .flatMap(this.complaintReactive::save)
+                .map(ComplaintEntity::toComplaint);
+    }
+
     @Override
     public Flux<Complaint> findByUserMobileNullSafe(String userMobile) {
         return complaintReactive.findByUserMobileNullSafe(userMobile).map(ComplaintEntity::toComplaint);
@@ -33,4 +59,16 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
                 .switchIfEmpty(Mono.error(new NotFoundException("Non Existent Complaint id:"+id)))
                 .map(ComplaintEntity::toComplaint);
     }
+
+    @Override
+    public Mono<Complaint> findByUserMobileAndBarcode(String userMobile, String barcode) {
+        return  this.articleReactive.findByBarcode(barcode)
+                .switchIfEmpty(Mono.empty())
+                .flatMap(articleEntity -> {
+                    return this.complaintReactive.findByUserMobileAndArticle(userMobile,articleEntity)
+                            .map(ComplaintEntity::toComplaint);
+                });
+
+    }
+
 }
