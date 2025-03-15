@@ -168,11 +168,11 @@ class ComplaintResourceIT {
                 .expectStatus()
                 .isNotFound();
     }
- /*
+
     @Test
     void testCreateComplaintResource_Successful(){
         ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
-                .barcode("8400000000100").userMobile("66").description("Nueva descripcion de test resource").build();
+                .barcode("8400000000086").userMobile("66").description("Nueva descripcion de test resource").build();
         this.restClientTestService.loginCustomer(webTestClient)
                 .post()
                 .uri(COMPLAINTS)
@@ -186,10 +186,10 @@ class ComplaintResourceIT {
                     assertEquals("","Nueva descripcion de test resource",complaint.getDescription());
                     assertEquals("","OPEN",complaint.getState());
                     assertEquals("","66",complaint.getUserMobile());
-                    assertEquals("","8400000000100",complaint.getBarcode());
+                    assertEquals("","8400000000086",complaint.getBarcode());
                 });
     }
-*/
+
     @Test
     void testCreateComplaintResource_ForbidenWhileTryingToCreateAComplainForOtherUser(){
         ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
@@ -243,7 +243,6 @@ class ComplaintResourceIT {
                 .isUnauthorized();
     }
 
-    /*
     @Test
     void testCreateComplaintResource_NotFoundBarcode(){
         ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
@@ -274,6 +273,4 @@ class ComplaintResourceIT {
                 .expectStatus()
                 .isEqualTo(HttpStatus.CONFLICT);
     }
-
-     */
 }
