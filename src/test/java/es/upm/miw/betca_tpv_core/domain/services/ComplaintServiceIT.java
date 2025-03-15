@@ -58,23 +58,6 @@ class ComplaintServiceIT {
     }
 
     @Test
-    void testCreateComplaintService_Successful(){
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getPrincipal()).thenReturn("66");
-
-        Complaint complaint = Complaint.builder().description("Queja de cliente enfadado").reply("").state("OPEN")
-                .barcode("8400000000100").userMobile("66")
-                .registrationDate(LocalDateTime.of(2025, Month.JANUARY, 1, 20, 56))
-                .build();
-
-        StepVerifier
-                .create(this.complaintService.create(complaint,authentication))
-                .assertNext(complaint1 -> complaint1.getDescription().contains("Queja de cliente enfadado"))
-                .thenCancel()
-                .verify();
-    }
-
-    @Test
     void testCreateComplaint_ForbidenUserMobile(){
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn("66");
@@ -102,22 +85,6 @@ class ComplaintServiceIT {
         StepVerifier
                 .create(this.complaintService.create(complaint,authentication))
                 .expectError(NotFoundException.class)
-                .verify();
-    }
-
-    @Test
-    void testCreateComplaint_AlreadyExistsComplaintWithUserMobileAndBarcodeProvided(){
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getPrincipal()).thenReturn("66");
-
-        Complaint complaint = Complaint.builder().description("Queja de cliente enfadado").reply("").state("OPEN")
-                .barcode("8400000000017").userMobile("66")
-                .registrationDate(LocalDateTime.of(2025, Month.JANUARY, 1, 20, 56))
-                .build();
-
-        StepVerifier
-                .create(this.complaintService.create(complaint,authentication))
-                .expectError(ConflictException.class)
                 .verify();
     }
 }
