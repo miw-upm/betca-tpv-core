@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
+import es.upm.miw.betca_tpv_core.domain.exceptions.BadRequestException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.model.Voucher;
@@ -53,7 +54,7 @@ public class VoucherServiceIT {
         }).verifyComplete();
     }
 
-    /*@Test
+    @Test
     void testCreateVoucherUserNotFound() {
         String userMobile = "000000000";
         String userName = "Paco";
@@ -68,7 +69,7 @@ public class VoucherServiceIT {
         when(userMicroservice.readByMobile(userMobile)).thenReturn(Mono.error(new BadRequestException("User not found")));
 
         StepVerifier.create(voucherService.create(voucher)).expectErrorMatches(throwable -> throwable instanceof BadRequestException).verify();
-    }*/
+    }
 
     @Test
     void testReadByReference() {
