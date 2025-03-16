@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 public class StockAlarmResource {
 
     public static final String STOCK_ALARMS = "/stock-alarms";
+    public static final String STOCK_ALARM_ID = "/{name}";
 
     private final StockAlarmService stockAlarmService;
 
@@ -27,7 +28,7 @@ public class StockAlarmResource {
         return this.stockAlarmService.create(stockAlarm);
     }
 
-    @GetMapping
+    @GetMapping(STOCK_ALARM_ID)
     public Mono<StockAlarm> read(@PathVariable String name) {
         return this.stockAlarmService.read(name);
     }

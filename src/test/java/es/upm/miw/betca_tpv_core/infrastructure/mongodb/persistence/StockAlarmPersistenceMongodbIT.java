@@ -41,4 +41,16 @@ public class StockAlarmPersistenceMongodbIT {
                 .expectError(ConflictException.class)
                 .verify();
     }
+
+    @Test
+    void testFindByName() {
+        StepVerifier
+                .create(this.stockAlarmPersistenceMongodb.readByName("Alarma2"))
+                .expectNextMatches(stockAlarm -> {
+                    assertEquals("Alarma2", stockAlarm.getName());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
 }
