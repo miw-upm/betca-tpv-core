@@ -10,6 +10,7 @@ import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ArticleEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ArticleLossEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.StockAuditEntity;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,9 +63,14 @@ public class StockAuditPersistenceMongodb implements StockAuditPersistence {
                     data.setLosses(getLossesEntity(stockAudit.getLosses()));
                     data.setCloseDate(stockAudit.getCloseDate());
                     data.setLossValue(stockAudit.getLossValue());
-                    data.setArticlesWithoutAudit(stockAudit.getArticlesWithoutAudit()
-                            .stream().map(ArticleEntity::new).toList());
-
+                    if(stockAudit.getArticlesAudited() != null){
+                        data.setArticlesAudited(stockAudit.getArticlesAudited()
+                                .stream().map(ArticleEntity::new).toList());
+                    }
+                    if(stockAudit.getArticlesWithoutAudit() != null){
+                        data.setArticlesWithoutAudit(stockAudit.getArticlesWithoutAudit()
+                                .stream().map(ArticleEntity::new).toList());
+                    }
                     return Mono.just(data);
                 })
                 .flatMap(stockAuditReactive::save)
@@ -78,5 +84,25 @@ public class StockAuditPersistenceMongodb implements StockAuditPersistence {
         return losses.stream()
                 .map(ArticleLossEntity::new)
                 .toList();
+    }
+
+    @Override
+    public Mono<Void> update(String id) {
+        return stockAuditReactive.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non existent StockAudit: " + id)))
+                .flatMap(stockAudit -> {
+                    if (stockAudit.getCloseDate() != null) {
+                        return Mono.error(new IllegalStateException("A closed audit cannot be updated."));
+                    }
+                    stockAudit.setUpdateDate(LocalDateTime.now());
+                    return articleReactive.findByDiscontinuedIsFalse()
+                            .collectList()
+                            .map(articles -> {
+                                stockAudit.setArticlesWithoutAudit(articles);
+                                return stockAudit;
+                            });
+                })
+                .flatMap(stockAuditReactive::save)
+                .then();
     }
 }

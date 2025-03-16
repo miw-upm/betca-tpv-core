@@ -21,8 +21,11 @@ public class StockAudit {
     private LocalDateTime creationDate;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime closeDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime updateDate;
     private List<Article> articlesWithoutAudit;
     private BigDecimal lossValue;
     private List<ArticleLoss> losses;
+    private List<Article> articlesAudited;
 
 }

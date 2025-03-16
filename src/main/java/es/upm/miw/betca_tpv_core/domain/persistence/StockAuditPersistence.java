@@ -14,4 +14,6 @@ public interface StockAuditPersistence {
     Mono<String> save(StockAudit stockAudit);
 
     Mono<Void> close(StockAudit stockAudit);
+
+    Mono<Void> update(String id);
 }

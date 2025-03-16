@@ -6,6 +6,7 @@ import es.upm.miw.betca_tpv_core.domain.model.ArticleLoss;
 import es.upm.miw.betca_tpv_core.domain.model.StockAudit;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
 import es.upm.miw.betca_tpv_core.domain.persistence.StockAuditPersistence;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.StockAuditCreateDto;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -37,16 +38,18 @@ public class StockAuditService {
         return stockAuditPersistence.read(id);
     }
 
-    public Mono<Void> create() {
+    public Mono<StockAuditCreateDto> create() {
         return this.crearStockAudit()
-                .flatMap(stockAuditPersistence::save)
-                .then();
+                .flatMap(stockAudit ->
+                        stockAuditPersistence.save(stockAudit)
+                                .map(StockAuditCreateDto::new)
+                );
     }
 
     private Mono<StockAudit> crearStockAudit() {
         StockAudit stockAudit = new StockAudit();
         stockAudit.setId("AUDIT" + System.currentTimeMillis());
-        stockAudit.setCreationDate(LocalDate.now().atStartOfDay());
+        stockAudit.setCreationDate(LocalDateTime.now());
         stockAudit.setCloseDate(null);
         stockAudit.setLossValue(BigDecimal.valueOf(0));
         stockAudit.setLosses(List.of());
@@ -76,14 +79,13 @@ public class StockAuditService {
                     stockAudit.setLossValue(lossValue);
                     stockAudit.setLosses(losses);
                     stockAudit.setArticlesWithoutAudit(articlesWithoutAudit);
-
                     return stockAuditPersistence.close(stockAudit);
                 })
                 .then();
     }
 
     private List<ArticleLoss> getArticleLosses(StockAudit stockAudit, List<Article> currentArticles) {
-        return stockAudit.getArticlesWithoutAudit().stream()
+        return stockAudit.getArticlesAudited().stream()
                 .flatMap(auditArticle -> currentArticles.stream()
                         .filter(currentArticle -> currentArticle.getBarcode().equals(auditArticle.getBarcode()))
                         .map(currentArticle -> {
@@ -107,15 +109,18 @@ public class StockAuditService {
 
     private List<Article> getArticlesWithoutAudit(List<Article> currentArticles, StockAudit stockAudit) {
         List<Article> articlesWithoutAudit = new ArrayList<>(currentArticles.stream()
-                .filter(article -> stockAudit.getArticlesWithoutAudit().stream()
+                .filter(article -> stockAudit.getArticlesAudited().stream()
                         .noneMatch(a -> a.getBarcode().equals(article.getBarcode())))
                 .toList());
 
-        articlesWithoutAudit.addAll(stockAudit.getArticlesWithoutAudit().stream()
+        articlesWithoutAudit.addAll(stockAudit.getArticlesAudited().stream()
                 .filter(auditArticle -> currentArticles.stream()
                         .noneMatch(currentArticle -> currentArticle.getBarcode().equals(auditArticle.getBarcode())))
                 .toList());
         return articlesWithoutAudit;
     }
 
+    public Mono<Void> update(String id) {
+        return this.stockAuditPersistence.update(id);
+    }
 }

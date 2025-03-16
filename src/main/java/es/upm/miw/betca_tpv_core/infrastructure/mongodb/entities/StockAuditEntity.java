@@ -27,20 +27,23 @@ public class StockAuditEntity {
     private String id;
     private LocalDateTime creationDate;
     private LocalDateTime closeDate;
+    private LocalDateTime updateDate;
     private List<ArticleEntity> articlesWithoutAudit;
     private BigDecimal lossValue;
     private List<ArticleLossEntity> losses;
+    private List<ArticleEntity> articlesAudited;
 
     public StockAuditEntity(StockAudit stockAudit, List<ArticleEntity> articles) {
         BeanUtils.copyProperties(stockAudit, this);
-        this.articlesWithoutAudit = articles;
+        this.articlesAudited = articles;
     }
 
     public StockAudit toStockAudit() {
         StockAudit stockAudit = new StockAudit();
         BeanUtils.copyProperties(this, stockAudit);
         stockAudit.setLosses(toLosses());
-        stockAudit.setArticlesWithoutAudit(toArticlesWithoutAudit());
+        stockAudit.setArticlesWithoutAudit(toArticles(this.getArticlesWithoutAudit()));
+        stockAudit.setArticlesAudited(toArticles(this.getArticlesAudited()));
         return stockAudit;
     }
 
@@ -52,10 +55,10 @@ public class StockAuditEntity {
                 .toList();
     }
 
-    private List<Article> toArticlesWithoutAudit() {
-        if (articlesWithoutAudit == null || this.closeDate == null)
+    private List<Article> toArticles(List<ArticleEntity> articles) {
+        if (articles == null)
             return Collections.emptyList();
-        return articlesWithoutAudit.stream()
+        return articles.stream()
                 .map(ArticleEntity::toArticle)
                 .toList();
     }

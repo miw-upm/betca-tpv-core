@@ -41,7 +41,7 @@ public class StockAuditServiceIT {
                     assertNotNull(stockAudit.getCreationDate());
                     assertEquals(50, stockAudit.getLossValue().intValue());
                     assertEquals("BARCODE001", stockAudit.getLosses().getFirst().getBarcode());
-                    assertEquals("BARCODE001", stockAudit.getArticlesWithoutAudit().getFirst().getBarcode());
+                    assertEquals("BARCODE001", stockAudit.getArticlesAudited().getFirst().getBarcode());
                 })
                 .verifyComplete();
     }
@@ -49,8 +49,10 @@ public class StockAuditServiceIT {
     @Test
     void testCreate() {
         StepVerifier
-                .create(stockAuditService.create()
-                        .then(Mono.defer(() -> this.stockAuditService.findAll().last())))
+                .create(
+                        stockAuditService.create()
+                                .flatMap(createdStockAudit -> stockAuditService.read(createdStockAudit.getId()))
+                )
                 .assertNext(stockAudit -> {
                     assertEquals(0, stockAudit.getLossValue().intValue());
                     assertNotNull(stockAudit.getCreationDate());
@@ -63,20 +65,24 @@ public class StockAuditServiceIT {
     @Test
     void testClose() {
         StepVerifier
-                .create(stockAuditService.create()
-                        .then(Mono.defer(() -> stockAuditService.findAll().last()))
-                        .flatMap(stockAudit -> articlePersistence.readByBarcode(stockAudit.getArticlesWithoutAudit()
-                                        .getFirst().
-                                        getBarcode())
-                                .flatMap(article -> {
-                                    if (article.getStock() > 0) {
-                                        article.setStock(article.getStock() + 5);
-                                    }
-                                    return articlePersistence.update(article.getBarcode(), article);
-                                })
-                                .thenReturn(stockAudit.getId()))
-                        .flatMap(stockAuditService::close)
-                        .then(Mono.defer(() -> stockAuditService.findAll().last())))
+                .create(
+                        stockAuditService.create()
+                                .flatMap(createdStockAudit ->
+                                        Mono.defer(() -> stockAuditService.findAll().last())
+                                                .flatMap(stockAudit -> articlePersistence.readByBarcode(
+                                                                stockAudit.getArticlesAudited().getFirst().getBarcode()
+                                                        )
+                                                        .flatMap(article -> {
+                                                            if (article.getStock() > 0) {
+                                                                article.setStock(article.getStock() + 5);
+                                                            }
+                                                            return articlePersistence.update(article.getBarcode(), article);
+                                                        })
+                                                        .thenReturn(stockAudit.getId()))
+                                )
+                                .flatMap(id -> stockAuditService.close(id).thenReturn(id))
+                                .flatMap(closedAuditId -> stockAuditService.read(closedAuditId))
+                )
                 .assertNext(stockAudit -> {
                     assertNotNull(stockAudit.getCloseDate());
                     assertTrue(stockAudit.getLossValue().intValue() > 0);
