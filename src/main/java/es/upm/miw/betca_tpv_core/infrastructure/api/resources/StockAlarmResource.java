@@ -5,9 +5,8 @@ import es.upm.miw.betca_tpv_core.domain.services.StockAlarmService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Rest
@@ -26,5 +25,15 @@ public class StockAlarmResource {
     @PostMapping
     public Mono<StockAlarm> create(@Valid @RequestBody StockAlarm stockAlarm) {
         return this.stockAlarmService.create(stockAlarm);
+    }
+
+    @GetMapping
+    public Mono<StockAlarm> read(@PathVariable String name) {
+        return this.stockAlarmService.read(name);
+    }
+
+    @GetMapping
+    public Flux<StockAlarm> findAll() {
+        return this.stockAlarmService.findAll();
     }
 }
