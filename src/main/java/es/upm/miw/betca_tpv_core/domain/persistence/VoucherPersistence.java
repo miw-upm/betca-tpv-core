@@ -19,5 +19,5 @@ public interface VoucherPersistence {
 
     Flux<Voucher> findByReferenceAndValueNullSafe(String reference, BigDecimal value);
 
-    Flux<Voucher> findVouchersWithFilters(LocalDateTime startDate, LocalDateTime endDate, Boolean consumed);
+    Flux<Voucher> findByDateRangeAndConsumedNullSafe(LocalDateTime startDate, LocalDateTime endDate, Boolean consumed);
 }

@@ -3,23 +3,26 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 import es.upm.miw.betca_tpv_core.domain.model.RgpdType;
 import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
+import es.upm.miw.betca_tpv_core.domain.services.RgpdService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.RgpdDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
 
 import java.util.Base64;
 import java.util.List;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.RgpdResource.RGPDS;
-import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.RgpdResource.USER_MOBILE;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.RgpdResource.USERS_NOT_SIGNED;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @RestTestConfig
@@ -33,6 +36,9 @@ class RgpdResourceIT {
 
     @MockBean
     private UserMicroservice userMicroservice;
+
+    @SpyBean
+    private RgpdService rgpdService;
 
     @Test
     void testCreateRgpd() {
@@ -80,7 +86,7 @@ class RgpdResourceIT {
     @Test
     void testUpdateRgpd() {
         String userMobile = "600000001";
-        RgpdDto updatedRgpdDto =  RgpdDto.builder()
+        RgpdDto updatedRgpdDto = RgpdDto.builder()
                 .rgpdType(RgpdType.BASIC)
                 .agreement(Base64.getEncoder().encodeToString("UpdatedAgreement".getBytes()))
                 .userMobile(userMobile)
@@ -102,4 +108,31 @@ class RgpdResourceIT {
         assertEquals(userMobile, responseRgpdDto.getUserMobile());
         assertEquals("Alex", responseRgpdDto.getUserName());
     }
+
+    @Test
+    void testGetUsersNotSignedRgpd() {
+        List<User> mockUsersNotSigned = List.of(
+                User.builder().mobile("600000003").firstName("Dario").build(),
+                User.builder().mobile("600000004").firstName("Sergio").build()
+        );
+
+        when(rgpdService.findUsersNotSignedRgpd()).thenReturn(Flux.fromIterable(mockUsersNotSigned));
+
+        List<User> responseUsers = this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(RGPDS + USERS_NOT_SIGNED)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(User.class)
+                .value(Assertions::assertNotNull)
+                .returnResult().getResponseBody();
+
+        assertNotNull(responseUsers);
+        assertThat(responseUsers.size()).isEqualTo(2);
+        assertEquals("600000003", responseUsers.get(0).getMobile());
+        assertEquals("Dario", responseUsers.get(0).getFirstName());
+        assertEquals("600000004", responseUsers.get(1).getMobile());
+        assertEquals("Sergio", responseUsers.get(1).getFirstName());
+    }
+
 }

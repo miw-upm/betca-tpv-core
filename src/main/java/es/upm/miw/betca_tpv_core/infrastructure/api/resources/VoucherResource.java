@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Rest
@@ -53,11 +52,11 @@ public class VoucherResource {
     }*/
 
     @GetMapping(SEARCH)
-    public Flux<Voucher> findVouchersWithFilters(
+    public Flux<Voucher> findByDateRangeAndConsumedNullSafe(
             @RequestParam(required = false) LocalDateTime startDate,
             @RequestParam(required = false) LocalDateTime endDate,
             @RequestParam Boolean consumed){
-        return this.voucherService.findVouchersWithFilters(startDate, endDate, consumed);
+        return this.voucherService.findByDateRangeAndConsumedNullSafe(startDate, endDate, consumed);
     }
 
     @GetMapping(value = REFERENCE_ID + PDF, produces = {"application/pdf", "application/json"})

@@ -28,7 +28,7 @@ public class VoucherService {
 
     public Mono<Voucher> create(Voucher voucher) {
         String userMobile = voucher.getUser().getMobile();
-        return this.voucherPersistence.create(voucher);
+        return this.verifyUserExistsByMobile(userMobile).then(this.voucherPersistence.create(voucher));
     }
 
     public Mono<Voucher> read(String reference) {
@@ -49,8 +49,8 @@ public class VoucherService {
         return this.voucherPersistence.findByReferenceAndValueNullSafe(reference, value);
     }
 
-    public Flux<Voucher> findVouchersWithFilters(LocalDateTime startDate, LocalDateTime endDate, Boolean consumed){
-        return this.voucherPersistence.findVouchersWithFilters(startDate, endDate, consumed);
+    public Flux<Voucher> findByDateRangeAndConsumedNullSafe(LocalDateTime startDate, LocalDateTime endDate, Boolean consumed){
+        return this.voucherPersistence.findByDateRangeAndConsumedNullSafe(startDate, endDate, consumed);
     }
 
     public Mono<byte[]> readPdf(String reference) {

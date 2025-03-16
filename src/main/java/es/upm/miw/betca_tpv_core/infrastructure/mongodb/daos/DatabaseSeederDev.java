@@ -90,6 +90,7 @@ public class DatabaseSeederDev {
         this.providerDao.deleteAll();
         this.cashierDao.deleteAll();
         this.offerDao.deleteAll();
+        this.rgpdDao.deleteAll();
         this.customerPointsDao.deleteAll();
         this.invoiceDao.deleteAll();
         this.budgetDao.deleteAll();
