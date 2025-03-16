@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 import es.upm.miw.betca_tpv_core.domain.model.StockAudit;
 import es.upm.miw.betca_tpv_core.domain.services.StockAuditService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.StockAuditCreateDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -36,13 +37,18 @@ public class StockAuditResource {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Void> create() {
+    public Mono<StockAuditCreateDto> create() {
         return this.stockAuditService.create();
     }
 
     @PutMapping(STOCK_AUDIT_ID + STOCK_AUDIT_CLOSE)
     public Mono<Void> close(@PathVariable String id) {
         return this.stockAuditService.close(id);
+    }
+
+    @PutMapping(STOCK_AUDIT_ID )
+    public Mono<Void> update(@PathVariable String id) {
+        return this.stockAuditService.update(id);
     }
 
 }

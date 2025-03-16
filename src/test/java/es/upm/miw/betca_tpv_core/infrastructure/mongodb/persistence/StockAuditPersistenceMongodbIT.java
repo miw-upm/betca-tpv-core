@@ -1,7 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
-import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.model.ArticleLoss;
 import es.upm.miw.betca_tpv_core.domain.model.StockAudit;
 import org.junit.jupiter.api.Test;
@@ -43,7 +42,7 @@ public class StockAuditPersistenceMongodbIT {
                     assertNotNull(stockAudit.getCreationDate());
                     assertEquals(50, stockAudit.getLossValue().intValue());
                     assertEquals("BARCODE001", stockAudit.getLosses().getFirst().getBarcode());
-                    assertEquals("BARCODE001", stockAudit.getArticlesWithoutAudit().getFirst().getBarcode());
+                    assertEquals("BARCODE001", stockAudit.getArticlesAudited().getFirst().getBarcode());
                     return true;
                 })
                 .expectComplete()
@@ -81,7 +80,6 @@ public class StockAuditPersistenceMongodbIT {
         stockAudit.setCloseDate(null);
         stockAudit.setLossValue(BigDecimal.valueOf(100));
         stockAudit.setLosses(List.of(new ArticleLoss("12345", 2.0)));
-        stockAudit.setArticlesWithoutAudit(List.of(new Article()));
 
         StepVerifier
                 .create(stockAuditPersistenceMongodb.close(stockAudit)
@@ -89,13 +87,24 @@ public class StockAuditPersistenceMongodbIT {
                 .assertNext(updatedAudit -> {
                     assertEquals(stockAudit.getLossValue(), updatedAudit.getLossValue());
                     assertEquals(1, updatedAudit.getLosses().size());
-                    assertEquals(1, updatedAudit.getArticlesWithoutAudit().size());
                     assertNull(updatedAudit.getCloseDate());
                 })
                 .verifyComplete();
     }
 
+    @Test
+    void testUpdate() {
+        StockAudit stockAudit = new StockAudit();
+        stockAudit.setId("AUDIT" + System.currentTimeMillis());
 
-
-
+        StepVerifier
+                .create(stockAuditPersistenceMongodb.save(stockAudit)
+                        .then(stockAuditPersistenceMongodb.update(stockAudit.getId()))
+                        .then(stockAuditPersistenceMongodb.read(stockAudit.getId())))
+                .assertNext(updatedAudit -> {
+                    assertNotNull(updatedAudit.getUpdateDate());
+                    assertNull(updatedAudit.getCloseDate());
+                })
+                .verifyComplete();
+    }
 }

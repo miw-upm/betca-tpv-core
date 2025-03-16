@@ -36,7 +36,7 @@ class StockAuditResourceIT {
                         assertNotNull(stockAudit.getLossValue());
                         assertNotNull(stockAudit.getCloseDate());
                         assertFalse(stockAudit.getLosses().isEmpty());
-                        assertFalse(stockAudit.getArticlesWithoutAudit().isEmpty());
+                        assertFalse(stockAudit.getArticlesAudited().isEmpty());
                     });
                 });
     }
@@ -56,7 +56,7 @@ class StockAuditResourceIT {
                     assertNotNull(stockAudit.getCreationDate());
                     assertEquals(50, stockAudit.getLossValue().intValue());
                     assertEquals("BARCODE001", stockAudit.getLosses().getFirst().getBarcode());
-                    assertEquals("BARCODE001", stockAudit.getArticlesWithoutAudit().getFirst().getBarcode());
+                    assertEquals("BARCODE001", stockAudit.getArticlesAudited().getFirst().getBarcode());
                 });
     }
 
@@ -70,7 +70,7 @@ class StockAuditResourceIT {
     }
 
     @Test
-    void testClose() {
+    void testUpdate() {
         Flux<String> result = this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(STOCK_AUDIT)
@@ -78,12 +78,21 @@ class StockAuditResourceIT {
                 .expectStatus().isCreated()
                 .returnResult(String.class)
                 .getResponseBody();
+
         result.subscribe(res -> {
             this.restClientTestService.loginAdmin(webTestClient)
                     .put()
-                    .uri(STOCK_AUDIT+STOCK_AUDIT_ID+STOCK_AUDIT_CLOSE, res)
+                    .uri(STOCK_AUDIT + STOCK_AUDIT_ID, res)
                     .exchange()
-                    .expectStatus().isCreated();
+                    .expectStatus().isOk()
+                    .expectBody(StockAudit.class)
+                    .value(Assertions::assertNotNull)
+                    .value(stockAudit -> {
+                        assertEquals(res, stockAudit.getId());
+                        assertNull(stockAudit.getCloseDate());
+                        assertNotNull(stockAudit.getUpdateDate());
+                    });
         });
     }
+
 }
