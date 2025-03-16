@@ -17,4 +17,13 @@ public class StockAlarm {
     private Integer warning;
     private Integer critical;
     private StockAlarmLine[] stockAlarmLine;
+
+    public static StockAlarm ofNameDescriptionWarningCritical(StockAlarm stockAlarm) {
+        return StockAlarm.builder()
+                .name(stockAlarm.getName())
+                .description(stockAlarm.getDescription())
+                .warning(stockAlarm.getWarning())
+                .critical(stockAlarm.getCritical())
+                .build();
+    }
 }

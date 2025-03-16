@@ -35,6 +35,7 @@ public class StockAlarmResource {
 
     @GetMapping
     public Flux<StockAlarm> findAll() {
-        return this.stockAlarmService.findAll();
+        return this.stockAlarmService.findAll()
+                .map(StockAlarm::ofNameDescriptionWarningCritical);
     }
 }
