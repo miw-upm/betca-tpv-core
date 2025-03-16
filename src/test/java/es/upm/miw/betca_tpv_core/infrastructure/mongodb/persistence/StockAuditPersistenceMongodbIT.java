@@ -1,12 +1,15 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
+import es.upm.miw.betca_tpv_core.domain.model.Article;
+import es.upm.miw.betca_tpv_core.domain.model.ArticleLoss;
 import es.upm.miw.betca_tpv_core.domain.model.StockAudit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -38,7 +41,7 @@ public class StockAuditPersistenceMongodbIT {
                     assertEquals("AUDIT001", stockAudit.getId());
                     assertNotNull(stockAudit.getCloseDate());
                     assertNotNull(stockAudit.getCreationDate());
-                    assertEquals(50, stockAudit.getLossValue());
+                    assertEquals(50, stockAudit.getLossValue().intValue());
                     assertEquals("BARCODE001", stockAudit.getLosses().getFirst().getBarcode());
                     assertEquals("BARCODE001", stockAudit.getArticlesWithoutAudit().getFirst().getBarcode());
                     return true;
@@ -54,7 +57,7 @@ public class StockAuditPersistenceMongodbIT {
                         .save(getInstanceStockAudit())
                         .then(Mono.defer(() -> this.stockAuditPersistenceMongodb.read(ID_STOCK_AUDI)))
                 ).assertNext(stockAudit -> {
-                            assertEquals(0, stockAudit.getLossValue());
+                            assertEquals(0, stockAudit.getLossValue().intValue());
                             assertNotNull(stockAudit.getCreationDate());
                             assertNull(stockAudit.getCloseDate());
                             assertTrue(stockAudit.getLosses().isEmpty());
@@ -66,9 +69,33 @@ public class StockAuditPersistenceMongodbIT {
         return StockAudit.builder()
                 .id(ID_STOCK_AUDI)
                 .creationDate(LocalDateTime.now())
-                .lossValue(0)
+                .lossValue(BigDecimal.valueOf(0))
                 .losses(List.of())
                 .build();
     }
+
+    @Test
+    void testClose() {
+        StockAudit stockAudit = new StockAudit();
+        stockAudit.setId("AUDIT003");
+        stockAudit.setCloseDate(null);
+        stockAudit.setLossValue(BigDecimal.valueOf(100));
+        stockAudit.setLosses(List.of(new ArticleLoss("12345", 2.0)));
+        stockAudit.setArticlesWithoutAudit(List.of(new Article()));
+
+        StepVerifier
+                .create(stockAuditPersistenceMongodb.close(stockAudit)
+                        .then(stockAuditPersistenceMongodb.read(stockAudit.getId())))
+                .assertNext(updatedAudit -> {
+                    assertEquals(stockAudit.getLossValue(), updatedAudit.getLossValue());
+                    assertEquals(1, updatedAudit.getLosses().size());
+                    assertEquals(1, updatedAudit.getArticlesWithoutAudit().size());
+                    assertNull(updatedAudit.getCloseDate());
+                })
+                .verifyComplete();
+    }
+
+
+
 
 }

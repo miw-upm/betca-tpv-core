@@ -11,6 +11,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +28,7 @@ public class StockAuditEntity {
     private LocalDateTime creationDate;
     private LocalDateTime closeDate;
     private List<ArticleEntity> articlesWithoutAudit;
-    private Integer lossValue;
+    private BigDecimal lossValue;
     private List<ArticleLossEntity> losses;
 
     public StockAuditEntity(StockAudit stockAudit, List<ArticleEntity> articles) {
@@ -52,7 +53,7 @@ public class StockAuditEntity {
     }
 
     private List<Article> toArticlesWithoutAudit() {
-        if (articlesWithoutAudit == null)
+        if (articlesWithoutAudit == null || this.closeDate == null)
             return Collections.emptyList();
         return articlesWithoutAudit.stream()
                 .map(ArticleEntity::toArticle)

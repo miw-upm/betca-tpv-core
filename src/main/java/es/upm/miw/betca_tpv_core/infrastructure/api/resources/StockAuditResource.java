@@ -15,6 +15,8 @@ public class StockAuditResource {
 
     public static final String STOCK_AUDIT = "/stock-audits";
     public static final String STOCK_AUDIT_ID = "/{id}";
+    public static final String STOCK_AUDIT_CLOSE = "/close";
+
     private final StockAuditService stockAuditService;
 
     @Autowired
@@ -36,6 +38,11 @@ public class StockAuditResource {
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Void> create() {
         return this.stockAuditService.create();
+    }
+
+    @PutMapping(STOCK_AUDIT_ID + STOCK_AUDIT_CLOSE)
+    public Mono<Void> close(@PathVariable String id) {
+        return this.stockAuditService.close(id);
     }
 
 }
