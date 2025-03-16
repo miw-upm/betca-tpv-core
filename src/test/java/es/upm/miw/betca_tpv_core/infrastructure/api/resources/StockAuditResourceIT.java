@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.StockAuditResource.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,7 +54,7 @@ class StockAuditResourceIT {
                     assertEquals("AUDIT001", stockAudit.getId());
                     assertNotNull(stockAudit.getCloseDate());
                     assertNotNull(stockAudit.getCreationDate());
-                    assertEquals(50, stockAudit.getLossValue());
+                    assertEquals(50, stockAudit.getLossValue().intValue());
                     assertEquals("BARCODE001", stockAudit.getLosses().getFirst().getBarcode());
                     assertEquals("BARCODE001", stockAudit.getArticlesWithoutAudit().getFirst().getBarcode());
                 });
@@ -68,5 +69,21 @@ class StockAuditResourceIT {
                 .expectStatus().isCreated();
     }
 
-
+    @Test
+    void testClose() {
+        Flux<String> result = this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(STOCK_AUDIT)
+                .exchange()
+                .expectStatus().isCreated()
+                .returnResult(String.class)
+                .getResponseBody();
+        result.subscribe(res -> {
+            this.restClientTestService.loginAdmin(webTestClient)
+                    .put()
+                    .uri(STOCK_AUDIT+STOCK_AUDIT_ID+STOCK_AUDIT_CLOSE, res)
+                    .exchange()
+                    .expectStatus().isCreated();
+        });
+    }
 }

@@ -11,5 +11,7 @@ public interface StockAuditPersistence {
 
     Mono<StockAudit> read(String id);
 
-    Mono<Void> save(StockAudit stockAudit);
+    Mono<String> save(StockAudit stockAudit);
+
+    Mono<Void> close(StockAudit stockAudit);
 }

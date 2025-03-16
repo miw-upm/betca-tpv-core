@@ -446,7 +446,7 @@ public class DatabaseSeederDev {
         stockAudit.setCreationDate(creationDate);
         stockAudit.setCloseDate(creationDate.plusDays(15));
         stockAudit.setArticlesWithoutAudit(articles);
-        stockAudit.setLossValue(numArticles * 10);
+        stockAudit.setLossValue(BigDecimal.valueOf(numArticles * 10L));
         stockAudit.setLosses(losses);
 
         return stockAudit;
