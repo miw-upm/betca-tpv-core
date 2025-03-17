@@ -24,4 +24,6 @@ public interface ArticlePersistence {
     Flux<String> findByBarcodeAndNotDiscontinuedNullField(String barcode);
 
     Flux<Article> findByProviderCompany(String company);
+
+    Flux<Article> findByDiscontinuedIsFalse();
 }

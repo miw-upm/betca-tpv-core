@@ -30,4 +30,8 @@ public class OrderService {
     public Mono<Order> update(String reference, Order order) {
         return this.orderPersistence.update(reference, order);
     }
+
+    public Mono<Void> delete(String reference) {
+        return this.orderPersistence.delete(reference);
+    }
 }

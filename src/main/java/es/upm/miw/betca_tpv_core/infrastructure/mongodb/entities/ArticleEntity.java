@@ -43,6 +43,10 @@ public class ArticleEntity {
         this.providerEntity = providerEntity;
     }
 
+    public ArticleEntity(Article article) {
+        BeanUtils.copyProperties(article, this);
+    }
+
     public Article toArticle() {
         Article article = new Article();
         BeanUtils.copyProperties(this, article);
