@@ -53,4 +53,37 @@ class StockAlarmResourceIT {
                 .getResponseBody();
         assertNotNull(stockAlarm);
     }
+
+    @Test
+    void testUpdate() {
+        StockAlarm stockAlarm = StockAlarm.builder().name("AlarmaResource").description("Actualizando")
+                .warning(9).critical(5).build();
+
+        StockAlarm stockAlarmDb = this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(StockAlarmResource.STOCK_ALARMS)
+                .body(Mono.just(stockAlarm), StockAlarm.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(StockAlarm.class)
+                .value(Assertions::assertNotNull)
+                .returnResult()
+                .getResponseBody();
+        assertNotNull(stockAlarmDb);
+
+        StockAlarm stockAlarmToUpdate = StockAlarm.builder().name("AlarmaResource").description("Resource")
+                .warning(9).critical(5).build();
+
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(StockAlarmResource.STOCK_ALARMS + StockAlarmResource.STOCK_ALARM_ID, stockAlarmDb.getName())
+                .body(Mono.just(stockAlarmToUpdate), StockAlarm.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(StockAlarm.class)
+                .value(updatedStockAlarm -> {
+                    assertNotNull(updatedStockAlarm.getName());
+                    assertEquals("Resource", updatedStockAlarm.getDescription());
+                });
+    }
 }

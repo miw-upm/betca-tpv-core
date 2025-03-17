@@ -28,4 +28,8 @@ public class StockAlarmService {
     public Flux<StockAlarm> findAll() {
         return this.stockAlarmPersistence.findAll();
     }
+
+    public Mono<StockAlarm> update(String name, StockAlarm stockAlarm) {
+        return this.stockAlarmPersistence.update(name, stockAlarm);
+    }
 }
