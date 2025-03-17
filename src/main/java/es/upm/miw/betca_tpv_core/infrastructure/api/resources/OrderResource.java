@@ -41,4 +41,9 @@ public class OrderResource {
         order.doDefault();
         return this.orderService.update(reference, order);
     }
+
+    @DeleteMapping(REFERENCE_ID)
+    public Mono<Void> delete(@PathVariable String reference) {
+        return this.orderService.delete(reference);
+    }
 }

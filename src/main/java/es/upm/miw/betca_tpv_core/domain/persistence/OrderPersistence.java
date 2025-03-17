@@ -12,4 +12,6 @@ public interface OrderPersistence {
     Mono<Order> readByReference(String reference);
 
     Mono<Order> update(String reference, Order order);
+
+    Mono<Void> delete(String reference);
 }

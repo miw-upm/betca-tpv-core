@@ -3,8 +3,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 import es.upm.miw.betca_tpv_core.TestConfig;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
-import es.upm.miw.betca_tpv_core.domain.model.Order;
-import es.upm.miw.betca_tpv_core.domain.model.OrderLine;
+import es.upm.miw.betca_tpv_core.domain.model.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
@@ -86,6 +85,31 @@ public class OrderPersistenceMongodbIT {
                     assertNotNull(returnedOrder.getOrderLinesList().getLast().getFinalAmount());
                     return true;
                 })
+                .verifyComplete();
+    }
+
+    @Test
+    void testDelete() {
+        LocalDateTime openingDate = LocalDateTime.of(2020, Month.MAY, 13, 22, 52);
+        OrderLine[] orderLines = {
+                OrderLine.builder().articleBarcode("barcode1").requiredAmount(1).finalAmount(2).build(),
+                OrderLine.builder().articleBarcode("barcode2").requiredAmount(0).finalAmount(0).build()
+        };
+
+        Order order = Order.builder()
+                .reference("ref1delete")
+                .description("desc1")
+                .providerCompany("pro1")
+                .openingDate(openingDate)
+                .orderLinesList(List.of(orderLines))
+                .build();
+
+        StepVerifier.create(this.orderPersistenceMongodb.create(order))
+                .assertNext(savedOrder -> assertEquals("ref1delete", savedOrder.getReference()))
+                .verifyComplete();
+
+
+        StepVerifier.create(this.orderPersistenceMongodb.delete("ref1delete"))
                 .verifyComplete();
     }
 }
