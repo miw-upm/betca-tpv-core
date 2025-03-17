@@ -55,4 +55,23 @@ public class StockAlarmServiceIT {
                 })
                 .verifyComplete();
     }
+
+    @Test
+    void testUpdate() {
+        StockAlarm stockAlarm = StockAlarm.builder().name("AlarmaActualizar").description("Actualizando")
+                        .warning(8).critical(7).build();
+        StepVerifier.create(stockAlarmService.create(stockAlarm)
+                .flatMap(createdStockAlarm -> {
+                    createdStockAlarm.setDescription("Descripcion actualizada");
+                    return this.stockAlarmService.update(createdStockAlarm.getName(), createdStockAlarm);
+                }))
+                .expectNextMatches(stockAlarmUpdated -> {
+                    assertNotNull(stockAlarmUpdated.getName());
+                    assertNotNull(stockAlarmUpdated.getDescription());
+                    assertEquals("Descripcion actualizada", stockAlarmUpdated.getDescription());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
 }

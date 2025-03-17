@@ -38,4 +38,10 @@ public class StockAlarmResource {
         return this.stockAlarmService.findAll()
                 .map(StockAlarm::ofNameDescriptionWarningCritical);
     }
+
+    @PutMapping(STOCK_ALARM_ID)
+    public Mono<StockAlarm> update(@PathVariable String name, @Valid @RequestBody StockAlarm stockAlarm) {
+        return this.stockAlarmService.update(name, stockAlarm)
+                .map(StockAlarm::ofNameDescriptionWarningCritical);
+    }
 }
