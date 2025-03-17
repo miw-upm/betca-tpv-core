@@ -118,4 +118,10 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
                 .flatMapMany(providerEntity -> this.articleReactive.findByProviderEntityId(providerEntity.getId()))
                 .map(ArticleEntity::toArticle);
     }
+
+    @Override
+    public Flux<Article> findByDiscontinuedIsFalse() {
+        return this.articleReactive.findByDiscontinuedIsFalse()
+                .map(ArticleEntity::toArticle);
+    }
 }

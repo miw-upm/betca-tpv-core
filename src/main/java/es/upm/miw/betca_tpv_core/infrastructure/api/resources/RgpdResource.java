@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.Rgpd;
+import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.services.RgpdService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.RgpdDto;
@@ -17,6 +18,7 @@ import reactor.core.publisher.Mono;
 public class RgpdResource {
     public static final String RGPDS = "/rgpds";
     public static final String USER_MOBILE = "/{userMobile}";
+    public static final String USERS_NOT_SIGNED = "/users-not-signed";
 
     private final RgpdService rgpdService;
 
@@ -45,5 +47,11 @@ public class RgpdResource {
         return this.rgpdService
                 .updateRgpd( userMobile, updatedRgpdDto.toRgpd())
                 .map(Rgpd::toDto);
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping(USERS_NOT_SIGNED)
+    public Flux<User> getUsersNotSignedRgpd() {
+        return this.rgpdService.findUsersNotSignedRgpd();
     }
 }

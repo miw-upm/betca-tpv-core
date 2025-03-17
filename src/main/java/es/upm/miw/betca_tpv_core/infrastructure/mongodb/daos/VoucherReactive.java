@@ -19,15 +19,11 @@ public interface VoucherReactive extends ReactiveMongoRepository<VoucherEntity, 
     Flux<VoucherEntity> findByReferenceAndValueNullSafe(
             String reference, BigDecimal value);
 
-    @Query("{'creationDate': {'$gte': ?0, '$lte': ?1}, 'dateOfUse': {'$ne': null}}")
-    Flux<VoucherEntity> findConsumedVouchersByDateRange(LocalDateTime startDate, LocalDateTime endDate);
-
-    @Query("{'creationDate': {'$gte': ?0, '$lte': ?1}, 'dateOfUse': null}")
-    Flux<VoucherEntity> findNonConsumedVouchersByDateRange(LocalDateTime startDate, LocalDateTime endDate);
-
-    @Query("{'dateOfUse': {'$ne': null}}")
-    Flux<VoucherEntity> findConsumedVouchers();
-
-    @Query("{'dateOfUse': null}")
-    Flux<VoucherEntity> findNonConsumedVouchers();
+    @Query("{$and:["
+            + "?#{ [0] == null ? {_id : {$ne:null}} : { creationDate : { $gte: [0] } } },"
+            + "?#{ [1] == null ? {_id : {$ne:null}} : { creationDate : { $lte: [1] } } },"
+            + "?#{ [2] == null ? {_id : {$ne:null}} : { dateOfUse : ([2] ? { $ne: null } : null) } }"
+            + "] }")
+    Flux<VoucherEntity> findByDateRangeAndConsumedNullSafe(
+            LocalDateTime startDate, LocalDateTime endDate, Boolean consumed);
 }
