@@ -98,7 +98,7 @@ public class StockAuditPersistenceMongodb implements StockAuditPersistence {
                     return articleReactive.findByDiscontinuedIsFalse()
                             .collectList()
                             .map(articles -> {
-                                stockAudit.setArticlesWithoutAudit(articles);
+                                stockAudit.setArticlesAudited(articles);
                                 return stockAudit;
                             });
                 })

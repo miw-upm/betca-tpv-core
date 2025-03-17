@@ -49,8 +49,9 @@ public class StockAuditService {
     private Mono<StockAudit> crearStockAudit() {
         StockAudit stockAudit = new StockAudit();
         stockAudit.setId("AUDIT" + System.currentTimeMillis());
-        stockAudit.setCreationDate(LocalDateTime.now());
-        stockAudit.setCloseDate(null);
+        LocalDateTime dateTime = LocalDateTime.now();
+        stockAudit.setCreationDate(dateTime);
+        stockAudit.setUpdateDate(dateTime);
         stockAudit.setLossValue(BigDecimal.valueOf(0));
         stockAudit.setLosses(List.of());
         return Mono.just(stockAudit);
