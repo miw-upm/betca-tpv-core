@@ -3,16 +3,24 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 import es.upm.miw.betca_tpv_core.domain.model.Cashier;
 import es.upm.miw.betca_tpv_core.domain.model.CashierClose;
 import es.upm.miw.betca_tpv_core.domain.model.CashierState;
+import es.upm.miw.betca_tpv_core.domain.services.utils.MovementType;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.CashMovementDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.CashierLastDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.stream.Stream;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.*;
 import static java.math.BigDecimal.ZERO;
@@ -26,6 +34,29 @@ class CashierResourceIT {
     private WebTestClient webTestClient;
     @Autowired
     private RestClientTestService restClientTestService;
+
+    private static Stream<Arguments> invalidCashMovementDtoProvider() {
+        return Stream.of(
+                Arguments.of(new CashMovementDto(null, null, null)),
+                Arguments.of(new CashMovementDto(MovementType.WITHDRAWAL, null, null)),
+                Arguments.of(new CashMovementDto(MovementType.DEPOSIT, null, null)),
+                Arguments.of(new CashMovementDto(MovementType.WITHDRAWAL, BigDecimal.valueOf(0), null)),
+                Arguments.of(new CashMovementDto(MovementType.DEPOSIT, BigDecimal.valueOf(0), null)),
+                Arguments.of(new CashMovementDto(MovementType.WITHDRAWAL, BigDecimal.valueOf(-1), null)),
+                Arguments.of(new CashMovementDto(MovementType.DEPOSIT, BigDecimal.valueOf(-1), null)),
+                Arguments.of(new CashMovementDto(MovementType.WITHDRAWAL, BigDecimal.valueOf(1), null)),
+                Arguments.of(new CashMovementDto(MovementType.DEPOSIT, BigDecimal.valueOf(1), null)),
+                Arguments.of(new CashMovementDto(MovementType.WITHDRAWAL, BigDecimal.valueOf(1), "")),
+                Arguments.of(new CashMovementDto(MovementType.DEPOSIT, BigDecimal.valueOf(1), ""))
+        );
+    }
+
+    private static Stream<Arguments> validCashMovementDtoProvider() {
+        return Stream.of(
+                Arguments.of(new CashMovementDto(MovementType.WITHDRAWAL, BigDecimal.TEN, "10e withdrawal")),
+                Arguments.of(new CashMovementDto(MovementType.DEPOSIT, BigDecimal.TEN, "10e deposit"))
+        );
+    }
 
     @Test
     void testFindLast() {
@@ -119,5 +150,44 @@ class CashierResourceIT {
                     Assertions.assertTrue( cashier.getClosureDate().isAfter(LocalDateTime.of(1971,1,1, 0, 0)));
                     Assertions.assertTrue( cashier.getClosureDate().isBefore(LocalDateTime.of(1972,1,1, 0, 0)));
                 }));
+    }
+
+    @ParameterizedTest()
+    @MethodSource("invalidCashMovementDtoProvider")
+    void testAddMovementsWithNonValidDto(CashMovementDto subject) {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .post().uri(CASHIERS + LAST + MOVEMENT)
+                .body(BodyInserters.fromValue(subject))
+                .exchange()
+                .expectStatus().is4xxClientError();
+    }
+
+    @ParameterizedTest
+    @MethodSource("validCashMovementDtoProvider")
+    void testAddMovementsWithValidDto(CashMovementDto subject) {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .post().uri(CASHIERS)
+                .exchange()
+                .expectStatus().isOk();
+        this.restClientTestService.loginAdmin(webTestClient)
+                .post().uri(CASHIERS + LAST + MOVEMENT)
+                .body(BodyInserters.fromValue(subject))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Cashier.class).value( cashier -> {
+                    if(subject.getMovementType() == MovementType.WITHDRAWAL){
+                        Assertions.assertEquals(subject.getAmount(),cashier.getWithdrawal());
+                    }else{
+                        Assertions.assertEquals(subject.getAmount(), cashier.getDeposit());
+                    }
+                });
+        this.restClientTestService.loginAdmin(webTestClient)
+                .patch().uri(CASHIERS + LAST)
+                .body(Mono.just(new CashierClose(subject.getAmount(), ZERO, "test")), CashierClose.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(CashierLastDto.class)
+                .value(Assertions::assertNotNull)
+                .value(cashier -> assertTrue(cashier.getClosed()));
     }
 }
