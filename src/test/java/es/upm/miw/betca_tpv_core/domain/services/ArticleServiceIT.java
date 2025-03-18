@@ -13,7 +13,7 @@ public class ArticleServiceIT {
     private ArticleService articleService;
 
     @Test
-    void testgetPurchasedBarcodesWithoutComplaints_UserWithComplaints(){
+    void testgetPurchasedBarcodesWithoutComplaints(){
         StepVerifier.create(this.articleService.getPurchasedBarcodesWithoutComplaints("666666004"))
                 .expectNextCount(3)
                 .thenConsumeWhile(Objects::nonNull)
@@ -21,7 +21,14 @@ public class ArticleServiceIT {
     }
 
     @Test
-    void testgetPurchasedBarcodesWithoutComplaints_UserWithoutPurchasedComplaints(){
+    void testgetPurchasedBarcodesWithoutComplaints_UserWithAllComplaintsCreated(){
+        StepVerifier.create(this.articleService.getPurchasedBarcodesWithoutComplaints("66"))
+                .expectNextCount(0)
+                .verifyComplete();
+    }
+
+    @Test
+    void testgetPurchasedBarcodesWithoutComplaints_WithOutPurchasedItems(){
         StepVerifier.create(this.articleService.getPurchasedBarcodesWithoutComplaints("66"))
                 .expectNextCount(0)
                 .verifyComplete();
