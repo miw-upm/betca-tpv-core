@@ -5,6 +5,8 @@ import es.upm.miw.betca_tpv_core.domain.model.Cashier;
 import es.upm.miw.betca_tpv_core.domain.model.CashierClose;
 import es.upm.miw.betca_tpv_core.domain.model.CashierState;
 import es.upm.miw.betca_tpv_core.domain.persistence.CashierPersistence;
+import es.upm.miw.betca_tpv_core.domain.services.utils.MovementType;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.CashMovementDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -80,4 +82,16 @@ public class CashierService {
                 .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier));
     }
 
+    public Mono<Cashier> addMovement(CashMovementDto movementDto){
+        return this.lastByOpenedAssure(true)
+                .map(lastCashier -> {
+                    if(movementDto.getMovementType() == MovementType.DEPOSIT){
+                        lastCashier.withdrawal(movementDto.getAmount(), movementDto.getComment());
+                    }else{
+                        lastCashier.deposit(movementDto.getAmount(), movementDto.getComment());
+                    }
+                    return lastCashier;
+                })
+                .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier));
+    }
 }
