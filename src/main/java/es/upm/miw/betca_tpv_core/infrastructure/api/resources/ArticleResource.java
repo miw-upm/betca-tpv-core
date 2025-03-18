@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono;
 public class ArticleResource {
     public static final String ARTICLES = "/articles";
 
-    public static final String PURCHASED = "/purchased_barcodes";
+    public static final String PURCHASED = "/barcodes/purchased/without-complaints";
     public static final String BARCODE_ID = "/{barcode}";
     public static final String SEARCH = "/search";
     public static final String UNFINISHED = "/unfinished";
