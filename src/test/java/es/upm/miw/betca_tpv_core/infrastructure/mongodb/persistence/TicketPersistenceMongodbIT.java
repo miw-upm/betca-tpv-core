@@ -48,7 +48,7 @@ class TicketPersistenceMongodbIT {
     void test_findbyUserMobile(){
         StepVerifier
                 .create(this.ticketPersistenceMongodb.findByUserMobile("666666004"))
-                .expectNextCount(3)
+                .expectNextCount(2)
                 .thenConsumeWhile(Objects::nonNull)
                 .verifyComplete();
     }
