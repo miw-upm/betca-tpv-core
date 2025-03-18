@@ -65,7 +65,7 @@ public class ArticleService {
         return this.articlePersistence.findByProviderCompany(company);
     }
 
-    public Flux<String> getPurchasedBarcodesWithoutComplaints(String userMobile){
+    public Flux<String> findByUserLoggedPurchasedBarcodesWithoutComplaints(String userMobile){
         return this.ticketPersistence.findByUserMobile(userMobile)
                 .flatMap(ticket -> Flux.fromIterable(ticket.getShoppingList()))
                 .map(Shopping::getBarcode)

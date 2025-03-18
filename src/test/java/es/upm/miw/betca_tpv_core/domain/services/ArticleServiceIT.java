@@ -13,23 +13,23 @@ public class ArticleServiceIT {
     private ArticleService articleService;
 
     @Test
-    void testgetPurchasedBarcodesWithoutComplaints(){
-        StepVerifier.create(this.articleService.getPurchasedBarcodesWithoutComplaints("666666004"))
+    void testFindByUserLoggedPurchasedBarcodesWithoutComplaints(){
+        StepVerifier.create(this.articleService.findByUserLoggedPurchasedBarcodesWithoutComplaints("666666004"))
                 .expectNextCount(3)
                 .thenConsumeWhile(Objects::nonNull)
                 .verifyComplete();
     }
 
     @Test
-    void testgetPurchasedBarcodesWithoutComplaints_UserWithAllComplaintsCreated(){
-        StepVerifier.create(this.articleService.getPurchasedBarcodesWithoutComplaints("66"))
+    void testFindByUserLoggedPurchasedBarcodesWithoutComplaints_UserWithAllComplaintsCreated(){
+        StepVerifier.create(this.articleService.findByUserLoggedPurchasedBarcodesWithoutComplaints("66"))
                 .expectNextCount(0)
                 .verifyComplete();
     }
 
     @Test
-    void testgetPurchasedBarcodesWithoutComplaints_WithOutPurchasedItems(){
-        StepVerifier.create(this.articleService.getPurchasedBarcodesWithoutComplaints("66"))
+    void testFindByUserLoggedPurchasedBarcodesWithoutComplaints_WithOutPurchasedItems(){
+        StepVerifier.create(this.articleService.findByUserLoggedPurchasedBarcodesWithoutComplaints("66"))
                 .expectNextCount(0)
                 .verifyComplete();
     }

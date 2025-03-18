@@ -80,8 +80,8 @@ public class ArticleResource {
 
     @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping(value = PURCHASED)
-    public Mono<ArticleBarcodesDto> getPurchasedBarcodesWithoutComplaints(Authentication authentication){
-        return this.articleService.getPurchasedBarcodesWithoutComplaints(authentication.getPrincipal().toString())
+    public Mono<ArticleBarcodesDto> findByUserLoggedPurchasedBarcodesWithoutComplaints(Authentication authentication){
+        return this.articleService.findByUserLoggedPurchasedBarcodesWithoutComplaints(authentication.getPrincipal().toString())
                 .collectList()
                 .map(ArticleBarcodesDto::new);
     }
