@@ -1,7 +1,11 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.model.Article;
+import es.upm.miw.betca_tpv_core.domain.model.Complaint;
+import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
+import es.upm.miw.betca_tpv_core.domain.persistence.ComplaintPersistence;
+import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,9 +19,15 @@ public class ArticleService {
 
     private final ArticlePersistence articlePersistence;
 
+    private final TicketPersistence ticketPersistence;
+
+    private final ComplaintPersistence complaintPersistence;
+
     @Autowired
-    public ArticleService(ArticlePersistence articlePersistence) {
+    public ArticleService(ArticlePersistence articlePersistence,TicketPersistence ticketPersistence,ComplaintPersistence complaintPersistence) {
         this.articlePersistence = articlePersistence;
+        this.ticketPersistence = ticketPersistence;
+        this.complaintPersistence = complaintPersistence;
     }
 
     public Mono<Article> create(Article article) {
@@ -53,5 +63,16 @@ public class ArticleService {
 
     public Flux<Article> findByProviderCompany(String company) {
         return this.articlePersistence.findByProviderCompany(company);
-    }   
+    }
+
+    public Flux<String> findByUserLoggedPurchasedBarcodesWithoutComplaints(String userMobile){
+        return this.ticketPersistence.findByUserMobile(userMobile)
+                .flatMap(ticket -> Flux.fromIterable(ticket.getShoppingList()))
+                .map(Shopping::getBarcode)
+                .distinct()
+                .filterWhen(barcode -> this.complaintPersistence.findByUserMobileAndBarcode(userMobile,barcode.toString())
+                        .hasElement()
+                        .map(hasComplaint -> Boolean.FALSE.equals(hasComplaint))
+                );
+    }
 }
