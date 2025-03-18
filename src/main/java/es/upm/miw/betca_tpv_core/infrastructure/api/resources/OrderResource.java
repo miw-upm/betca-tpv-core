@@ -7,7 +7,10 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.time.LocalDateTime;
 
 @Rest
 @RequestMapping(OrderResource.ORDERS)
@@ -30,6 +33,16 @@ public class OrderResource {
         return this.orderService.create(order);
     }
 
+    @GetMapping(SEARCH)
+    public Flux<Order> findByReferenceAndDescriptionAndCompanyAndOpeningDateAndClosingDateNullSafe(
+            @RequestParam(required = false) String reference, @RequestParam(required = false) String description, @
+                    RequestParam(required = false) String company, @RequestParam(required = false) LocalDateTime openingDate,
+            @RequestParam(required = false) LocalDateTime closingDate) {
+        return this.orderService.findByReferenceAndDescriptionAndCompanyAndOpeningDateAndClosingDateNullSafe(
+                        reference, description, company, openingDate, closingDate)
+                .map(Order::ofReferenceDescriptionCompanyOpeningDateClosingDate);
+    }
+
     @PreAuthorize("permitAll()")
     @GetMapping(REFERENCE_ID)
     public Mono<Order> read(@PathVariable String reference) {
@@ -38,7 +51,6 @@ public class OrderResource {
 
     @PutMapping(REFERENCE_ID)
     public Mono<Order> update(@PathVariable String reference, @Valid @RequestBody Order order) {
-        order.doDefault();
         return this.orderService.update(reference, order);
     }
 

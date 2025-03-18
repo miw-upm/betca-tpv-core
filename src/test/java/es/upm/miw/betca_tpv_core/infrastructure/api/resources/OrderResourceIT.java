@@ -185,4 +185,20 @@ class OrderResourceIT {
                 .exchange()
                 .expectStatus().isNotFound();
     }
+
+    @Test
+    void findByReferenceAndDescriptionAndCompanyAndOpeningDateAndClosingDateNullSafe() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(ORDERS + SEARCH)
+                        .queryParam("reference", "ref1")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Order.class)
+                .value(Assertions::assertNotNull)
+                .value(orders -> assertTrue(orders
+                        .stream().allMatch(order -> order.getProviderCompany().toLowerCase().contains("pro1"))));
+    }
 }

@@ -39,4 +39,16 @@ public class Order {
             this.orderLinesList = new ArrayList<>();
         }
     }
+
+    public static Order ofReferenceDescriptionCompanyOpeningDateClosingDate(Order order) {
+        return Order.builder()
+                .reference(order.getReference())
+                .description(order.getDescription())
+                .providerCompany(order.getProviderCompany())
+                .openingDate(order.getOpeningDate())
+                .closingDate(order.getClosingDate())
+                .orderLinesList(order.getOrderLinesList())
+                .build();
+    }
+
 }

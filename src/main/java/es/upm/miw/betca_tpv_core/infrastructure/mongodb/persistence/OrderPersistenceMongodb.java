@@ -11,6 +11,7 @@ import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.OrderLineEntity
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -49,6 +50,14 @@ public class OrderPersistenceMongodb implements OrderPersistence {
     public Mono<Order> readByReference(String reference) {
         return this.orderReactive.findByReference(reference)
                 .switchIfEmpty(Mono.error(new NotFoundException("Non existent Order reference: " + reference)))
+                .map(OrderEntity::toOrder);
+    }
+
+    @Override
+    public Flux<Order> findByReferenceAndDescriptionAndCompanyAndOpeningDateAndClosingDateNullSafe(
+            String reference, String description, String company, LocalDateTime openingDate, LocalDateTime closingDate) {
+        return this.orderReactive.findByReferenceAndDescriptionAndCompanyAndOpeningDateAndClosingDateNullSafe(
+                        reference, description, company, openingDate, closingDate)
                 .map(OrderEntity::toOrder);
     }
 
