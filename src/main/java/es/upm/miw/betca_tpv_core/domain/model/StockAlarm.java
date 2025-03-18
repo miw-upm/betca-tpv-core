@@ -6,15 +6,35 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 @Data
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class StockAlarm {
+public class
+StockAlarm {
     @NotBlank
     private String name;
     private String description;
     private Integer warning;
     private Integer critical;
-    private StockAlarmLine[] stockAlarmLine;
+    private List<StockAlarmLine> stockAlarmLines;
+
+    public static StockAlarm ofNameDescriptionWarningCritical(StockAlarm stockAlarm) {
+        return StockAlarm.builder()
+                .name(stockAlarm.getName())
+                .description(stockAlarm.getDescription())
+                .warning(stockAlarm.getWarning())
+                .critical(stockAlarm.getCritical())
+                .build();
+    }
+
+    public void doDefault() {
+        if(Objects.isNull(stockAlarmLines)) {
+            this.stockAlarmLines = new ArrayList<>();
+        }
+    }
 }

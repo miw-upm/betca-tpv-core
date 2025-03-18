@@ -11,6 +11,7 @@ import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.OrderLineEntity
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -53,11 +54,27 @@ public class OrderPersistenceMongodb implements OrderPersistence {
     }
 
     @Override
+    public Flux<Order> findByReferenceAndDescriptionAndCompanyAndOpeningDateAndClosingDateNullSafe(
+            String reference, String description, String company, LocalDateTime openingDate, LocalDateTime closingDate) {
+        return this.orderReactive.findByReferenceAndDescriptionAndCompanyAndOpeningDateAndClosingDateNullSafe(
+                        reference, description, company, openingDate, closingDate)
+                .map(OrderEntity::toOrder);
+    }
+
+    @Override
     public Mono<Order> update(String reference, Order order) {
         return this.orderReactive.findByReference(reference)
                 .switchIfEmpty(Mono.error(new NotFoundException("Non existent Order reference: " + reference)))
                 .flatMap(existingOrderEntity -> {
                     existingOrderEntity.setClosingDate(LocalDateTime.now());
+                    List<OrderLineEntity> orderLineEntities = order.getOrderLinesList().stream()
+                            .map(orderLine -> {
+                                OrderLineEntity orderLineEntity = new OrderLineEntity();
+                                BeanUtils.copyProperties(orderLine, orderLineEntity);
+                                return orderLineEntity;
+                            })
+                            .toList();
+                    existingOrderEntity.setOrderLineEntities(orderLineEntities);
                     return this.orderReactive.save(existingOrderEntity);
                 })
                 .map(OrderEntity::toOrder);
@@ -68,5 +85,11 @@ public class OrderPersistenceMongodb implements OrderPersistence {
                 .flatMap(orderEntity -> Mono.error(
                         new ConflictException("Order reference already exists : " + reference)
                 ));
+    }
+
+    public Mono<Void> delete(String reference) {
+        return this.orderReactive.findByReference(reference)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non existent Order reference: " + reference)))
+                .flatMap(orderEntity -> this.orderReactive.deleteById(orderEntity.getId()));
     }
 }

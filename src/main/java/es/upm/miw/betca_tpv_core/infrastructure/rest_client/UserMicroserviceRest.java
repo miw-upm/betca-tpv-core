@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service("userClient")
 public class UserMicroserviceRest implements UserMicroservice {
@@ -32,6 +35,41 @@ public class UserMicroserviceRest implements UserMicroservice {
                         .uri(userUri + "/users/" + mobile)
                         .retrieve()
                         .bodyToMono(User.class)
+                        .onErrorMap(Exception.class, exception ->
+                                new BadGatewayException("Unexpected error: " + exception.getClass() + " - " + exception.getMessage()))
+                );
+    }
+
+    @Override
+    public Flux<User> findUsersNotInList(List<String> userMobiles) {
+        return ReactiveSecurityContextHolder.getContext()
+                .map(securityContext -> securityContext.getAuthentication().getCredentials().toString())
+                .flatMapMany(token -> webClientBuilder.build()
+                            .mutate().defaultHeader("Authorization", "Bearer " + token).build()
+                            .get()
+                            .uri(uriBuilder -> uriBuilder
+                                    .path(userUri + "/users" + "/not-in-list")
+                                    .queryParam("userMobiles", String.join(",", userMobiles))
+                                    .build())
+                            .retrieve()
+                            .bodyToFlux(User.class)
+                            .onErrorMap(Exception.class, exception ->
+                                    new BadGatewayException("Unexpected error: " + exception.getClass() + " - " + exception.getMessage()))
+                );
+    }
+
+    @Override
+    public Mono<String> test() {
+        return ReactiveSecurityContextHolder.getContext()
+                .map(securityContext -> securityContext.getAuthentication().getCredentials().toString())
+                .flatMap(token -> webClientBuilder.build()
+                        .mutate().defaultHeader("Authorization", "Bearer " + token).build()
+                        .get()
+                        .uri(uriBuilder -> uriBuilder
+                                .path(userUri + "/users" + "/not-in-list")
+                                .build())
+                        .retrieve()
+                        .bodyToMono(String.class)
                         .onErrorMap(Exception.class, exception ->
                                 new BadGatewayException("Unexpected error: " + exception.getClass() + " - " + exception.getMessage()))
                 );
