@@ -14,5 +14,5 @@ public class StockAlarmLine {
     @NotBlank
     private Article article;
     private Integer warning;
-    private Integer number;
+    private Integer critical;
 }
