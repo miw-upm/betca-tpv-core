@@ -86,9 +86,9 @@ public class CashierService {
         return this.lastByOpenedAssure(true)
                 .map(lastCashier -> {
                     if(movementDto.getMovementType() == MovementType.DEPOSIT){
-                        lastCashier.withdrawal(movementDto.getAmount(), movementDto.getComment());
-                    }else{
                         lastCashier.deposit(movementDto.getAmount(), movementDto.getComment());
+                    }else{
+                        lastCashier.withdrawal(movementDto.getAmount(), movementDto.getComment());
                     }
                     return lastCashier;
                 })
