@@ -24,7 +24,7 @@ public class CashierResource {
     public static final String LAST = "/last";
     public static final String STATE = "/state";
     public static final String CLOSED_BETWEEN = "/closed-between";
-    public static final String MOVEMENT = "/movement";
+    public static final String CASH_MOVEMENT = "/cash-movement";
 
     private final CashierService cashierService;
 
@@ -59,8 +59,8 @@ public class CashierResource {
         return cashierService.close(cashierClose);
     }
 
-    @PostMapping(value = LAST+MOVEMENT)
-    public Mono<Cashier> addMovement(@Valid @RequestBody CashMovementDto cashMovementDto){
+    @PostMapping(value = CASH_MOVEMENT)
+    public Mono<CashierState> addMovement(@Valid @RequestBody CashMovementDto cashMovementDto){
         return cashierService.addMovement(cashMovementDto);
     }
 }
