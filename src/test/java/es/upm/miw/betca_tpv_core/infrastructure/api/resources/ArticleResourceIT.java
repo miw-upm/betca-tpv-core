@@ -204,7 +204,7 @@ class ArticleResourceIT {
     }
     @Test
     void testFindByUserLoggedPurchasedBarcodesWithoutComplaints_NotAuthManager() {
-        this.restClientTestService.loginOperator(webTestClient)
+        this.restClientTestService.loginManager(webTestClient)
                 .get()
                 .uri(ARTICLES + PURCHASED)
                 .exchange()
