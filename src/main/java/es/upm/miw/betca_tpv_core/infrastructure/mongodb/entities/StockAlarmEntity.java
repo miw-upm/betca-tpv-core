@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities;
 
 import es.upm.miw.betca_tpv_core.domain.model.StockAlarm;
+import es.upm.miw.betca_tpv_core.domain.model.StockAlarmLine;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +12,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -25,7 +27,7 @@ public class StockAlarmEntity {
     private String description;
     private Integer warning;
     private Integer critical;
-    private List<StockAlarmLineEntity> stockAlarmLineEntityList;
+    private List<StockAlarmLineEntity> stockAlarmLineEntities;
 
     public StockAlarmEntity(StockAlarm stockAlarm) {
         BeanUtils.copyProperties(stockAlarm, this);
@@ -34,6 +36,11 @@ public class StockAlarmEntity {
     public StockAlarm toStockAlarm() {
         StockAlarm stockAlarm = new StockAlarm();
         BeanUtils.copyProperties(this, stockAlarm);
+        if(Objects.nonNull(this.stockAlarmLineEntities) && !this.stockAlarmLineEntities.isEmpty()) {
+            stockAlarm.setStockAlarmLines(this.stockAlarmLineEntities.stream()
+                    .map(StockAlarmLineEntity::toStockAlarmLine)
+                    .toList());
+        }
         return stockAlarm;
     }
 }

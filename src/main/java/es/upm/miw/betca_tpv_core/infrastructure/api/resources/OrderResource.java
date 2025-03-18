@@ -51,7 +51,6 @@ public class OrderResource {
 
     @PutMapping(REFERENCE_ID)
     public Mono<Order> update(@PathVariable String reference, @Valid @RequestBody Order order) {
-        order.doDefault();
         return this.orderService.update(reference, order);
     }
 

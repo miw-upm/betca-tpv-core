@@ -57,7 +57,7 @@ public class StockAlarmPersistenceMongodb implements StockAlarmPersistence {
                 .switchIfEmpty(Mono.error(new NotFoundException("Non existent stock alarm name: " + name)))
                 .flatMap(stockAlarmEntity -> {
                     BeanUtils.copyProperties(stockAlarm, stockAlarmEntity);
-                    List<StockAlarmLineEntity> lines = stockAlarmEntity.getStockAlarmLineEntityList();
+                    List<StockAlarmLineEntity> lines = stockAlarmEntity.getStockAlarmLineEntities();
                     if (lines == null || lines.isEmpty()) {
                         return Mono.just(stockAlarmEntity);
                     }
