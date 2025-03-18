@@ -5,9 +5,11 @@ import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.services.ArticleService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ArticleBarcodesDto;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -17,6 +19,7 @@ import reactor.core.publisher.Mono;
 public class ArticleResource {
     public static final String ARTICLES = "/articles";
 
+    public static final String PURCHASED = "/purchased_barcodes";
     public static final String BARCODE_ID = "/{barcode}";
     public static final String SEARCH = "/search";
     public static final String UNFINISHED = "/unfinished";
@@ -75,4 +78,11 @@ public class ArticleResource {
         return this.articleService.findByProviderCompany(providerCompany);
     }
 
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @GetMapping(value = PURCHASED)
+    public Mono<ArticleBarcodesDto> getPurchasedBarcodesWithoutComplaints(Authentication authentication){
+        return this.articleService.getPurchasedBarcodesWithoutComplaints(authentication.getPrincipal().toString())
+                .collectList()
+                .map(ArticleBarcodesDto::new);
+    }
 }
