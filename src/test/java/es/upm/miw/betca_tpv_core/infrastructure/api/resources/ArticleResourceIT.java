@@ -184,19 +184,31 @@ class ArticleResourceIT {
                         .stream().allMatch(article -> article.getProviderCompany().toLowerCase().contains("pro1"))));
     }
     @Test
-    void test() {
+    void testFindByUserLoggedPurchasedBarcodesWithoutComplaints_NotAuthAdmin() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(uriBuilder -> uriBuilder
-                        .path(ARTICLES + SEARCH_PROVIDER_COMPANY)
-                        .queryParam("providerCompany", "pro1")
-                        .build())
+                .uri(ARTICLES + PURCHASED)
                 .exchange()
-                .expectStatus().isOk()
-                .expectBodyList(Article.class)
-                .value(Assertions::assertNotNull)
-                .value(articles ->
-                        assertTrue(articles
-                                .stream().allMatch(article -> article.getProviderCompany().toLowerCase().contains("pro1"))));
+                .expectStatus()
+                .isUnauthorized();
+    }
+
+    @Test
+    void testFindByUserLoggedPurchasedBarcodesWithoutComplaints_NotAuthOperator() {
+        this.restClientTestService.loginOperator(webTestClient)
+                .get()
+                .uri(ARTICLES + PURCHASED)
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
+    }
+    @Test
+    void testFindByUserLoggedPurchasedBarcodesWithoutComplaints_NotAuthManager() {
+        this.restClientTestService.loginOperator(webTestClient)
+                .get()
+                .uri(ARTICLES + PURCHASED)
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
     }
 }
