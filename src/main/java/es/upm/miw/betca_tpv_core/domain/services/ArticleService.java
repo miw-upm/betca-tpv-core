@@ -73,6 +73,7 @@ public class ArticleService {
                 .filterWhen(barcode1 -> this.complaintPersistence.findByUserMobileAndBarcodeAndState(userMobile,barcode1.toString(), ComplaintState.OPEN)
                         .hasElement()
                         .map(hasComplaint -> Boolean.FALSE.equals(hasComplaint))
-                );
+                )
+                .filter(barcode2 -> barcode == null || barcode2.contains(barcode));
     }
 }

@@ -13,7 +13,7 @@ public class ArticleServiceIT {
     private ArticleService articleService;
 
     @Test
-    void testFindByUserLoggedPurchasedBarcodesWithoutComplaints(){
+    void testFindByBarcodeAndUserLoggedPurchasedBarcodesWithoutComplaints(){
         StepVerifier.create(this.articleService.findByBarcodeAndUserLoggedPurchasedArticlesWithoutComplaintsOpen(null,"666666004"))
                 .expectNextCount(3)
                 .thenConsumeWhile(Objects::nonNull)
@@ -21,15 +21,22 @@ public class ArticleServiceIT {
     }
 
     @Test
-    void testFindByUserLoggedPurchasedBarcodesWithoutComplaints_UserWithAllComplaintsCreated(){
+    void testFindByBarcodeAndUserLoggedPurchasedBarcodesWithoutComplaints_withBarcodeFilter(){
+        StepVerifier.create(this.articleService.findByBarcodeAndUserLoggedPurchasedArticlesWithoutComplaintsOpen("8400000000031","666666004"))
+                .expectNextCount(1)
+                .verifyComplete();
+    }
+
+    @Test
+    void testFindByBarcodeAndUserLoggedPurchasedBarcodesWithoutComplaints_UserWithAllComplaintsCreated(){
         StepVerifier.create(this.articleService.findByBarcodeAndUserLoggedPurchasedArticlesWithoutComplaintsOpen(null,"66"))
                 .expectNextCount(0)
                 .verifyComplete();
     }
 
     @Test
-    void testFindByUserLoggedPurchasedBarcodesWithoutComplaints_WithOutPurchasedItems(){
-        StepVerifier.create(this.articleService.findByBarcodeAndUserLoggedPurchasedArticlesWithoutComplaintsOpen(null,"66"))
+    void testFindByBarcodeAndUserLoggedPurchasedBarcodesWithoutComplaints_WithOutPurchasedItems(){
+        StepVerifier.create(this.articleService.findByBarcodeAndUserLoggedPurchasedArticlesWithoutComplaintsOpen(null,"6600001"))
                 .expectNextCount(0)
                 .verifyComplete();
     }

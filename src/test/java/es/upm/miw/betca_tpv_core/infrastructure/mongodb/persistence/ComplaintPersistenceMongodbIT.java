@@ -53,14 +53,14 @@ class ComplaintPersistenceMongodbIT {
     }
 
     @Test
-    void testFindByUserMobileAndBarcode_NotExistsBarcode(){
+    void testFindByUserMobileAndBarcodeAndState_NotExistsBarcode(){
         StepVerifier
                 .create(this.complaintPersistenceMongodb.findByUserMobileAndBarcodeAndState("66","y",ComplaintState.CLOSED))
                 .verifyComplete();
     }
 
     @Test
-    void testFindByUserMobileAndBarcode_ExistsComplaint(){
+    void testFindByUserMobileAndBarcodeAndState_ExistsComplaint(){
         StepVerifier
                 .create(this.complaintPersistenceMongodb.findByUserMobileAndBarcodeAndState("66","8400000000017",ComplaintState.OPEN))
                 .assertNext(complaint -> assertTrue(complaint.getDescription().contains("Queja aleatoria")))
@@ -69,7 +69,7 @@ class ComplaintPersistenceMongodbIT {
     }
 
     @Test
-    void testFindByUserMobileAndBarcode_NotExistsComplaint(){
+    void testFindByUserMobileAndBarcodeAndState_NotExistsComplaint(){
         StepVerifier
                 .create(this.complaintPersistenceMongodb.findByUserMobileAndBarcodeAndState("66","8400000000100",ComplaintState.OPEN))
                 .verifyComplete();

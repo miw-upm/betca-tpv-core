@@ -51,7 +51,7 @@ class ComplaintReactiveIT {
                 .verify();
     }
     @Test
-    void testFindByUserMobileAndBarcode_ShouldCompleteWhenNoComplaintExists() {
+    void testFindByUserMobileAndArticleAndState_ShouldCompleteWhenNoComplaintExists() {
         StepVerifier
                 .create(
                         articleReactive.findByBarcode("8400000000100")
@@ -61,7 +61,7 @@ class ComplaintReactiveIT {
                 .verify();
     }
     @Test
-    void testFindByUserMobileAndBarcode_ShouldReturnComplaintExists() {
+    void testFindByUserMobileAndArticleAndState_ShouldReturnComplaintExists() {
         StepVerifier
                 .create(
                         articleReactive.findByBarcode("8400000000017")
