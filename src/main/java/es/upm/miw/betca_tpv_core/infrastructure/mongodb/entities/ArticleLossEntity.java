@@ -17,6 +17,11 @@ public class ArticleLossEntity {
     private String barcode;
     private Double amount;
 
+    public ArticleLossEntity(ArticleLoss articleLoss) {
+        this.barcode = articleLoss.getBarcode();
+        this.amount = articleLoss.getAmount();
+    }
+
     public ArticleLoss toArticleLoss(){
         ArticleLoss articleLoss = new ArticleLoss();
         articleLoss.setAmount(amount);

@@ -183,4 +183,32 @@ class ArticleResourceIT {
                         assertTrue(articles
                         .stream().allMatch(article -> article.getProviderCompany().toLowerCase().contains("pro1"))));
     }
+    @Test
+    void testFindByUserLoggedPurchasedBarcodesWithoutComplaints_NotAuthAdmin() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(ARTICLES + PURCHASED)
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
+    }
+
+    @Test
+    void testFindByUserLoggedPurchasedBarcodesWithoutComplaints_NotAuthOperator() {
+        this.restClientTestService.loginOperator(webTestClient)
+                .get()
+                .uri(ARTICLES + PURCHASED)
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
+    }
+    @Test
+    void testFindByUserLoggedPurchasedBarcodesWithoutComplaints_NotAuthManager() {
+        this.restClientTestService.loginManager(webTestClient)
+                .get()
+                .uri(ARTICLES + PURCHASED)
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
+    }
 }

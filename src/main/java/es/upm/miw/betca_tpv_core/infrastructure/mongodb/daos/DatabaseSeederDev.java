@@ -35,6 +35,7 @@ public class DatabaseSeederDev {
     private final StockAuditDao stockAuditDao;
     private final ComplaintDao complaintDao;
     private final OrderDao orderDao;
+    private final StockAlarmDao stockAlarmDao;
 
     private final DatabaseStarting databaseStarting;
 
@@ -54,7 +55,8 @@ public class DatabaseSeederDev {
             VoucherDao voucherDao,
             StockAuditDao stockAuditDao,
             ComplaintDao complaintDao,
-            OrderDao orderDao
+            OrderDao orderDao,
+            StockAlarmDao stockAlarmDao
     ) {
         this.articleDao = articleDao;
         this.providerDao = providerDao;
@@ -71,6 +73,7 @@ public class DatabaseSeederDev {
         this.stockAuditDao = stockAuditDao;
         this.complaintDao = complaintDao;
         this.orderDao = orderDao;
+        this.stockAlarmDao = stockAlarmDao;
 
         this.deleteAllAndInitializeAndSeedDataBase();
     }
@@ -87,12 +90,14 @@ public class DatabaseSeederDev {
         this.providerDao.deleteAll();
         this.cashierDao.deleteAll();
         this.offerDao.deleteAll();
+        this.rgpdDao.deleteAll();
         this.customerPointsDao.deleteAll();
         this.invoiceDao.deleteAll();
         this.budgetDao.deleteAll();
         this.voucherDao.deleteAll();
         this.stockAuditDao.deleteAll();
         this.orderDao.deleteAll();
+        this.stockAlarmDao.deleteAll();
         log.warn("------- Delete All -----------");
         this.databaseStarting.initialize();
     }
@@ -194,6 +199,8 @@ public class DatabaseSeederDev {
                         3, ZERO, ShoppingState.COMMITTED),
                 new ShoppingEntity(articles[5], articles[5].getDescription(), articles[5].getRetailPrice(),
                         2, ZERO, ShoppingState.COMMITTED),
+                new ShoppingEntity(articles[1], articles[1].getDescription(), articles[1].getRetailPrice(),
+                        3, new BigDecimal("50"), ShoppingState.COMMITTED),
         };
         LocalDateTime date = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
         TicketEntity[] tickets = {
@@ -212,6 +219,21 @@ public class DatabaseSeederDev {
                 new TicketEntity("5fa4608f4928694ef5980e4d", "WB9-e8xQT4ejb74r1vLrCw",
                         List.of(shoppingList[5]), date, new BigDecimal("20"),
                         new BigDecimal("5"), ZERO, "note", "666666005", ZERO),
+                new TicketEntity("5fa4608f4928694ef5980e4e", "WB9-e8xQT4ejb74r1vLrCw",
+                        List.of(shoppingList[3]), date, new BigDecimal("20"),
+                        new BigDecimal("5"), ZERO, "note", "666666005", ZERO),
+                new TicketEntity("5fa4608f4928694ef5980e4f", "WB9-e8xQT4ejb74r1vLrCw",
+                        List.of(shoppingList[6]), date, new BigDecimal("20"),
+                        new BigDecimal("5"), ZERO, "note", "666666005", ZERO),
+                new TicketEntity("5fa4608f4928694ef5980e4g", "nUs81zZ4R_iuoq0_zCRm6A",
+                        List.of(shoppingList[6]), date, new BigDecimal("10"),
+                        new BigDecimal("6"), ZERO, "note", "66", ZERO),
+                new TicketEntity("5fa4608f4928694ef5980e4h", "nUs81zZ4R_iuoq0_zCRm6A",
+                        List.of(shoppingList[2]), date, new BigDecimal("10"),
+                        new BigDecimal("6"), ZERO, "note", "66", ZERO),
+                new TicketEntity("5fa4608f4928694ef5980e4i", "nUs81zZ4R_iuoq0_zCRm6A",
+                        List.of(shoppingList[3]), date, new BigDecimal("30"),
+                        new BigDecimal("6"), ZERO, "note", "66", ZERO),
         };
         this.ticketDao.saveAll(Arrays.asList(tickets));
         log.warn("        ------- tickets");
@@ -302,57 +324,57 @@ public class DatabaseSeederDev {
         CashierEntity[] cashiers = {
                 CashierEntity.builder().id("00010b300000000000000000").cardSales(BigDecimal.valueOf(100)).cashSales(BigDecimal.valueOf(1)).withdrawal(BigDecimal.valueOf(20)).deposit(BigDecimal.valueOf(20))
                         .initialCash(BigDecimal.valueOf(0)).finalCash(BigDecimal.valueOf(1)).comment("Demo cashier closure Jan 1970 (1)")
-                        .openingDate(LocalDateTime.of(1970,1,1,8,0)).closureDate(LocalDateTime.of(1970,1,1,20,0)).build(),
+                        .openingDate(LocalDateTime.of(1970, 1, 1, 8, 0)).closureDate(LocalDateTime.of(1970, 1, 1, 20, 0)).build(),
                 CashierEntity.builder().id("00025cb00000000000000000").cardSales(BigDecimal.valueOf(200)).cashSales(BigDecimal.valueOf(10)).withdrawal(BigDecimal.valueOf(9)).deposit(BigDecimal.valueOf(0))
                         .initialCash(BigDecimal.valueOf(1)).finalCash(BigDecimal.valueOf(2)).comment("Demo cashier closure Jan 1970 (2)")
-                        .openingDate(LocalDateTime.of(1970,1,2,8,0)).closureDate(LocalDateTime.of(1970,1,2,20,0)).build(),
+                        .openingDate(LocalDateTime.of(1970, 1, 2, 8, 0)).closureDate(LocalDateTime.of(1970, 1, 2, 20, 0)).build(),
                 CashierEntity.builder().id("002898300000000000000000").cardSales(BigDecimal.valueOf(20)).cashSales(BigDecimal.valueOf(100)).withdrawal(BigDecimal.valueOf(100)).deposit(BigDecimal.valueOf(3))
                         .initialCash(BigDecimal.valueOf(2)).finalCash(BigDecimal.valueOf(5)).comment("Demo cashier closure Jan 1970 (3)")
-                        .openingDate(LocalDateTime.of(1970,1,31,8,0)).closureDate(LocalDateTime.of(1970,1,31,20,0)).build(),
+                        .openingDate(LocalDateTime.of(1970, 1, 31, 8, 0)).closureDate(LocalDateTime.of(1970, 1, 31, 20, 0)).build(),
                 CashierEntity.builder().id("0029e9b00000000000000000").cardSales(BigDecimal.valueOf(25)).cashSales(BigDecimal.valueOf(25)).withdrawal(BigDecimal.valueOf(20)).deposit(BigDecimal.valueOf(3))
                         .initialCash(BigDecimal.valueOf(5)).finalCash(BigDecimal.valueOf(13)).comment("Demo cashier closure Feb 1970 (1)")
-                        .openingDate(LocalDateTime.of(1970,2,1,8,0)).closureDate(LocalDateTime.of(1970,2,1,20,0)).build(),
+                        .openingDate(LocalDateTime.of(1970, 2, 1, 8, 0)).closureDate(LocalDateTime.of(1970, 2, 1, 20, 0)).build(),
                 CashierEntity.builder().id("003c5eb00000000000000000").cardSales(BigDecimal.valueOf(100)).cashSales(BigDecimal.valueOf(27)).withdrawal(BigDecimal.valueOf(30)).deposit(BigDecimal.valueOf(0))
                         .initialCash(BigDecimal.valueOf(13)).finalCash(BigDecimal.valueOf(10)).comment("Demo cashier closure Feb 1970 (2)")
-                        .openingDate(LocalDateTime.of(1970,2,15,8,0)).closureDate(LocalDateTime.of(1970,2,15,20,0)).build(),
+                        .openingDate(LocalDateTime.of(1970, 2, 15, 8, 0)).closureDate(LocalDateTime.of(1970, 2, 15, 20, 0)).build(),
                 CashierEntity.builder().id("00cea7200000000000000000").cardSales(BigDecimal.valueOf(0)).cashSales(BigDecimal.valueOf(40)).withdrawal(BigDecimal.valueOf(25)).deposit(BigDecimal.valueOf(50))
                         .initialCash(BigDecimal.valueOf(10)).finalCash(BigDecimal.valueOf(75)).comment("Demo cashier closure Jun 1970 (1)")
-                        .openingDate(LocalDateTime.of(1970,6,6,8,0)).closureDate(LocalDateTime.of(1970,6,6,20,0)).build(),
+                        .openingDate(LocalDateTime.of(1970, 6, 6, 8, 0)).closureDate(LocalDateTime.of(1970, 6, 6, 20, 0)).build(),
                 CashierEntity.builder().id("01e0ed300000000000000000").cardSales(BigDecimal.valueOf(75)).cashSales(BigDecimal.valueOf(25)).withdrawal(BigDecimal.valueOf(50)).deposit(BigDecimal.valueOf(0))
                         .initialCash(BigDecimal.valueOf(75)).finalCash(BigDecimal.valueOf(50)).comment("Demo cashier closure Dec 1970 (1)")
-                        .openingDate(LocalDateTime.of(1970,12,31,8,0)).closureDate(LocalDateTime.of(1970,12,31,20,0)).build(),
+                        .openingDate(LocalDateTime.of(1970, 12, 31, 8, 0)).closureDate(LocalDateTime.of(1970, 12, 31, 20, 0)).build(),
                 CashierEntity.builder().id("01e23eb00000000000000000").cardSales(BigDecimal.valueOf(15)).cashSales(BigDecimal.valueOf(100)).withdrawal(BigDecimal.valueOf(0)).deposit(BigDecimal.valueOf(50))
                         .initialCash(BigDecimal.valueOf(50)).finalCash(BigDecimal.valueOf(200)).comment("Demo cashier closure Jan 1971 (1)")
-                        .openingDate(LocalDateTime.of(1971,1,1,8,0)).closureDate(LocalDateTime.of(1971,1,1,20,0)).build()
+                        .openingDate(LocalDateTime.of(1971, 1, 1, 8, 0)).closureDate(LocalDateTime.of(1971, 1, 1, 20, 0)).build()
         };
 
         this.cashierDao.saveAll(Arrays.asList(cashiers));
         log.warn("        ------- cashierClosure");
 
-            LocalDateTime dateComplaintCreationArticle1 = LocalDateTime.of(2021, Month.JANUARY, 1, 20, 56);
-            LocalDateTime dateComplaintCreationArticle2 = LocalDateTime.of(2022, Month.MAY, 31, 1, 34);
-            LocalDateTime dateComplaintCreationArticle3 = LocalDateTime.of(2021, Month.JULY, 15, 10, 4);
-            LocalDateTime dateComplaintCreationArticle4 = LocalDateTime.of(2022, Month.AUGUST, 15, 10, 4);
+        LocalDateTime dateComplaintCreationArticle1 = LocalDateTime.of(2021, Month.JANUARY, 1, 20, 56);
+        LocalDateTime dateComplaintCreationArticle2 = LocalDateTime.of(2022, Month.MAY, 31, 1, 34);
+        LocalDateTime dateComplaintCreationArticle3 = LocalDateTime.of(2021, Month.JULY, 15, 10, 4);
+        LocalDateTime dateComplaintCreationArticle4 = LocalDateTime.of(2022, Month.AUGUST, 15, 10, 4);
 
-            ComplaintEntity[] complaints = {
-                    ComplaintEntity.builder().id("dfun8ecm9cd").description("Queja aleatoria").reply("")
-                            .article(articles[0]).registrationDate(dateComplaintCreationArticle1).state(ComplaintState.OPEN)
-                            .registrationDate(dateComplaintCreationArticle1).userMobile("66").build(),
-                    ComplaintEntity.builder().description("Queja MIW").reply("Respuesta MIW").state(ComplaintState.CLOSED)
-                            .article(articles[1]).registrationDate(dateComplaintCreationArticle2)
-                            .registrationDate(dateComplaintCreationArticle2).userMobile("66").build(),
-                    ComplaintEntity.builder().description("Queja Grado").reply("").state(ComplaintState.OPEN)
-                            .article(articles[2]).registrationDate(dateComplaintCreationArticle3)
-                            .userMobile("66").build(),
-                    ComplaintEntity.builder().description("Queja Asignatura").reply("Solucionado").state(ComplaintState.CLOSED)
-                            .article(articles[2]).registrationDate(dateComplaintCreationArticle4)
-                            .userMobile("666666005").build(),
-                    ComplaintEntity.builder().id("frieourfncw0").description("Queja articulo").reply("").state(ComplaintState.OPEN)
-                            .article(articles[1]).registrationDate(dateComplaintCreationArticle1)
-                            .userMobile("666666005").build(),
-            };
-            this.complaintDao.saveAll(Arrays.asList(complaints));
-            log.warn("        ------- complaints");
+        ComplaintEntity[] complaints = {
+                ComplaintEntity.builder().id("dfun8ecm9cd").description("Queja aleatoria").reply("")
+                        .article(articles[0]).registrationDate(dateComplaintCreationArticle1).state(ComplaintState.OPEN)
+                        .registrationDate(dateComplaintCreationArticle1).userMobile("66").build(),
+                ComplaintEntity.builder().description("Queja MIW").reply("Respuesta MIW").state(ComplaintState.CLOSED)
+                        .article(articles[1]).registrationDate(dateComplaintCreationArticle2)
+                        .registrationDate(dateComplaintCreationArticle2).userMobile("66").build(),
+                ComplaintEntity.builder().description("Queja Grado").reply("").state(ComplaintState.OPEN)
+                        .article(articles[2]).registrationDate(dateComplaintCreationArticle3)
+                        .userMobile("66").build(),
+                ComplaintEntity.builder().description("Queja Asignatura").reply("Solucionado").state(ComplaintState.CLOSED)
+                        .article(articles[2]).registrationDate(dateComplaintCreationArticle4)
+                        .userMobile("666666005").build(),
+                ComplaintEntity.builder().id("frieourfncw0").description("Queja articulo").reply("").state(ComplaintState.OPEN)
+                        .article(articles[1]).registrationDate(dateComplaintCreationArticle1)
+                        .userMobile("666666005").build(),
+        };
+        this.complaintDao.saveAll(Arrays.asList(complaints));
+        log.warn("        ------- complaints");
 
 
         log.warn("------- seeded customer points for users");
@@ -364,35 +386,56 @@ public class DatabaseSeederDev {
         LocalDateTime providerOrderOpeningDate2 = LocalDateTime.of(2022, Month.MAY, 12, 10, 36);
 
         List<OrderLineEntity> orderLinesEntity1 = Arrays.asList(
-                new OrderLineEntity("barcode1", 1,null),
+                new OrderLineEntity("barcode1", 1, null),
                 new OrderLineEntity("barcode2", 0, null)
         );
 
         List<OrderLineEntity> orderLinesEntity2 = Arrays.asList(
-                new OrderLineEntity("barcode3", 1,null),
+                new OrderLineEntity("barcode3", 1, null),
                 new OrderLineEntity("barcode4", 4, null)
         );
 
         OrderEntity[] orders = {
-            OrderEntity.builder().id("65674521222")
-                    .reference("ref1")
-                    .description("desc1")
-                    .providerCompany("pro1")
-                    .openingDate(providerOrderOpeningDate1)
-                    .closingDate(null)
-                    .orderLineEntities(orderLinesEntity1).build(),
-            OrderEntity.builder().id("23123")
-                    .reference("ref2")
-                    .description("desc2")
-                    .providerCompany("pro2")
-                    .openingDate(providerOrderOpeningDate2)
-                    .closingDate(null)
-                    .orderLineEntities(orderLinesEntity2).build()
+                OrderEntity.builder().id("65674521222")
+                        .reference("ref1")
+                        .description("desc1")
+                        .providerCompany("pro1")
+                        .openingDate(providerOrderOpeningDate1)
+                        .closingDate(null)
+                        .orderLineEntities(orderLinesEntity1).build(),
+                OrderEntity.builder().id("23123")
+                        .reference("ref2")
+                        .description("desc2")
+                        .providerCompany("pro2")
+                        .openingDate(providerOrderOpeningDate2)
+                        .closingDate(null)
+                        .orderLineEntities(orderLinesEntity2).build()
         };
 
 
         this.orderDao.saveAll(Arrays.asList(orders));
         log.warn("        ------- providerOrders");
+
+        StockAlarmLineEntity[] stockAlarmLineEntities = {
+                StockAlarmLineEntity.builder().article(articles[0].toArticle()).warning(2).critical(1).build(),
+                StockAlarmLineEntity.builder().article(articles[1].toArticle()).warning(3).critical(2).build(),
+        };
+        StockAlarmEntity[] stockAlarms = {
+                StockAlarmEntity.builder().name("Alarma1")
+                        .description("Descripcion 1")
+                        .warning(5)
+                        .critical(3)
+                        .stockAlarmLineEntities(List.of(stockAlarmLineEntities))
+                        .build(),
+                StockAlarmEntity.builder().name("Alarma2")
+                        .description("Descripcion 2")
+                        .warning(8)
+                        .critical(5)
+                        .build(),
+        };
+
+        this.stockAlarmDao.saveAll(Arrays.asList(stockAlarms));
+        log.warn("        ------- stockAlarms");
 
     }
 
@@ -426,8 +469,8 @@ public class DatabaseSeederDev {
         stockAudit.setId(id);
         stockAudit.setCreationDate(creationDate);
         stockAudit.setCloseDate(creationDate.plusDays(15));
-        stockAudit.setArticlesWithoutAudit(articles);
-        stockAudit.setLossValue(numArticles * 10);
+        stockAudit.setArticlesAudited(articles);
+        stockAudit.setLossValue(BigDecimal.valueOf(numArticles * 10L));
         stockAudit.setLosses(losses);
 
         return stockAudit;

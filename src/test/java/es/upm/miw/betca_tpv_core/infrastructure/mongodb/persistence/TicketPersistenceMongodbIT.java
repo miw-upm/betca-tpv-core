@@ -11,6 +11,7 @@ import reactor.test.StepVerifier;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -43,4 +44,20 @@ class TicketPersistenceMongodbIT {
                 .verify();
     }
 
+    @Test
+    void test_findbyUserMobile(){
+        StepVerifier
+                .create(this.ticketPersistenceMongodb.findByUserMobile("666666004"))
+                .expectNextCount(2)
+                .thenConsumeWhile(Objects::nonNull)
+                .verifyComplete();
+    }
+
+    @Test
+    void test_findbyUserMobile_UserWithOutPurchasedBarcodes(){
+        StepVerifier
+                .create(this.ticketPersistenceMongodb.findByUserMobile("666666001"))
+                .expectNextCount(0)
+                .verifyComplete();
+    }
 }

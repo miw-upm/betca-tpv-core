@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.exceptions.BadRequestException;
 import es.upm.miw.betca_tpv_core.domain.model.Rgpd;
+import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.persistence.RgpdPersistence;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,17 @@ public class RgpdService {
     public Mono<Rgpd> updateRgpd(String userMobile, Rgpd updatedRgpd) {
         return rgpdPersistence.updateRgpd(userMobile, updatedRgpd)
                 .map(rgpd -> rgpd);
+    }
+
+    public Flux<User> findUsersNotSignedRgpd() {
+        Mono<String> str = this.userMicroservice.test();
+
+        return this.rgpdPersistence.findAllRgpds()
+                .map(Rgpd::getUser)
+                .map(User::getMobile)
+                .collectList()
+                .flatMapMany(this.userMicroservice::findUsersNotInList)
+                .map(user -> User.builder().mobile(user.getMobile()).firstName(user.getFirstName()).build());
     }
 
     private Mono<Void> verifyUserExistsByMobile(String userMobile) {
