@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
+import es.upm.miw.betca_tpv_core.domain.model.ComplaintState;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintCreationDto;
 import org.junit.jupiter.api.Assertions;
@@ -184,7 +185,7 @@ class ComplaintResourceIT {
                 .value(complaint -> {
                     assertNotNull(complaint.getId());
                     assertEquals("","Nueva descripcion de test resource",complaint.getDescription());
-                    assertEquals("","OPEN",complaint.getState());
+                    assertEquals("", ComplaintState.OPEN,complaint.getState());
                     assertEquals("","66",complaint.getUserMobile());
                     assertEquals("","8400000000086",complaint.getBarcode());
                 });

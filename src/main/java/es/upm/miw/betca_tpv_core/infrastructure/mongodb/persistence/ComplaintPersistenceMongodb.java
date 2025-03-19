@@ -1,17 +1,12 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
-import com.fasterxml.jackson.databind.util.BeanUtil;
-import es.upm.miw.betca_tpv_core.domain.exceptions.ForbiddenException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
-import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
-import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.persistence.ComplaintPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ComplaintReactive;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ArticleEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ComplaintEntity;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ComplaintState;
+import es.upm.miw.betca_tpv_core.domain.model.ComplaintState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,11 +56,11 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
     }
 
     @Override
-    public Mono<Complaint> findByUserMobileAndBarcode(String userMobile, String barcode) {
+    public Mono<Complaint> findByUserMobileAndBarcodeAndState(String userMobile, String barcode,ComplaintState state) {
         return  this.articleReactive.findByBarcode(barcode)
                 .switchIfEmpty(Mono.empty())
                 .flatMap(articleEntity -> {
-                    return this.complaintReactive.findByUserMobileAndArticle(userMobile,articleEntity)
+                    return this.complaintReactive.findByUserMobileAndArticleAndState(userMobile,articleEntity,state)
                             .map(ComplaintEntity::toComplaint);
                 });
 
