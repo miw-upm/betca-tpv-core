@@ -32,4 +32,8 @@ public class StockAlarmService {
     public Mono<StockAlarm> update(String name, StockAlarm stockAlarm) {
         return this.stockAlarmPersistence.update(name, stockAlarm);
     }
+
+    public Mono<StockAlarm> updateLines(String name, StockAlarm stockAlarm) {
+        return this.stockAlarmPersistence.updateLines(name, stockAlarm);
+    }
 }
