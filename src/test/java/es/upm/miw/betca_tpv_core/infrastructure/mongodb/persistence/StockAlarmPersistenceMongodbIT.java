@@ -19,8 +19,6 @@ public class StockAlarmPersistenceMongodbIT {
 
     @Autowired
     private StockAlarmPersistenceMongodb stockAlarmPersistenceMongodb;
-    @Autowired
-    private ArticlePersistenceMongodb articlePersistenceMongodb;
 
     @Test
     void testCreate() {

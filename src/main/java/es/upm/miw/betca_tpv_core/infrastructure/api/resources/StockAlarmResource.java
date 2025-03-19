@@ -15,6 +15,7 @@ public class StockAlarmResource {
 
     public static final String STOCK_ALARMS = "/stock-alarms";
     public static final String STOCK_ALARM_ID = "/{name}";
+    public static final String STOCK_ALARM_LINES = "/lines";
 
     private final StockAlarmService stockAlarmService;
 
@@ -43,5 +44,10 @@ public class StockAlarmResource {
     public Mono<StockAlarm> update(@PathVariable String name, @Valid @RequestBody StockAlarm stockAlarm) {
         return this.stockAlarmService.update(name, stockAlarm)
                 .map(StockAlarm::ofNameDescriptionWarningCritical);
+    }
+
+    @PutMapping(STOCK_ALARM_ID+STOCK_ALARM_LINES)
+    public Mono<StockAlarm> updateLines(@PathVariable String name, @Valid @RequestBody StockAlarm stockAlarm) {
+        return this.stockAlarmService.updateLines(name, stockAlarm);
     }
 }
