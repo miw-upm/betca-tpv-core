@@ -184,7 +184,7 @@ class ArticleResourceIT {
                         .stream().allMatch(article -> article.getProviderCompany().toLowerCase().contains("pro1"))));
     }
     @Test
-    void testFindByUserLoggedPurchasedBarcodesWithoutComplaints_NotAuthAdmin() {
+    void testFindByBarcodeAndUserLoggedPurchasedBarcodesWithoutComplaints_NotAuthAdmin() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(ARTICLES + PURCHASED)
@@ -194,7 +194,7 @@ class ArticleResourceIT {
     }
 
     @Test
-    void testFindByUserLoggedPurchasedBarcodesWithoutComplaints_NotAuthOperator() {
+    void testFindByBarcodeAndUserLoggedPurchasedBarcodesWithoutComplaints_NotAuthOperator() {
         this.restClientTestService.loginOperator(webTestClient)
                 .get()
                 .uri(ARTICLES + PURCHASED)
@@ -203,7 +203,7 @@ class ArticleResourceIT {
                 .isUnauthorized();
     }
     @Test
-    void testFindByUserLoggedPurchasedBarcodesWithoutComplaints_NotAuthManager() {
+    void testFindByBarcodeAndUserLoggedPurchasedBarcodesWithoutComplaints_NotAuthManager() {
         this.restClientTestService.loginManager(webTestClient)
                 .get()
                 .uri(ARTICLES + PURCHASED)
