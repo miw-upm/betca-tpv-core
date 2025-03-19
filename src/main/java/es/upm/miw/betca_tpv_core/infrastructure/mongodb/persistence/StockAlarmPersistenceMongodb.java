@@ -3,17 +3,18 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.StockAlarm;
+import es.upm.miw.betca_tpv_core.domain.model.StockAlarmLine;
 import es.upm.miw.betca_tpv_core.domain.persistence.StockAlarmPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.StockAlarmReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.StockAlarmEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.StockAlarmLineEntity;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -50,26 +51,56 @@ public class StockAlarmPersistenceMongodb implements StockAlarmPersistence {
 
     @Override
     public Mono<StockAlarm> update(String name, StockAlarm stockAlarm) {
-        if(!name.equals(stockAlarm.getName())) {
+        if (!name.equals(stockAlarm.getName())) {
             return Mono.error(new ConflictException("Inconsistent stock alarm name"));
         }
+
         return this.stockAlarmReactive.findByName(name)
                 .switchIfEmpty(Mono.error(new NotFoundException("Non existent stock alarm name: " + name)))
                 .flatMap(stockAlarmEntity -> {
-                    BeanUtils.copyProperties(stockAlarm, stockAlarmEntity);
-                    List<StockAlarmLineEntity> lines = stockAlarmEntity.getStockAlarmLineEntities();
-                    if (lines == null || lines.isEmpty()) {
-                        return Mono.just(stockAlarmEntity);
-                    }
-                    return Flux.fromIterable(lines)
-                            .flatMap(line -> this.articleReactive.findByBarcode(line.getArticle().getBarcode())
-                                    .switchIfEmpty(
-                                            Mono.error(new NotFoundException("Non existent article barcode: " +
-                                                    line.getArticle().getBarcode()))))
-                            .then(Mono.just(stockAlarmEntity));
+                    stockAlarmEntity.setDescription(stockAlarm.getDescription());
+                    stockAlarmEntity.setWarning(stockAlarm.getWarning());
+                    stockAlarmEntity.setCritical(stockAlarm.getCritical());
+
+                    return this.stockAlarmReactive.save(stockAlarmEntity);
                 })
-                .flatMap(this.stockAlarmReactive::save)
                 .map(StockAlarmEntity::toStockAlarm);
+    }
+
+    @Override
+    public Mono<StockAlarm> updateLines(String name, StockAlarm stockAlarm) {
+        if (!name.equals(stockAlarm.getName())) {
+            return Mono.error(new ConflictException("Inconsistent stock alarm name"));
+        }
+
+        return this.stockAlarmReactive.findByName(name)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non existent stock alarm name: " + name)))
+                .flatMap(stockAlarmEntity -> {
+                    stockAlarmEntity.setDescription(stockAlarm.getDescription());
+                    stockAlarmEntity.setWarning(stockAlarm.getWarning());
+                    stockAlarmEntity.setCritical(stockAlarm.getCritical());
+
+                    List<StockAlarmLine> newLines = stockAlarm.getStockAlarmLines();
+                    if (newLines == null || newLines.isEmpty()) {
+                        stockAlarmEntity.setStockAlarmLineEntities(new ArrayList<>());
+                        return this.stockAlarmReactive.save(stockAlarmEntity).map(StockAlarmEntity::toStockAlarm);
+                    }
+
+                    return Flux.fromIterable(newLines)
+                            .flatMap(line ->
+                                    this.articleReactive.findByBarcode(line.getArticle().getBarcode())
+                                            .switchIfEmpty(Mono.error(new NotFoundException(
+                                                    "Non existent article barcode: " + line.getArticle().getBarcode())))
+                                            .map(article ->
+                                                    new StockAlarmLineEntity(article.toArticle(),
+                                                            line.getWarning(), line.getCritical())))
+                            .collectList()
+                            .flatMap(updatedLines -> {
+                                stockAlarmEntity.setStockAlarmLineEntities(updatedLines);
+                                return this.stockAlarmReactive.save(stockAlarmEntity);
+                            })
+                            .map(StockAlarmEntity::toStockAlarm);
+                });
     }
 
     private Mono<Void> assertNameNotExist(String name) {

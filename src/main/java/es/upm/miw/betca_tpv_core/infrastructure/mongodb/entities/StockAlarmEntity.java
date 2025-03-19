@@ -1,7 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities;
 
 import es.upm.miw.betca_tpv_core.domain.model.StockAlarm;
-import es.upm.miw.betca_tpv_core.domain.model.StockAlarmLine;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,6 +30,11 @@ public class StockAlarmEntity {
 
     public StockAlarmEntity(StockAlarm stockAlarm) {
         BeanUtils.copyProperties(stockAlarm, this);
+        if (Objects.nonNull(stockAlarm.getStockAlarmLines()) && !stockAlarm.getStockAlarmLines().isEmpty()) {
+            this.setStockAlarmLineEntities(stockAlarm.getStockAlarmLines().stream()
+                    .map(StockAlarmLineEntity::new)
+                    .toList());
+        }
     }
 
     public StockAlarm toStockAlarm() {
