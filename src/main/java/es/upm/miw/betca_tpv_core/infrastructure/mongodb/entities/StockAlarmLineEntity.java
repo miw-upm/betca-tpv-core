@@ -22,8 +22,16 @@ public class StockAlarmLineEntity {
     private Integer warning;
     private Integer critical;
 
+    public StockAlarmLineEntity(Article article, Integer warning, Integer critical) {
+        this.article = article;
+        this.warning = warning;
+        this.critical = critical;
+    }
+
     public StockAlarmLineEntity(StockAlarmLine stockAlarmLine) {
-        BeanUtils.copyProperties(stockAlarmLine, this);
+        this.article = stockAlarmLine.getArticle();
+        this.warning = stockAlarmLine.getWarning();
+        this.critical = stockAlarmLine.getCritical();
     }
 
     public StockAlarmLine toStockAlarmLine() {

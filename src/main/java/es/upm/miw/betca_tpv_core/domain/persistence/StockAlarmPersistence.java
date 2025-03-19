@@ -13,4 +13,6 @@ public interface StockAlarmPersistence {
     Flux<StockAlarm> findAll();
 
     Mono<StockAlarm> update(String name, StockAlarm stockAlarm);
+
+    Mono<StockAlarm> updateLines(String name, StockAlarm stockAlarm);
 }
