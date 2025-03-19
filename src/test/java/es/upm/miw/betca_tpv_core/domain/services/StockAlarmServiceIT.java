@@ -115,17 +115,17 @@ public class StockAlarmServiceIT {
                 .build();
 
         StockAlarm stockAlarmUpdated = StockAlarm.builder()
-                .name("AlarmaUpdateLines")
+                .name("AlarmaUpdateLinesService")
                 .description("Actualizado")
                 .warning(5)
                 .critical(2)
                 .stockAlarmLines(List.of(updatedStockAlarmLine))
                 .build();
 
-        StepVerifier.create(this.stockAlarmService.updateLines("AlarmaUpdateLines", stockAlarmUpdated))
+        StepVerifier.create(this.stockAlarmService.updateLines("AlarmaUpdateLinesService", stockAlarmUpdated))
                 .expectNextMatches(updated -> {
                     assertNotNull(updated.getName());
-                    assertEquals("AlarmaUpdateLines", updated.getName());
+                    assertEquals("AlarmaUpdateLinesService", updated.getName());
                     assertNotNull(updated.getDescription());
                     assertEquals("Actualizado", updated.getDescription());
                     assertEquals(5, updated.getWarning());
