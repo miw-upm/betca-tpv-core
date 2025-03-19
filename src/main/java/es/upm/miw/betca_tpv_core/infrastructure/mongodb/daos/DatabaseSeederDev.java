@@ -199,6 +199,8 @@ public class DatabaseSeederDev {
                         3, ZERO, ShoppingState.COMMITTED),
                 new ShoppingEntity(articles[5], articles[5].getDescription(), articles[5].getRetailPrice(),
                         2, ZERO, ShoppingState.COMMITTED),
+                new ShoppingEntity(articles[1], articles[1].getDescription(), articles[1].getRetailPrice(),
+                        3, new BigDecimal("50"), ShoppingState.COMMITTED),
         };
         LocalDateTime date = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
         TicketEntity[] tickets = {
@@ -217,6 +219,21 @@ public class DatabaseSeederDev {
                 new TicketEntity("5fa4608f4928694ef5980e4d", "WB9-e8xQT4ejb74r1vLrCw",
                         List.of(shoppingList[5]), date, new BigDecimal("20"),
                         new BigDecimal("5"), ZERO, "note", "666666005", ZERO),
+                new TicketEntity("5fa4608f4928694ef5980e4e", "WB9-e8xQT4ejb74r1vLrCw",
+                        List.of(shoppingList[3]), date, new BigDecimal("20"),
+                        new BigDecimal("5"), ZERO, "note", "666666005", ZERO),
+                new TicketEntity("5fa4608f4928694ef5980e4f", "WB9-e8xQT4ejb74r1vLrCw",
+                        List.of(shoppingList[6]), date, new BigDecimal("20"),
+                        new BigDecimal("5"), ZERO, "note", "666666005", ZERO),
+                new TicketEntity("5fa4608f4928694ef5980e4g", "nUs81zZ4R_iuoq0_zCRm6A",
+                        List.of(shoppingList[6]), date, new BigDecimal("10"),
+                        new BigDecimal("6"), ZERO, "note", "66", ZERO),
+                new TicketEntity("5fa4608f4928694ef5980e4h", "nUs81zZ4R_iuoq0_zCRm6A",
+                        List.of(shoppingList[2]), date, new BigDecimal("10"),
+                        new BigDecimal("6"), ZERO, "note", "66", ZERO),
+                new TicketEntity("5fa4608f4928694ef5980e4i", "nUs81zZ4R_iuoq0_zCRm6A",
+                        List.of(shoppingList[3]), date, new BigDecimal("30"),
+                        new BigDecimal("6"), ZERO, "note", "66", ZERO),
         };
         this.ticketDao.saveAll(Arrays.asList(tickets));
         log.warn("        ------- tickets");

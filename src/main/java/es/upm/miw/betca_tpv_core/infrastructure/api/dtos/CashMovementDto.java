@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CashMovementDto {
-    private MovementType movementType;
+    private MovementType type;
     @NotNull(message = "amount field is mandatory")
     @Positive(message = "negative or zero amount are not allowed")
     private BigDecimal amount;

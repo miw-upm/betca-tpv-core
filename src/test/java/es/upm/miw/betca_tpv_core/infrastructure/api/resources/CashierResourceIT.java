@@ -16,13 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.*;
+import static java.math.BigDecimal.TEN;
 import static java.math.BigDecimal.ZERO;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -53,8 +53,9 @@ class CashierResourceIT {
 
     private static Stream<Arguments> validCashMovementDtoProvider() {
         return Stream.of(
-                Arguments.of(new CashMovementDto(MovementType.WITHDRAWAL, BigDecimal.TEN, "10e withdrawal")),
-                Arguments.of(new CashMovementDto(MovementType.DEPOSIT, BigDecimal.TEN, "10e deposit"))
+                Arguments.of(new CashMovementDto(MovementType.DEPOSIT, BigDecimal.valueOf(20), "20e deposit")),
+                Arguments.of(new CashMovementDto(MovementType.WITHDRAWAL, TEN, "10e withdrawal")),
+                Arguments.of(new CashMovementDto(MovementType.WITHDRAWAL, TEN, "another 10e withdrawal"))
         );
     }
 
@@ -128,27 +129,27 @@ class CashierResourceIT {
     }
 
     @Test
-    void testFindAllClosedBetween(){
+    void testFindAllClosedBetween() {
         this.restClientTestService.loginAdmin(webTestClient)
-                .get().uri(CASHIERS + CLOSED_BETWEEN +"?from=1970-01-01&to=1970-01-01")
+                .get().uri(CASHIERS + CLOSED_BETWEEN + "?from=1970-01-01&to=1970-01-01")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBodyList(Cashier.class).hasSize(0);
         this.restClientTestService.loginAdmin(webTestClient)
-                .get().uri(CASHIERS + CLOSED_BETWEEN +"?from=1970-01-01&to=1970-02-01")
+                .get().uri(CASHIERS + CLOSED_BETWEEN + "?from=1970-01-01&to=1970-02-01")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Cashier.class).value( cashiers -> cashiers.forEach( cashier -> {
-                    Assertions.assertTrue( cashier.getClosureDate().isAfter(LocalDateTime.of(1970,1,1, 0, 0)));
-                    Assertions.assertTrue( cashier.getClosureDate().isBefore(LocalDateTime.of(1970,2,1, 0, 0)));
+                .expectBodyList(Cashier.class).value(cashiers -> cashiers.forEach(cashier -> {
+                    Assertions.assertTrue(cashier.getClosureDate().isAfter(LocalDateTime.of(1970, 1, 1, 0, 0)));
+                    Assertions.assertTrue(cashier.getClosureDate().isBefore(LocalDateTime.of(1970, 2, 1, 0, 0)));
                 }));
         this.restClientTestService.loginAdmin(webTestClient)
-                .get().uri(CASHIERS + CLOSED_BETWEEN +"?from=1971-01-01&to=1972-01-01")
+                .get().uri(CASHIERS + CLOSED_BETWEEN + "?from=1971-01-01&to=1972-01-01")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Cashier.class).value( cashiers -> cashiers.forEach( cashier -> {
-                    Assertions.assertTrue( cashier.getClosureDate().isAfter(LocalDateTime.of(1971,1,1, 0, 0)));
-                    Assertions.assertTrue( cashier.getClosureDate().isBefore(LocalDateTime.of(1972,1,1, 0, 0)));
+                .expectBodyList(Cashier.class).value(cashiers -> cashiers.forEach(cashier -> {
+                    Assertions.assertTrue(cashier.getClosureDate().isAfter(LocalDateTime.of(1971, 1, 1, 0, 0)));
+                    Assertions.assertTrue(cashier.getClosureDate().isBefore(LocalDateTime.of(1972, 1, 1, 0, 0)));
                 }));
     }
 
@@ -156,7 +157,7 @@ class CashierResourceIT {
     @MethodSource("invalidCashMovementDtoProvider")
     void testAddMovementsWithNonValidDto(CashMovementDto subject) {
         this.restClientTestService.loginAdmin(webTestClient)
-                .post().uri(CASHIERS + LAST + MOVEMENT)
+                .post().uri(CASHIERS + CASH_MOVEMENT)
                 .body(BodyInserters.fromValue(subject))
                 .exchange()
                 .expectStatus().is4xxClientError();
@@ -165,22 +166,27 @@ class CashierResourceIT {
     @ParameterizedTest
     @MethodSource("validCashMovementDtoProvider")
     void testAddMovementsWithValidDto(CashMovementDto subject) {
+        final BigDecimal[] expectedTotalCash = new BigDecimal[]{subject.getAmount()};
+        if(subject.getType() == MovementType.WITHDRAWAL){
+            expectedTotalCash[0] = expectedTotalCash[0].negate();
+        }
         this.restClientTestService.loginAdmin(webTestClient)
                 .post().uri(CASHIERS)
                 .exchange()
                 .expectStatus().isOk();
         this.restClientTestService.loginAdmin(webTestClient)
-                .post().uri(CASHIERS + LAST + MOVEMENT)
+                .get().uri(CASHIERS + LAST + STATE)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(CashierState.class)
+                .value(cashierState -> expectedTotalCash[0] = expectedTotalCash[0].add(cashierState.getTotalCash()));
+        this.restClientTestService.loginAdmin(webTestClient)
+                .post().uri(CASHIERS + CASH_MOVEMENT)
                 .body(BodyInserters.fromValue(subject))
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(Cashier.class).value( cashier -> {
-                    if(subject.getMovementType() == MovementType.WITHDRAWAL){
-                        Assertions.assertEquals(subject.getAmount(),cashier.getWithdrawal());
-                    }else{
-                        Assertions.assertEquals(subject.getAmount(), cashier.getDeposit());
-                    }
-                });
+                .expectBody(CashierState.class)
+                .value(cashierState -> Assertions.assertEquals(expectedTotalCash[0], cashierState.getTotalCash()));
         this.restClientTestService.loginAdmin(webTestClient)
                 .patch().uri(CASHIERS + LAST)
                 .body(Mono.just(new CashierClose(subject.getAmount(), ZERO, "test")), CashierClose.class)

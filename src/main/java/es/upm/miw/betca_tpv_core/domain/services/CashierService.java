@@ -82,16 +82,17 @@ public class CashierService {
                 .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier));
     }
 
-    public Mono<Cashier> addMovement(CashMovementDto movementDto){
+    public Mono<CashierState> addMovement(CashMovementDto movementDto){
         return this.lastByOpenedAssure(true)
                 .map(lastCashier -> {
-                    if(movementDto.getMovementType() == MovementType.DEPOSIT){
+                    if(movementDto.getType() == MovementType.DEPOSIT){
                         lastCashier.deposit(movementDto.getAmount(), movementDto.getComment());
                     }else{
                         lastCashier.withdrawal(movementDto.getAmount(), movementDto.getComment());
                     }
                     return lastCashier;
                 })
-                .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier));
+                .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier))
+                .map(CashierState::new);
     }
 }
