@@ -17,7 +17,9 @@ public class StockAlarmResource {
     public static final String STOCK_ALARMS = "/stock-alarms";
     public static final String STOCK_ALARM_ID = "/{name}";
     public static final String STOCK_ALARM_LINES = "/lines";
-    public static final String STOCK_ALARM_SEARCH_WARNING = "/search-warning";
+    public static final String STOCK_ALARM_SEARCH = "/search";
+    public static final String STOCK_ALARM_WARNING = "/warnings";
+    public static final String STOCK_ALARM_CRITICAL = "/criticals";
 
     private final StockAlarmService stockAlarmService;
 
@@ -53,8 +55,13 @@ public class StockAlarmResource {
         return this.stockAlarmService.updateLines(name, stockAlarm);
     }
 
-    @GetMapping(STOCK_ALARM_SEARCH_WARNING)
+    @GetMapping(STOCK_ALARM_SEARCH+STOCK_ALARM_WARNING)
     public Mono<StockAlarmLine[]> searchWarnings() {
         return this.stockAlarmService.searchWarnings();
+    }
+
+    @GetMapping(STOCK_ALARM_SEARCH+STOCK_ALARM_CRITICAL)
+    public Mono<StockAlarmLine[]> searchCriticals() {
+        return this.stockAlarmService.searchCriticals();
     }
 }

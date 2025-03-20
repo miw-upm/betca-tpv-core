@@ -183,7 +183,8 @@ class StockAlarmResourceIT {
 
         StockAlarmLine[] stockAlarmLinesDb = this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(StockAlarmResource.STOCK_ALARMS + StockAlarmResource.STOCK_ALARM_SEARCH_WARNING)
+                .uri(StockAlarmResource.STOCK_ALARMS + StockAlarmResource.STOCK_ALARM_SEARCH
+                        + StockAlarmResource.STOCK_ALARM_WARNING)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(StockAlarmLine[].class)
@@ -226,7 +227,8 @@ class StockAlarmResourceIT {
 
         StockAlarmLine[] stockAlarmLinesDb = this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(StockAlarmResource.STOCK_ALARMS + StockAlarmResource.STOCK_ALARM_SEARCH_WARNING)
+                .uri(StockAlarmResource.STOCK_ALARMS + StockAlarmResource.STOCK_ALARM_SEARCH
+                        + StockAlarmResource.STOCK_ALARM_CRITICAL)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(StockAlarmLine[].class)
