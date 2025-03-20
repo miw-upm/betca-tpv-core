@@ -193,4 +193,47 @@ class StockAlarmResourceIT {
         assertNotNull(stockAlarmLinesDb
         );
     }
+
+    @Test
+    void testSearchCriticals() {
+        Article article1 = Article.builder().barcode("8400000000017").description("Articulo1").build();
+
+        StockAlarmLine stockAlarmLine = StockAlarmLine.builder()
+                .article(article1)
+                .warning(900)
+                .critical(1)
+                .build();
+
+        StockAlarm stockAlarm = StockAlarm.builder()
+                .name("AlarmaSearchCriticalResource")
+                .description("Search")
+                .warning(3)
+                .critical(1)
+                .stockAlarmLines(List.of(stockAlarmLine))
+                .build();
+
+        StockAlarm stockAlarmDb = this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(StockAlarmResource.STOCK_ALARMS)
+                .body(Mono.just(stockAlarm), StockAlarm.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(StockAlarm.class)
+                .value(Assertions::assertNotNull)
+                .returnResult()
+                .getResponseBody();
+        assertNotNull(stockAlarmDb);
+
+        StockAlarmLine[] stockAlarmLinesDb = this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(StockAlarmResource.STOCK_ALARMS + StockAlarmResource.STOCK_ALARM_SEARCH_WARNING)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(StockAlarmLine[].class)
+                .value(Assertions::assertNotNull)
+                .returnResult()
+                .getResponseBody();
+        assertNotNull(stockAlarmLinesDb
+        );
+    }
 }

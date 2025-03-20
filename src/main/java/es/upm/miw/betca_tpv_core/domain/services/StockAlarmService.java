@@ -41,4 +41,8 @@ public class StockAlarmService {
     public Mono<StockAlarmLine[]> searchWarnings() {
         return this.stockAlarmPersistence.searchWarnings();
     }
+
+    public Mono<StockAlarmLine[]> searchCriticals() {
+        return this.stockAlarmPersistence.searchCriticals();
+    }
 }

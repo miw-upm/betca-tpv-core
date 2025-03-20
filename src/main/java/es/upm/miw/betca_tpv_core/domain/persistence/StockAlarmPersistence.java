@@ -18,4 +18,6 @@ public interface StockAlarmPersistence {
     Mono<StockAlarm> updateLines(String name, StockAlarm stockAlarm);
 
     Mono<StockAlarmLine[]> searchWarnings();
+
+    Mono<StockAlarmLine[]> searchCriticals();
 }
