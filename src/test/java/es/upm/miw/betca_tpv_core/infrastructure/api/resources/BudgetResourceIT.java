@@ -162,10 +162,10 @@ public class BudgetResourceIT {
     }
 
     @Test
-    void testSearch() {
+    void testSearchByReferenceLike() {
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(BUDGETS + BUDGET_SEARCH + "?reference=55")
+                .uri(BUDGETS + BUDGET_SEARCH_BY_REFERENCE + "?reference=55")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBodyList(Budget.class)
@@ -180,6 +180,38 @@ public class BudgetResourceIT {
                             .anyMatch(reference -> reference.equals("8323558811")));
                     assertTrue(references.stream()
                             .anyMatch(reference -> reference.equals("2323553433")));
+                });
+    }
+
+    @Test
+    void testSearchByReferenceLikeNullSafe() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(BUDGETS + BUDGET_SEARCH)
+                        .queryParam("reference", "")
+                        .build()
+                )
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Budget.class)
+                .hasSize(6)
+                .value(budgets -> {
+                    List<String> references = budgets.stream()
+                            .map(Budget::getReference)
+                            .toList();
+                    assertTrue(references.stream()
+                            .anyMatch(reference -> reference.equals("2")));
+                    assertTrue(references.stream()
+                            .anyMatch(reference -> reference.equals("3")));
+                    assertTrue(references.stream()
+                            .anyMatch(reference -> reference.equals("2323558888")));
+                    assertTrue(references.stream()
+                            .anyMatch(reference -> reference.equals("8323558811")));
+                    assertTrue(references.stream()
+                            .anyMatch(reference -> reference.equals("2323553433")));
+                    assertTrue(references.stream()
+                            .anyMatch(reference -> reference.equals("2323883433")));
                 });
     }
 }

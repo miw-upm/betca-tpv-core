@@ -16,6 +16,7 @@ public class BudgetResource {
     public static final String BUDGETS = "/budgets";
     public static final String BUDGET_ID = "/{id}";
     public static final String BUDGET_SEARCH = "/search";
+    public static final String BUDGET_SEARCH_BY_REFERENCE = "/search-by-reference";
 
     @Autowired
     IBudgetService budgetService;
@@ -43,6 +44,11 @@ public class BudgetResource {
     }
 
     @GetMapping(BUDGET_SEARCH)
+    public Flux<Budget> findByReferenceLikeNullSafe(@RequestParam(required = false) String reference) {
+        return this.budgetService.findByReferenceLikeNullSafe(reference);
+    }
+
+    @GetMapping(BUDGET_SEARCH_BY_REFERENCE)
     public Flux<Budget> findByReferenceLike(@RequestParam String reference) {
         return this.budgetService.findByReferenceLike(reference);
     }

@@ -13,5 +13,7 @@ public interface IBudgetService {
 
     Mono<Budget> update(String id, Budget budget);
 
+    Flux<Budget> findByReferenceLikeNullSafe(String reference);
+
     Flux<Budget> findByReferenceLike(String reference);
 }
