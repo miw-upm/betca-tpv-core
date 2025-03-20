@@ -6,6 +6,7 @@ import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.model.StockAlarm;
 import es.upm.miw.betca_tpv_core.domain.model.StockAlarmLine;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
@@ -163,6 +164,82 @@ public class StockAlarmPersistenceMongodbIT {
 
                     return true;
                 })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testSearchWarnings() {
+        Article article1 = Article.builder().barcode("8400000000017").description("Articulo1").build();
+
+        StockAlarmLine stockAlarmLine = StockAlarmLine.builder()
+                .article(article1)
+                .warning(900)
+                .critical(1)
+                .build();
+
+        StockAlarm stockAlarm = StockAlarm.builder()
+                .name("AlarmaSearchWarning")
+                .description("Search")
+                .warning(3)
+                .critical(1)
+                .stockAlarmLines(List.of(stockAlarmLine))
+                .build();
+
+        StepVerifier.create(this.stockAlarmPersistenceMongodb.create(stockAlarm))
+                .assertNext(createdStockAlarm -> {
+                    assertNotNull(createdStockAlarm);
+                    assertEquals("AlarmaSearchWarning", createdStockAlarm.getName());
+                    assertEquals("Search", createdStockAlarm.getDescription());
+                    assertEquals(3, createdStockAlarm.getWarning());
+                    assertEquals(1, createdStockAlarm.getCritical());
+                    assertNotNull(createdStockAlarm.getStockAlarmLines());
+                    assertFalse(createdStockAlarm.getStockAlarmLines().isEmpty());
+                    assertEquals(1, createdStockAlarm.getStockAlarmLines().size());
+                })
+                .expectComplete()
+                .verify();
+
+        StepVerifier.create(this.stockAlarmPersistenceMongodb.searchWarnings())
+                .assertNext(Assertions::assertNotNull)
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testSearchCriticals() {
+        Article article1 = Article.builder().barcode("8400000000017").description("Articulo1").build();
+
+        StockAlarmLine stockAlarmLine = StockAlarmLine.builder()
+                .article(article1)
+                .warning(900)
+                .critical(1)
+                .build();
+
+        StockAlarm stockAlarm = StockAlarm.builder()
+                .name("AlarmaSearchCritical")
+                .description("Search")
+                .warning(3)
+                .critical(1)
+                .stockAlarmLines(List.of(stockAlarmLine))
+                .build();
+
+        StepVerifier.create(this.stockAlarmPersistenceMongodb.create(stockAlarm))
+                .assertNext(createdStockAlarm -> {
+                    assertNotNull(createdStockAlarm);
+                    assertEquals("AlarmaSearchCritical", createdStockAlarm.getName());
+                    assertEquals("Search", createdStockAlarm.getDescription());
+                    assertEquals(3, createdStockAlarm.getWarning());
+                    assertEquals(1, createdStockAlarm.getCritical());
+                    assertNotNull(createdStockAlarm.getStockAlarmLines());
+                    assertFalse(createdStockAlarm.getStockAlarmLines().isEmpty());
+                    assertEquals(1, createdStockAlarm.getStockAlarmLines().size());
+                })
+                .expectComplete()
+                .verify();
+
+        StepVerifier.create(this.stockAlarmPersistenceMongodb.searchCriticals())
+                .assertNext(Assertions::assertNotNull)
                 .expectComplete()
                 .verify();
     }

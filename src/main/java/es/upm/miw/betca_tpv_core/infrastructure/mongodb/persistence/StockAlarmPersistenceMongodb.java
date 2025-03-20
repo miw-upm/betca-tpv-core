@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,6 +102,46 @@ public class StockAlarmPersistenceMongodb implements StockAlarmPersistence {
                             })
                             .map(StockAlarmEntity::toStockAlarm);
                 });
+    }
+
+    @Override
+    public Mono<StockAlarmLine[]> searchWarnings() {
+        return this.stockAlarmReactive.findAll()
+                .flatMap(stockAlarmEntity -> {
+                    List<StockAlarmLineEntity> lines = stockAlarmEntity.getStockAlarmLineEntities();
+                    return (lines == null || lines.isEmpty()) ? Flux.empty() : Flux.fromIterable(lines);
+                })
+                .flatMap(stockAlarmLineEntity -> this.articleReactive.findByBarcode(stockAlarmLineEntity.getArticle().getBarcode())
+                        .map(article -> new AbstractMap.SimpleEntry<>(stockAlarmLineEntity, article.getStock()))
+                        .defaultIfEmpty(new AbstractMap.SimpleEntry<>(stockAlarmLineEntity, null))
+                )
+                .filter(entry -> {
+                    Integer stock = entry.getValue();
+                    return stock != null && stock <= entry.getKey().getWarning();
+                })
+                .map(entry -> entry.getKey().toStockAlarmLine())
+                .collectList()
+                .map(list -> list.toArray(new StockAlarmLine[0]));
+    }
+
+    @Override
+    public Mono<StockAlarmLine[]> searchCriticals() {
+        return this.stockAlarmReactive.findAll()
+                .flatMap(stockAlarmEntity -> {
+                    List<StockAlarmLineEntity> lines = stockAlarmEntity.getStockAlarmLineEntities();
+                    return (lines == null || lines.isEmpty()) ? Flux.empty() : Flux.fromIterable(lines);
+                })
+                .flatMap(stockAlarmLineEntity -> this.articleReactive.findByBarcode(stockAlarmLineEntity.getArticle().getBarcode())
+                        .map(article -> new AbstractMap.SimpleEntry<>(stockAlarmLineEntity, article.getStock()))
+                        .defaultIfEmpty(new AbstractMap.SimpleEntry<>(stockAlarmLineEntity, null))
+                )
+                .filter(entry -> {
+                    Integer stock = entry.getValue();
+                    return stock != null && stock <= entry.getKey().getCritical();
+                })
+                .map(entry -> entry.getKey().toStockAlarmLine())
+                .collectList()
+                .map(list -> list.toArray(new StockAlarmLine[0]));
     }
 
     private Mono<Void> assertNameNotExist(String name) {

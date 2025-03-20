@@ -360,7 +360,7 @@ public class DatabaseSeederDev {
                 ComplaintEntity.builder().id("dfun8ecm9cd").description("Queja aleatoria").reply("")
                         .article(articles[0]).registrationDate(dateComplaintCreationArticle1).state(ComplaintState.OPEN)
                         .registrationDate(dateComplaintCreationArticle1).userMobile("66").build(),
-                ComplaintEntity.builder().description("Queja MIW").reply("Respuesta MIW").state(ComplaintState.CLOSED)
+                ComplaintEntity.builder().description("Queja MIW").reply("Respuesta MIW").state(ComplaintState.OPEN)
                         .article(articles[1]).registrationDate(dateComplaintCreationArticle2)
                         .registrationDate(dateComplaintCreationArticle2).userMobile("66").build(),
                 ComplaintEntity.builder().description("Queja Grado").reply("").state(ComplaintState.OPEN)

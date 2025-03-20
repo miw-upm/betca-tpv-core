@@ -2,15 +2,12 @@ package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
-import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ComplaintState;
+import es.upm.miw.betca_tpv_core.domain.model.ComplaintState;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
 
@@ -56,25 +53,25 @@ class ComplaintPersistenceMongodbIT {
     }
 
     @Test
-    void testFindByUserMobileAndBarcode_NotExistsBarcode(){
+    void testFindByUserMobileAndBarcodeAndState_NotExistsBarcode(){
         StepVerifier
-                .create(this.complaintPersistenceMongodb.findByUserMobileAndBarcode("66","y"))
+                .create(this.complaintPersistenceMongodb.findByUserMobileAndBarcodeAndState("66","y",ComplaintState.CLOSED))
                 .verifyComplete();
     }
 
     @Test
-    void testFindByUserMobileAndBarcode_ExistsComplaint(){
+    void testFindByUserMobileAndBarcodeAndState_ExistsComplaint(){
         StepVerifier
-                .create(this.complaintPersistenceMongodb.findByUserMobileAndBarcode("66","8400000000017"))
+                .create(this.complaintPersistenceMongodb.findByUserMobileAndBarcodeAndState("66","8400000000017",ComplaintState.OPEN))
                 .assertNext(complaint -> assertTrue(complaint.getDescription().contains("Queja aleatoria")))
                 .thenCancel()
                 .verify();
     }
 
     @Test
-    void testFindByUserMobileAndBarcode_NotExistsComplaint(){
+    void testFindByUserMobileAndBarcodeAndState_NotExistsComplaint(){
         StepVerifier
-                .create(this.complaintPersistenceMongodb.findByUserMobileAndBarcode("66","8400000000100"))
+                .create(this.complaintPersistenceMongodb.findByUserMobileAndBarcodeAndState("66","8400000000100",ComplaintState.OPEN))
                 .verifyComplete();
     }
 
@@ -88,7 +85,7 @@ class ComplaintPersistenceMongodbIT {
 
     @Test
     void testCreateComplaint_Successful(){
-        Complaint complaint = Complaint.builder().description("Queja En test").reply("").state("OPEN")
+        Complaint complaint = Complaint.builder().description("Queja En test").reply("").state(ComplaintState.OPEN)
                 .barcode("8400000000100").userMobile("666666005")
                 .registrationDate(LocalDateTime.of(2025, Month.JANUARY, 1, 20, 56))
                 .build();
