@@ -15,5 +15,7 @@ public interface BudgetPersistence {
 
     Mono<Void> deleteById(String id);
 
+    Flux<Budget> findByReferenceLikeNullSafe(String reference);
+
     Flux<Budget> findByReferenceLike(String reference);
 }

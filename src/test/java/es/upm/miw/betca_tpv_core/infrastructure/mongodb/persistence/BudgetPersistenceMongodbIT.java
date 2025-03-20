@@ -125,12 +125,21 @@ public class BudgetPersistenceMongodbIT {
     }
 
     @Test
-    void testSearch() {
+    void testSearchByReferenceLike() {
         StepVerifier
                 .create(this.budgetPersistenceMongodb.findByReferenceLike("55"))
                 .expectNextMatches(budget -> budget.getReference().equals("2323558888"))
                 .expectNextMatches(budget -> budget.getReference().equals("8323558811"))
                 .expectNextMatches(budget -> budget.getReference().equals("2323553433"))
+                .verifyComplete();
+    }
+
+    @Test
+    void testSearchByReferenceLikeNullSafe() {
+        StepVerifier
+                .create(this.budgetPersistenceMongodb.findByReferenceLikeNullSafe("33"))
+                .expectNextMatches(budget -> budget.getReference().equals("2323553433"))
+                .expectNextMatches(budget -> budget.getReference().equals("2323883433"))
                 .verifyComplete();
     }
 }

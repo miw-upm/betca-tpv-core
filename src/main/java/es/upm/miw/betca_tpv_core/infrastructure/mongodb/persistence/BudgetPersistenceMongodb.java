@@ -96,6 +96,13 @@ public class BudgetPersistenceMongodb implements BudgetPersistence {
     }
 
     @Override
+    public Flux<Budget> findByReferenceLikeNullSafe(String reference) {
+        return this.budgetReactive.findByReferenceLikeNullSafe(reference)
+                .filter(budgetEntity -> this.notExpired(budgetEntity.getCreationDate()))
+                .map(BudgetEntity::toBudget);
+    }
+
+    @Override
     public Flux<Budget> findByReferenceLike(String reference) {
         return this.budgetReactive.findByReferenceLike(reference)
                 .filter(budgetEntity -> this.notExpired(budgetEntity.getCreationDate()))

@@ -41,6 +41,11 @@ public class BudgetService implements IBudgetService {
     }
 
     @Override
+    public Flux<Budget> findByReferenceLikeNullSafe(String reference) {
+        return this.budgetPersistence.findByReferenceLikeNullSafe(reference);
+    }
+
+    @Override
     public Flux<Budget> findByReferenceLike(String reference) {
         return this.budgetPersistence.findByReferenceLike(reference);
     }
