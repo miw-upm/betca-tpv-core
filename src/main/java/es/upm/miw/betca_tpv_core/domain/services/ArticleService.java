@@ -1,11 +1,11 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.model.Article;
-import es.upm.miw.betca_tpv_core.domain.model.Complaint;
 import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
 import es.upm.miw.betca_tpv_core.domain.persistence.ComplaintPersistence;
 import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
+import es.upm.miw.betca_tpv_core.domain.model.ComplaintState;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,14 +65,15 @@ public class ArticleService {
         return this.articlePersistence.findByProviderCompany(company);
     }
 
-    public Flux<String> findByUserLoggedPurchasedBarcodesWithoutComplaints(String userMobile){
+    public Flux<String> findByBarcodeAndUserLoggedPurchasedArticlesWithoutComplaintsOpen(String barcode,String userMobile){
         return this.ticketPersistence.findByUserMobile(userMobile)
                 .flatMap(ticket -> Flux.fromIterable(ticket.getShoppingList()))
                 .map(Shopping::getBarcode)
                 .distinct()
-                .filterWhen(barcode -> this.complaintPersistence.findByUserMobileAndBarcode(userMobile,barcode.toString())
+                .filterWhen(barcode1 -> this.complaintPersistence.findByUserMobileAndBarcodeAndState(userMobile,barcode1.toString(), ComplaintState.OPEN)
                         .hasElement()
                         .map(hasComplaint -> Boolean.FALSE.equals(hasComplaint))
-                );
+                )
+                .filter(barcode2 -> barcode == null || barcode2.contains(barcode));
     }
 }

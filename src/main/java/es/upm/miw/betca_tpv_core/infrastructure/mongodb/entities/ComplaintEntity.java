@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities;
 
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
+import es.upm.miw.betca_tpv_core.domain.model.ComplaintState;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
@@ -41,7 +42,6 @@ public class ComplaintEntity {
 
         BeanUtils.copyProperties(this,complaint);
         complaint.setBarcode(this.article.getBarcode());
-        complaint.setState(state.toString());
         return complaint;
 
     }

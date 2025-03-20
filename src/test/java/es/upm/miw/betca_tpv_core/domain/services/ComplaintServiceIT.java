@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ForbiddenException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
+import es.upm.miw.betca_tpv_core.domain.model.ComplaintState;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -62,7 +63,7 @@ class ComplaintServiceIT {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn("66");
 
-        Complaint complaint = Complaint.builder().description("Queja de cliente enfadado").reply("").state("OPEN")
+        Complaint complaint = Complaint.builder().description("Queja de cliente enfadado").reply("").state(ComplaintState.OPEN)
                 .barcode("8400000000100").userMobile("6")
                 .registrationDate(LocalDateTime.of(2025, Month.JANUARY, 1, 20, 56))
                 .build();
@@ -77,7 +78,7 @@ class ComplaintServiceIT {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn("66");
 
-        Complaint complaint = Complaint.builder().description("Queja de cliente enfadado").reply("").state("OPEN")
+        Complaint complaint = Complaint.builder().description("Queja de cliente enfadado").reply("").state(ComplaintState.OPEN)
                 .barcode("gvv7v576vbvtyr5dcvtuc6e5rcvft").userMobile("66")
                 .registrationDate(LocalDateTime.of(2025, Month.JANUARY, 1, 20, 56))
                 .build();

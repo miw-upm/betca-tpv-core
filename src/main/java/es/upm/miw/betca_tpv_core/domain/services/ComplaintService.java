@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ForbiddenException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
+import es.upm.miw.betca_tpv_core.domain.model.ComplaintState;
 import es.upm.miw.betca_tpv_core.domain.model.PrivilegedRoles;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
 import es.upm.miw.betca_tpv_core.domain.persistence.ComplaintPersistence;
@@ -40,7 +41,7 @@ public class ComplaintService {
         }
         return this.articlePersistence.readByBarcode(complaint.getBarcode())
                 .switchIfEmpty(Mono.error(new NotFoundException("The article provided not exists")))
-                .then(this.assertComplaintWithBarcodeAndUserMobileNotExists(complaint.getUserMobile(),complaint.getBarcode())
+                .then(this.assertComplaintWithBarcodeAndUserMobileWithOpenStateNotExists(complaint.getUserMobile(),complaint.getBarcode())
                                         .then(this.complaintPersistence.create(complaint)));
 
     }
@@ -65,8 +66,8 @@ public class ComplaintService {
         return this.complaintPersistence.findByUserMobileNullSafe(userMobile);
     }
 
-    private Mono<Void> assertComplaintWithBarcodeAndUserMobileNotExists(String userMobile,String barcode){
-        return this.complaintPersistence.findByUserMobileAndBarcode(userMobile,barcode)
+    private Mono<Void> assertComplaintWithBarcodeAndUserMobileWithOpenStateNotExists(String userMobile,String barcode){
+        return this.complaintPersistence.findByUserMobileAndBarcodeAndState(userMobile,barcode, ComplaintState.OPEN)
                 .flatMap(complaint -> Mono.error(new ConflictException("There is already a complaint for the article and the user provided")));
     }
 }

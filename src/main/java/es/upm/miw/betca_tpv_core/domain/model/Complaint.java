@@ -36,6 +36,6 @@ public class Complaint {
     @NotBlank
     private String userMobile;
     @NotBlank
-    private String state;
+    private ComplaintState state;
 
 }
