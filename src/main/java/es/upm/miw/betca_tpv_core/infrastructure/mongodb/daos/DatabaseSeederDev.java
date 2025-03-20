@@ -291,14 +291,16 @@ public class DatabaseSeederDev {
         this.invoiceDao.saveAll(Arrays.asList(invoice));
         LogManager.getLogger(this.getClass()).warn("        ------- invoices");
 
-        LocalDateTime budgetCreationDate = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
+        LocalDateTime budgetCreationDate = LocalDateTime.now();
         BudgetEntity[] budgets = {
-                BudgetEntity.builder().id("1").reference("1").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
+                BudgetEntity.builder().id("1").reference("1").creationDate(LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10)).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
                 BudgetEntity.builder().id("2").reference("2").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
                 BudgetEntity.builder().id("3").reference("3").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
-                BudgetEntity.builder().id("4").reference("2323558888").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
-                BudgetEntity.builder().id("5").reference("8323558811").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
-                BudgetEntity.builder().id("6").reference("2323553433").creationDate(budgetCreationDate).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build()
+                BudgetEntity.builder().id("4").reference("2323558888").creationDate(budgetCreationDate.minusDays(1)).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
+                BudgetEntity.builder().id("5").reference("8323558811").creationDate(budgetCreationDate.minusDays(1)).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
+                BudgetEntity.builder().id("6").reference("2323553433").creationDate(budgetCreationDate.minusDays(1)).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
+                BudgetEntity.builder().id("7").reference("2323883433").creationDate(budgetCreationDate.minusDays(5)).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build(),
+                BudgetEntity.builder().id("8").reference("2323883434").creationDate(budgetCreationDate.minusMonths(1).minusDays(1)).shoppingEntityList(List.of(shoppingList[0], shoppingList[1])).build()
         };
 
 
