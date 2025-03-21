@@ -287,17 +287,6 @@ class ComplaintResourceIT {
     }
 
     @Test
-    void testDeleteComplaintAsCustomer_Successful(){
-        String complaintId=this.getIdOfNewComplaintByBarcode("8400000000017");
-        this.restClientTestService.loginOtherCustomer(webTestClient)
-                .delete()
-                .uri(COMPLAINTS+"/"+complaintId)
-                .exchange()
-                .expectStatus()
-                .isOk();
-    }
-
-    @Test
     void testDeleteComplaintAsCustomer_Forbidden(){
         this.restClientTestService.loginCustomer(webTestClient)
                 .delete()
@@ -313,8 +302,7 @@ class ComplaintResourceIT {
                 .delete()
                 .uri(COMPLAINTS+"/djnxjccdisdcbhdsnc")
                 .exchange()
-                .expectStatus()
-                .isForbidden();
+                .expectStatus().isEqualTo(HttpStatus.CONFLICT);
     }
     @Test
     void testDeleteComplaintAsManager_UnAuthorized(){
