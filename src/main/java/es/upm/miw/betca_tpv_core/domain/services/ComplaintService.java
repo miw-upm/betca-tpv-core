@@ -66,8 +66,22 @@ public class ComplaintService {
         return this.complaintPersistence.findByUserMobileNullSafe(userMobile);
     }
 
-    public Mono<Void> deleteById(String id){
-        return this.complaintPersistence.deleteById(id);
+    public Mono<Void> delete(String id,Authentication authentication){
+        Set<String> PRIVILEGED_ROLES = Arrays.stream(PrivilegedRoles.values())
+                .filter(privilegedRoles -> privilegedRoles.equals(PrivilegedRoles.ROLE_ADMIN))
+                .map(Enum::name)
+                .collect(Collectors.toSet());
+
+        boolean hasPriviligedRoles= authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(PRIVILEGED_ROLES::contains);
+
+        return this.complaintPersistence.readById(id)
+                .filter(complaint -> ( hasPriviligedRoles
+                        || complaint.getUserMobile().equals(authentication.getPrincipal()))
+                )
+                .switchIfEmpty(Mono.error(new ForbiddenException("You do not have permission to read this complaint")))
+                .then(this.complaintPersistence.delete(id));
     }
 
     private Mono<Void> assertComplaintWithBarcodeAndUserMobileWithOpenStateNotExists(String userMobile,String barcode){
