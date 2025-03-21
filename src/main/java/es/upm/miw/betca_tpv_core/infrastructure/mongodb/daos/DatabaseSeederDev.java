@@ -366,7 +366,7 @@ public class DatabaseSeederDev {
                 ComplaintEntity.builder().description("Queja Grado").reply("").state(ComplaintState.OPEN)
                         .article(articles[2]).registrationDate(dateComplaintCreationArticle3)
                         .userMobile("66").build(),
-                ComplaintEntity.builder().description("Queja Asignatura").reply("Solucionado").state(ComplaintState.CLOSED)
+                ComplaintEntity.builder().id("djnxjccdisdcbhdsnc").description("Queja Asignatura").reply("Solucionado").state(ComplaintState.CLOSED)
                         .article(articles[2]).registrationDate(dateComplaintCreationArticle4)
                         .userMobile("666666005").build(),
                 ComplaintEntity.builder().id("frieourfncw0").description("Queja articulo").reply("").state(ComplaintState.OPEN)

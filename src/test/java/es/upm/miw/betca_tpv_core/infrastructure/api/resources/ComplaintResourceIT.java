@@ -288,13 +288,33 @@ class ComplaintResourceIT {
 
     @Test
     void testDeleteComplaintAsCustomer_Successful(){
-        String complaintId=this.getIdOfNewComplaintByBarcode("8400000000055");
+        String complaintId=this.getIdOfNewComplaintByBarcode("8400000000017");
         this.restClientTestService.loginOtherCustomer(webTestClient)
                 .delete()
                 .uri(COMPLAINTS+"/"+complaintId)
                 .exchange()
                 .expectStatus()
                 .isOk();
+    }
+
+    @Test
+    void testDeleteComplaintAsCustomer_Forbidden(){
+        this.restClientTestService.loginCustomer(webTestClient)
+                .delete()
+                .uri(COMPLAINTS+"/frieourfncw0")
+                .exchange()
+                .expectStatus()
+                .isForbidden();
+    }
+
+    @Test
+    void testDeleteComplaintAsCustomer_ComplaintIsClosed(){
+        this.restClientTestService.loginExtraCustomer(webTestClient)
+                .delete()
+                .uri(COMPLAINTS+"/djnxjccdisdcbhdsnc")
+                .exchange()
+                .expectStatus()
+                .isForbidden();
     }
     @Test
     void testDeleteComplaintAsManager_UnAuthorized(){
