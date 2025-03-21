@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Repository
@@ -95,8 +96,20 @@ public class BudgetPersistenceMongodb implements BudgetPersistence {
     }
 
     @Override
+    public Flux<Budget> findByReferenceLikeNullSafe(String reference) {
+        return this.budgetReactive.findByReferenceLikeNullSafe(reference)
+                .filter(budgetEntity -> this.notExpired(budgetEntity.getCreationDate()))
+                .map(BudgetEntity::toBudget);
+    }
+
+    @Override
     public Flux<Budget> findByReferenceLike(String reference) {
         return this.budgetReactive.findByReferenceLike(reference)
+                .filter(budgetEntity -> this.notExpired(budgetEntity.getCreationDate()))
                 .map(BudgetEntity::toBudget);
+    }
+
+    private boolean notExpired(LocalDateTime creationDate) {
+        return !LocalDateTime.now().isAfter(creationDate.plusMonths(1));
     }
 }
