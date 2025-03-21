@@ -56,6 +56,7 @@ public class ComplaintService {
                 .anyMatch(PRIVILEGED_ROLES::contains);
 
         return this.complaintPersistence.readById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non Existent Complaint id:"+id)))
                 .filter(complaint -> ( hasPriviligedRoles
                         || complaint.getUserMobile().equals(authentication.getPrincipal()))
                 )
@@ -77,10 +78,13 @@ public class ComplaintService {
                 .anyMatch(PRIVILEGED_ROLES::contains);
 
         return this.complaintPersistence.readById(id)
+                .switchIfEmpty(Mono.empty())
                 .filter(complaint -> ( hasPriviligedRoles
                         || complaint.getUserMobile().equals(authentication.getPrincipal()))
                 )
                 .switchIfEmpty(Mono.error(new ForbiddenException("You do not have permission to read this complaint")))
+                .filter(complaint -> (hasPriviligedRoles || !complaint.getState().equals(ComplaintState.CLOSED)))
+                .switchIfEmpty(Mono.error(new ConflictException("You cannot delete a complaint with closed status")))
                 .then(this.complaintPersistence.delete(id));
     }
 
