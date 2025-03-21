@@ -275,4 +275,32 @@ class ComplaintResourceIT {
                 .isEqualTo(HttpStatus.CONFLICT);
     }
 
+    @Test
+    void testDeleteComplaintAsAdmin_Successful(){
+        this.restClientTestService.loginAdmin(webTestClient)
+                .delete()
+                .uri(COMPLAINTS+"/dfun8ecm9cd")
+                .exchange()
+                .expectStatus()
+                .isOk();
+    }
+
+    @Test
+    void testDeleteComplaintAsManager_UnAuthorized(){
+        this.restClientTestService.loginManager(webTestClient)
+                .delete()
+                .uri(COMPLAINTS+"/4r34f54")
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
+    }
+    @Test
+    void testDeleteComplaintAsOperator_UnAuthorized(){
+        this.restClientTestService.loginOperator(webTestClient)
+                .delete()
+                .uri(COMPLAINTS+"/4r34f54")
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
+    }
 }
