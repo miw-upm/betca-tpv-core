@@ -66,8 +66,8 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
     }
 
     @Override
-    public Mono<Void> delete(String id) {
-        return this.complaintReactive.findById(id)
+    public Mono<Void> delete(Complaint complaint) {
+        return this.complaintReactive.findById(complaint.getId())
                 .flatMap(this.complaintReactive::delete);
     }
 }

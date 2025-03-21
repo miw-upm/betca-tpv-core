@@ -82,10 +82,10 @@ public class ComplaintService {
                 .filter(complaint -> ( hasPriviligedRoles
                         || complaint.getUserMobile().equals(authentication.getPrincipal()))
                 )
-                .switchIfEmpty(Mono.error(new ForbiddenException("You do not have permission to read this complaint")))
+                .switchIfEmpty(Mono.error(new ForbiddenException("You do not have permission to delete this complaint")))
                 .filter(complaint -> (hasPriviligedRoles || !complaint.getState().equals(ComplaintState.CLOSED)))
                 .switchIfEmpty(Mono.error(new ConflictException("You cannot delete a complaint with closed status")))
-                .then(this.complaintPersistence.delete(id));
+                .flatMap(this.complaintPersistence::delete);
     }
 
     private Mono<Void> assertComplaintWithBarcodeAndUserMobileWithOpenStateNotExists(String userMobile,String barcode){

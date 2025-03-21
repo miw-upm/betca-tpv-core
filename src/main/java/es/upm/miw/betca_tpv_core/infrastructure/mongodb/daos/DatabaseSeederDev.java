@@ -201,6 +201,8 @@ public class DatabaseSeederDev {
                         2, ZERO, ShoppingState.COMMITTED),
                 new ShoppingEntity(articles[1], articles[1].getDescription(), articles[1].getRetailPrice(),
                         3, new BigDecimal("50"), ShoppingState.COMMITTED),
+                new ShoppingEntity(articles[9], articles[9].getDescription(), articles[1].getRetailPrice(),
+                        3, new BigDecimal("50"), ShoppingState.COMMITTED),
         };
         LocalDateTime date = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
         TicketEntity[] tickets = {
@@ -234,6 +236,9 @@ public class DatabaseSeederDev {
                 new TicketEntity("5fa4608f4928694ef5980e4i", "nUs81zZ4R_iuoq0_zCRm6A",
                         List.of(shoppingList[3]), date, new BigDecimal("30"),
                         new BigDecimal("6"), ZERO, "note", "66", ZERO),
+                new TicketEntity("5fa4608f4928694ef5980e4j", "nUs81zZ4R_iuoq0_zCRm6A",
+                        List.of(shoppingList[7]), date, new BigDecimal("30"),
+                        new BigDecimal("6"), ZERO, "note", "666666003", ZERO),
         };
         this.ticketDao.saveAll(Arrays.asList(tickets));
         log.warn("        ------- tickets");
@@ -366,12 +371,15 @@ public class DatabaseSeederDev {
                 ComplaintEntity.builder().description("Queja Grado").reply("").state(ComplaintState.OPEN)
                         .article(articles[2]).registrationDate(dateComplaintCreationArticle3)
                         .userMobile("66").build(),
-                ComplaintEntity.builder().id("djnxjccdisdcbhdsnc").description("Queja Asignatura").reply("Solucionado").state(ComplaintState.CLOSED)
+                ComplaintEntity.builder().description("Queja Asignatura").reply("Solucionado").state(ComplaintState.CLOSED)
                         .article(articles[2]).registrationDate(dateComplaintCreationArticle4)
                         .userMobile("666666005").build(),
                 ComplaintEntity.builder().id("frieourfncw0").description("Queja articulo").reply("").state(ComplaintState.OPEN)
                         .article(articles[1]).registrationDate(dateComplaintCreationArticle1)
                         .userMobile("666666005").build(),
+                ComplaintEntity.builder().id("fdfsdfsdfgfgdfgdfcer").description("Queja Asignatura").reply("Solucionado").state(ComplaintState.CLOSED)
+                        .article(articles[9]).registrationDate(dateComplaintCreationArticle4)
+                        .userMobile("666666003").build(),
         };
         this.complaintDao.saveAll(Arrays.asList(complaints));
         log.warn("        ------- complaints");

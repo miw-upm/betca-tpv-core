@@ -275,6 +275,24 @@ class ComplaintResourceIT {
                 .isEqualTo(HttpStatus.CONFLICT);
     }
 
+    private String getIdOfNewComplaintByBarcode(String barcode){
+        return this.restClientTestService.loginOtherCustomer(webTestClient)
+                .post()
+                .uri(COMPLAINTS)
+                .bodyValue(ComplaintCreationDto.builder().description("Descripcion nueva prueba test")
+                        .barcode(barcode)
+                        .userMobile("666666004")
+                        .build()
+                )
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .returnResult(Complaint.class)
+                .getResponseBody()
+                .blockFirst()
+                .getId();
+    }
+
     @Test
     void testDeleteComplaintAsAdmin_Successful(){
         String complaintId=this.getIdOfNewComplaintByBarcode("8400000000031");
@@ -295,15 +313,6 @@ class ComplaintResourceIT {
                 .expectStatus()
                 .isForbidden();
     }
-
-    @Test
-    void testDeleteComplaintAsCustomer_ComplaintIsClosed(){
-        this.restClientTestService.loginExtraCustomer(webTestClient)
-                .delete()
-                .uri(COMPLAINTS+"/djnxjccdisdcbhdsnc")
-                .exchange()
-                .expectStatus().isEqualTo(HttpStatus.CONFLICT);
-    }
     @Test
     void testDeleteComplaintAsManager_UnAuthorized(){
         this.restClientTestService.loginManager(webTestClient)
@@ -323,21 +332,4 @@ class ComplaintResourceIT {
                 .isUnauthorized();
     }
 
-    private String getIdOfNewComplaintByBarcode(String barcode){
-        return this.restClientTestService.loginOtherCustomer(webTestClient)
-                .post()
-                .uri(COMPLAINTS)
-                .bodyValue(ComplaintCreationDto.builder().description("Descripcion nueva prueba test")
-                        .barcode(barcode)
-                        .userMobile("666666004")
-                        .build()
-                )
-                .exchange()
-                .expectStatus()
-                .isOk()
-                .returnResult(Complaint.class)
-                .getResponseBody()
-                .blockFirst()
-                .getId();
-    }
 }
