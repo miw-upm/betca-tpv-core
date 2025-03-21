@@ -45,6 +45,6 @@ public class ComplaintResource {
     @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     @DeleteMapping
     public Mono<Void> deleteById(@PathVariable String id){
-        return this.complaintService.deleteById();
+        return this.complaintService.deleteById(id);
     }
 }

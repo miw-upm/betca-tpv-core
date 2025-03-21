@@ -66,6 +66,10 @@ public class ComplaintService {
         return this.complaintPersistence.findByUserMobileNullSafe(userMobile);
     }
 
+    public Mono<Void> deleteById(String id){
+        return this.complaintPersistence.deleteById(id);
+    }
+
     private Mono<Void> assertComplaintWithBarcodeAndUserMobileWithOpenStateNotExists(String userMobile,String barcode){
         return this.complaintPersistence.findByUserMobileAndBarcodeAndState(userMobile,barcode, ComplaintState.OPEN)
                 .flatMap(complaint -> Mono.error(new ConflictException("There is already a complaint for the article and the user provided")));
