@@ -41,4 +41,10 @@ public class ComplaintResource {
     public Flux<Complaint> findByUserMobileNullSafe(@RequestParam(required = false) String userMobile){
         return this.complaintService.findByUserMobileNullSafe(userMobile);
     }
+
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
+    @DeleteMapping
+    public Mono<Void> deleteById(@PathVariable String id){
+        return this.complaintService.deleteById();
+    }
 }
