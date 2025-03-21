@@ -47,7 +47,7 @@ public class RestClientTestService {
     }
 
     public WebTestClient loginOtherCustomer(WebTestClient webTestClient) {
-        return this.login(Role.CUSTOMER, "666666005", "customer", webTestClient);
+        return this.login(Role.CUSTOMER, "666666004", "customer", webTestClient);
     }
 
     public void logout() {

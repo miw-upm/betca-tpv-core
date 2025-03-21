@@ -277,7 +277,7 @@ class ComplaintResourceIT {
 
     @Test
     void testDeleteComplaintAsAdmin_Successful(){
-        String complaintId=this.getIdOfNewComplaint();
+        String complaintId=this.getIdOfNewComplaintByBarcode("8400000000031");
         this.restClientTestService.loginOtherCustomer(webTestClient)
                 .delete()
                 .uri(COMPLAINTS+"/"+complaintId)
@@ -288,7 +288,7 @@ class ComplaintResourceIT {
 
     @Test
     void testDeleteComplaintAsCustomer_Successful(){
-        String complaintId=this.getIdOfNewComplaint();
+        String complaintId=this.getIdOfNewComplaintByBarcode("8400000000055");
         this.restClientTestService.loginOtherCustomer(webTestClient)
                 .delete()
                 .uri(COMPLAINTS+"/"+complaintId)
@@ -315,13 +315,14 @@ class ComplaintResourceIT {
                 .isUnauthorized();
     }
 
-    private String getIdOfNewComplaint(){
+    private String getIdOfNewComplaintByBarcode(String barcode){
         return this.restClientTestService.loginOtherCustomer(webTestClient)
                 .post()
                 .uri(COMPLAINTS)
-                .bodyValue(ComplaintCreationDto.builder().description("Descripcion queja prueba borrado")
-                        .barcode("8400000000062")
-                        .userMobile("666666005").build()
+                .bodyValue(Complaint.builder().description()
+                        .barcode(barcode)
+                        .userMobile("666666004")
+                        .build()
                 )
                 .exchange()
                 .expectStatus()
