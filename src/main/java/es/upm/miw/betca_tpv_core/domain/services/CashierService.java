@@ -23,9 +23,13 @@ public class CashierService {
 
     private final CashierPersistence cashierPersistence;
 
+    private final SlackService slackService;  //
+
     @Autowired
-    public CashierService(CashierPersistence cashierPersistence) {
+    public CashierService(CashierPersistence cashierPersistence,
+                          SlackService slackService) {
         this.cashierPersistence = cashierPersistence;
+        this.slackService = slackService;  //
     }
 
 
@@ -67,11 +71,24 @@ public class CashierService {
     public Mono<Cashier> close(CashierClose cashierClose) {
         return this.lastByOpenedAssure(true)
                 .map(lastCashier -> {
+                    // Se ejecuta la lógica de cierre
                     lastCashier.close(cashierClose.getFinalCash(), cashierClose.getFinalCard(), cashierClose.getComment());
                     return lastCashier;
                 })
-                .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier));
+                .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier))
+                .doOnNext(updatedCashier -> {
+                    // Se genera el resumen de cierre usando lostCard para la diferencia de pago con tarjeta
+                    String summary = String.format(
+                            "Resumen de cierre: Efectivo €%s, Diferencia en tarjeta €%s, Comentario: %s",
+                            updatedCashier.getFinalCash(),
+                            updatedCashier.getLostCard(),  // Se utiliza lostCard en lugar de finalCard
+                            updatedCashier.getComment()
+                    );
+                    // Se envía el mensaje a Slack
+                    slackService.sendMessage("info", summary);
+                });
     }
+
 
     Mono<Cashier> addSale(BigDecimal cash, BigDecimal card, BigDecimal voucher) {
         return this.lastByOpenedAssure(true)
