@@ -36,7 +36,7 @@ public class ComplaintResource {
     public Mono<Complaint> readById(@PathVariable String id ,Authentication authentication){
         return this.complaintService.readById(id,authentication);
     }
-    @PreAuthorize("hasRole('ROLE_ADMIN') or #userMobile == authentication.principal")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR') or #userMobile == authentication.principal")
     @GetMapping(SEARCH)
     public Flux<Complaint> findByUserMobileNullSafe(@RequestParam(required = false) String userMobile){
         return this.complaintService.findByUserMobileNullSafe(userMobile);
