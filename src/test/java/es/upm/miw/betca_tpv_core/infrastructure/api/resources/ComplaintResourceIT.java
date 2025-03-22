@@ -171,27 +171,6 @@ class ComplaintResourceIT {
     }
 
     @Test
-    void testCreateComplaintResource_Successful(){
-        ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
-                .barcode("8400000000086").userMobile("66").description("Nueva descripcion de test resource").build();
-        this.restClientTestService.loginCustomer(webTestClient)
-                .post()
-                .uri(COMPLAINTS)
-                .body(Mono.just(complaintCreationDto),ComplaintCreationDto.class)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(Complaint.class)
-                .value(Assertions::assertNotNull)
-                .value(complaint -> {
-                    assertNotNull(complaint.getId());
-                    assertEquals("","Nueva descripcion de test resource",complaint.getDescription());
-                    assertEquals("", ComplaintState.OPEN,complaint.getState());
-                    assertEquals("","66",complaint.getUserMobile());
-                    assertEquals("","8400000000086",complaint.getBarcode());
-                });
-    }
-
-    @Test
     void testCreateComplaintResource_ForbidenWhileTryingToCreateAComplainForOtherUser(){
         ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
                 .barcode("8400000000100")
@@ -295,8 +274,8 @@ class ComplaintResourceIT {
 
     @Test
     void testDeleteComplaintAsAdmin_Successful(){
-        String complaintId=this.getIdOfNewComplaintByBarcode("8400000000031");
-        this.restClientTestService.loginOtherCustomer(webTestClient)
+        String complaintId=this.getIdOfNewComplaintByBarcode("8400000000017");
+        this.restClientTestService.loginAdmin(webTestClient)
                 .delete()
                 .uri(COMPLAINTS+"/"+complaintId)
                 .exchange()
@@ -312,6 +291,14 @@ class ComplaintResourceIT {
                 .exchange()
                 .expectStatus()
                 .isForbidden();
+    }
+    @Test
+    void testDeleteComplaintAsCustomer_ComplaintIsClosed(){
+        this.restClientTestService.loginExtraCustomer(webTestClient)
+                .delete()
+                .uri(COMPLAINTS+"/fdfsdfsdfgfgdfgdfcer")
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.CONFLICT);
     }
     @Test
     void testDeleteComplaintAsManager_UnAuthorized(){

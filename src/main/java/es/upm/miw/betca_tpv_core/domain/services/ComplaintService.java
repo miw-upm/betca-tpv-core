@@ -80,10 +80,10 @@ public class ComplaintService {
         return this.complaintPersistence.readById(id)
                 .switchIfEmpty(Mono.empty())
                 .flatMap(complaint -> {
-                    if(!hasPriviligedRoles || !complaint.getUserMobile().equals(authentication.getPrincipal())){
+                    if(!hasPriviligedRoles && !complaint.getUserMobile().equals(authentication.getPrincipal())){
                         return Mono.error(new ForbiddenException("You do not have permission to delete this complaint"));
                     }
-                    if  (!hasPriviligedRoles ||  complaint.getState().equals(ComplaintState.CLOSED)){
+                    if  (!hasPriviligedRoles &&  complaint.getState().equals(ComplaintState.CLOSED)){
                         return Mono.error(new ConflictException("You cannot delete a complaint with closed status"));
                     }
                     return this.complaintPersistence.delete(complaint);
