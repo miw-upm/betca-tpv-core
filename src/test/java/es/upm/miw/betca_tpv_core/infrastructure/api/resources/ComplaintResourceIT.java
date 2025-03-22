@@ -287,7 +287,7 @@ class ComplaintResourceIT {
     void testDeleteComplaintAsCustomer_Forbidden(){
         this.restClientTestService.loginCustomer(webTestClient)
                 .delete()
-                .uri(COMPLAINTS+"/frieourfncw0")
+                .uri(COMPLAINTS+"/6A6867")
                 .exchange()
                 .expectStatus()
                 .isForbidden();
@@ -296,7 +296,7 @@ class ComplaintResourceIT {
     void testDeleteComplaintAsCustomer_ComplaintIsClosed(){
         this.restClientTestService.loginExtraCustomer(webTestClient)
                 .delete()
-                .uri(COMPLAINTS+"/fdfsdfsdfgfgdfgdfcer")
+                .uri(COMPLAINTS+"/9C27C5")
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT);
     }
