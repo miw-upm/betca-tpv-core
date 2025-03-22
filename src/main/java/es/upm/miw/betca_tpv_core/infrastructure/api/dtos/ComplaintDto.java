@@ -1,17 +1,13 @@
-package es.upm.miw.betca_tpv_core.domain.model;
+package es.upm.miw.betca_tpv_core.infrastructure.api.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintCreationDto;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintDto;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import es.upm.miw.betca_tpv_core.domain.model.ComplaintState;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDateTime;
 
@@ -20,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Complaint {
+public class ComplaintDto {
     @NotBlank
     private String trackingCode;
     @NotBlank
@@ -37,10 +33,4 @@ public class Complaint {
     private String userMobile;
     @NotBlank
     private ComplaintState state;
-
-    public ComplaintDto toComplaintDto(){
-        ComplaintDto complaintDto = new ComplaintDto();
-        BeanUtils.copyProperties(this,complaintDto);
-        return complaintDto;
-    }
 }
