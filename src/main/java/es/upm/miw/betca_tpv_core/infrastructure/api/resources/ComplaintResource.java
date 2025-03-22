@@ -18,7 +18,7 @@ import reactor.core.publisher.Mono;
 public class ComplaintResource {
     public static final String COMPLAINTS = "/complaints";
     public static final String SEARCH = "/search";
-    public static final String COMPLAINT_ID = "/{id}";
+    public static final String COMPLAINT_TRACKING_CODE = "/{trackingCode}";
     private final ComplaintService complaintService;
 
     @Autowired
@@ -32,9 +32,9 @@ public class ComplaintResource {
         return this.complaintService.create(complaintCreationDto.toComplaint(),authentication);
     }
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','CUSTOMER','OPERATOR')")
-    @GetMapping(COMPLAINT_ID)
-    public Mono<Complaint> readById(@PathVariable String id ,Authentication authentication){
-        return this.complaintService.readById(id,authentication);
+    @GetMapping(COMPLAINT_TRACKING_CODE)
+    public Mono<Complaint> readByTrackingCode(@PathVariable String trackingCode ,Authentication authentication){
+        return this.complaintService.readByTrackingCode(trackingCode,authentication);
     }
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR') or #userMobile == authentication.principal")
     @GetMapping(SEARCH)
@@ -43,8 +43,8 @@ public class ComplaintResource {
     }
 
     @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
-    @DeleteMapping(COMPLAINT_ID)
-    public Mono<Void> delete(@PathVariable String id, Authentication authentication){
-        return this.complaintService.delete(id,authentication);
+    @DeleteMapping(COMPLAINT_TRACKING_CODE)
+    public Mono<Void> delete(@PathVariable String trackingCode, Authentication authentication){
+        return this.complaintService.delete(trackingCode,authentication);
     }
 }

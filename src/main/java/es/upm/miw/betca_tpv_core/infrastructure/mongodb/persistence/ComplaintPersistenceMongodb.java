@@ -49,8 +49,8 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
     }
 
     @Override
-    public Mono<Complaint> readById(String id) {
-        return complaintReactive.findById(id)
+    public Mono<Complaint> readByTrackingCode(String trackingCode) {
+        return complaintReactive.findByTrackingCode(trackingCode)
                 .map(ComplaintEntity::toComplaint);
     }
 
@@ -67,7 +67,7 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
 
     @Override
     public Mono<Void> delete(Complaint complaint) {
-        return this.complaintReactive.findById(complaint.getId())
+        return this.complaintReactive.findByTrackingCode(complaint.getTrackingCode())
                 .flatMap(this.complaintReactive::delete);
     }
 }

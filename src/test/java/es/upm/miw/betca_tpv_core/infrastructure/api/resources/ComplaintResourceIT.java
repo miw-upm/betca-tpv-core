@@ -118,7 +118,7 @@ class ComplaintResourceIT {
                 .isUnauthorized();
     }
     @Test
-    void testReadById_UserNotLogged(){
+    void testReadByTrackingCode_UserNotLogged(){
         this.webTestClient
                 .get()
                 .uri(COMPLAINTS+"/dasd")
@@ -127,41 +127,41 @@ class ComplaintResourceIT {
                 .isUnauthorized();
     }
     @Test
-    void testReadById_UserIsAdmin(){
+    void testReadByTrackingCode_UserIsAdmin(){
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(COMPLAINTS+"/dfun8ecm9cd")
+                .uri(COMPLAINTS+"/9B83A8")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Complaint.class)
                 .value(Assertions::assertNotNull)
-                .value(complaint -> assertEquals("Éxito en readById","66", complaint.getUserMobile().toString()));
+                .value(complaint -> assertEquals("Éxito en readByTrackingCode","66", complaint.getUserMobile().toString()));
     }
 
     @Test
-    void testReadById_WhenCustomerIsNotOwnerOfComplaint(){
+    void testReadByTrackingCode_WhenCustomerIsNotOwnerOfComplaint(){
         this.restClientTestService.loginCustomer(webTestClient)
                 .get()
-                .uri(COMPLAINTS+"/frieourfncw0")
+                .uri(COMPLAINTS+"/6A6867")
                 .exchange()
                 .expectStatus()
                 .isForbidden();
     }
 
     @Test
-    void testReadById_WhenCustomerIsOwnerOfComplaint(){
+    void testReadByTrackingCode_WhenCustomerIsOwnerOfComplaint(){
         this.restClientTestService.loginCustomer(webTestClient)
                 .get()
-                .uri(COMPLAINTS+"/dfun8ecm9cd")
+                .uri(COMPLAINTS+"/9B83A8")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Complaint.class)
                 .value(Assertions::assertNotNull)
-                .value(complaint -> assertEquals("Éxito en readById","66", complaint.getUserMobile().toString()));
+                .value(complaint -> assertEquals("Éxito en readByTrackingCode","66", complaint.getUserMobile().toString()));
     }
 
     @Test
-    void testReadById_NotFound(){
+    void testReadByTrackingCode_NotFound(){
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(COMPLAINTS+"/sdnieufsudn843")
@@ -269,7 +269,7 @@ class ComplaintResourceIT {
                 .returnResult(Complaint.class)
                 .getResponseBody()
                 .blockFirst()
-                .getId();
+                .getTrackingCode();
     }
 
     @Test
