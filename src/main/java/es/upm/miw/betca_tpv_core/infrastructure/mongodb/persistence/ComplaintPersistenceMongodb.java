@@ -51,7 +51,6 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
     @Override
     public Mono<Complaint> readById(String id) {
         return complaintReactive.findById(id)
-                .switchIfEmpty(Mono.error(new NotFoundException("Non Existent Complaint id:"+id)))
                 .map(ComplaintEntity::toComplaint);
     }
 
@@ -66,4 +65,9 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
 
     }
 
+    @Override
+    public Mono<Void> delete(Complaint complaint) {
+        return this.complaintReactive.findById(complaint.getId())
+                .flatMap(this.complaintReactive::delete);
+    }
 }

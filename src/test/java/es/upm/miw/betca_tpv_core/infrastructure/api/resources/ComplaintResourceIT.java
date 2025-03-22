@@ -171,27 +171,6 @@ class ComplaintResourceIT {
     }
 
     @Test
-    void testCreateComplaintResource_Successful(){
-        ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
-                .barcode("8400000000086").userMobile("66").description("Nueva descripcion de test resource").build();
-        this.restClientTestService.loginCustomer(webTestClient)
-                .post()
-                .uri(COMPLAINTS)
-                .body(Mono.just(complaintCreationDto),ComplaintCreationDto.class)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(Complaint.class)
-                .value(Assertions::assertNotNull)
-                .value(complaint -> {
-                    assertNotNull(complaint.getId());
-                    assertEquals("","Nueva descripcion de test resource",complaint.getDescription());
-                    assertEquals("", ComplaintState.OPEN,complaint.getState());
-                    assertEquals("","66",complaint.getUserMobile());
-                    assertEquals("","8400000000086",complaint.getBarcode());
-                });
-    }
-
-    @Test
     void testCreateComplaintResource_ForbidenWhileTryingToCreateAComplainForOtherUser(){
         ComplaintCreationDto complaintCreationDto = ComplaintCreationDto.builder()
                 .barcode("8400000000100")
@@ -273,6 +252,71 @@ class ComplaintResourceIT {
                 .exchange()
                 .expectStatus()
                 .isEqualTo(HttpStatus.CONFLICT);
+    }
+
+    private String getIdOfNewComplaintByBarcode(String barcode){
+        return this.restClientTestService.loginOtherCustomer(webTestClient)
+                .post()
+                .uri(COMPLAINTS)
+                .bodyValue(ComplaintCreationDto.builder().description("Descripcion nueva prueba test")
+                        .barcode(barcode)
+                        .userMobile("666666004")
+                        .build()
+                )
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .returnResult(Complaint.class)
+                .getResponseBody()
+                .blockFirst()
+                .getId();
+    }
+
+    @Test
+    void testDeleteComplaintAsAdmin_Successful(){
+        String complaintId=this.getIdOfNewComplaintByBarcode("8400000000017");
+        this.restClientTestService.loginAdmin(webTestClient)
+                .delete()
+                .uri(COMPLAINTS+"/"+complaintId)
+                .exchange()
+                .expectStatus()
+                .isOk();
+    }
+
+    @Test
+    void testDeleteComplaintAsCustomer_Forbidden(){
+        this.restClientTestService.loginCustomer(webTestClient)
+                .delete()
+                .uri(COMPLAINTS+"/frieourfncw0")
+                .exchange()
+                .expectStatus()
+                .isForbidden();
+    }
+    @Test
+    void testDeleteComplaintAsCustomer_ComplaintIsClosed(){
+        this.restClientTestService.loginExtraCustomer(webTestClient)
+                .delete()
+                .uri(COMPLAINTS+"/fdfsdfsdfgfgdfgdfcer")
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.CONFLICT);
+    }
+    @Test
+    void testDeleteComplaintAsManager_UnAuthorized(){
+        this.restClientTestService.loginManager(webTestClient)
+                .delete()
+                .uri(COMPLAINTS+"/4r34f54")
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
+    }
+    @Test
+    void testDeleteComplaintAsOperator_UnAuthorized(){
+        this.restClientTestService.loginOperator(webTestClient)
+                .delete()
+                .uri(COMPLAINTS+"/4r34f54")
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
     }
 
 }

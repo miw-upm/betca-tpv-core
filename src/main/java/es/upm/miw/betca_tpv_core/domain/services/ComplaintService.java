@@ -56,6 +56,7 @@ public class ComplaintService {
                 .anyMatch(PRIVILEGED_ROLES::contains);
 
         return this.complaintPersistence.readById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non Existent Complaint id:"+id)))
                 .filter(complaint -> ( hasPriviligedRoles
                         || complaint.getUserMobile().equals(authentication.getPrincipal()))
                 )
@@ -64,6 +65,29 @@ public class ComplaintService {
 
     public Flux<Complaint> findByUserMobileNullSafe(String userMobile){
         return this.complaintPersistence.findByUserMobileNullSafe(userMobile);
+    }
+
+    public Mono<Void> delete(String id,Authentication authentication){
+        Set<String> PRIVILEGED_ROLES = Arrays.stream(PrivilegedRoles.values())
+                .filter(privilegedRoles -> privilegedRoles.equals(PrivilegedRoles.ROLE_ADMIN))
+                .map(Enum::name)
+                .collect(Collectors.toSet());
+
+        boolean hasPriviligedRoles= authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(PRIVILEGED_ROLES::contains);
+
+        return this.complaintPersistence.readById(id)
+                .switchIfEmpty(Mono.empty())
+                .flatMap(complaint -> {
+                    if(!hasPriviligedRoles && !complaint.getUserMobile().equals(authentication.getPrincipal())){
+                        return Mono.error(new ForbiddenException("You do not have permission to delete this complaint"));
+                    }
+                    if  (!hasPriviligedRoles &&  complaint.getState().equals(ComplaintState.CLOSED)){
+                        return Mono.error(new ConflictException("You cannot delete a complaint with closed status"));
+                    }
+                    return this.complaintPersistence.delete(complaint);
+                });
     }
 
     private Mono<Void> assertComplaintWithBarcodeAndUserMobileWithOpenStateNotExists(String userMobile,String barcode){

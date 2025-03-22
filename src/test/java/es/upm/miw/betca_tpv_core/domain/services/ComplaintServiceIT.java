@@ -9,10 +9,12 @@ import es.upm.miw.betca_tpv_core.domain.model.ComplaintState;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import reactor.test.StepVerifier;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
