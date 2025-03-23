@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_core.domain.model.Complaint;
 import es.upm.miw.betca_tpv_core.domain.model.ComplaintState;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintCreationDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ class ComplaintResourceIT {
                 )
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Complaint.class)
+                .expectBodyList(ComplaintDto.class)
                 .value(Assertions::assertNotNull)
                 .value( complaints -> assertTrue( (long) complaints
                         .size() >=3)
@@ -53,7 +54,7 @@ class ComplaintResourceIT {
                 )
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Complaint.class)
+                .expectBodyList(ComplaintDto.class)
                 .value(Assertions::assertNotNull)
                 .value( complaints -> assertTrue( (long) complaints
                         .size() ==0)
@@ -67,7 +68,7 @@ class ComplaintResourceIT {
                 .uri(COMPLAINTS+SEARCH)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Complaint.class)
+                .expectBodyList(ComplaintDto.class)
                 .value(Assertions::assertNotNull)
                 .value( complaints -> assertTrue( (long) complaints
                         .size() >=3)
@@ -86,7 +87,7 @@ class ComplaintResourceIT {
                 )
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Complaint.class)
+                .expectBodyList(ComplaintDto.class)
                 .value(Assertions::assertNotNull)
                 .value( complaints -> assertTrue( (long) complaints
                         .size() >=3)
@@ -133,7 +134,7 @@ class ComplaintResourceIT {
                 .uri(COMPLAINTS+"/9B83A8")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(Complaint.class)
+                .expectBody(ComplaintDto.class)
                 .value(Assertions::assertNotNull)
                 .value(complaint -> assertEquals("Éxito en readByTrackingCode","66", complaint.getUserMobile().toString()));
     }
@@ -155,7 +156,7 @@ class ComplaintResourceIT {
                 .uri(COMPLAINTS+"/9B83A8")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(Complaint.class)
+                .expectBody(ComplaintDto.class)
                 .value(Assertions::assertNotNull)
                 .value(complaint -> assertEquals("Éxito en readByTrackingCode","66", complaint.getUserMobile().toString()));
     }
@@ -266,7 +267,7 @@ class ComplaintResourceIT {
                 .exchange()
                 .expectStatus()
                 .isOk()
-                .returnResult(Complaint.class)
+                .returnResult(ComplaintDto.class)
                 .getResponseBody()
                 .blockFirst()
                 .getTrackingCode();

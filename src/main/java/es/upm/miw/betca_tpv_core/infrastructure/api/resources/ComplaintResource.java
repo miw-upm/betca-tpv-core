@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_core.domain.model.Complaint;
 import es.upm.miw.betca_tpv_core.domain.services.ComplaintService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintCreationDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintDto;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,18 +29,21 @@ public class ComplaintResource {
 
     @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping(produces = {"application/json"})
-    public Mono<Complaint> create(@Valid @RequestBody ComplaintCreationDto complaintCreationDto,Authentication authentication){
-        return this.complaintService.create(complaintCreationDto.toComplaint(),authentication);
+    public Mono<ComplaintDto> create(@Valid @RequestBody ComplaintCreationDto complaintCreationDto, Authentication authentication){
+        return this.complaintService.create(complaintCreationDto.toComplaint(),authentication)
+                .map(Complaint::toComplaintDto);
     }
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','CUSTOMER','OPERATOR')")
     @GetMapping(COMPLAINT_TRACKING_CODE)
-    public Mono<Complaint> readByTrackingCode(@PathVariable String trackingCode ,Authentication authentication){
-        return this.complaintService.readByTrackingCode(trackingCode,authentication);
+    public Mono<ComplaintDto> readByTrackingCode(@PathVariable String trackingCode ,Authentication authentication){
+        return this.complaintService.readByTrackingCode(trackingCode,authentication)
+                .map(Complaint::toComplaintDto);;
     }
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR') or #userMobile == authentication.principal")
     @GetMapping(SEARCH)
-    public Flux<Complaint> findByUserMobileNullSafe(@RequestParam(required = false) String userMobile){
-        return this.complaintService.findByUserMobileNullSafe(userMobile);
+    public Flux<ComplaintDto> findByUserMobileNullSafe(@RequestParam(required = false) String userMobile){
+        return this.complaintService.findByUserMobileNullSafe(userMobile)
+                .map(Complaint::toComplaintDto);
     }
 
     @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
