@@ -37,7 +37,7 @@ public class ComplaintResource {
     @GetMapping(COMPLAINT_TRACKING_CODE)
     public Mono<ComplaintDto> readByTrackingCode(@PathVariable String trackingCode ,Authentication authentication){
         return this.complaintService.readByTrackingCode(trackingCode,authentication)
-                .map(Complaint::toComplaintDto);;
+                .map(Complaint::toComplaintDto);
     }
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR') or #userMobile == authentication.principal")
     @GetMapping(SEARCH)
