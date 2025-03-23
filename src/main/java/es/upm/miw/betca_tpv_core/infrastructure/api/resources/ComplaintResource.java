@@ -56,7 +56,7 @@ public class ComplaintResource {
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
     public Mono<ComplaintDto> updateAsAdmin(@PathVariable String trackingCode, @RequestBody ComplaintUpdateAdminDto complaintUpdateAdminDto){
-        this.complaintService.updateAsAdmin(trackingCode,complaintUpdateAdminDto)
+        return this.complaintService.updateAsAdmin(trackingCode,complaintUpdateAdminDto)
                 .map(Complaint::toComplaintDto);
     }
 }

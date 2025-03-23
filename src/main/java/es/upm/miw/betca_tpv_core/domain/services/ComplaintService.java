@@ -142,11 +142,11 @@ public class ComplaintService {
                         return Mono.just(complaint);
                     }
                 })
-                .flatMap( complaint ->
-                        this.generateTrackingCode(complaint.getUserMobile(), complaint.getBarcode(), ComplaintState.OPEN.toString())
-                                .map(newTrackingCode -> {
-                                    complaint.setTrackingCode(newTrackingCode);
-                                    return this.complaintPersistence.update(complaint);
+                .flatMap( complaintToSave ->
+                        this.generateTrackingCode(complaintToSave.getUserMobile(), complaintToSave.getBarcode(), complaintToSave.getState().toString())
+                                .flatMap(newTrackingCode -> {
+                                    complaintToSave.setTrackingCode(newTrackingCode);
+                                    return this.complaintPersistence.update(complaintToSave);
                                 })
                 );
     }
