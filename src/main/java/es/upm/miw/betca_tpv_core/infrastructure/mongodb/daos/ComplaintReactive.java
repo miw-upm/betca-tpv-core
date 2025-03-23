@@ -15,6 +15,5 @@ public interface ComplaintReactive extends ReactiveMongoRepository<ComplaintEnti
             + "] }")
     Flux<ComplaintEntity> findByUserMobileNullSafe(String userMobile);
 
-    @Override
-    Mono<ComplaintEntity> findById(String id);
+    Mono<ComplaintEntity> findByTrackingCode(String trackingCode);
 }

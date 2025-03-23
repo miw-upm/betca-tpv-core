@@ -16,6 +16,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,11 +29,9 @@ public class ComplaintService {
 
     private final ArticlePersistence articlePersistence;
 
-    private final UserMicroservice userMicroservice;
     @Autowired
-    public ComplaintService (ComplaintPersistence complaintPersistence,UserMicroservice userMicroservice,ArticlePersistence articlePersistence){
+    public ComplaintService (ComplaintPersistence complaintPersistence,ArticlePersistence articlePersistence){
         this.complaintPersistence=complaintPersistence;
-        this.userMicroservice=userMicroservice;
         this.articlePersistence = articlePersistence;
     }
 
@@ -39,13 +39,36 @@ public class ComplaintService {
         if(!complaint.getUserMobile().equals(authentication.getPrincipal())){
             return Mono.error(new ForbiddenException("You do not have permission to create a complaint for other user"));
         }
+
         return this.articlePersistence.readByBarcode(complaint.getBarcode())
                 .switchIfEmpty(Mono.error(new NotFoundException("The article provided not exists")))
-                .then(this.assertComplaintWithBarcodeAndUserMobileWithOpenStateNotExists(complaint.getUserMobile(),complaint.getBarcode())
-                                        .then(this.complaintPersistence.create(complaint)));
+                .then(this.assertComplaintWithBarcodeAndUserMobileWithOpenStateNotExists(
+                        complaint.getUserMobile(), complaint.getBarcode()))
+                .then(this.generateTrackingCode(complaint.getUserMobile(), complaint.getBarcode(), ComplaintState.OPEN.toString())
+                        .map(trackingCode -> {
+                            complaint.setTrackingCode(trackingCode);
+                            return complaint;
+                        }))
+                .flatMap(this.complaintPersistence::create);
+
 
     }
-    public Mono<Complaint> readById(String id, Authentication authentication) {
+
+    private Mono<String> generateTrackingCode(String userMobile, String barcode, String state) {
+        return Mono.just(userMobile + "-" + barcode + "-" + state)
+                .map(value -> {
+                    try {
+                        MessageDigest md = MessageDigest.getInstance("MD5");
+                        byte[] digest = md.digest(value.getBytes());
+                        return new BigInteger(1, digest).toString(16).substring(0, 6).toUpperCase();
+                    } catch (Exception e) {
+                        throw new RuntimeException("Error generating hash", e);
+                    }
+                });
+    }
+
+
+    public Mono<Complaint> readByTrackingCode(String trackingCode, Authentication authentication) {
 
         Set<String> PRIVILEGED_ROLES = Arrays.stream(PrivilegedRoles.values())
                 .map(Enum::name)
@@ -55,8 +78,8 @@ public class ComplaintService {
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch(PRIVILEGED_ROLES::contains);
 
-        return this.complaintPersistence.readById(id)
-                .switchIfEmpty(Mono.error(new NotFoundException("Non Existent Complaint id:"+id)))
+        return this.complaintPersistence.readByTrackingCode(trackingCode)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non Existent Complaint trackingCode:"+trackingCode)))
                 .filter(complaint -> ( hasPriviligedRoles
                         || complaint.getUserMobile().equals(authentication.getPrincipal()))
                 )
@@ -67,7 +90,7 @@ public class ComplaintService {
         return this.complaintPersistence.findByUserMobileNullSafe(userMobile);
     }
 
-    public Mono<Void> delete(String id,Authentication authentication){
+    public Mono<Void> delete(String trackingCode,Authentication authentication){
         Set<String> PRIVILEGED_ROLES = Arrays.stream(PrivilegedRoles.values())
                 .filter(privilegedRoles -> privilegedRoles.equals(PrivilegedRoles.ROLE_ADMIN))
                 .map(Enum::name)
@@ -77,7 +100,7 @@ public class ComplaintService {
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch(PRIVILEGED_ROLES::contains);
 
-        return this.complaintPersistence.readById(id)
+        return this.complaintPersistence.readByTrackingCode(trackingCode)
                 .switchIfEmpty(Mono.empty())
                 .flatMap(complaint -> {
                     if(!hasPriviligedRoles && !complaint.getUserMobile().equals(authentication.getPrincipal())){

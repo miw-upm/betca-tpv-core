@@ -362,7 +362,7 @@ public class DatabaseSeederDev {
         LocalDateTime dateComplaintCreationArticle4 = LocalDateTime.of(2022, Month.AUGUST, 15, 10, 4);
 
         ComplaintEntity[] complaints = {
-                ComplaintEntity.builder().id("dfun8ecm9cd").description("Queja aleatoria").reply("")
+                ComplaintEntity.builder().trackingCode("9B83A8").description("Queja aleatoria").reply("")
                         .article(articles[0]).registrationDate(dateComplaintCreationArticle1).state(ComplaintState.OPEN)
                         .registrationDate(dateComplaintCreationArticle1).userMobile("66").build(),
                 ComplaintEntity.builder().description("Queja MIW").reply("Respuesta MIW").state(ComplaintState.OPEN)
@@ -374,10 +374,10 @@ public class DatabaseSeederDev {
                 ComplaintEntity.builder().description("Queja Asignatura").reply("Solucionado").state(ComplaintState.CLOSED)
                         .article(articles[2]).registrationDate(dateComplaintCreationArticle4)
                         .userMobile("666666005").build(),
-                ComplaintEntity.builder().id("frieourfncw0").description("Queja articulo").reply("").state(ComplaintState.OPEN)
+                ComplaintEntity.builder().trackingCode("6A6867").description("Queja articulo").reply("").state(ComplaintState.OPEN)
                         .article(articles[1]).registrationDate(dateComplaintCreationArticle1)
                         .userMobile("666666005").build(),
-                ComplaintEntity.builder().id("fdfsdfsdfgfgdfgdfcer").description("Queja Asignatura").reply("Solucionado").state(ComplaintState.CLOSED)
+                ComplaintEntity.builder().trackingCode("9C27C5").description("Queja Asignatura").reply("Solucionado").state(ComplaintState.CLOSED)
                         .article(articles[9]).registrationDate(dateComplaintCreationArticle4)
                         .userMobile("666666003").build(),
         };

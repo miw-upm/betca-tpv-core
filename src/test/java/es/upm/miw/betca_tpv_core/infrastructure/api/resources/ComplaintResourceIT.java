@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_core.domain.model.Complaint;
 import es.upm.miw.betca_tpv_core.domain.model.ComplaintState;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintCreationDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ class ComplaintResourceIT {
                 )
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Complaint.class)
+                .expectBodyList(ComplaintDto.class)
                 .value(Assertions::assertNotNull)
                 .value( complaints -> assertTrue( (long) complaints
                         .size() >=3)
@@ -53,7 +54,7 @@ class ComplaintResourceIT {
                 )
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Complaint.class)
+                .expectBodyList(ComplaintDto.class)
                 .value(Assertions::assertNotNull)
                 .value( complaints -> assertTrue( (long) complaints
                         .size() ==0)
@@ -67,7 +68,7 @@ class ComplaintResourceIT {
                 .uri(COMPLAINTS+SEARCH)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Complaint.class)
+                .expectBodyList(ComplaintDto.class)
                 .value(Assertions::assertNotNull)
                 .value( complaints -> assertTrue( (long) complaints
                         .size() >=3)
@@ -86,7 +87,7 @@ class ComplaintResourceIT {
                 )
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Complaint.class)
+                .expectBodyList(ComplaintDto.class)
                 .value(Assertions::assertNotNull)
                 .value( complaints -> assertTrue( (long) complaints
                         .size() >=3)
@@ -118,7 +119,7 @@ class ComplaintResourceIT {
                 .isUnauthorized();
     }
     @Test
-    void testReadById_UserNotLogged(){
+    void testReadByTrackingCode_UserNotLogged(){
         this.webTestClient
                 .get()
                 .uri(COMPLAINTS+"/dasd")
@@ -127,41 +128,41 @@ class ComplaintResourceIT {
                 .isUnauthorized();
     }
     @Test
-    void testReadById_UserIsAdmin(){
+    void testReadByTrackingCode_UserIsAdmin(){
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(COMPLAINTS+"/dfun8ecm9cd")
+                .uri(COMPLAINTS+"/9B83A8")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(Complaint.class)
+                .expectBody(ComplaintDto.class)
                 .value(Assertions::assertNotNull)
-                .value(complaint -> assertEquals("Éxito en readById","66", complaint.getUserMobile().toString()));
+                .value(complaint -> assertEquals("Éxito en readByTrackingCode","66", complaint.getUserMobile().toString()));
     }
 
     @Test
-    void testReadById_WhenCustomerIsNotOwnerOfComplaint(){
+    void testReadByTrackingCode_WhenCustomerIsNotOwnerOfComplaint(){
         this.restClientTestService.loginCustomer(webTestClient)
                 .get()
-                .uri(COMPLAINTS+"/frieourfncw0")
+                .uri(COMPLAINTS+"/6A6867")
                 .exchange()
                 .expectStatus()
                 .isForbidden();
     }
 
     @Test
-    void testReadById_WhenCustomerIsOwnerOfComplaint(){
+    void testReadByTrackingCode_WhenCustomerIsOwnerOfComplaint(){
         this.restClientTestService.loginCustomer(webTestClient)
                 .get()
-                .uri(COMPLAINTS+"/dfun8ecm9cd")
+                .uri(COMPLAINTS+"/9B83A8")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(Complaint.class)
+                .expectBody(ComplaintDto.class)
                 .value(Assertions::assertNotNull)
-                .value(complaint -> assertEquals("Éxito en readById","66", complaint.getUserMobile().toString()));
+                .value(complaint -> assertEquals("Éxito en readByTrackingCode","66", complaint.getUserMobile().toString()));
     }
 
     @Test
-    void testReadById_NotFound(){
+    void testReadByTrackingCode_NotFound(){
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(COMPLAINTS+"/sdnieufsudn843")
@@ -266,10 +267,10 @@ class ComplaintResourceIT {
                 .exchange()
                 .expectStatus()
                 .isOk()
-                .returnResult(Complaint.class)
+                .returnResult(ComplaintDto.class)
                 .getResponseBody()
                 .blockFirst()
-                .getId();
+                .getTrackingCode();
     }
 
     @Test
@@ -287,7 +288,7 @@ class ComplaintResourceIT {
     void testDeleteComplaintAsCustomer_Forbidden(){
         this.restClientTestService.loginCustomer(webTestClient)
                 .delete()
-                .uri(COMPLAINTS+"/frieourfncw0")
+                .uri(COMPLAINTS+"/6A6867")
                 .exchange()
                 .expectStatus()
                 .isForbidden();
@@ -296,7 +297,7 @@ class ComplaintResourceIT {
     void testDeleteComplaintAsCustomer_ComplaintIsClosed(){
         this.restClientTestService.loginExtraCustomer(webTestClient)
                 .delete()
-                .uri(COMPLAINTS+"/fdfsdfsdfgfgdfgdfcer")
+                .uri(COMPLAINTS+"/9C27C5")
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT);
     }
