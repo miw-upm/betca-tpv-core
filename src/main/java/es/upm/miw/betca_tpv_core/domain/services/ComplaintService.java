@@ -122,25 +122,33 @@ public class ComplaintService {
                             isModifiedUserMobile = this.isModifiedString(complaintUpdateAdminDto.getUserMobile(),complaint.getUserMobile()),
                             isModifiedState = this.isModifiedComplaintState(complaintUpdateAdminDto.getState());
 
-                    isModifiedBarcode ? complaint.setBarcode(complaintUpdateAdminDto.getBarcode()):"";
-                    isModifiedUserMobile ? complaint.setUserMobile(complaintUpdateAdminDto.getUserMobile()):"";
-                    complaint.setState((isModifiedState ? ComplaintState.OPEN :ComplaintState.CLOSED));
-                    complaint.setTrackingCode(this.generateTrackingCode(complaint.getUserMobile(),
-                            complaint.getBarcode(),complaint.getState()));
+                    if (isModifiedBarcode) {
+                        complaint.setBarcode(complaintUpdateAdminDto.getBarcode());
+                    }
+                    if (isModifiedUserMobile) {
+                        complaint.setUserMobile(complaintUpdateAdminDto.getUserMobile());
+                    }
+                    complaint.setState(isModifiedState ? ComplaintState.OPEN : ComplaintState.CLOSED);
 
                     if (isModifiedBarcode || isModifiedUserMobile || isModifiedState) {
                         return assertComplaintWithBarcodeAndUserMobileAndStateNotExists(complaint.getUserMobile(),
                                 complaint.getBarcode(),complaint.getState())
                                 .then(
-                                    return this.complaintPersistence.update(complaint);
+                                    Mono.just(complaint)
                                 );
                     } else {
                         complaint.setReply(complaintUpdateAdminDto.getReply());
                         complaint.setDescription(complaintUpdateAdminDto.getDescription());
-                        return this.complaintPersistence.save(complaint);
+                        return Mono.just(complaint);
                     }
                 })
-        return
+                .flatMap( complaint ->
+                        this.generateTrackingCode(complaint.getUserMobile(), complaint.getBarcode(), ComplaintState.OPEN.toString())
+                                .map(newTrackingCode -> {
+                                    complaint.setTrackingCode(newTrackingCode);
+                                    return this.complaintPersistence.update(complaint);
+                                })
+                );
     }
     private Boolean isModifiedString(String modifiedValue,String currentValue){
         return (modifiedValue != null && modifiedValue.isEmpty() && !modifiedValue.equals(currentValue));
