@@ -365,13 +365,13 @@ public class DatabaseSeederDev {
                 ComplaintEntity.builder().trackingCode("9B83A8").description("Queja aleatoria").reply("")
                         .article(articles[0]).registrationDate(dateComplaintCreationArticle1).state(ComplaintState.OPEN)
                         .registrationDate(dateComplaintCreationArticle1).userMobile("66").build(),
-                ComplaintEntity.builder().description("Queja MIW").reply("Respuesta MIW").state(ComplaintState.OPEN)
+                ComplaintEntity.builder().trackingCode("4918CC").description("Queja MIW").reply("Respuesta MIW").state(ComplaintState.OPEN)
                         .article(articles[1]).registrationDate(dateComplaintCreationArticle2)
                         .registrationDate(dateComplaintCreationArticle2).userMobile("66").build(),
-                ComplaintEntity.builder().description("Queja Grado").reply("").state(ComplaintState.OPEN)
+                ComplaintEntity.builder().trackingCode("90FC92").description("Queja Grado").reply("").state(ComplaintState.OPEN)
                         .article(articles[2]).registrationDate(dateComplaintCreationArticle3)
                         .userMobile("66").build(),
-                ComplaintEntity.builder().description("Queja Asignatura").reply("Solucionado").state(ComplaintState.CLOSED)
+                ComplaintEntity.builder().trackingCode("D6680A").description("Queja Asignatura").reply("Solucionado").state(ComplaintState.CLOSED)
                         .article(articles[2]).registrationDate(dateComplaintCreationArticle4)
                         .userMobile("666666005").build(),
                 ComplaintEntity.builder().trackingCode("6A6867").description("Queja articulo").reply("").state(ComplaintState.OPEN)
