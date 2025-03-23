@@ -115,7 +115,7 @@ public class ComplaintService {
     }
 
     public Mono<Complaint> updateAsAdmin(String trackingCode, ComplaintUpdateAdminDto complaintUpdateAdminDto){
-        this.complaintPersistence.readByTrackingCode(trackingCode)
+        return this.complaintPersistence.readByTrackingCode(trackingCode)
                 .switchIfEmpty(Mono.error(new NotFoundException("Non Existent Complaint trackingCode:"+trackingCode)))
                 .flatMap(complaint -> {
                     boolean isModifiedBarcode = this.isModifiedString(complaintUpdateAdminDto.getBarcode(),complaint.getBarcode()),
