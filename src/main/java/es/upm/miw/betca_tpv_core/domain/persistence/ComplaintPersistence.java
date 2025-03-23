@@ -17,4 +17,6 @@ public interface ComplaintPersistence {
     Mono<Complaint> findByUserMobileAndBarcodeAndState(String userMobile, String barcode, ComplaintState state);
 
     Mono<Void> delete(Complaint complaint);
+
+    Mono<Complaint> update(Complaint complaint);
 }

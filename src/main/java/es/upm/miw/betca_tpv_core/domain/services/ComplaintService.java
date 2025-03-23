@@ -132,7 +132,7 @@ public class ComplaintService {
                         return assertComplaintWithBarcodeAndUserMobileAndStateNotExists(complaint.getUserMobile(),
                                 complaint.getBarcode(),complaint.getState())
                                 .then(
-                                    return this.complaintPersistence.save();
+                                    return this.complaintPersistence.update(complaint);
                                 );
                     } else {
                         complaint.setReply(complaintUpdateAdminDto.getReply());
