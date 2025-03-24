@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_core.domain.services.ComplaintService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintCreationDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateAdminDto;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ public class ComplaintResource {
     public static final String COMPLAINTS = "/complaints";
     public static final String SEARCH = "/search";
     public static final String COMPLAINT_TRACKING_CODE = "/{trackingCode}";
+
+    public static final String COMPLAINT_UPDATE_ADMIN = "/admin";
     private final ComplaintService complaintService;
 
     @Autowired
@@ -50,5 +53,12 @@ public class ComplaintResource {
     @DeleteMapping(COMPLAINT_TRACKING_CODE)
     public Mono<Void> delete(@PathVariable String trackingCode, Authentication authentication){
         return this.complaintService.delete(trackingCode,authentication);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping(COMPLAINT_TRACKING_CODE+COMPLAINT_UPDATE_ADMIN)
+    public Mono<ComplaintDto> updateAsAdmin(@PathVariable String trackingCode, @RequestBody ComplaintUpdateAdminDto complaintUpdateAdminDto){
+        return this.complaintService.updateAsAdmin(trackingCode,complaintUpdateAdminDto)
+                .map(Complaint::toComplaintDto);
     }
 }

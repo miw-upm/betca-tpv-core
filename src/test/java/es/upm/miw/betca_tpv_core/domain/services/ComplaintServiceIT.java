@@ -1,20 +1,20 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
-import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ForbiddenException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
 import es.upm.miw.betca_tpv_core.domain.model.ComplaintState;
+import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateAdminDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -87,6 +87,21 @@ class ComplaintServiceIT {
 
         StepVerifier
                 .create(this.complaintService.create(complaint,authentication))
+                .expectError(NotFoundException.class)
+                .verify();
+    }
+
+    @Test
+    void  testUpdateComplaintAdmin_NotExistsNewUserMobile(){
+        UserMicroservice userMicroservice = mock(UserMicroservice.class);
+        when(userMicroservice.readByMobile("yh8h56b87")).thenReturn(Mono.empty());
+
+        StepVerifier
+                .create(this.complaintService.updateAsAdmin("4918CC",
+                        ComplaintUpdateAdminDto.builder()
+                                .userMobile("yh8h56b87")
+                                .build()
+                        ))
                 .expectError(NotFoundException.class)
                 .verify();
     }
