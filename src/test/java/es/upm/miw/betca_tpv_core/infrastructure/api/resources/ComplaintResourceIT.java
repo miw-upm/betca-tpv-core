@@ -394,49 +394,4 @@ class ComplaintResourceIT {
                 .expectStatus()
                 .isNotFound();
     }
-/*
-    @Test
-    void testUpdateComplaintAdmin_NotExistsNewBarcode(){
-        this.restClientTestService.loginAdmin(webTestClient)
-                .put()
-                .uri(COMPLAINTS+"/4918CC"+COMPLAINT_UPDATE_ADMIN)
-                .bodyValue(ComplaintUpdateAdminDto.builder()
-                        .barcode("fubidfvjkdvjdk dsk")
-                        .userMobile("66")
-                        .state(ComplaintState.OPEN)
-                        .build()
-                )
-                .exchange()
-                .expectStatus()
-                .isNotFound();
-    }
-
-
-    @Test
-    void testUpdateComplaintAdmin_Successful(){
-        this.restClientTestService.loginAdmin(webTestClient)
-                .put()
-                .uri(COMPLAINTS+"/D6680A"+COMPLAINT_UPDATE_ADMIN)
-                .bodyValue(ComplaintUpdateAdminDto.builder()
-                        .userMobile("666666003")
-                        .state(ComplaintState.OPEN)
-                        .reply("Cerrado")
-                        .description("Descripcion modificada por administrador")
-                        .build()
-                )
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(ComplaintDto.class)
-                .value(Assertions::assertNotNull)
-                .value( complaint -> {
-                    System.out.println(complaint);
-                    assertEquals("Éxito ","666666003", complaint.getUserMobile().toString());
-                    assertEquals("Éxito","8400000000031", complaint.getBarcode().toString());
-                            assertEquals("Éxito","Cerrado", complaint.getReply().toString());
-                    assertEquals("Éxito",ComplaintState.OPEN, complaint.getState());
-                    assertEquals("Éxito","Descripcion modificada por administrador", complaint.getDescription());
-                }
-                );
-    }
-*/
 }
