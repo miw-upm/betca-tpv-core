@@ -21,6 +21,8 @@ public class ComplaintResource {
     public static final String COMPLAINTS = "/complaints";
     public static final String SEARCH = "/search";
     public static final String COMPLAINT_TRACKING_CODE = "/{trackingCode}";
+
+    public static final String COMPLAINT_UPDATE_ADMIN = "/admin";
     private final ComplaintService complaintService;
 
     @Autowired
@@ -54,7 +56,7 @@ public class ComplaintResource {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping
+    @PutMapping(COMPLAINT_TRACKING_CODE+COMPLAINT_UPDATE_ADMIN)
     public Mono<ComplaintDto> updateAsAdmin(@PathVariable String trackingCode, @RequestBody ComplaintUpdateAdminDto complaintUpdateAdminDto){
         return this.complaintService.updateAsAdmin(trackingCode,complaintUpdateAdminDto)
                 .map(Complaint::toComplaintDto);

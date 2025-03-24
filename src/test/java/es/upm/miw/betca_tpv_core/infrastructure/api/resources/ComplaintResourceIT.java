@@ -1,10 +1,10 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
-import es.upm.miw.betca_tpv_core.domain.model.Complaint;
 import es.upm.miw.betca_tpv_core.domain.model.ComplaintState;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintCreationDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateAdminDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -318,6 +318,124 @@ class ComplaintResourceIT {
                 .exchange()
                 .expectStatus()
                 .isUnauthorized();
+    }
+
+    @Test
+    void testUpdateComplaintAdmin_UnAuthorizedAsCustomer(){
+        this.restClientTestService.loginCustomer(webTestClient)
+                .put()
+                .uri(COMPLAINTS+"/udsiandi"+COMPLAINT_UPDATE_ADMIN)
+                .bodyValue(new ComplaintUpdateAdminDto())
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
+    }
+
+    @Test
+    void testUpdateComplaintAdmin_UnAuthorizedAsManager(){
+        this.restClientTestService.loginManager(webTestClient)
+                .put()
+                .uri(COMPLAINTS+"/udsiandi"+COMPLAINT_UPDATE_ADMIN)
+                .bodyValue(new ComplaintUpdateAdminDto())
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
+    }
+
+    @Test
+    void testUpdateComplaintAdmin_UnAuthorizedAsOperator(){
+        this.restClientTestService.loginOperator(webTestClient)
+                .put()
+                .uri(COMPLAINTS+"/udsiandi"+COMPLAINT_UPDATE_ADMIN)
+                .bodyValue(new ComplaintUpdateAdminDto())
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
+    }
+
+    @Test
+    void testUpdateComplaintAdmin_NotFound(){
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(COMPLAINTS+"/udsianddimcosdmio9i"+COMPLAINT_UPDATE_ADMIN)
+                .bodyValue(new ComplaintUpdateAdminDto())
+                .exchange()
+                .expectStatus()
+                .isNotFound();
+    }
+
+    @Test
+    void testUpdateComplaintAdmin_ConflictException(){
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(COMPLAINTS+"/4918CC"+COMPLAINT_UPDATE_ADMIN)
+                .bodyValue(ComplaintUpdateAdminDto.builder()
+                        .barcode("8400000000017")
+                        .userMobile("66")
+                        .state(ComplaintState.OPEN)
+                        .build()
+                )
+                .exchange()
+                .expectStatus()
+                .isEqualTo(HttpStatus.CONFLICT);
+    }
+
+    @Test
+    void testUpdateComplaintAdmin_NotExistsNewBarcode(){
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(COMPLAINTS+"/4918CC"+COMPLAINT_UPDATE_ADMIN)
+                .bodyValue(ComplaintUpdateAdminDto.builder()
+                        .barcode("fubidfvjkdvjdk dsk")
+                        .userMobile("66")
+                        .state(ComplaintState.OPEN)
+                        .build()
+                )
+                .exchange()
+                .expectStatus()
+                .isNotFound();
+    }
+
+    @Test
+    void testUpdateComplaintAdmin_NotExistsTrackingCode(){
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(COMPLAINTS+"/dn82d787n892mi92hcn872n"+COMPLAINT_UPDATE_ADMIN)
+                .bodyValue(ComplaintUpdateAdminDto.builder()
+                        .userMobile("66")
+                        .state(ComplaintState.OPEN)
+                        .build()
+                )
+                .exchange()
+                .expectStatus()
+                .isNotFound();
+    }
+
+    @Test
+    void testUpdateComplaintAdmin_Successful(){
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(COMPLAINTS+"/D6680A"+COMPLAINT_UPDATE_ADMIN)
+                .bodyValue(ComplaintUpdateAdminDto.builder()
+                        .userMobile("666666003")
+                        .state(ComplaintState.OPEN)
+                        .reply("Cerrado")
+                        .description("Descripcion modificada por administrador")
+                        .build()
+                )
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ComplaintDto.class)
+                .value(Assertions::assertNotNull)
+                .value( complaint -> {
+                    System.out.println(complaint);
+                    assertEquals("Éxito ","666666003", complaint.getUserMobile().toString());
+                    assertEquals("Éxito","8400000000031", complaint.getBarcode().toString());
+                            assertEquals("Éxito","Cerrado", complaint.getReply().toString());
+                    assertEquals("Éxito",ComplaintState.OPEN, complaint.getState());
+                    assertEquals("Éxito","Descripcion modificada por administrador", complaint.getDescription());
+                }
+                );
     }
 
 }
