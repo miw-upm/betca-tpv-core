@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_core.domain.exceptions.ForbiddenException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
 import es.upm.miw.betca_tpv_core.domain.model.ComplaintState;
+import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateAdminDto;
 import org.junit.jupiter.api.Test;
@@ -104,5 +105,41 @@ class ComplaintServiceIT {
                         ))
                 .expectError(NotFoundException.class)
                 .verify();
+    }
+
+    @Test
+    void testUpdateComplaintAdmin_NotExistsNewBarcode(){
+        UserMicroservice userMicroservice = mock(UserMicroservice.class);
+        when(userMicroservice.readByMobile("66")).thenReturn(
+                Mono.just(User.builder().mobile("66").build())
+        );
+        StepVerifier
+                .create(
+                        this.complaintService.updateAsAdmin("4918CC",ComplaintUpdateAdminDto.builder()
+                                .barcode("fubidfvjkdvjdk dsk")
+                                .userMobile("66")
+                                .state(ComplaintState.OPEN)
+                                .build())
+                )
+                .expectError(NotFoundException.class);
+    }
+
+    @Test
+    void testUpdateComplaintAdmin_Successful(){
+        StepVerifier
+                .create(
+                        this.complaintService.updateAsAdmin("9C27C5",ComplaintUpdateAdminDto.builder()
+                                .reply("Cerrado")
+                                .description("Descripcion modificada por administrador")
+                                .build())
+                )
+                .assertNext(complaint -> {
+                    assertEquals("666666003", complaint.getUserMobile().toString(), "Éxito");
+                    assertEquals("Cerrado", complaint.getReply().toString(), "Éxito");
+                    assertEquals("Descripcion modificada por administrador", complaint.getDescription(), "Éxito");
+                })
+                .thenCancel()
+                .verify();
+
     }
 }
