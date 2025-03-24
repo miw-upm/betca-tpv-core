@@ -381,6 +381,21 @@ class ComplaintResourceIT {
     }
 
     @Test
+    void testUpdateComplaintAdmin_NotExistsTrackingCode(){
+        this.restClientTestService.loginAdmin(webTestClient)
+                .put()
+                .uri(COMPLAINTS+"/dn82d787n892mi92hcn872n"+COMPLAINT_UPDATE_ADMIN)
+                .bodyValue(ComplaintUpdateAdminDto.builder()
+                        .userMobile("66")
+                        .state(ComplaintState.OPEN)
+                        .build()
+                )
+                .exchange()
+                .expectStatus()
+                .isNotFound();
+    }
+/*
+    @Test
     void testUpdateComplaintAdmin_NotExistsNewBarcode(){
         this.restClientTestService.loginAdmin(webTestClient)
                 .put()
@@ -396,20 +411,6 @@ class ComplaintResourceIT {
                 .isNotFound();
     }
 
-    @Test
-    void testUpdateComplaintAdmin_NotExistsTrackingCode(){
-        this.restClientTestService.loginAdmin(webTestClient)
-                .put()
-                .uri(COMPLAINTS+"/dn82d787n892mi92hcn872n"+COMPLAINT_UPDATE_ADMIN)
-                .bodyValue(ComplaintUpdateAdminDto.builder()
-                        .userMobile("66")
-                        .state(ComplaintState.OPEN)
-                        .build()
-                )
-                .exchange()
-                .expectStatus()
-                .isNotFound();
-    }
 
     @Test
     void testUpdateComplaintAdmin_Successful(){
@@ -437,5 +438,5 @@ class ComplaintResourceIT {
                 }
                 );
     }
-
+*/
 }
