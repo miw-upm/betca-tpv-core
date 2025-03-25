@@ -6,6 +6,7 @@ import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintCreationDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateAdminDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateCustomerDto;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class ComplaintResource {
     public static final String COMPLAINT_TRACKING_CODE = "/{trackingCode}";
 
     public static final String COMPLAINT_UPDATE_ADMIN = "/admin";
+
+    public static final String COMPLAINT_UPDATE_CUSTOMER = "/customer";
+
     private final ComplaintService complaintService;
 
     @Autowired
@@ -59,6 +63,13 @@ public class ComplaintResource {
     @PutMapping(COMPLAINT_TRACKING_CODE+COMPLAINT_UPDATE_ADMIN)
     public Mono<ComplaintDto> updateAsAdmin(@PathVariable String trackingCode, @RequestBody ComplaintUpdateAdminDto complaintUpdateAdminDto){
         return this.complaintService.updateAsAdmin(trackingCode,complaintUpdateAdminDto)
+                .map(Complaint::toComplaintDto);
+    }
+
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @PutMapping(COMPLAINT_TRACKING_CODE+COMPLAINT_UPDATE_CUSTOMER)
+    public Mono<ComplaintDto> updateAsCustomer(@PathVariable String trackingCode, @RequestBody ComplaintUpdateCustomerDto complaintUpdateCustomerDto){
+        return this.complaintService.updateAsCustomer(trackingCode,complaintUpdateCustomerDto)
                 .map(Complaint::toComplaintDto);
     }
 }

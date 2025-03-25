@@ -19,4 +19,6 @@ public interface ComplaintPersistence {
     Mono<Void> delete(Complaint complaint);
 
     Mono<Complaint> update(Complaint complaint,String oldBarcode);
+
+    Mono<Complaint> updateAsCustomer(String trackingCode,String description);
 }
