@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
+import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ForbiddenException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
@@ -8,6 +9,7 @@ import es.upm.miw.betca_tpv_core.domain.model.ComplaintState;
 import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateAdminDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateCustomerDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -141,5 +143,38 @@ class ComplaintServiceIT {
                 .thenCancel()
                 .verify();
 
+    }
+
+    @Test
+    void testUpdateComplaintCustomer_Successful(){
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getPrincipal()).thenReturn("666666005");
+
+        StepVerifier
+                .create(
+                        this.complaintService.updateAsCustomer("6A6867", ComplaintUpdateCustomerDto.builder()
+                                .description("Descripcion modificada por customer")
+                                .build(),authentication)
+                )
+                .assertNext(complaint -> {
+                    assertEquals("Descripcion modificada por customer", complaint.getDescription(), "Éxito");
+                })
+                .thenCancel()
+                .verify();
+
+    }
+
+    @Test
+    void testUpdateComplaintCustomer_ConflictException(){
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getPrincipal()).thenReturn("666666005");
+
+        StepVerifier
+                .create(
+                        this.complaintService.updateAsCustomer("D6680A",ComplaintUpdateCustomerDto.builder()
+                                .description("Sdjbasknas")
+                                .build(),authentication)
+                )
+                .expectError(ConflictException.class);
     }
 }

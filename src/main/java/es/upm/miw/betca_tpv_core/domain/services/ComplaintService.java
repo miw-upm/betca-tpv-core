@@ -10,6 +10,7 @@ import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
 import es.upm.miw.betca_tpv_core.domain.persistence.ComplaintPersistence;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateAdminDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateCustomerDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -161,6 +162,22 @@ public class ComplaintService {
                                     return this.complaintPersistence.update(complaintToSave,trackingCode);
                                 })
                 );
+    }
+
+    public Mono<Complaint> updateAsCustomer(String trackingCode, ComplaintUpdateCustomerDto complaintUpdateCustomerDto,Authentication authentication){
+        return this.complaintPersistence.readByTrackingCode(trackingCode)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non Existent Complaint trackingCode:"+trackingCode)))
+                .flatMap(complaint ->
+                        {
+                            if(!complaint.getUserMobile().toString().equals(authentication.getPrincipal().toString())){
+                                return Mono.error(new ForbiddenException("You do not have permission to update this complaint"));
+                            }
+                            if(complaint.getState().equals(ComplaintState.CLOSED)){
+                                return Mono.error(new ConflictException("You cannot modify a complaint with closed status"));
+                            }
+                            complaint.setDescription(complaintUpdateCustomerDto.getDescription());
+                            return this.complaintPersistence.updateAsCustomer(complaint);
+                        });
     }
     private Boolean isModifiedString(String modifiedValue,String currentValue){
         return (modifiedValue != null && !modifiedValue.isEmpty() && !modifiedValue.equals(currentValue));
