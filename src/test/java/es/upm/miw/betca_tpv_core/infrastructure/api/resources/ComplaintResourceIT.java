@@ -394,4 +394,33 @@ class ComplaintResourceIT {
                 .expectStatus()
                 .isNotFound();
     }
+
+    @Test
+    void testUpdateComplaintCustomer_NotExistsTrackingCode(){
+        this.restClientTestService.loginCustomer(webTestClient)
+                .put()
+                .uri(COMPLAINTS+"/dn82d787n89dofem2mi92hcn872n"+COMPLAINT_UPDATE_CUSTOMER)
+                .bodyValue(ComplaintUpdateAdminDto.builder()
+                        .description("cdsdfvfvsdvsdvs")
+                        .build()
+                )
+                .exchange()
+                .expectStatus()
+                .isNotFound();
+    }
+
+    @Test
+    void testUpdateComplaintCustomer_ForbiddenToUpdate(){
+        this.restClientTestService.loginCustomer(webTestClient)
+                .put()
+                .uri(COMPLAINTS+"/9C27C5"+COMPLAINT_UPDATE_CUSTOMER)
+                .bodyValue(ComplaintUpdateAdminDto.builder()
+                        .description("cdsdfvfvsdvsdvs")
+                        .build()
+                )
+                .exchange()
+                .expectStatus()
+                .isForbidden();
+    }
+
 }

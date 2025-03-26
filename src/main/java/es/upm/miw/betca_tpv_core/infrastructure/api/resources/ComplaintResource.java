@@ -68,8 +68,8 @@ public class ComplaintResource {
 
     @PreAuthorize("hasRole('CUSTOMER')")
     @PutMapping(COMPLAINT_TRACKING_CODE+COMPLAINT_UPDATE_CUSTOMER)
-    public Mono<ComplaintDto> updateAsCustomer(@PathVariable String trackingCode, @RequestBody ComplaintUpdateCustomerDto complaintUpdateCustomerDto){
-        return this.complaintService.updateAsCustomer(trackingCode,complaintUpdateCustomerDto)
+    public Mono<ComplaintDto> updateAsCustomer(@PathVariable String trackingCode, @RequestBody ComplaintUpdateCustomerDto complaintUpdateCustomerDto,Authentication authentication){
+        return this.complaintService.updateAsCustomer(trackingCode,complaintUpdateCustomerDto,authentication)
                 .map(Complaint::toComplaintDto);
     }
 }

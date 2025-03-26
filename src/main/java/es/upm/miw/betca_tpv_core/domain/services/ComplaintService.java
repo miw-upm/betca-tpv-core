@@ -164,8 +164,17 @@ public class ComplaintService {
                 );
     }
 
-    public Mono<Complaint> updateAsCustomer(String trackingCode, ComplaintUpdateCustomerDto complaintUpdateCustomerDto){
-        return this.complaintPersistence.updateAsCustomer(trackingCode,complaintUpdateCustomerDto.getDescription());
+    public Mono<Complaint> updateAsCustomer(String trackingCode, ComplaintUpdateCustomerDto complaintUpdateCustomerDto,Authentication authentication){
+        return this.complaintPersistence.readByTrackingCode(trackingCode)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non Existent Complaint trackingCode:"+trackingCode)))
+                .flatMap(complaint ->
+                        {
+                            if(!complaint.getUserMobile().toString().equals(authentication.getPrincipal().toString())){
+                                return Mono.error(new ForbiddenException("You do not have permission to update this complaint"));
+                            }
+                            complaint.setDescription(complaintUpdateCustomerDto.getDescription());
+                            return this.complaintPersistence.updateAsCustomer(complaint);
+                        });
     }
     private Boolean isModifiedString(String modifiedValue,String currentValue){
         return (modifiedValue != null && !modifiedValue.isEmpty() && !modifiedValue.equals(currentValue));

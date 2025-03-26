@@ -20,5 +20,5 @@ public interface ComplaintPersistence {
 
     Mono<Complaint> update(Complaint complaint,String oldBarcode);
 
-    Mono<Complaint> updateAsCustomer(String trackingCode,String description);
+    Mono<Complaint> updateAsCustomer(Complaint complaint);
 }
