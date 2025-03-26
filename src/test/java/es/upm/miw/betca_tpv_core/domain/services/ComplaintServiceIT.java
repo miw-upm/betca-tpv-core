@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
+import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.ForbiddenException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
@@ -161,5 +162,19 @@ class ComplaintServiceIT {
                 .thenCancel()
                 .verify();
 
+    }
+
+    @Test
+    void testUpdateComplaintCustomer_ConflictException(){
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getPrincipal()).thenReturn("666666005");
+
+        StepVerifier
+                .create(
+                        this.complaintService.updateAsCustomer("D6680A",ComplaintUpdateCustomerDto.builder()
+                                .description("Sdjbasknas")
+                                .build(),authentication)
+                )
+                .expectError(ConflictException.class);
     }
 }

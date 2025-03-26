@@ -172,6 +172,9 @@ public class ComplaintService {
                             if(!complaint.getUserMobile().toString().equals(authentication.getPrincipal().toString())){
                                 return Mono.error(new ForbiddenException("You do not have permission to update this complaint"));
                             }
+                            if(complaint.getState().equals(ComplaintState.CLOSED)){
+                                return Mono.error(new ConflictException("You cannot modify a complaint with closed status"));
+                            }
                             complaint.setDescription(complaintUpdateCustomerDto.getDescription());
                             return this.complaintPersistence.updateAsCustomer(complaint);
                         });

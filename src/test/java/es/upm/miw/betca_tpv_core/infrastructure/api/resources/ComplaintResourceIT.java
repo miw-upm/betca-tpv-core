@@ -5,6 +5,7 @@ import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintCreationDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateAdminDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateCustomerDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -414,7 +415,7 @@ class ComplaintResourceIT {
         this.restClientTestService.loginCustomer(webTestClient)
                 .put()
                 .uri(COMPLAINTS+"/9C27C5"+COMPLAINT_UPDATE_CUSTOMER)
-                .bodyValue(ComplaintUpdateAdminDto.builder()
+                .bodyValue(ComplaintUpdateCustomerDto.builder()
                         .description("cdsdfvfvsdvsdvs")
                         .build()
                 )
