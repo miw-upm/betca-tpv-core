@@ -92,14 +92,19 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
 
     @Override
     public Mono<Complaint> updateAsCustomer(Complaint complaint) {
-        ComplaintEntity complaintEntity = new ComplaintEntity();
-        BeanUtils.copyProperties(complaint,complaintEntity);
-        return this.articleReactive.findByBarcode(complaint.getBarcode())
-                .switchIfEmpty(Mono.error(new NotFoundException("The barcode provided not exists")))
-                .flatMap(article -> {
-                    complaintEntity.setArticle(article);
-                    return this.complaintReactive.save(complaintEntity).map(ComplaintEntity::toComplaint);
-                });
+
+        return this.complaintReactive.findByTrackingCode(complaint.getTrackingCode())
+                .flatMap( complaintEntity ->
+                        {   BeanUtils.copyProperties(complaint,complaintEntity);
+                            return this.articleReactive.findByBarcode(complaint.getBarcode())
+                                .switchIfEmpty(Mono.error(new NotFoundException("The barcode provided not exists")))
+                                .flatMap(article -> {
+                                        complaintEntity.setArticle(article);
+                                    return this.complaintReactive.save(complaintEntity).map(ComplaintEntity::toComplaint);
+                                });
+                        }
+                );
+
     }
 
 
