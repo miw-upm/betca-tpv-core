@@ -53,5 +53,19 @@ public class SlackServiceIT extends BaseTestContainerTest {
 
     }
 
+    @Test
+    void testInitWithEmptyWebhookUrlThrowsException() {
+
+        ReflectionTestUtils.setField(slackService, "slackWebhookUrl", "");
+
+
+        org.junit.jupiter.api.Assertions.assertThrows(
+                IllegalStateException.class,
+                () -> slackService.init()
+        );
+    }
+
+
+
 
 }
