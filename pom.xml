@@ -59,6 +59,8 @@
         <itextpdf.version>7.0.2</itextpdf.version>
         <!-- OpenAPI -->
         <springdoc-openapi-starter-webflux-ui.version>2.8.4</springdoc-openapi-starter-webflux-ui.version>
+        <!-- TestContainer -->
+        <testcontainers.version>1.17.3</testcontainers.version>
     </properties>
 
     <dependencies>
@@ -161,6 +163,24 @@
             <version>${de.flapdoodle.embed.mongo.spring3x.version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- TestContainer -->
+        <!-- Testcontainers for JUnit Jupiter -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Testcontainers WireMock module -->
+        <dependency>
+            <groupId>org.wiremock.integrations.testcontainers</groupId>
+            <artifactId>wiremock-testcontainers-module</artifactId>
+            <version>1.0-alpha-13</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- End TestContainer -->
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
