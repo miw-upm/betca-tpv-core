@@ -1,26 +1,45 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
+import es.upm.miw.betca_tpv_core.BaseTestContainerTest;
 import es.upm.miw.betca_tpv_core.TestConfig;
 import es.upm.miw.betca_tpv_core.domain.exceptions.BadRequestException;
 import es.upm.miw.betca_tpv_core.domain.model.CashierClose;
 import es.upm.miw.betca_tpv_core.domain.services.utils.MovementType;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.CashMovementDto;
+import org.junit.After;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.BDDMockito;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 
+import static org.mockito.ArgumentMatchers.any;
+
 @TestConfig
 class CashierServiceIT {
 
     @Autowired
     private CashierService cashierService;
+
+    @MockBean
+    private SlackService slackService;
+
+    @BeforeEach
+    void setUp () {
+        BDDMockito.doNothing().when(this.slackService).sendMessage(any(),any());
+    }
 
     private static Stream<Arguments> invalidCashMovementDtoProvider() {
         return Stream.of(

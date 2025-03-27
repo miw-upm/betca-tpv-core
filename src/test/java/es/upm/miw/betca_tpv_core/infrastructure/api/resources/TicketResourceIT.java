@@ -3,12 +3,14 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.domain.services.CustomerPointsService;
+import es.upm.miw.betca_tpv_core.domain.services.SlackService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -23,6 +25,7 @@ import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.TicketResou
 import static java.math.BigDecimal.ZERO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @RestTestConfig
@@ -36,9 +39,12 @@ class TicketResourceIT {
     private CustomerPointsService customerPointsService;
     @MockBean
     private UserMicroservice userMicroservice;
+    @MockBean
+    private SlackService slackService;
 
     @BeforeEach
     void openCashier() {
+        BDDMockito.doNothing().when(this.slackService).sendMessage(any(),any());
         this.restClientTestService.loginAdmin(webTestClient)
                 .post().uri(CASHIERS)
                 .exchange()
