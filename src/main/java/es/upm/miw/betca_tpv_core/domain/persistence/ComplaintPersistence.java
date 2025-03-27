@@ -12,7 +12,13 @@ public interface ComplaintPersistence {
 
     Flux<Complaint> findByUserMobileNullSafe(String userMobile);
 
-    Mono<Complaint> readById(String id);
+    Mono<Complaint> readByTrackingCode(String id);
 
     Mono<Complaint> findByUserMobileAndBarcodeAndState(String userMobile, String barcode, ComplaintState state);
+
+    Mono<Void> delete(Complaint complaint);
+
+    Mono<Complaint> update(Complaint complaint,String oldBarcode);
+
+    Mono<Complaint> updateAsCustomer(Complaint complaint);
 }

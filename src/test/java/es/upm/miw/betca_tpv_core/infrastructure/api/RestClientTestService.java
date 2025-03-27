@@ -46,6 +46,13 @@ public class RestClientTestService {
         return this.login(Role.CUSTOMER, "66", "customer", webTestClient);
     }
 
+    public WebTestClient loginOtherCustomer(WebTestClient webTestClient) {
+        return this.login(Role.CUSTOMER, "666666004", "customer", webTestClient);
+    }
+
+    public WebTestClient loginExtraCustomer(WebTestClient webTestClient) {
+        return this.login(Role.CUSTOMER, "666666003", "customer", webTestClient);
+    }
     public void logout() {
         this.token = null;
     }
