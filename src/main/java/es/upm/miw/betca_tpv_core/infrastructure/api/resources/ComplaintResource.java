@@ -24,6 +24,8 @@ public class ComplaintResource {
 
     public static final String COMPLAINT_UPDATE_CUSTOMER = "/customer";
 
+    public static final String COMPLAINT_UPDATE_MANAGEMENT= "/management";
+
     private final ComplaintService complaintService;
 
     @Autowired
@@ -71,7 +73,7 @@ public class ComplaintResource {
     }
 
     @PreAuthorize("hasAnyRole('MANAGER','OPERATOR')")
-    @PutMapping(COMPLAINT_TRACKING_CODE+COMPLAINT_UPDATE_CUSTOMER)
+    @PutMapping(COMPLAINT_TRACKING_CODE+COMPLAINT_UPDATE_MANAGEMENT)
     public Mono<ComplaintDto> updateAsManagement(@PathVariable String trackingCode, @RequestBody ComplaintUpdateManagementDto complaintUpdateManagementDto){
         return this.complaintService.updateAsManagement(trackingCode,complaintUpdateManagementDto)
                 .map(Complaint::toComplaintDto);
