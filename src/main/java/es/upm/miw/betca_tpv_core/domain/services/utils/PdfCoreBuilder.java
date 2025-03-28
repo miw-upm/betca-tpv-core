@@ -133,6 +133,15 @@ public class PdfCoreBuilder {
         return this;
     }
 
+    public PdfCoreBuilder foot_GiftTicket() {
+        this
+                .line()
+                .paragraph("The gift voucher can be used up to 30 days after its issue.")
+                .paragraphEmphasized("Enjoy your gift card")
+                .paragraphEmphasized(" ")
+                .line();
+        return this;
+    }
     public PdfCoreBuilder image(String fileName) {
         try {
             Image img = new Image(ImageDataFactory.create(new ClassPathResource("imges/" + fileName).getURL()));
