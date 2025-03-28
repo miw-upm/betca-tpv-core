@@ -3,10 +3,7 @@ package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
 import es.upm.miw.betca_tpv_core.domain.services.ComplaintService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintCreationDto;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintDto;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateAdminDto;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateCustomerDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +67,13 @@ public class ComplaintResource {
     @PutMapping(COMPLAINT_TRACKING_CODE+COMPLAINT_UPDATE_CUSTOMER)
     public Mono<ComplaintDto> updateAsCustomer(@PathVariable String trackingCode, @RequestBody ComplaintUpdateCustomerDto complaintUpdateCustomerDto,Authentication authentication){
         return this.complaintService.updateAsCustomer(trackingCode,complaintUpdateCustomerDto,authentication)
+                .map(Complaint::toComplaintDto);
+    }
+
+    @PreAuthorize("hasAnyRole('MANAGER','OPERATOR')")
+    @PutMapping(COMPLAINT_TRACKING_CODE+COMPLAINT_UPDATE_CUSTOMER)
+    public Mono<ComplaintDto> updateAsManagement(@PathVariable String trackingCode, @RequestBody ComplaintUpdateManagementDto complaintUpdateManagementDto){
+        return this.complaintService.updateAsManagement(trackingCode,complaintUpdateManagementDto)
                 .map(Complaint::toComplaintDto);
     }
 }
