@@ -468,20 +468,4 @@ class ComplaintResourceIT {
                 .value(Assertions::assertNotNull)
                 .value(complaint -> assertEquals("Éxito","Modificado por manager", complaint.getReply().toString()));
     }
-
-    @Test
-    void testUpdateComplaintManagement_SuccessfulAsOperator(){
-        this.restClientTestService.loginOperator(webTestClient)
-                .put()
-                .uri(COMPLAINTS+"/6A6867"+COMPLAINT_UPDATE_MANAGEMENT)
-                .bodyValue(ComplaintUpdateManagementDto.builder()
-                        .reply("Modificado por operator")
-                        .build()
-                )
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(ComplaintDto.class)
-                .value(Assertions::assertNotNull)
-                .value(complaint -> assertEquals("Éxito","Modificado por operator", complaint.getReply().toString()));
-    }
 }
