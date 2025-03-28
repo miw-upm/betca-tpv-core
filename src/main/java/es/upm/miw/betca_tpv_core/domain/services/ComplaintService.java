@@ -126,7 +126,7 @@ public class ComplaintService {
                 .flatMap(complaint -> {
                     boolean isModifiedBarcode = this.isModifiedString(complaintUpdateAdminDto.getBarcode(),complaint.getBarcode()),
                             isModifiedUserMobile = this.isModifiedString(complaintUpdateAdminDto.getUserMobile(),complaint.getUserMobile()),
-                            isModifiedState = this.isModifiedComplaintState(complaintUpdateAdminDto.getState()),
+                            isModifiedState = this.isModifiedComplaintState(complaintUpdateAdminDto.getState(),complaint.getState()),
                             isModifiedDescription = this.isModifiedString(complaintUpdateAdminDto.getDescription(),complaint.getDescription()),
                             isModifiedReply = this.isModifiedString(complaintUpdateAdminDto.getReply(),complaint.getReply());
 
@@ -142,9 +142,12 @@ public class ComplaintService {
                     if (isModifiedReply) {
                         complaint.setReply(complaintUpdateAdminDto.getReply());
                     }
-                    complaint.setState(isModifiedState ? ComplaintState.OPEN : ComplaintState.CLOSED);
 
-                    if (isModifiedBarcode || isModifiedUserMobile || isModifiedState) {
+                    if(isModifiedState){
+                        complaint.setState(complaintUpdateAdminDto.getState());
+                    }
+
+                    if (isModifiedBarcode || isModifiedUserMobile || (isModifiedState && complaint.getState().equals(ComplaintState.OPEN))) {
                         return assertComplaintWithBarcodeAndUserMobileAndStateNotExists(complaint.getUserMobile(),
                                 complaint.getBarcode(),complaint.getState())
                                 .then(this.userMicroservice.readByMobile(complaint.getUserMobile())
@@ -190,7 +193,7 @@ public class ComplaintService {
                         complaint.setReply(complaintUpdateManagementDto.getReply());
                     }
 
-                    if(complaintUpdateManagementDto.getState()!=null && !complaintUpdateManagementDto.getState().equals(complaint.getState())){
+                    if(isModifiedComplaintState(complaintUpdateManagementDto.getState(),complaintUpdateManagementDto.getState())){
                         complaint.setState(complaintUpdateManagementDto.getState());
                         if(complaint.getState().equals(ComplaintState.OPEN)){
                             return this.assertComplaintWithBarcodeAndUserMobileAndStateNotExists(
@@ -207,8 +210,8 @@ public class ComplaintService {
         return (modifiedValue != null && !modifiedValue.isEmpty() && !modifiedValue.equals(currentValue));
     }
 
-    private Boolean isModifiedComplaintState(ComplaintState modifiedValue){
-        return (modifiedValue != null && !modifiedValue.equals(ComplaintState.CLOSED));
+    private Boolean isModifiedComplaintState(ComplaintState modifiedValue, ComplaintState actualValue){
+        return (modifiedValue != null && !modifiedValue.equals(actualValue));
     }
 
     private Mono<Void> assertComplaintWithBarcodeAndUserMobileAndStateNotExists(String userMobile,String barcode, ComplaintState complaintState){
