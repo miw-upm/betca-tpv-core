@@ -1,18 +1,25 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
+import es.upm.miw.betca_tpv_core.BaseTestContainerTest;
 import es.upm.miw.betca_tpv_core.domain.model.Cashier;
 import es.upm.miw.betca_tpv_core.domain.model.CashierClose;
 import es.upm.miw.betca_tpv_core.domain.model.CashierState;
+import es.upm.miw.betca_tpv_core.domain.services.SlackService;
 import es.upm.miw.betca_tpv_core.domain.services.utils.MovementType;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.CashMovementDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.CashierLastDto;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Mono;
@@ -26,10 +33,13 @@ import static java.math.BigDecimal.TEN;
 import static java.math.BigDecimal.ZERO;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 
 @RestTestConfig
 class CashierResourceIT {
 
+    @MockBean
+    private SlackService slackService;
     @Autowired
     private WebTestClient webTestClient;
     @Autowired
@@ -57,6 +67,11 @@ class CashierResourceIT {
                 Arguments.of(new CashMovementDto(MovementType.WITHDRAWAL, TEN, "10e withdrawal")),
                 Arguments.of(new CashMovementDto(MovementType.WITHDRAWAL, TEN, "another 10e withdrawal"))
         );
+    }
+
+    @BeforeEach
+    void setUp() {
+        BDDMockito.doNothing().when(this.slackService).sendMessage(any(),any());
     }
 
     @Test

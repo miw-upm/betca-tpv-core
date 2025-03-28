@@ -11,6 +11,7 @@ import es.upm.miw.betca_tpv_core.domain.persistence.ComplaintPersistence;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateAdminDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateCustomerDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateManagementDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -125,7 +126,7 @@ public class ComplaintService {
                 .flatMap(complaint -> {
                     boolean isModifiedBarcode = this.isModifiedString(complaintUpdateAdminDto.getBarcode(),complaint.getBarcode()),
                             isModifiedUserMobile = this.isModifiedString(complaintUpdateAdminDto.getUserMobile(),complaint.getUserMobile()),
-                            isModifiedState = this.isModifiedComplaintState(complaintUpdateAdminDto.getState()),
+                            isModifiedState = this.isModifiedComplaintState(complaintUpdateAdminDto.getState(),complaint.getState()),
                             isModifiedDescription = this.isModifiedString(complaintUpdateAdminDto.getDescription(),complaint.getDescription()),
                             isModifiedReply = this.isModifiedString(complaintUpdateAdminDto.getReply(),complaint.getReply());
 
@@ -141,9 +142,12 @@ public class ComplaintService {
                     if (isModifiedReply) {
                         complaint.setReply(complaintUpdateAdminDto.getReply());
                     }
-                    complaint.setState(isModifiedState ? ComplaintState.OPEN : ComplaintState.CLOSED);
 
-                    if (isModifiedBarcode || isModifiedUserMobile || isModifiedState) {
+                    if(isModifiedState){
+                        complaint.setState(complaintUpdateAdminDto.getState());
+                    }
+
+                    if (isModifiedBarcode || isModifiedUserMobile || (isModifiedState && complaint.getState().equals(ComplaintState.OPEN))) {
                         return assertComplaintWithBarcodeAndUserMobileAndStateNotExists(complaint.getUserMobile(),
                                 complaint.getBarcode(),complaint.getState())
                                 .then(this.userMicroservice.readByMobile(complaint.getUserMobile())
@@ -159,7 +163,7 @@ public class ComplaintService {
                         this.generateTrackingCode(complaintToSave.getUserMobile(), complaintToSave.getBarcode(), complaintToSave.getState().toString())
                                 .flatMap(newTrackingCode -> {
                                     complaintToSave.setTrackingCode(newTrackingCode);
-                                    return this.complaintPersistence.update(complaintToSave,trackingCode);
+                                    return this.complaintPersistence.updateAsAdmin(complaintToSave,trackingCode);
                                 })
                 );
     }
@@ -176,15 +180,38 @@ public class ComplaintService {
                                 return Mono.error(new ConflictException("You cannot modify a complaint with closed status"));
                             }
                             complaint.setDescription(complaintUpdateCustomerDto.getDescription());
-                            return this.complaintPersistence.updateAsCustomer(complaint);
+                            return this.complaintPersistence.update(complaint);
                         });
     }
+
+    public Mono<Complaint> updateAsManagement(String trackingCode, ComplaintUpdateManagementDto complaintUpdateManagementDto){
+        return this.complaintPersistence.readByTrackingCode(trackingCode)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non Existent Complaint trackingCode:"+trackingCode)))
+                .flatMap(complaint ->
+                {
+                    if(isModifiedString(complaintUpdateManagementDto.getReply(),complaint.getReply())){
+                        complaint.setReply(complaintUpdateManagementDto.getReply());
+                    }
+
+                    if(isModifiedComplaintState(complaintUpdateManagementDto.getState(),complaintUpdateManagementDto.getState())){
+                        complaint.setState(complaintUpdateManagementDto.getState());
+                        if(complaint.getState().equals(ComplaintState.OPEN)){
+                            return this.assertComplaintWithBarcodeAndUserMobileAndStateNotExists(
+                                    complaint.getUserMobile(), complaint.getBarcode(),ComplaintState.OPEN)
+                                    .then(Mono.just(complaint));
+                        }
+                    }
+                    return Mono.just(complaint);
+                })
+                .flatMap(this.complaintPersistence::update);
+    }
+
     private Boolean isModifiedString(String modifiedValue,String currentValue){
         return (modifiedValue != null && !modifiedValue.isEmpty() && !modifiedValue.equals(currentValue));
     }
 
-    private Boolean isModifiedComplaintState(ComplaintState modifiedValue){
-        return (modifiedValue != null && !modifiedValue.equals(ComplaintState.CLOSED));
+    private Boolean isModifiedComplaintState(ComplaintState modifiedValue, ComplaintState actualValue){
+        return (modifiedValue != null && !modifiedValue.equals(actualValue));
     }
 
     private Mono<Void> assertComplaintWithBarcodeAndUserMobileAndStateNotExists(String userMobile,String barcode, ComplaintState complaintState){

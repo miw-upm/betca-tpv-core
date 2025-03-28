@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -23,6 +22,7 @@ import java.util.List;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.CASHIERS;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.CashierResource.LAST;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.GiftTicketResource.GIFTTICKETS;
+import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.GiftTicketResource.REFERENCE_GIFTTICKETS;
 import static es.upm.miw.betca_tpv_core.infrastructure.api.resources.TicketResource.*;
 import static java.math.BigDecimal.ZERO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,7 +31,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @RestTestConfig
-class TicketResourceIT {
+class GiftTicketResourceIT {
 
     @Autowired
     private WebTestClient webTestClient;
@@ -70,9 +70,8 @@ class TicketResourceIT {
                 .discount(BigDecimal.TEN).state(ShoppingState.NOT_COMMITTED).build();
         Ticket ticket = Ticket.builder().cash(new BigDecimal("200"))
                 .card(BigDecimal.ZERO).voucher(BigDecimal.ZERO).note("note")
-                .shoppingList(List.of(shopping1, shopping2)).user(User.builder().mobile("666666004").build())
-                .pointsDiscount(BigDecimal.ZERO)
-                .build();
+                .shoppingList(List.of(shopping1, shopping2)).user(User.builder().mobile("666666004").build()).build();
+        /*POST ticket*/
         Ticket dbTicket = this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(TICKETS)
@@ -88,6 +87,7 @@ class TicketResourceIT {
                     assertEquals(0, new BigDecimal("95.06").compareTo(returnTicket.total()));
                 }).returnResult().getResponseBody();
         assertNotNull(dbTicket);
+        /*GET ticket*/
         this.restClientTestService.loginAdmin(webTestClient)
                 .get()
                 .uri(TICKETS + ID_ID + RECEIPT, dbTicket.getId())
@@ -95,164 +95,77 @@ class TicketResourceIT {
                 .expectStatus().isOk()
                 .expectBody(byte[].class)
                 .value(Assertions::assertNotNull);
+        //GiftTicket giftTicket = new GiftTicket("mensajeuno", ticket);
+        GiftTicketDto giftTicketDto = new GiftTicketDto(dbTicket.getId(), "mensajeUno");
+        /*POST gift ticket*/
+        GiftTicket giftTicket = this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(GIFTTICKETS)
+                .body(Mono.just(giftTicketDto), GiftTicketDto.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(GiftTicket.class)
+                .value(Assertions::assertNotNull)
+                .value(returnGiftTicket -> {
+                    assertNotNull(returnGiftTicket.getId());
+                    assertNotNull(returnGiftTicket.getReference());
+                    assertNotNull(returnGiftTicket.getMessage());
+                    assertNotNull(returnGiftTicket.getTicket());
+                    assertNotNull(returnGiftTicket.getTicket().getShoppingList().get(0));
+                    assertNotNull(returnGiftTicket.getTicket().getShoppingList().get(1));
+                }).returnResult().getResponseBody();
+        assertNotNull(giftTicket);
+        /*GET gift ticket*/
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(GIFTTICKETS + REFERENCE_GIFTTICKETS + RECEIPT, giftTicket.getReference())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(byte[].class)
+                .value(Assertions::assertNotNull);
     }
 
     @Test
-    void testCreateNotFoundArticleException() {
-        Shopping shopping1 = Shopping.builder().barcode("kk").amount(1)
+    void testCreateNotFound() {
+        Shopping shopping1 = Shopping.builder().barcode("8400000000017").retailPrice(new BigDecimal("20")).amount(1)
                 .discount(BigDecimal.ZERO).state(ShoppingState.COMMITTED).build();
+        Shopping shopping2 = Shopping.builder().barcode("8400000000024").retailPrice(new BigDecimal("27.8")).amount(3)
+                .discount(BigDecimal.TEN).state(ShoppingState.NOT_COMMITTED).build();
         Ticket ticket = Ticket.builder().cash(new BigDecimal("200"))
                 .card(BigDecimal.ZERO).voucher(BigDecimal.ZERO).note("note")
-                .shoppingList(List.of(shopping1)).build();
-        this.restClientTestService.loginAdmin(webTestClient)
+                .shoppingList(List.of(shopping1, shopping2)).user(User.builder().mobile("666666004").build()).build();
+        /*POST ticket*/
+        Ticket dbTicket = this.restClientTestService.loginAdmin(webTestClient)
                 .post()
                 .uri(TICKETS)
                 .body(Mono.just(ticket), Ticket.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Ticket.class)
+                .value(Assertions::assertNotNull)
+                .value(returnTicket -> {
+                    assertNotNull(returnTicket.getId());
+                    assertNotNull(returnTicket.getReference());
+                    assertNotNull(returnTicket.getCreationDate());
+                    assertEquals(0, new BigDecimal("95.06").compareTo(returnTicket.total()));
+                }).returnResult().getResponseBody();
+        assertNotNull(dbTicket);
+        /*GET ticket*/
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get()
+                .uri(TICKETS + ID_ID + RECEIPT, dbTicket.getId())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(byte[].class)
+                .value(Assertions::assertNotNull);
+        GiftTicketDto giftTicketDto = new GiftTicketDto("0", "mensajeUno");
+        /*POST gift ticket*/
+        this.restClientTestService.loginAdmin(webTestClient)
+                .post()
+                .uri(GIFTTICKETS)
+                .body(Mono.just(giftTicketDto), GiftTicketDto.class)
                 .exchange()
                 .expectStatus().isNotFound();
-    }
-
-    @Test
-    void testCreateUnauthorizedException() {
-        Shopping shopping1 = Shopping.builder().barcode("kk").amount(1)
-                .discount(BigDecimal.ZERO).state(ShoppingState.COMMITTED).build();
-        Ticket ticket = Ticket.builder().cash(new BigDecimal("200"))
-                .card(BigDecimal.ZERO).voucher(BigDecimal.ZERO).note("note")
-                .shoppingList(List.of(shopping1)).build();
-        webTestClient
-                .post()
-                .uri(TICKETS)
-                .body(Mono.just(ticket), Ticket.class)
-                .exchange()
-                .expectStatus().isUnauthorized();
-    }
-
-    @Test
-    void testReceipt() {
-        this.restClientTestService.loginAdmin(webTestClient)
-                .get()
-                .uri(TICKETS + ID_ID + RECEIPT, "5fa45e863d6e834d642689ac")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(byte[].class)
-                .value(Assertions::assertNotNull);
-    }
-
-    @Test
-    void testReadReceiptByReference() {
-        Shopping shopping1 = Shopping.builder().barcode("8400000000017").retailPrice(new BigDecimal("20")).amount(1)
-                .discount(BigDecimal.ZERO).state(ShoppingState.COMMITTED).build();
-        Shopping shopping2 = Shopping.builder().barcode("8400000000024").retailPrice(new BigDecimal("27.8")).amount(3)
-                .discount(BigDecimal.TEN).state(ShoppingState.NOT_COMMITTED).build();
-        Ticket ticket = Ticket.builder().cash(new BigDecimal("200"))
-                .card(BigDecimal.ZERO).voucher(BigDecimal.ZERO).note("note")
-                .shoppingList(List.of(shopping1, shopping2)).user(User.builder().mobile("666666004").build()).build();
-        /*POST ticket*/
-        Ticket dbTicket = this.restClientTestService.loginAdmin(webTestClient)
-                .post()
-                .uri(TICKETS)
-                .body(Mono.just(ticket), Ticket.class)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(Ticket.class)
-                .value(Assertions::assertNotNull)
-                .value(returnTicket -> {
-                    assertNotNull(returnTicket.getId());
-                    assertNotNull(returnTicket.getReference());
-                    assertNotNull(returnTicket.getCreationDate());
-                    assertEquals(0, new BigDecimal("95.06").compareTo(returnTicket.total()));
-                }).returnResult().getResponseBody();
-        assertNotNull(dbTicket);
-        /*GET ticket*/
-        this.restClientTestService.loginAdmin(webTestClient)
-                .get()
-                .uri(TICKETS + ID_ID + RECEIPT, dbTicket.getId())
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(byte[].class)
-                .value(Assertions::assertNotNull);
-        //GiftTicket giftTicket = new GiftTicket("mensajeuno", ticket);
-        GiftTicketDto giftTicketDto = new GiftTicketDto(dbTicket.getId(), "mensajeUno");
-        /*POST gift ticket*/
-        GiftTicket giftTicket = this.restClientTestService.loginAdmin(webTestClient)
-                .post()
-                .uri(GIFTTICKETS)
-                .body(Mono.just(giftTicketDto), GiftTicketDto.class)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(GiftTicket.class)
-                .value(Assertions::assertNotNull)
-                .returnResult().getResponseBody();
-        assertNotNull(giftTicket);
-        /*GET ticket*/
-        this.restClientTestService.loginAdmin(webTestClient)
-                .get()
-                .uri(TICKETS + REFERENCE_REFERENCE + REFERENCE, giftTicket.getReference())
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(byte[].class)
-                .value(Assertions::assertNotNull);
-    }
-
-    @Test
-    void testReadReceiptByReferenceData() {
-        Shopping shopping1 = Shopping.builder().barcode("8400000000017").retailPrice(new BigDecimal("20")).amount(1)
-                .discount(BigDecimal.ZERO).state(ShoppingState.COMMITTED).build();
-        Shopping shopping2 = Shopping.builder().barcode("8400000000024").retailPrice(new BigDecimal("27.8")).amount(3)
-                .discount(BigDecimal.TEN).state(ShoppingState.NOT_COMMITTED).build();
-        Ticket ticket = Ticket.builder().cash(new BigDecimal("200"))
-                .card(BigDecimal.ZERO).voucher(BigDecimal.ZERO).note("note")
-                .shoppingList(List.of(shopping1, shopping2)).user(User.builder().mobile("666666004").build()).build();
-        /*POST ticket*/
-        Ticket dbTicket = this.restClientTestService.loginAdmin(webTestClient)
-                .post()
-                .uri(TICKETS)
-                .body(Mono.just(ticket), Ticket.class)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(Ticket.class)
-                .value(Assertions::assertNotNull)
-                .value(returnTicket -> {
-                    assertNotNull(returnTicket.getId());
-                    assertNotNull(returnTicket.getReference());
-                    assertNotNull(returnTicket.getCreationDate());
-                    assertEquals(0, new BigDecimal("95.06").compareTo(returnTicket.total()));
-                }).returnResult().getResponseBody();
-        assertNotNull(dbTicket);
-        /*GET ticket*/
-        this.restClientTestService.loginAdmin(webTestClient)
-                .get()
-                .uri(TICKETS + ID_ID + RECEIPT, dbTicket.getId())
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(byte[].class)
-                .value(Assertions::assertNotNull);
-        //GiftTicket giftTicket = new GiftTicket("mensajeuno", ticket);
-        GiftTicketDto giftTicketDto = new GiftTicketDto(dbTicket.getId(), "mensajeUno");
-        /*POST gift ticket*/
-        GiftTicket giftTicket = this.restClientTestService.loginAdmin(webTestClient)
-                .post()
-                .uri(GIFTTICKETS)
-                .body(Mono.just(giftTicketDto), GiftTicketDto.class)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(GiftTicket.class)
-                .value(Assertions::assertNotNull)
-                .value(returnTicket -> {
-                    assertNotNull(returnTicket.getId());
-                    assertNotNull(returnTicket.getReference());
-                    assertNotNull(returnTicket.getMessage());
-                    assertNotNull(returnTicket.getTicket());
-                }).returnResult().getResponseBody();
-        assertNotNull(giftTicket);
-        /*GET ticket*/
-        this.restClientTestService.loginAdmin(webTestClient)
-                .get()
-                .uri(TICKETS + REFERENCE_REFERENCE + REFERENCE + DATA, giftTicket.getReference())
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(byte[].class)
-                .value(Assertions::assertNotNull);
     }
 
     @AfterEach

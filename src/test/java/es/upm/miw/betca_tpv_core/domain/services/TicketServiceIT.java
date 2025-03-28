@@ -1,15 +1,18 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
+import es.upm.miw.betca_tpv_core.BaseTestContainerTest;
 import es.upm.miw.betca_tpv_core.TestConfig;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -39,6 +42,9 @@ class TicketServiceIT {
     @MockBean
     private CustomerPointsService customerPointsService;
 
+    @MockBean
+    private SlackService slackService;
+
     @BeforeEach
     void openCashier() {
         StepVerifier
@@ -48,8 +54,8 @@ class TicketServiceIT {
                 //.willReturn(Mono.just(User.builder().mobile("666666666").firstName("mock").build()))
                 .willAnswer(arguments ->
                         Mono.just(User.builder().mobile(arguments.getArgument(0)).firstName("mock").build()));
+        BDDMockito.doNothing().when(this.slackService).sendMessage(any(),any());
     }
-
 
     @Test
     void tesCreate() {

@@ -30,6 +30,7 @@ services: # Define los servicios: son contenedores
       - "8082:8082"
     environment: # Variables de entorno de Spring para configurar la conexión a la base de datos:
       SPRING_DATA_MONGODB_URI: mongodb://mongo:mongo@database:27017/tpv?authSource=admin
+
     labels:
       - "es.upm.miw.betca-tpv-core=app"
 volumes:
