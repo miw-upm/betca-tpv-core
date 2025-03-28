@@ -11,6 +11,7 @@ import es.upm.miw.betca_tpv_core.domain.persistence.ComplaintPersistence;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateAdminDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateCustomerDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateManagementDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -159,7 +160,7 @@ public class ComplaintService {
                         this.generateTrackingCode(complaintToSave.getUserMobile(), complaintToSave.getBarcode(), complaintToSave.getState().toString())
                                 .flatMap(newTrackingCode -> {
                                     complaintToSave.setTrackingCode(newTrackingCode);
-                                    return this.complaintPersistence.update(complaintToSave,trackingCode);
+                                    return this.complaintPersistence.updateAsAdmin(complaintToSave,trackingCode);
                                 })
                 );
     }
@@ -176,9 +177,32 @@ public class ComplaintService {
                                 return Mono.error(new ConflictException("You cannot modify a complaint with closed status"));
                             }
                             complaint.setDescription(complaintUpdateCustomerDto.getDescription());
-                            return this.complaintPersistence.updateAsCustomer(complaint);
+                            return this.complaintPersistence.update(complaint);
                         });
     }
+
+    public Mono<Complaint> updateAsManagement(String trackingCode, ComplaintUpdateManagementDto complaintUpdateManagementDto){
+        return this.complaintPersistence.readByTrackingCode(trackingCode)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non Existent Complaint trackingCode:"+trackingCode)))
+                .flatMap(complaint ->
+                {
+                    if(isModifiedString(complaintUpdateManagementDto.getReply(),complaint.getReply())){
+                        complaint.setReply(complaintUpdateManagementDto.getReply());
+                    }
+
+                    if(complaintUpdateManagementDto.getState()!=null && !complaintUpdateManagementDto.getState().equals(complaint.getState())){
+                        complaint.setState(complaintUpdateManagementDto.getState());
+                        if(complaint.getState().equals(ComplaintState.OPEN)){
+                            return this.assertComplaintWithBarcodeAndUserMobileAndStateNotExists(
+                                    complaint.getUserMobile(), complaint.getBarcode(),ComplaintState.OPEN)
+                                    .then(Mono.just(complaint));
+                        }
+                    }
+                    return Mono.just(complaint);
+                })
+                .flatMap(this.complaintPersistence::update);
+    }
+
     private Boolean isModifiedString(String modifiedValue,String currentValue){
         return (modifiedValue != null && !modifiedValue.isEmpty() && !modifiedValue.equals(currentValue));
     }

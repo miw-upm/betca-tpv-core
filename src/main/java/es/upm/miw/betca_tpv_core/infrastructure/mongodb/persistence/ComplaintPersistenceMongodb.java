@@ -76,7 +76,7 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
     }
 
     @Override
-    public Mono<Complaint> update(Complaint complaint, String oldBarcode) {
+    public Mono<Complaint> updateAsAdmin(Complaint complaint, String oldBarcode) {
         return this.complaintReactive.findByTrackingCode(oldBarcode)
                 .flatMap(complaintEntity -> {
                     BeanUtils.copyProperties(complaint, complaintEntity);
@@ -91,7 +91,7 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
     }
 
     @Override
-    public Mono<Complaint> updateAsCustomer(Complaint complaint) {
+    public Mono<Complaint> update(Complaint complaint) {
 
         return this.complaintReactive.findByTrackingCode(complaint.getTrackingCode())
                 .flatMap( complaintEntity ->
