@@ -16,6 +16,11 @@ public class TicketResource {
     public static final String ID_ID = "/{id}";
     public static final String RECEIPT = "/receipt";
 
+    public static final String  REFERENCE_REFERENCE = "/{reference}";
+    public static final String REFERENCE = "/reference";
+
+    public static final String DATA = "/data";
+
     private final TicketService ticketService;
 
     @Autowired
@@ -33,4 +38,14 @@ public class TicketResource {
         return this.ticketService.readReceipt(id);
     }
 
+    @GetMapping(value = REFERENCE_REFERENCE + REFERENCE, produces = {"application/pdf","application/json"})
+    public Mono<byte[]> readReceiptByReference(@PathVariable String reference) {
+
+        return this.ticketService.readByReference(reference);
+    }
+
+    @GetMapping(value = REFERENCE_REFERENCE + REFERENCE + DATA, produces = {"application/json"})
+    public Mono<Ticket> readReceiptByReferenceData(@PathVariable String reference) {
+        return this.ticketService.readByReferenceData(reference);
+    }
 }
