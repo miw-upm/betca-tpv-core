@@ -189,4 +189,17 @@ class ComplaintServiceIT {
                 )
                 .expectError(ConflictException.class);
     }
+
+    @Test
+    void testUpdateComplaintCustomer_Success(){
+        StepVerifier
+                .create(
+                        this.complaintService.updateAsManagement("D6680A",ComplaintUpdateManagementDto.builder()
+                                .state(ComplaintState.OPEN)
+                                .build())
+                )
+                .expectNextMatches(updatedComplaint -> 
+                        updatedComplaint.getState() == ComplaintState.OPEN
+                ).verifyComplete();
+    }
 }

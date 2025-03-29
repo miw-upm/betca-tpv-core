@@ -193,7 +193,7 @@ public class ComplaintService {
                         complaint.setReply(complaintUpdateManagementDto.getReply());
                     }
 
-                    if(isModifiedComplaintState(complaintUpdateManagementDto.getState(),complaintUpdateManagementDto.getState())){
+                    if(isModifiedComplaintState(complaintUpdateManagementDto.getState(),complaint.getState())){
                         complaint.setState(complaintUpdateManagementDto.getState());
                         if(complaint.getState().equals(ComplaintState.OPEN)){
                             return this.assertComplaintWithBarcodeAndUserMobileAndStateNotExists(
