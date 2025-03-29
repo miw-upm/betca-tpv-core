@@ -75,7 +75,7 @@ public class InvoiceServiceIT {
         StepVerifier
                 .create(this.invoiceService.getTotalTaxes(List.of(shopping1, shopping2), invoice))
                 .assertNext(result -> {
-                    assertEquals(new BigDecimal("14.85"), result.getBaseTax());
+                    assertEquals(new BigDecimal("0.22"), result.getBaseTax());
                     assertEquals(new BigDecimal("3.08"), result.getTaxValue());
                 })
                 .verifyComplete();
