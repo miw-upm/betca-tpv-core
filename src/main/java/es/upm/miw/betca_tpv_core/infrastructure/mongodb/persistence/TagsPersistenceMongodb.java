@@ -30,6 +30,12 @@ public class TagsPersistenceMongodb implements TagsPersistence {
                 .flatMap(this.tagsReactive::save)
                 .map(TagsEntity::toTag);
     }
+    @Override
+    public Mono<Tags> findById(String id) {
+        return this.tagsReactive.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non-existent tag ID: " + id)))
+                .map(TagsEntity::toTag);
+    }
 
     @Override
     public Mono<Tags> readByName(String name) {
@@ -64,6 +70,12 @@ public class TagsPersistenceMongodb implements TagsPersistence {
     }
 
     @Override
+    public Mono<Void> deleteById(String id) {
+        return this.tagsReactive.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non-existent tag ID: " + id)))
+                .flatMap(tagsEntity -> this.tagsReactive.delete(tagsEntity));
+    }
+    @Override
     public Flux<Tags> findByAnyNullField() {
         return this.tagsReactive.findByGroupIsNull()
                 .map(TagsEntity::toTag);
@@ -86,5 +98,10 @@ public class TagsPersistenceMongodb implements TagsPersistence {
                 .flatMap(tagsEntity -> Mono.error(
                         new ConflictException("Tag name already exists: " + name)
                 ));
+    }
+    @Override
+    public Flux<Tags> findAll() {
+        return this.tagsReactive.findAll()
+                .map(TagsEntity::toTag);
     }
 }

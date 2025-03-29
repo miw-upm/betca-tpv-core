@@ -15,9 +15,15 @@ public interface TagsPersistence {
 
     Mono<Void> deleteByName(String name);
 
+    Mono<Void> deleteById(String id);
+
+    Mono<Tags> findById(String id); // Ajustado para incluir el tipo de retorno
+
     Flux<Tags> findByAnyNullField();
 
     Flux<Tags> findByNameAndGroupAndDescriptionNullSafe(String name, String group, String description);
 
     Flux<Tags> findByNameLikeAndGroupIsNotNullNullSafe(String name);
+
+    Flux<Tags> findAll();
 }

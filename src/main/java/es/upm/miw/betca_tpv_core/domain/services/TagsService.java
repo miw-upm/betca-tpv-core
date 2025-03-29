@@ -53,4 +53,15 @@ public class TagsService {
     public Flux<Tags> findByNameLikeAndGroupIsNotNullNullSafe(String name) {
         return this.tagsPersistence.findByNameLikeAndGroupIsNotNullNullSafe(name);
     }
+
+    public Flux<Tags> findAll() {
+        return this.tagsPersistence.findAll();
+    }
+    public Mono<Tags> findById(String id) {
+        return this.tagsPersistence.findById(id);
+    }
+
+    public Mono<Void> deleteById(String id) {
+        return this.tagsPersistence.deleteById(id);
+    }
 }
