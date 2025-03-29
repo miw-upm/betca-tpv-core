@@ -183,7 +183,7 @@ class ComplaintServiceIT {
     void testUpdateComplaintAsManagement_ConflictException(){
         StepVerifier
                 .create(
-                        this.complaintService.updateAsManagement("D6680A", ComplaintUpdateManagementDto.builder()
+                        this.complaintService.updateAsManagement("9C27C5", ComplaintUpdateManagementDto.builder()
                                 .state(ComplaintState.OPEN)
                                 .build())
                 )
