@@ -1,18 +1,16 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
-import es.upm.miw.betca_tpv_core.BaseTestContainerTest;
+import com.mongodb.assertions.Assertions;
 import es.upm.miw.betca_tpv_core.TestConfig;
-import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
-import org.junit.jupiter.api.AfterAll;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.GiftTicketDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.util.ReflectionTestUtils;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -24,10 +22,9 @@ import static java.math.BigDecimal.ZERO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 
 @TestConfig
-class TicketServiceIT {
+class GiftTicketServiceIT {
 
     @Autowired
     private TicketService ticketService;
@@ -35,12 +32,11 @@ class TicketServiceIT {
     private ArticleService articleService;
     @Autowired
     private CashierService cashierService;
+    @Autowired
+    private GiftTicketService giftTicketService;
 
     @MockBean
     private UserMicroservice userMicroservice;
-
-    @MockBean
-    private CustomerPointsService customerPointsService;
 
     @MockBean
     private SlackService slackService;
@@ -51,14 +47,13 @@ class TicketServiceIT {
                 .create(this.cashierService.createOpened())
                 .verifyComplete();
         BDDMockito.given(this.userMicroservice.readByMobile(any(String.class)))
-                //.willReturn(Mono.just(User.builder().mobile("666666666").firstName("mock").build()))
                 .willAnswer(arguments ->
                         Mono.just(User.builder().mobile(arguments.getArgument(0)).firstName("mock").build()));
         BDDMockito.doNothing().when(this.slackService).sendMessage(any(),any());
     }
 
     @Test
-    void tesCreate() {
+    void testCreateGiftTicket() {
         AtomicInteger stock = new AtomicInteger();
         StepVerifier
                 .create(this.articleService.read("8400000000093")).consumeNextWith(article -> stock.set(article.getStock()))
@@ -70,79 +65,56 @@ class TicketServiceIT {
         Ticket ticket = Ticket.builder().cash(new BigDecimal("200")).card(ZERO).voucher(ZERO)
                 .user(User.builder().mobile("666666004").build()).note("note")
                 .shoppingList(List.of(shopping1, shopping2)).build();
-        StepVerifier
-                .create(this.ticketService.create(ticket))
-                .expectNextMatches(dbTicket -> {
-                    assertNotNull(dbTicket.getId());
-                    assertNotNull(dbTicket.getCreationDate());
-                    assertNotNull(dbTicket.getReference());
-                    assertEquals(2, dbTicket.getShoppingList().size());
-                    return true;
-                })
-                .expectComplete()
-                .verify();
-        StepVerifier
-                .create(this.articleService.read("8400000000093"))
-                .assertNext(article -> assertEquals(stock.get() - 3, article.getStock()))
-                .verifyComplete();
-    }
-
-    @Test
-    void tesCreateNotFoundException() {
-        AtomicInteger stock = new AtomicInteger();
-        StepVerifier
-                .create(this.articleService.read("8400000000093")).consumeNextWith(article -> stock.set(article.getStock()))
-                .verifyComplete();
-        Shopping shopping = Shopping.builder().barcode("kk").amount(2)
-                .discount(BigDecimal.TEN).state(ShoppingState.NOT_COMMITTED).build();
-        Ticket ticket = Ticket.builder().cash(new BigDecimal("200"))
-                .card(ZERO).voucher(ZERO).note("note")
-                .shoppingList(List.of(shopping)).build();
-        StepVerifier
-                .create(this.ticketService.create(ticket))
-                .expectError(NotFoundException.class)
-                .verify();
-
-        StepVerifier
-                .create(this.articleService.read("8400000000093"))
-                .assertNext(article -> assertEquals(stock.get(), article.getStock()))
-                .verifyComplete();
-    }
-
-    @Test
-    void testReceipt() {
-        BDDMockito.given(this.customerPointsService.readCustomerPointsByMobile(anyString()))
-                .willReturn(Mono.just(new CustomerPoints()));
-
-        StepVerifier
-                .create(this.ticketService.readReceipt("5fa45e863d6e834d642689ac"))
-                .expectNextCount(1)
-                .verifyComplete();
-    }
-
-    @Test
-    void testReadByReference() {
-        AtomicInteger stock = new AtomicInteger();
-        StepVerifier
-                .create(this.articleService.read("8400000000093")).consumeNextWith(article -> stock.set(article.getStock()))
-                .verifyComplete();
-        Shopping shopping1 = Shopping.builder().barcode("8400000000093").amount(1)
-                .discount(ZERO).state(ShoppingState.COMMITTED).build();
-        Shopping shopping2 = Shopping.builder().barcode("8400000000093").amount(2)
-                .discount(BigDecimal.TEN).state(ShoppingState.NOT_COMMITTED).build();
-        Ticket ticket = Ticket.builder().cash(new BigDecimal("200")).card(ZERO).voucher(ZERO)
-                .user(User.builder().mobile("666666004").build()).note("note")
-                .shoppingList(List.of(shopping1, shopping2)).build();
-
         Ticket ticketTest = this.ticketService.create(ticket).block();
         assertNotNull(ticketTest);
         assertNotNull(ticketTest.getId());
         assertNotNull(ticketTest.getCreationDate());
-        assertNotNull(ticketTest.getReference());
-        assertEquals(2, ticketTest.getShoppingList().size());
+        assertNotNull(ticketTest.getCard());
+        assertNotNull(ticketTest.getVoucher());
+        assertNotNull(ticketTest.getNote());
+
+        GiftTicketDto giftTicketDto = new GiftTicketDto(ticketTest.getId(), "feliz cumpleaños");
 
         StepVerifier
-                .create(this.ticketService.readByReference(ticketTest.getReference()))
+                .create(this.giftTicketService.create(giftTicketDto))
+                .expectNextMatches(dbTicket -> {
+                    assertEquals(dbTicket.getTicket().getId(), giftTicketDto.getId());
+                    assertEquals(dbTicket.getMessage(), giftTicketDto.getMessage());
+                    return true;
+                })
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void tesReadForReceiptByReference() {
+        AtomicInteger stock = new AtomicInteger();
+        StepVerifier
+                .create(this.articleService.read("8400000000093")).consumeNextWith(article -> stock.set(article.getStock()))
+                .verifyComplete();
+        Shopping shopping1 = Shopping.builder().barcode("8400000000093").amount(1)
+                .discount(ZERO).state(ShoppingState.COMMITTED).build();
+        Shopping shopping2 = Shopping.builder().barcode("8400000000093").amount(2)
+                .discount(BigDecimal.TEN).state(ShoppingState.NOT_COMMITTED).build();
+        Ticket ticket = Ticket.builder().cash(new BigDecimal("200")).card(ZERO).voucher(ZERO)
+                .user(User.builder().mobile("666666004").build()).note("note")
+                .shoppingList(List.of(shopping1, shopping2)).build();
+        Ticket ticketTest = this.ticketService.create(ticket).block();
+        assertNotNull(ticketTest);
+        assertNotNull(ticketTest.getId());
+        assertNotNull(ticketTest.getCreationDate());
+        assertNotNull(ticketTest.getCard());
+        assertNotNull(ticketTest.getVoucher());
+        assertNotNull(ticketTest.getNote());
+
+        GiftTicketDto giftTicketDto = new GiftTicketDto(ticketTest.getId(), "feliz cumpleaños");
+        GiftTicket giftTicketTest = this.giftTicketService.create(giftTicketDto).block();
+        assertNotNull(giftTicketTest);
+        assertNotNull(giftTicketTest.getReference());
+
+        StepVerifier
+                .create(this.giftTicketService.readForReceiptByReference(giftTicketTest.getReference()))
+                .assertNext(Assertions::assertNotNull)
                 .verifyComplete();
     }
 

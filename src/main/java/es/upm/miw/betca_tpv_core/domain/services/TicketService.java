@@ -98,8 +98,7 @@ public class TicketService {
     }
 
     public Mono<Ticket> readByReferenceData(String reference) {
-        Mono<Ticket> monoTicket = this.giftTicketPersistence.readTicketByReference(reference);
-        return monoTicket;
+        return this.giftTicketPersistence.readTicketByReference(reference);
     }
 
 }

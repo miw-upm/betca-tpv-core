@@ -171,7 +171,6 @@ class TicketResourceIT {
                 .expectStatus().isOk()
                 .expectBody(byte[].class)
                 .value(Assertions::assertNotNull);
-        //GiftTicket giftTicket = new GiftTicket("mensajeuno", ticket);
         GiftTicketDto giftTicketDto = new GiftTicketDto(dbTicket.getId(), "mensajeUno");
         /*POST gift ticket*/
         GiftTicket giftTicket = this.restClientTestService.loginAdmin(webTestClient)
