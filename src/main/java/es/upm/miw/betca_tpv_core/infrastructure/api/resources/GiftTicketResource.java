@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 @RequestMapping(GiftTicketResource.GIFTTICKETS)
 public class GiftTicketResource {
     public static final String GIFTTICKETS = "/gift_tickets";
-    public static final String REFERENCE_GIFTTICKETS = "/{reference_gift_tickets}";
+    public static final String REFERENCE_GIFTTICKETS = "/{referenceGiftTickets}";
     public static final String RECEIPT = "/receipt";
 
 
@@ -30,8 +30,8 @@ public class GiftTicketResource {
     }
 
     @GetMapping(value = REFERENCE_GIFTTICKETS + RECEIPT, produces = {"application/pdf", "application/json"})
-    public Mono<byte[]> readReceiptForReceiptByReference(@PathVariable String reference_gift_tickets) {
-        return this.giftTicketService.readForReceiptByReference(reference_gift_tickets);
+    public Mono<byte[]> readReceiptForReceiptByReference(@PathVariable String referenceGiftTickets) {
+        return this.giftTicketService.readForReceiptByReference(referenceGiftTickets);
     }
 
 }
