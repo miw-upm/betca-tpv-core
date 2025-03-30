@@ -10,6 +10,7 @@ import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateAdminDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateCustomerDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintUpdateManagementDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -176,5 +177,29 @@ class ComplaintServiceIT {
                                 .build(),authentication)
                 )
                 .expectError(ConflictException.class);
+    }
+
+    @Test
+    void testUpdateComplaintAsManagement_ConflictException(){
+        StepVerifier
+                .create(
+                        this.complaintService.updateAsManagement("9C27C5", ComplaintUpdateManagementDto.builder()
+                                .state(ComplaintState.OPEN)
+                                .build())
+                )
+                .expectError(ConflictException.class);
+    }
+
+    @Test
+    void testUpdateComplaintCustomer_Success(){
+        StepVerifier
+                .create(
+                        this.complaintService.updateAsManagement("D6680A",ComplaintUpdateManagementDto.builder()
+                                .state(ComplaintState.OPEN)
+                                .build())
+                )
+                .expectNextMatches(updatedComplaint -> 
+                        updatedComplaint.getState() == ComplaintState.OPEN
+                ).verifyComplete();
     }
 }
