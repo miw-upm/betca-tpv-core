@@ -2,11 +2,11 @@ package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.model.Review;
 import es.upm.miw.betca_tpv_core.domain.persistence.ReviewPersistence;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -14,12 +14,14 @@ import static org.mockito.Mockito.*;
 public class ReviewServiceIT {
 
     private ReviewPersistence reviewPersistence;
+    private ArticleService articleService;
     private ReviewService reviewService;
 
     @BeforeEach
     void setUp() {
         reviewPersistence = mock(ReviewPersistence.class);
-        reviewService = new ReviewService(reviewPersistence);
+        articleService = mock(ArticleService.class);
+        reviewService = new ReviewService(reviewPersistence, articleService);
     }
 
     @Test
@@ -30,6 +32,8 @@ public class ReviewServiceIT {
                 .stars(5)
                 .opinion("Excellent product!")
                 .build();
+        when(articleService.findByBarcodeAndUserLoggedPurchasedArticlesWithoutComplaintsOpen(review.getArticleId(), review.getUserId()))
+                .thenReturn(Flux.just(review.getArticleId()));
         when(reviewPersistence.create(review)).thenReturn(Mono.just(review));
 
         Mono<Review> result = reviewService.createReview(review);
@@ -38,7 +42,28 @@ public class ReviewServiceIT {
                 .expectNextMatches(r -> r.getStars() == 5 &&
                         "Excellent product!".equals(r.getOpinion()))
                 .verifyComplete();
+        verify(articleService).findByBarcodeAndUserLoggedPurchasedArticlesWithoutComplaintsOpen(review.getArticleId(), review.getUserId());
         verify(reviewPersistence).create(review);
+    }
+
+    @Test
+    void testCreateReviewUserNotPurchased() {
+        Review review = Review.builder()
+                .userId("user1")
+                .articleId("article1")
+                .stars(4)
+                .opinion("Good")
+                .build();
+        when(articleService.findByBarcodeAndUserLoggedPurchasedArticlesWithoutComplaintsOpen(review.getArticleId(), review.getUserId()))
+                .thenReturn(Flux.empty());
+
+        Mono<Review> result = reviewService.createReview(review);
+
+        StepVerifier.create(result)
+                .expectError(IllegalArgumentException.class)
+                .verify();
+        verify(articleService).findByBarcodeAndUserLoggedPurchasedArticlesWithoutComplaintsOpen(review.getArticleId(), review.getUserId());
+        verify(reviewPersistence, never()).create(any());
     }
 
     @Test
@@ -55,6 +80,7 @@ public class ReviewServiceIT {
         StepVerifier.create(result)
                 .expectError(IllegalArgumentException.class)
                 .verify();
+        verify(articleService, never()).findByBarcodeAndUserLoggedPurchasedArticlesWithoutComplaintsOpen(any(), any());
         verify(reviewPersistence, never()).create(any());
     }
 

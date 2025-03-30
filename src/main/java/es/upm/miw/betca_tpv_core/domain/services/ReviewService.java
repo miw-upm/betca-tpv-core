@@ -10,16 +10,25 @@ import reactor.core.publisher.Mono;
 public class ReviewService {
 
     private final ReviewPersistence reviewPersistence;
-
-    public ReviewService(ReviewPersistence reviewPersistence) {
+    private final ArticleService articleService;
+    public ReviewService(ReviewPersistence reviewPersistence, ArticleService articleService) {
         this.reviewPersistence = reviewPersistence;
+        this.articleService = articleService;
     }
 
     public Mono<Review> createReview(Review review) {
         if (review.getStars() < 1 || review.getStars() > 5) {
             return Mono.error(new IllegalArgumentException("Stars must be between 1 and 5"));
         }
-        return reviewPersistence.create(review);
+        return articleService
+                .findByBarcodeAndUserLoggedPurchasedArticlesWithoutComplaintsOpen(review.getArticleId(), review.getUserId())
+                .collectList()
+                .flatMap(purchasedBarcodes -> {
+                    if (purchasedBarcodes.isEmpty()) {
+                        return Mono.error(new IllegalArgumentException("User has not purchased this article"));
+                    }
+                    return reviewPersistence.create(review);
+                });
     }
 
     public Flux<Review> findByArticleId(String articleId) {
