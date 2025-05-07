@@ -6,26 +6,33 @@ import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ProviderReactive;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.TagsReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ArticleEntity;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.TagsEntity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Repository
 public class ArticlePersistenceMongodb implements ArticlePersistence {
 
     private final ProviderReactive providerReactive;
     private final ArticleReactive articleReactive;
+    private final TagsReactive tagsReactive;
 
     @Autowired
-    public ArticlePersistenceMongodb(ProviderReactive providerReactive, ArticleReactive articleReactive) {
+    public ArticlePersistenceMongodb(ProviderReactive providerReactive, ArticleReactive articleReactive,TagsReactive tagsReactive) {
         this.providerReactive = providerReactive;
         this.articleReactive = articleReactive;
+        this.tagsReactive = tagsReactive;
     }
 
     @Override
+
     public Mono<Article> create(Article article) {
         return this.assertBarcodeNotExist(article.getBarcode())
                 .then(Mono.justOrEmpty(article.getProviderCompany()))
@@ -34,8 +41,15 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
                                 new NotFoundException("Non existent company: " + article.getProviderCompany())
                         ))
                 )
-                .map(providerEntity -> new ArticleEntity(article, providerEntity))
-                .switchIfEmpty(Mono.just(new ArticleEntity(article, null)))
+                .map(providerEntity -> {
+                    List<TagsEntity> tagsEntities = article.getTagIds()
+                            .stream()
+                            .map(this.tagsReactive::findById)
+                            .map(Mono::block)
+                            .toList();
+                    return new ArticleEntity(article, providerEntity, tagsEntities);
+                })
+                .switchIfEmpty(Mono.just(new ArticleEntity(article, null, null)))
                 .flatMap(this.articleReactive::save)
                 .map(ArticleEntity::toArticle);
     }

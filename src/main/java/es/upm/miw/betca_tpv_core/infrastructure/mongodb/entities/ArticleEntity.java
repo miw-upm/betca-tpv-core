@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Data
@@ -32,14 +33,17 @@ public class ArticleEntity {
     private BigDecimal retailPrice;
     private Integer stock;
     private Tax tax;
+    private List<TagsEntity> tags;
     private LocalDateTime registrationDate;
     private Boolean discontinued;
 
     @DBRef(lazy = true)
     private ProviderEntity providerEntity;
 
-    public ArticleEntity(Article article, ProviderEntity providerEntity) {
+
+    public ArticleEntity(Article article, ProviderEntity providerEntity,List <TagsEntity> tags) {
         BeanUtils.copyProperties(article, this);
+        this.tags = tags;
         this.providerEntity = providerEntity;
     }
 

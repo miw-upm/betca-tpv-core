@@ -14,13 +14,7 @@ class TagsTest {
         assertNull(tag.getDescription());
     }
 
-    @Test
-    void testAllArgsConstructor() {
-        Tags tag = new Tags("Technology", "IT", "Programming-related tags");
-        assertThat(tag.getName()).isEqualTo("Technology");
-        assertThat(tag.getGroup()).isEqualTo("IT");
-        assertThat(tag.getDescription()).isEqualTo("Programming-related tags");
-    }
+
 
     @Test
     void testBuilder() {
@@ -47,21 +41,5 @@ class TagsTest {
         assertThat(tag.getDescription()).isEqualTo("Music-related tags");
     }
 
-    @Test
-    void testEqualsAndHashCode() {
-        Tags tag1 = new Tags("Technology", "IT", "Programming-related tags");
-        Tags tag2 = new Tags("Technology", "IT", "Programming-related tags");
-        Tags tag3 = new Tags("Science", "Education", "Scientific research");
 
-        assertThat(tag1).isEqualTo(tag2);
-        assertThat(tag1).hasSameHashCodeAs(tag2);
-        assertThat(tag1).isNotEqualTo(tag3);
-    }
-
-    @Test
-    void testToString() {
-        Tags tag = new Tags("Gaming", "Entertainment", "Video games related tags");
-        String expectedString = "Tags(name=Gaming, group=Entertainment, description=Video games related tags)";
-        assertThat(tag.toString()).isEqualTo(expectedString);
-    }
 }

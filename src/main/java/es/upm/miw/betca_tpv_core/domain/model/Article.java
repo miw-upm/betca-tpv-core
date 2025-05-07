@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -30,6 +32,7 @@ public class Article {
     private String reference;
     private Integer stock;
     private Tax tax;
+    private List<Tags> tags;
     private Boolean discontinued;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") // pattern="dd/MM/yyyy hh:mm" o iso = DateTimeFormat.ISO.TIME
     private LocalDateTime registrationDate;
@@ -72,4 +75,16 @@ public class Article {
         doDefault();
         return this.retailPrice.subtract(getArticleBaseTax());
     }
+
+    public List<String> getTagIds() {
+        if (tags == null) {
+            return List.of(); // o Collections.emptyList()
+        }
+        return tags.stream()
+                .filter(Objects::nonNull)
+                .map(Tags::getId)
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
 }

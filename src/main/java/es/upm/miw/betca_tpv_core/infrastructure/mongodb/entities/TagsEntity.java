@@ -14,7 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-@Document(collection = "tags") // Especifica el nombre de la colección
+@Document(collection = "tags")
 public class TagsEntity {
     @Id
     private String id;
