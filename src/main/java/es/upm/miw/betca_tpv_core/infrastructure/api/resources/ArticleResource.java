@@ -35,12 +35,12 @@ public class ArticleResource {
         return this.articleService.create(article);
     }
 
+
     @PreAuthorize("permitAll()")
     @GetMapping(BARCODE_ID)
     public Mono<Article> read(@PathVariable String barcode) {
         return this.articleService.read(barcode);
     }
-
     @PutMapping(BARCODE_ID)
     public Mono<Article> update(@PathVariable String barcode, @Valid @RequestBody Article article) {
         article.doDefault();

@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -44,7 +45,7 @@ public class OfferEntity {
         if (Objects.nonNull(this.articleEntities) && !this.articleEntities.isEmpty()) {
             offer.setArticleList(this.articleEntities.stream()
                     .map(ArticleEntity::toArticle)
-                    .toList());
+                    .collect(Collectors.toList()));
         }
         return offer;
     }

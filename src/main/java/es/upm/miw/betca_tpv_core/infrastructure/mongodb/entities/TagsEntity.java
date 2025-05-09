@@ -9,7 +9,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 @Data
 @NoArgsConstructor
 @Builder
@@ -18,13 +17,20 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class TagsEntity {
     @Id
     private String id;
+
     @Indexed(unique = true)
     private String name;
+
     private String group;
     private String description;
 
     public TagsEntity(Tags tag) {
         BeanUtils.copyProperties(tag, this);
+    }
+
+    // ✅ Constructor adicional requerido por tu método create
+    public TagsEntity(String name) {
+        this.name = name;
     }
 
     public Tags toTag() {

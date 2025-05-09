@@ -1,9 +1,6 @@
 package es.upm.miw.betca_tpv_core.domain.model;
-import es.upm.miw.betca_tpv_core.domain.model.Article;
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
-import es.upm.miw.betca_tpv_core.domain.model.validations.PositiveBigDecimal;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +9,6 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -23,19 +19,17 @@ import java.util.UUID;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Article {
-    @NotBlank
+    private String id;
     private String barcode;
-    @NotBlank
-    private String description;
-    @PositiveBigDecimal
-    private BigDecimal retailPrice;
     private String reference;
+    private String description;
+    private BigDecimal retailPrice;
     private Integer stock;
     private Tax tax;
-    private List<Tags> tags;
-    private Boolean discontinued;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") // pattern="dd/MM/yyyy hh:mm" o iso = DateTimeFormat.ISO.TIME
+    private List<Tags> tags; // Lista real de objetos
+    private List<String> tagIds; // Lista auxiliar de nombres
     private LocalDateTime registrationDate;
+    private Boolean discontinued;
     private String providerCompany;
 
     public static Article ofBarcodeDescriptionStock(Article article) {
@@ -68,7 +62,7 @@ public class Article {
         doDefault();
         return this.retailPrice
                 .divide(BigDecimal.ONE.add(tax.getRate()
-                                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)), 2, RoundingMode.HALF_UP);
+                        .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)), 2, RoundingMode.HALF_UP);
     }
 
     public BigDecimal getArticleTaxValue() {
@@ -77,14 +71,16 @@ public class Article {
     }
 
     public List<String> getTagIds() {
-        if (tags == null) {
-            return List.of(); // o Collections.emptyList()
-        }
+        if (tags == null) return List.of();
         return tags.stream()
                 .filter(Objects::nonNull)
-                .map(Tags::getId)
+                .map(Tags::getName)
                 .filter(Objects::nonNull)
                 .toList();
     }
 
+    // Este método es innecesario si se usa getTagIds(). Elimínalo o impleméntalo si necesitas lo inverso.
+    public void setTags(List<String> reversed) {
+        // Solo se usa cuando se quiera setear lista de nombres. No implementado aquí.
+    }
 }

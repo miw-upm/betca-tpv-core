@@ -22,4 +22,6 @@ public interface ArticlePersistence {
     Mono<Article> readAndWriteStockByBarcodeAssured(String barcode, Integer stockIncrement);
 
     Flux<String> findByBarcodeAndNotDiscontinuedNullField(String barcode);
+
+
 }

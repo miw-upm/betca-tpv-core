@@ -52,7 +52,7 @@
         <!-- coverage report -->
         <jacoco.version>0.8.12</jacoco.version>
         <!-- mongodb -->
-        <de.flapdoodle.embed.mongo.spring3x.version>4.12.6</de.flapdoodle.embed.mongo.spring3x.version>
+        <de.flapdoodle.embed.mongo.spring3x.version>4.20.0</de.flapdoodle.embed.mongo.spring3x.version>
         <!-- jwt -->
         <jwt.version>4.4.0</jwt.version>
         <!-- pdf -->
@@ -66,6 +66,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -224,4 +229,3 @@
     </build>
 
 </project>
-

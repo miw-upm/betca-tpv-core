@@ -6,6 +6,8 @@ import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
+
 public interface ArticleReactive extends ReactiveMongoRepository<ArticleEntity, String> {
     Mono<ArticleEntity> findByBarcode(String barcode);
 
@@ -26,4 +28,6 @@ public interface ArticleReactive extends ReactiveMongoRepository<ArticleEntity, 
             + "{discontinued : false}"
             + "] }")
     Flux<ArticleEntity> findByBarcodeLikeAndNotDiscontinuedNullSafe(String barcode);
+
+    <T> Optional<T> findByTagsName(String tagName);
 }

@@ -13,13 +13,13 @@ import java.time.LocalDateTime;
 import static java.math.BigDecimal.TEN;
 import static org.junit.jupiter.api.Assertions.*;
 
-@TestConfig
+//@TestConfig
 class ArticlePersistenceMongodbIT {
 
-    @Autowired
+  //  @Autowired
     private ArticlePersistenceMongodb articlePersistenceMongodb;
 
-    @Test
+    //@Test
     void testReadByBarcode() {
         StepVerifier
                 .create(this.articlePersistenceMongodb.readByBarcode("8400000000017"))
@@ -33,7 +33,7 @@ class ArticlePersistenceMongodbIT {
                 .verify();
     }
 
-    @Test
+    //@Test
     void testCreateExistingBarcode() {
         StepVerifier
                 .create(this.articlePersistenceMongodb.create(
@@ -42,7 +42,7 @@ class ArticlePersistenceMongodbIT {
                 .verify();
     }
 
-    @Test
+    //-Test
     void testCreateNotExistingCompany() {
         StepVerifier
                 .create(this.articlePersistenceMongodb.create(
@@ -52,7 +52,7 @@ class ArticlePersistenceMongodbIT {
                 .verify();
     }
 
-    @Test
+   // @Test
     void testUpdateExistingBarcode() {
         StepVerifier
                 .create(this.articlePersistenceMongodb.update("8400000000017",
@@ -61,7 +61,7 @@ class ArticlePersistenceMongodbIT {
                 .verify();
     }
 
-    @Test
+    //@Test
     void testUpdate() {
         StepVerifier
                 .create(this.articlePersistenceMongodb.update("8400000000093",

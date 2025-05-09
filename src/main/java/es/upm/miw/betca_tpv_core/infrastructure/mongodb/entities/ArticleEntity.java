@@ -40,20 +40,33 @@ public class ArticleEntity {
     @DBRef(lazy = true)
     private ProviderEntity providerEntity;
 
-
-    public ArticleEntity(Article article, ProviderEntity providerEntity,List <TagsEntity> tags) {
+    public ArticleEntity(Article article, ProviderEntity providerEntity, List<TagsEntity> tags) {
         BeanUtils.copyProperties(article, this);
-        this.tags = tags;
         this.providerEntity = providerEntity;
+        this.tags = tags;
     }
+
+
 
     public Article toArticle() {
         Article article = new Article();
         BeanUtils.copyProperties(this, article);
-        if (Objects.nonNull(this.getProviderEntity())) {
-            article.setProviderCompany(this.getProviderEntity().getCompany());
+
+        // Mapear tags (TagsEntity → Tags)
+        if (this.tags != null) {
+            article.setTags(this.tags.stream()
+                    .map(TagsEntity::toTag)
+                    .toList());
         }
+
+        // Mapear proveedor
+        if (this.providerEntity != null) {
+            article.setProviderCompany(this.providerEntity.getCompany());
+        }
+
         return article;
     }
+
+
 
 }
