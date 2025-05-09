@@ -79,8 +79,7 @@ public class Article {
                 .toList();
     }
 
-    // Este método es innecesario si se usa getTagIds(). Elimínalo o impleméntalo si necesitas lo inverso.
-    public void setTags(List<String> reversed) {
-        // Solo se usa cuando se quiera setear lista de nombres. No implementado aquí.
+
+    public void setTags(List<String> list) {
     }
 }

@@ -18,6 +18,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -41,7 +42,9 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
                 .switchIfEmpty(Mono.error(new NotFoundException("Provider not found")));
 
         // Procesar y crear los tags si no existen
-        Mono<List<TagsEntity>> tagsMono = Flux.fromIterable(article.getTagIds())
+        Mono<List<TagsEntity>> tagsMono = Flux.fromIterable(
+                        Optional.ofNullable(article.getTagIds()).orElse(Collections.emptyList())
+                )
                 .flatMap(tagName ->
                         tagsReactive.findByName(tagName)
                                 .switchIfEmpty(tagsReactive.save(
@@ -74,9 +77,12 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
                     result.setProviderCompany(savedEntity.getProviderEntity().getCompany());
 
                     // Asignamos los nombres de los tags en orden inverso
-                    List<String> tagNames = savedEntity.getTags().stream()
+                    List<String> tagNames = Optional.ofNullable(savedEntity.getTags())
+                            .orElse(Collections.emptyList())
+                            .stream()
                             .map(TagsEntity::getName)
                             .collect(Collectors.toList());
+
                     Collections.reverse(tagNames); // Invertimos el orden
                     result.setTags(tagNames);
 

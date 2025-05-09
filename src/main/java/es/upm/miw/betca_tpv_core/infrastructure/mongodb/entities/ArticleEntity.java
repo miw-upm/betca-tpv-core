@@ -51,21 +51,12 @@ public class ArticleEntity {
     public Article toArticle() {
         Article article = new Article();
         BeanUtils.copyProperties(this, article);
-
-        // Mapear tags (TagsEntity → Tags)
-        if (this.tags != null) {
-            article.setTags(this.tags.stream()
-                    .map(TagsEntity::toTag)
-                    .toList());
+        if (Objects.nonNull(this.getProviderEntity())) {
+            article.setProviderCompany(this.getProviderEntity().getCompany());
         }
-
-        // Mapear proveedor
-        if (this.providerEntity != null) {
-            article.setProviderCompany(this.providerEntity.getCompany());
-        }
-
         return article;
     }
+
 
 
 
