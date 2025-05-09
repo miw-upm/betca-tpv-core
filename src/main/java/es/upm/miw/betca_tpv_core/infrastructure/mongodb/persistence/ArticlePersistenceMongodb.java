@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -36,26 +37,27 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
     }
 
     @Override
+
     public Mono<Article> create(Article article) {
         // Buscar proveedor por nombre de compañía
         Mono<ProviderEntity> providerMono = providerReactive.findByCompany(article.getProviderCompany())
                 .switchIfEmpty(Mono.error(new NotFoundException("Provider not found")));
 
-        // Procesar y crear los tags si no existen
-        Mono<List<TagsEntity>> tagsMono = Flux.fromIterable(
-                        Optional.ofNullable(article.getTagIds()).orElse(Collections.emptyList())
-                )
-                .flatMap(tagName ->
-                        tagsReactive.findByName(tagName)
-                                .switchIfEmpty(tagsReactive.save(
-                                        TagsEntity.builder()
-                                                .name(tagName)
-                                                .group("default")
-                                                .description("default")
-                                                .build()
-                                ))
-                )
-                .collectList();
+        // Buscar los tags por nombre de forma estricta
+        List<String> tagNames = Optional.ofNullable(article.getTagIds()).orElse(Collections.emptyList());
+
+        // Crear lista de Monos con verificación estricta
+        List<Mono<TagsEntity>> tagMonos = tagNames.stream()
+                .map(tagName -> tagsReactive.findByName(tagName)
+                        .switchIfEmpty(Mono.error(new NotFoundException("Tag not found: " + tagName))))
+                .collect(Collectors.toList());
+
+        // Ejecutar todos los Monos de tags
+        Mono<List<TagsEntity>> tagsMono = Mono.zip(tagMonos, objects ->
+                Arrays.stream(objects)
+                        .map(o -> (TagsEntity) o)
+                        .collect(Collectors.toList())
+        );
 
         // Combinar proveedor y tags para construir y guardar el artículo
         return Mono.zip(providerMono, tagsMono)
@@ -76,16 +78,14 @@ public class ArticlePersistenceMongodb implements ArticlePersistence {
 
                     result.setProviderCompany(savedEntity.getProviderEntity().getCompany());
 
-                    // Asignamos los nombres de los tags en orden inverso
-                    List<String> tagNames = Optional.ofNullable(savedEntity.getTags())
+                    List<String> reversedTags = Optional.ofNullable(savedEntity.getTags())
                             .orElse(Collections.emptyList())
                             .stream()
                             .map(TagsEntity::getName)
                             .collect(Collectors.toList());
+                    Collections.reverse(reversedTags);
 
-                    Collections.reverse(tagNames); // Invertimos el orden
-                    result.setTags(tagNames);
-
+                    result.setTags(reversedTags);
                     return result;
                 });
     }
