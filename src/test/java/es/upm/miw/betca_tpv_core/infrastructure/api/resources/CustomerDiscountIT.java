@@ -23,18 +23,6 @@ public class CustomerDiscountIT {
     private RestClientTestService restClientTestService;
     @LocalServerPort
     int port;
-    @BeforeEach
-    void setup() {
-        this.webTestClient = WebTestClient.bindToServer()
-                .baseUrl("http://localhost:" + port)
-                .filter((request, next) -> {
-                    System.out.println(">>> Enviando petición a: "
-                            + request.method() + " " + request.url());
-                    return next.exchange(request);
-                })
-                .build();
-    }
-
 
     @Test
     void testCreate() {

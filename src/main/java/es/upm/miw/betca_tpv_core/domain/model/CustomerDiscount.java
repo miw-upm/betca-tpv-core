@@ -1,5 +1,6 @@
 package es.upm.miw.betca_tpv_core.domain.model;
 
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.CustomerDiscountDto;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.CustomerDiscountEntity;
 import org.springframework.beans.BeanUtils;
 
@@ -76,6 +77,12 @@ public class CustomerDiscount {
         return customerDiscountEntity;
     }
 
+    public CustomerDiscountDto toDto(){
+        CustomerDiscountDto customerDiscountDto = new CustomerDiscountDto();
+        BeanUtils.copyProperties(this, customerDiscountDto);
+        customerDiscountDto.setUserMobile(this.user.getMobile());
+        return customerDiscountDto;
+    }
     @Override
     public String toString() {
         return "CustomerDiscount{" +
