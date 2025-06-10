@@ -36,7 +36,7 @@ public class DatabaseSeederDev {
     private final ComplaintDao complaintDao;
     private final OrderDao orderDao;
     private final StockAlarmDao stockAlarmDao;
-
+    private final CustomerDiscountDao customerDiscountDao;
     private final DatabaseStarting databaseStarting;
 
     @Autowired
@@ -56,7 +56,8 @@ public class DatabaseSeederDev {
             StockAuditDao stockAuditDao,
             ComplaintDao complaintDao,
             OrderDao orderDao,
-            StockAlarmDao stockAlarmDao
+            StockAlarmDao stockAlarmDao,
+            CustomerDiscountDao customerDiscountDao
     ) {
         this.articleDao = articleDao;
         this.providerDao = providerDao;
@@ -74,7 +75,7 @@ public class DatabaseSeederDev {
         this.complaintDao = complaintDao;
         this.orderDao = orderDao;
         this.stockAlarmDao = stockAlarmDao;
-
+        this.customerDiscountDao = customerDiscountDao;
         this.deleteAllAndInitializeAndSeedDataBase();
     }
 
@@ -98,6 +99,7 @@ public class DatabaseSeederDev {
         this.stockAuditDao.deleteAll();
         this.orderDao.deleteAll();
         this.stockAlarmDao.deleteAll();
+        this.customerDiscountDao.deleteAll();
         log.warn("------- Delete All -----------");
         this.databaseStarting.initialize();
     }
@@ -444,6 +446,19 @@ public class DatabaseSeederDev {
 
         this.stockAlarmDao.saveAll(Arrays.asList(stockAlarms));
         log.warn("        ------- stockAlarms");
+
+        User[] customerDiscountUsers = {
+                new User("666666666","david","wu","123@gmail.com", "y111111x","calle techo"),
+                new User("699999999","lily","li","321@gmail.com", "y666666x","calle techo")
+        };
+
+        CustomerDiscountEntity[] customerDiscountEntities = {
+                new CustomerDiscountEntity(customerDiscountUsers[0],"Vip Customer",LocalDateTime.now(),25,100),
+                new CustomerDiscountEntity(customerDiscountUsers[1],"Vip Customer",LocalDateTime.now(),99,1)
+
+        };
+        this.customerDiscountDao.saveAll(Arrays.asList(customerDiscountEntities));
+        log.warn("        ------- customerDiscounts");
 
     }
 
