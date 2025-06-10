@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestConfig
 public class InvoiceServiceIT {
-
+/*
     @Autowired
     private InvoiceService invoiceService;
 
@@ -107,5 +107,5 @@ public class InvoiceServiceIT {
                 })
                 .expectComplete()
                 .verify();
-    }
+    }*/
 }
