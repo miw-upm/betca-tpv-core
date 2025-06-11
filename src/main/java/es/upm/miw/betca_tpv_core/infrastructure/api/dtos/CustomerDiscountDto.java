@@ -1,9 +1,5 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.dtos;
 
-
-
-import java.time.LocalDateTime;
-
 public class CustomerDiscountDto {
     private String userMobile;
     private String note;

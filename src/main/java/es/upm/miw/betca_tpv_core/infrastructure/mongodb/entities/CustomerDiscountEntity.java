@@ -85,9 +85,9 @@ public class CustomerDiscountEntity {
     public CustomerDiscount toCustomerDiscount() {
         CustomerDiscount customerDiscount = new CustomerDiscount();
         BeanUtils.copyProperties(this, customerDiscount, "user");
-        User user =  new User();
-        BeanUtils.copyProperties(this.user, user);
-        customerDiscount.setUser(user);
+        User userToCopy =  new User();
+        BeanUtils.copyProperties(this.user, userToCopy);
+        customerDiscount.setUser(userToCopy);
         return customerDiscount;
     }
 
