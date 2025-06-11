@@ -11,9 +11,14 @@ public interface StockAuditPersistence {
 
     Mono<StockAudit> read(String id);
 
-    Mono<String> save(StockAudit stockAudit);
+    Mono<StockAudit> create(StockAudit stockAudit);  // Cambiado de save a create
 
-    Mono<Void> close(StockAudit stockAudit);
+    Mono<StockAudit> update(StockAudit stockAudit);  // Actualizado para manejar el objeto completo
 
-    Mono<Void> update(String id);
+    Mono<Void> delete(String id);
+
+    // Método específico para cerrar auditoría si es necesario
+    default Mono<Void> close(StockAudit stockAudit) {
+        return update(stockAudit).then();
+    }
 }

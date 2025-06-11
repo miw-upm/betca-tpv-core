@@ -1,127 +1,173 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
-import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
-import es.upm.miw.betca_tpv_core.domain.model.Article;
-import es.upm.miw.betca_tpv_core.domain.model.ArticleLoss;
-import es.upm.miw.betca_tpv_core.domain.model.StockAudit;
-import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
-import es.upm.miw.betca_tpv_core.domain.persistence.StockAuditPersistence;
-import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.StockAuditCreateDto;
+import es.upm.miw.betca_tpv_core.domain.exceptions.*;
+import es.upm.miw.betca_tpv_core.domain.model.*;
+import es.upm.miw.betca_tpv_core.domain.persistence.*;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
+import reactor.core.publisher.*;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class StockAuditService {
-
     private final StockAuditPersistence stockAuditPersistence;
-
     private final ArticlePersistence articlePersistence;
 
-    public StockAuditService(StockAuditPersistence stockAuditPersistence, ArticlePersistence articlePersistence) {
+    @Autowired
+    public StockAuditService(StockAuditPersistence stockAuditPersistence,
+                             ArticlePersistence articlePersistence) {
         this.stockAuditPersistence = stockAuditPersistence;
         this.articlePersistence = articlePersistence;
     }
 
-    public Flux<StockAudit> findAll() {
+    public Flux<StockAudit> readAll() {
         return stockAuditPersistence.findAll();
     }
 
-    public Mono<StockAudit> read(String id) {
-        return stockAuditPersistence.read(id);
+    public Mono<StockAudit> readOne(String id) {
+        return stockAuditPersistence.read(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("Stock Audit not found: " + id)));
     }
 
     public Mono<StockAuditCreateDto> create() {
-        return this.crearStockAudit()
-                .flatMap(stockAudit ->
-                        stockAuditPersistence.save(stockAudit)
-                                .map(StockAuditCreateDto::new)
-                );
+        return this.createStockAudit()
+                .flatMap(stockAudit -> stockAuditPersistence.create(stockAudit)
+                        .map(savedAudit -> new StockAuditCreateDto(savedAudit.getId())));
     }
 
-    private Mono<StockAudit> crearStockAudit() {
-        StockAudit stockAudit = new StockAudit();
-        stockAudit.setId("AUDIT" + System.currentTimeMillis());
-        LocalDateTime dateTime = LocalDateTime.now();
-        stockAudit.setCreationDate(dateTime);
-        stockAudit.setUpdateDate(dateTime);
-        stockAudit.setLossValue(BigDecimal.valueOf(0));
-        stockAudit.setLosses(List.of());
-        return Mono.just(stockAudit);
+    private Mono<StockAudit> createStockAudit() {
+        return articlePersistence.findByDiscontinuedIsFalse()
+                .collectList()
+                .map(articles -> {
+                    List<ArticleAudit> articleAudits = articles.stream()
+                            .map(article -> ArticleAudit.builder()
+                                    .barcode(article.getBarcode())
+                                    .description(article.getDescription())
+                                    .stock(article.getStock())
+                                    .real(null)
+                                    .retailPrice(article.getRetailPrice())
+                                    .build())
+                            .collect(Collectors.toList());
+
+                    return StockAudit.builder()
+                            .id("AUDIT" + System.currentTimeMillis())
+                            .creationDate(LocalDateTime.now())
+                            .updateDate(LocalDateTime.now())
+                            .closeDate(null)
+                            .lossValue(BigDecimal.ZERO)
+                            .losses(new ArrayList<>())
+                            .articlesAudited(new ArrayList<>())
+                            .articlesWithoutAudit(articleAudits)
+                            .build();
+                });
     }
 
-    public Mono<Void> close(String auditId) {
-        return Mono.zip(
-                        stockAuditPersistence.read(auditId)
-                                .onErrorResume(NotFoundException.class, e -> Mono.empty()),
-                        articlePersistence.findByDiscontinuedIsFalse().collectList()
-                )
-                .flatMap(tuple -> {
-                    StockAudit stockAudit = tuple.getT1();
-                    List<Article> currentArticles = tuple.getT2();
-
+    public Mono<Void> close(String id) {
+        return stockAuditPersistence.read(id)
+                .flatMap(stockAudit -> {
                     if (stockAudit.getCloseDate() != null) {
-                        return Mono.error(new IllegalStateException("La auditoría ya está cerrada."));
+                        return Mono.error(new IllegalStateException("Stock audit already closed"));
                     }
 
-                    List<Article> articlesWithoutAudit = getArticlesWithoutAudit(currentArticles, stockAudit);
-                    List<ArticleLoss> losses = getArticleLosses(stockAudit, currentArticles);
+                    if (stockAudit.getArticlesWithoutAudit() != null
+                            && !stockAudit.getArticlesWithoutAudit().isEmpty()) {
+                        int pendingCount = stockAudit.getArticlesWithoutAudit().size();
+                        String barcodes = stockAudit.getArticlesWithoutAudit().stream()
+                                .map(ArticleAudit::getBarcode)
+                                .limit(5)
+                                .collect(Collectors.joining(", "));
+                        return Mono.error(new IllegalStateException(
+                                String.format("No se puede cerrar. Hay %d artículos pendientes: %s", pendingCount, barcodes)
+                        ));
+                    }
 
-                    BigDecimal lossValue = getLossValue(losses,currentArticles);
+                    List<ArticleLoss> losses = this.calculateLosses(stockAudit);
+                    BigDecimal lossValue = this.calculateLossValue(losses, stockAudit);
 
                     stockAudit.setCloseDate(LocalDateTime.now());
-                    stockAudit.setLossValue(lossValue);
                     stockAudit.setLosses(losses);
-                    stockAudit.setArticlesWithoutAudit(articlesWithoutAudit);
-                    return stockAuditPersistence.close(stockAudit);
+                    stockAudit.setLossValue(lossValue);
+                    stockAudit.setUpdateDate(LocalDateTime.now());
+
+                    return stockAuditPersistence.update(stockAudit);
                 })
                 .then();
     }
 
-    private List<ArticleLoss> getArticleLosses(StockAudit stockAudit, List<Article> currentArticles) {
-        return stockAudit.getArticlesAudited().stream()
-                .flatMap(auditArticle -> currentArticles.stream()
-                        .filter(currentArticle -> currentArticle.getBarcode().equals(auditArticle.getBarcode()))
-                        .map(currentArticle -> {
-                            int difference = currentArticle.getStock() - auditArticle.getStock();
-                            return difference != 0 ? new ArticleLoss(auditArticle.getBarcode(), (double) Math.abs(difference)) : null;
-                        })
-                        .filter(Objects::nonNull))
-                .toList();
+
+    public Mono<Void> update(String id, StockAuditUpdateDto updateDto) {
+        return stockAuditPersistence.read(id)
+                .flatMap(stockAudit -> {
+                    if (stockAudit.getCloseDate() != null) {
+                        return Mono.error(new IllegalStateException("Stock audit already closed"));
+                    }
+
+                    // Copias defensivas para editar las listas
+                    List<ArticleAudit> updatedAudited = new ArrayList<>(stockAudit.getArticlesAudited());
+                    List<ArticleAudit> updatedWithoutAudit = new ArrayList<>(stockAudit.getArticlesWithoutAudit());
+
+                    for (ArticleAuditDto auditDto : updateDto.getArticlesAudited()) {
+                        // Busca el artículo en los pendientes
+                        ArticleAudit articleToUpdate = updatedWithoutAudit.stream()
+                                .filter(a -> a.getBarcode().equals(auditDto.getBarcode()))
+                                .findFirst()
+                                .orElseThrow(() -> new NotFoundException("Article not found: " + auditDto.getBarcode()));
+
+                        validateRealStock(auditDto, articleToUpdate);
+
+                        // Actualiza campos
+                        articleToUpdate.setReal(auditDto.getReal());
+                        articleToUpdate.setRetailPrice(auditDto.getRetailPrice());
+
+                        // Mueve el artículo a auditados
+                        updatedAudited.add(articleToUpdate);
+                        updatedWithoutAudit.remove(articleToUpdate);
+                    }
+
+                    // Actualiza el estado en la entidad
+                    stockAudit.setArticlesAudited(updatedAudited);
+                    stockAudit.setArticlesWithoutAudit(updatedWithoutAudit);
+                    stockAudit.setUpdateDate(LocalDateTime.now());
+
+                    return stockAuditPersistence.update(stockAudit);
+                })
+                .then();
     }
 
-    private BigDecimal getLossValue(List<ArticleLoss> losses, List<Article> currentArticles) {
+    private List<ArticleLoss> calculateLosses(StockAudit stockAudit) {
+        return stockAudit.getArticlesAudited().stream()
+                .filter(art -> art.getReal() != null && !art.getReal().equals(art.getStock()))
+                .map(art -> new ArticleLoss(
+                        art.getBarcode(),
+                        Double.valueOf(art.getStock() - art.getReal())
+                ))
+                .collect(Collectors.toList());
+    }
+
+    private BigDecimal calculateLossValue(List<ArticleLoss> losses, StockAudit stockAudit) {
         return losses.stream()
-                .map(loss -> currentArticles.stream()
-                        .filter(article -> article.getBarcode().equals(loss.getBarcode()))
+                .map(loss -> stockAudit.getArticlesAudited().stream()
+                        .filter(a -> a.getBarcode().equals(loss.getBarcode()))
                         .findFirst()
-                        .map(Article::getRetailPrice)
-                        .orElse(BigDecimal.valueOf(0))
-                        .multiply(BigDecimal.valueOf(loss.getAmount())))
+                        .map(art -> art.getRetailPrice().multiply(BigDecimal.valueOf(loss.getAmount())))
+                        .orElse(BigDecimal.ZERO)
+                )
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private List<Article> getArticlesWithoutAudit(List<Article> currentArticles, StockAudit stockAudit) {
-        List<Article> articlesWithoutAudit = new ArrayList<>(currentArticles.stream()
-                .filter(article -> stockAudit.getArticlesAudited().stream()
-                        .noneMatch(a -> a.getBarcode().equals(article.getBarcode())))
-                .toList());
-
-        articlesWithoutAudit.addAll(stockAudit.getArticlesAudited().stream()
-                .filter(auditArticle -> currentArticles.stream()
-                        .noneMatch(currentArticle -> currentArticle.getBarcode().equals(auditArticle.getBarcode())))
-                .toList());
-        return articlesWithoutAudit;
-    }
-
-    public Mono<Void> update(String id) {
-        return this.stockAuditPersistence.update(id);
+    private void validateRealStock(ArticleAuditDto auditDto, ArticleAudit article) {
+        if (auditDto.getReal() == null) {
+            throw new IllegalArgumentException("Real stock cannot be null for article: " + article.getBarcode());
+        }
+        if (auditDto.getReal() < 0) {
+            throw new IllegalArgumentException("Real stock cannot be negative for article: " + article.getBarcode());
+        }
+        if (auditDto.getReal() > article.getStock()) {
+            throw new IllegalArgumentException("Real stock cannot be greater than theoretical stock for article: " + article.getBarcode());
+        }
     }
 }

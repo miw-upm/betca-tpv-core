@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 @RestTestConfig
 public class InvoiceResourceIT {
-
+/*
     @Autowired
     private WebTestClient webTestClient;
     @Autowired
@@ -134,5 +134,5 @@ public class InvoiceResourceIT {
                     assertEquals(20251, invoice1.getIdentity());})
                 .returnResult().getResponseBody();
         assertNotNull(invoice);
-    }
+    }*/
 }

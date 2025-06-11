@@ -62,7 +62,13 @@
         <!-- TestContainer -->
         <testcontainers.version>1.17.3</testcontainers.version>
     </properties>
-
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Central</name>
+            <url>https://repo.maven.apache.org/maven2/</url>
+        </repository>
+    </repositories>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -131,6 +137,8 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>1.18.32</version>
+            <scope>provided</scope>
         </dependency>
         <!-- ================ TEST ================== -->
         <!-- Spring Test -->
@@ -249,4 +257,3 @@
     </build>
 
 </project>
-
