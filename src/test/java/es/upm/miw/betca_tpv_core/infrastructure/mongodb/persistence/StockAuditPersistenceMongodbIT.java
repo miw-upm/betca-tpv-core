@@ -53,7 +53,7 @@ public class StockAuditPersistenceMongodbIT {
     void testSave() {
         StepVerifier
                 .create(this.stockAuditPersistenceMongodb
-                        .save(getInstanceStockAudit())
+                        .create(getInstanceStockAudit())
                         .then(Mono.defer(() -> this.stockAuditPersistenceMongodb.read(ID_STOCK_AUDI)))
                 ).assertNext(stockAudit -> {
                             assertEquals(0, stockAudit.getLossValue().intValue());
@@ -98,8 +98,8 @@ public class StockAuditPersistenceMongodbIT {
         stockAudit.setId("AUDIT" + System.currentTimeMillis());
 
         StepVerifier
-                .create(stockAuditPersistenceMongodb.save(stockAudit)
-                        .then(stockAuditPersistenceMongodb.update(stockAudit.getId()))
+                .create(stockAuditPersistenceMongodb.create(stockAudit)
+                        .then(stockAuditPersistenceMongodb.update(stockAudit))
                         .then(stockAuditPersistenceMongodb.read(stockAudit.getId())))
                 .assertNext(updatedAudit -> {
                     assertNotNull(updatedAudit.getUpdateDate());

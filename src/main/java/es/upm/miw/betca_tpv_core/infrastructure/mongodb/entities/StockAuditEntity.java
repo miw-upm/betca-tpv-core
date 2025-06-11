@@ -1,6 +1,6 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities;
 
-import es.upm.miw.betca_tpv_core.domain.model.Article;
+import es.upm.miw.betca_tpv_core.domain.model.ArticleAudit;
 import es.upm.miw.betca_tpv_core.domain.model.ArticleLoss;
 import es.upm.miw.betca_tpv_core.domain.model.StockAudit;
 import lombok.AllArgsConstructor;
@@ -28,38 +28,46 @@ public class StockAuditEntity {
     private LocalDateTime creationDate;
     private LocalDateTime closeDate;
     private LocalDateTime updateDate;
-    private List<ArticleEntity> articlesWithoutAudit;
+    private List<ArticleAuditEntity> articlesWithoutAudit;
     private BigDecimal lossValue;
     private List<ArticleLossEntity> losses;
-    private List<ArticleEntity> articlesAudited;
+    private List<ArticleAuditEntity> articlesAudited;
 
-    public StockAuditEntity(StockAudit stockAudit, List<ArticleEntity> articles) {
+    public StockAuditEntity(StockAudit stockAudit) {
         BeanUtils.copyProperties(stockAudit, this);
-        this.articlesAudited = articles;
+        this.articlesWithoutAudit = toEntities(stockAudit.getArticlesWithoutAudit());
+        this.articlesAudited = toEntities(stockAudit.getArticlesAudited());
     }
 
     public StockAudit toStockAudit() {
         StockAudit stockAudit = new StockAudit();
         BeanUtils.copyProperties(this, stockAudit);
-        stockAudit.setLosses(toLosses());
-        stockAudit.setArticlesWithoutAudit(toArticles(this.getArticlesWithoutAudit()));
-        stockAudit.setArticlesAudited(toArticles(this.getArticlesAudited()));
+        stockAudit.setArticlesWithoutAudit(toDomain(this.articlesWithoutAudit));
+        stockAudit.setArticlesAudited(toDomain(this.articlesAudited));
+        stockAudit.setLosses(toLosses(this.losses));
         return stockAudit;
     }
 
-    private List<ArticleLoss> toLosses() {
-        if (losses == null)
-            return Collections.emptyList();
-        return losses.stream()
-                .map(ArticleLossEntity::toArticleLoss)
-                .toList();
+    private List<ArticleAuditEntity> toEntities(List<ArticleAudit> audits) {
+        if (audits == null) return Collections.emptyList();
+        return audits.stream().map(ArticleAuditEntity::new).toList();
     }
 
-    private List<Article> toArticles(List<ArticleEntity> articles) {
-        if (articles == null)
-            return Collections.emptyList();
-        return articles.stream()
-                .map(ArticleEntity::toArticle)
+    private List<ArticleAudit> toDomain(List<ArticleAuditEntity> entities) {
+        if (entities == null) return Collections.emptyList();
+        return entities.stream().map(ArticleAuditEntity::toArticleAudit).toList();
+    }
+
+    private List<ArticleLoss> toLosses(List<ArticleLossEntity> losses) {
+        if (losses == null) return Collections.emptyList();
+        return losses.stream().map(ArticleLossEntity::toArticleLoss).toList();
+    }
+
+    // NUEVO: Método para convertir lista de ArticleEntity a ArticleAuditEntity
+    public static List<ArticleAuditEntity> fromArticleEntities(List<ArticleEntity> articleEntities) {
+        if (articleEntities == null) return Collections.emptyList();
+        return articleEntities.stream()
+                .map(ArticleAuditEntity::new)
                 .toList();
     }
 }

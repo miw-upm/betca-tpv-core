@@ -60,7 +60,13 @@
         <!-- OpenAPI -->
         <springdoc-openapi-starter-webflux-ui.version>2.8.4</springdoc-openapi-starter-webflux-ui.version>
     </properties>
-
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Central</name>
+            <url>https://repo.maven.apache.org/maven2/</url>
+        </repository>
+    </repositories>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -129,6 +135,8 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>1.18.32</version>
+            <scope>provided</scope>
         </dependency>
         <!-- ================ TEST ================== -->
         <!-- Spring Test -->
@@ -229,4 +237,3 @@
     </build>
 
 </project>
-
