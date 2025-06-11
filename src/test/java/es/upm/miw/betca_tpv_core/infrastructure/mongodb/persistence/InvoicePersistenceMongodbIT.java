@@ -55,9 +55,9 @@ class InvoicePersistenceMongodbIT {
     @Test
     void testFindByIdentity() {
         StepVerifier
-                .create(this.invoicePersistenceMongodb.readByIdentity(20252))
+                .create(this.invoicePersistenceMongodb.readByIdentity(20251))
                 .expectNextMatches(invoice1 -> {
-                    assertEquals(20252, invoice1.getIdentity());
+                    assertEquals(20251, invoice1.getIdentity());
                     return true;
                 })
                 .expectComplete()
@@ -79,9 +79,9 @@ class InvoicePersistenceMongodbIT {
     @Test
     void testFindByUserMobile() {
         StepVerifier
-                .create(this.invoicePersistenceMongodb.findByUserMobile("666666004"))
+                .create(this.invoicePersistenceMongodb.findByUserMobile("666666000"))
                 .expectNextMatches(invoice1 -> {
-                    assertEquals("666666004", invoice1.getUser().getMobile());
+                    assertEquals("666666000", invoice1.getUser().getMobile());
                     return true;
                 })
                 .expectComplete()

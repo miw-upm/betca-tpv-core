@@ -40,39 +40,6 @@ public class InvoiceResourceIT {
     }
 
     @Test
-    void testCreate(){
-        User user = User.builder()
-                .mobile("666666005")
-                .build();
-
-        Ticket ticket = Ticket.builder()
-                .id("5fa4608f4928694ef5980e4d")
-                .user(user)
-                .build();
-
-        Invoice invoice = Invoice.builder()
-                .user(user)
-                .ticket(ticket)
-                .build();
-
-        Invoice dbInvoice = this.restClientTestService.loginAdmin(webTestClient)
-                .post()
-                .uri(INVOICES)
-                .body(Mono.just(invoice), Invoice.class)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(Invoice.class)
-                .value(Assertions::assertNotNull)
-                .value(returnInvoice -> {
-                    assertNotNull(returnInvoice.getCreationDate());
-                    assertNotNull(returnInvoice.getIdentity());
-                    assertEquals(new BigDecimal("0.01"), returnInvoice.getBaseTax());
-                    assertEquals(new BigDecimal("0.00"), returnInvoice.getTaxValue());
-                }).returnResult().getResponseBody();
-        assertNotNull(dbInvoice);
-    }
-
-    @Test
     void testCreateNotFoundArticleException() {
         Shopping shopping1 = Shopping.builder().barcode("Not Found").build();
 
@@ -97,13 +64,13 @@ public class InvoiceResourceIT {
     void testRead(){
         Invoice invoice = this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(INVOICES + IDENTITY_ID, 20253)
+                .uri(INVOICES + IDENTITY_ID, 20251)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Invoice.class)
                 .value(Assertions::assertNotNull)
                 .value(invoice1 -> {
-                    assertEquals(20253, invoice1.getIdentity());
+                    assertEquals(20251, invoice1.getIdentity());
                     assertNotNull(invoice1.getTicket());
                 })
                 .returnResult()
@@ -114,7 +81,7 @@ public class InvoiceResourceIT {
     @Test
     void testReceipt(){
         this.restClientTestService.loginAdmin(webTestClient)
-                .get().uri(INVOICES + IDENTITY_ID + RECEIPT, 20252)
+                .get().uri(INVOICES + IDENTITY_ID + RECEIPT, 20251)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(byte[].class)
@@ -125,7 +92,7 @@ public class InvoiceResourceIT {
     void testFindByTicketId(){
         this.restClientTestService.loginAdmin(webTestClient)
                 .get().uri(uriBuilder -> uriBuilder.path(INVOICES + TICKET_SEARCH)
-                        .queryParam("ticketId", "5fa4603b7513a164c99677ac").build())
+                        .queryParam("ticketId", "5fa45e863d6e834d642689ac").build())
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Invoice.class)
@@ -138,7 +105,7 @@ public class InvoiceResourceIT {
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path(INVOICES + MOBILE_SEARCH)
-                        .queryParam("mobile", "666666004")
+                        .queryParam("mobile", "666666000")
                         .build())
                 .exchange()
                 .expectStatus().isOk()
@@ -146,25 +113,25 @@ public class InvoiceResourceIT {
                 .value(Assertions::assertNotNull)
                 .value(invoices -> assertTrue(invoices
                         .stream().allMatch(invoice ->
-                                invoice.getIdentity().equals(20252))));
+                                invoice.getIdentity().equals(20251))));
     }
 
     @Test
     void testUpdateUser(){
         this.restClientTestService.loginAdmin(webTestClient)
                 .patch()
-                .uri(INVOICES + "/{identity}", 20253).contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(User.builder().mobile("600000012").build()), User.class).exchange()
+                .uri(INVOICES + "/{identity}", 20251).contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(User.builder().mobile("600000000").build()), User.class).exchange()
                 .expectStatus().isOk();
         Invoice invoice = this.restClientTestService.loginAdmin(webTestClient)
                 .get()
-                .uri(INVOICES + IDENTITY_ID, 20253).exchange()
+                .uri(INVOICES + IDENTITY_ID, 20251).exchange()
                 .expectStatus().isOk()
                 .expectBody(Invoice.class).value(Assertions::assertNotNull)
                 .value(invoice1 -> {
                     assertNotNull(invoice1);
-                    assertEquals("600000012", invoice1.getUser().getMobile());
-                    assertEquals(20253, invoice1.getIdentity());})
+                    assertEquals("600000000", invoice1.getUser().getMobile());
+                    assertEquals(20251, invoice1.getIdentity());})
                 .returnResult().getResponseBody();
         assertNotNull(invoice);
     }*/

@@ -30,8 +30,8 @@ public class InvoiceReactiveIT {
     @Test
     void testFindByIdentity() {
         StepVerifier
-                .create(this.invoiceReactive.findByIdentity(20252))
-                .assertNext(invoice -> assertEquals(20252, (int) invoice.getIdentity()))
+                .create(this.invoiceReactive.findByIdentity(20251))
+                .assertNext(invoice -> assertEquals(20251, (int) invoice.getIdentity()))
                 .thenCancel()
                 .verify();
     }
@@ -39,8 +39,8 @@ public class InvoiceReactiveIT {
     @Test
     void testFindByTicketId(){
         StepVerifier
-                .create(this.invoiceReactive.findByTicketId("5fa4608f4928694ef5980e4c"))
-                .assertNext(invoice -> assertTrue(invoice.getTicketId().contains("5fa4608f4928694ef5980e4c")))
+                .create(this.invoiceReactive.findByTicketId("5fa45e863d6e834d642689ac"))
+                .assertNext(invoice -> assertTrue(invoice.getTicketId().contains("5fa45e863d6e834d642689ac")))
                 .thenCancel()
                 .verify();
     }
@@ -48,8 +48,8 @@ public class InvoiceReactiveIT {
     @Test
     void testFindByUserMobile() {
         StepVerifier
-                .create(this.invoiceReactive.findByUserMobile("666666004"))
-                .assertNext(invoice -> assertTrue(invoice.getUserMobile().contains("666666004")))
+                .create(this.invoiceReactive.findByUserMobile("666666000"))
+                .assertNext(invoice -> assertTrue(invoice.getUserMobile().contains("666666000")))
                 .thenCancel()
                 .verify();
     }

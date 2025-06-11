@@ -207,6 +207,12 @@ public class DatabaseSeederDev {
                         3, new BigDecimal("50"), ShoppingState.COMMITTED),
         };
         LocalDateTime date = LocalDateTime.of(2019, Month.JANUARY, 12, 10, 10);
+        UserEntity userA = new UserEntity();
+        userA.setMobile("666666000");
+
+        UserEntity userB = new UserEntity();
+        userB.setMobile("666666004");
+
         TicketEntity[] tickets = {
                 new TicketEntity("5fa45e863d6e834d642689ac", "nUs81zZ4R_iuoq0_zCRm6A",
                         List.of(shoppingList[0], shoppingList[1]), date, new BigDecimal("20.0"),
@@ -286,14 +292,8 @@ public class DatabaseSeederDev {
         log.warn("------- seeded customer points for users");
 
         InvoiceEntity[] invoice = {
-                InvoiceEntity.builder().id("1").identity(20251).baseTax(new BigDecimal("14.5")).taxValue(new BigDecimal("34"))
+                InvoiceEntity.builder().id("1").identity(20251).baseTax(new BigDecimal("51.00")).taxValue(new BigDecimal("10.70"))
                         .ticketId("5fa45e863d6e834d642689ac").userMobile("666666000").creationDate(LocalDateTime.now()).build(),
-                InvoiceEntity.builder().id("2").identity(20252).baseTax(new BigDecimal("5.9")).taxValue(new BigDecimal("85"))
-                        .ticketId("5fa4603b7513a164c99677ac").userMobile("666666004").creationDate(LocalDateTime.now()).build(),
-                InvoiceEntity.builder().id("3").identity(20253).baseTax(new BigDecimal("27.1")).taxValue(new BigDecimal("20"))
-                        .ticketId("5fa4608f4928694ef5980e4c").userMobile("666666003").creationDate(LocalDateTime.now()).build(),
-                InvoiceEntity.builder().id("4").identity(20254).baseTax(new BigDecimal("16.3")).taxValue(new BigDecimal("15"))
-                        .ticketId("5fa45f6f3a61083cb241289c").userMobile("666666002").creationDate(LocalDateTime.now()).build(),
         };
         this.invoiceDao.saveAll(Arrays.asList(invoice));
         LogManager.getLogger(this.getClass()).warn("        ------- invoices");
