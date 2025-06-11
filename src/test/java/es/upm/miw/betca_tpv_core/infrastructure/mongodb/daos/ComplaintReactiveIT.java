@@ -1,17 +1,10 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
-import es.upm.miw.betca_tpv_core.domain.model.Article;
-import es.upm.miw.betca_tpv_core.domain.model.Provider;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ArticleEntity;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ComplaintState;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ProviderEntity;
+import es.upm.miw.betca_tpv_core.domain.model.ComplaintState;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,7 +27,7 @@ class ComplaintReactiveIT {
                 .expectNextMatches( complaint ->{
                     assertTrue(complaint.getDescription().contains("Queja MIW"));
                     assertTrue(complaint.getReply().contains("Respuesta MIW"));
-                    assertEquals(ComplaintState.CLOSED,complaint.getState());
+                    assertEquals(ComplaintState.OPEN,complaint.getState());
                     return true;
                 })
                 .thenCancel()
@@ -58,21 +51,21 @@ class ComplaintReactiveIT {
                 .verify();
     }
     @Test
-    void testFindByUserMobileAndBarcode_ShouldCompleteWhenNoComplaintExists() {
+    void testFindByUserMobileAndArticleAndState_ShouldCompleteWhenNoComplaintExists() {
         StepVerifier
                 .create(
                         articleReactive.findByBarcode("8400000000100")
-                                .flatMap(article -> complaintReactive.findByUserMobileAndArticle("66", article))
+                                .flatMap(article -> complaintReactive.findByUserMobileAndArticleAndState("66", article,ComplaintState.CLOSED))
                 )
                 .expectComplete()
                 .verify();
     }
     @Test
-    void testFindByUserMobileAndBarcode_ShouldReturnComplaintExists() {
+    void testFindByUserMobileAndArticleAndState_ShouldReturnComplaintExists() {
         StepVerifier
                 .create(
                         articleReactive.findByBarcode("8400000000017")
-                                .flatMap(article -> complaintReactive.findByUserMobileAndArticle("66", article))
+                                .flatMap(article -> complaintReactive.findByUserMobileAndArticleAndState("66", article,ComplaintState.OPEN))
                 )
                 .expectNextMatches(complaint -> complaint != null && complaint.getArticle().getBarcode().equals("8400000000017") && complaint.getUserMobile().equals("66"))
                 .expectComplete()

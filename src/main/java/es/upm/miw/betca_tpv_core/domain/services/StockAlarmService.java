@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.domain.model.StockAlarm;
+import es.upm.miw.betca_tpv_core.domain.model.StockAlarmLine;
 import es.upm.miw.betca_tpv_core.domain.persistence.StockAlarmPersistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,5 +28,21 @@ public class StockAlarmService {
 
     public Flux<StockAlarm> findAll() {
         return this.stockAlarmPersistence.findAll();
+    }
+
+    public Mono<StockAlarm> update(String name, StockAlarm stockAlarm) {
+        return this.stockAlarmPersistence.update(name, stockAlarm);
+    }
+
+    public Mono<StockAlarm> updateLines(String name, StockAlarm stockAlarm) {
+        return this.stockAlarmPersistence.updateLines(name, stockAlarm);
+    }
+
+    public Mono<StockAlarmLine[]> searchWarnings() {
+        return this.stockAlarmPersistence.searchWarnings();
+    }
+
+    public Mono<StockAlarmLine[]> searchCriticals() {
+        return this.stockAlarmPersistence.searchCriticals();
     }
 }

@@ -1,14 +1,18 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities;
 
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
+import es.upm.miw.betca_tpv_core.domain.model.ComplaintState;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -22,7 +26,8 @@ import java.time.LocalDateTime;
 public class ComplaintEntity {
     @Id
     private String id;
-
+    @Indexed(unique = true)
+    private String trackingCode;
     @DBRef(lazy = true)
     private ArticleEntity article;
 
@@ -31,7 +36,7 @@ public class ComplaintEntity {
     private String description;
 
     private String reply;
-
+    @NotBlank
     private String userMobile;
     @Enumerated(EnumType.STRING)
     private ComplaintState state;
@@ -41,7 +46,6 @@ public class ComplaintEntity {
 
         BeanUtils.copyProperties(this,complaint);
         complaint.setBarcode(this.article.getBarcode());
-        complaint.setState(state.toString());
         return complaint;
 
     }

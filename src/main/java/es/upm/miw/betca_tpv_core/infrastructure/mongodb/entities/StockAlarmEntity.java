@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -25,15 +26,25 @@ public class StockAlarmEntity {
     private String description;
     private Integer warning;
     private Integer critical;
-    private List<StockAlarmLineEntity> stockAlarmLineEntityList;
+    private List<StockAlarmLineEntity> stockAlarmLineEntities;
 
     public StockAlarmEntity(StockAlarm stockAlarm) {
         BeanUtils.copyProperties(stockAlarm, this);
+        if (Objects.nonNull(stockAlarm.getStockAlarmLines()) && !stockAlarm.getStockAlarmLines().isEmpty()) {
+            this.setStockAlarmLineEntities(stockAlarm.getStockAlarmLines().stream()
+                    .map(StockAlarmLineEntity::new)
+                    .toList());
+        }
     }
 
     public StockAlarm toStockAlarm() {
         StockAlarm stockAlarm = new StockAlarm();
         BeanUtils.copyProperties(this, stockAlarm);
+        if(Objects.nonNull(this.stockAlarmLineEntities) && !this.stockAlarmLineEntities.isEmpty()) {
+            stockAlarm.setStockAlarmLines(this.stockAlarmLineEntities.stream()
+                    .map(StockAlarmLineEntity::toStockAlarmLine)
+                    .toList());
+        }
         return stockAlarm;
     }
 }

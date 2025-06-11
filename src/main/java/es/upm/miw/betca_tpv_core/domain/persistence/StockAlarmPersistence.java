@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.domain.persistence;
 
 import es.upm.miw.betca_tpv_core.domain.model.StockAlarm;
+import es.upm.miw.betca_tpv_core.domain.model.StockAlarmLine;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -11,4 +12,12 @@ public interface StockAlarmPersistence {
     Mono<StockAlarm> readByName(String name);
 
     Flux<StockAlarm> findAll();
+
+    Mono<StockAlarm> update(String name, StockAlarm stockAlarm);
+
+    Mono<StockAlarm> updateLines(String name, StockAlarm stockAlarm);
+
+    Mono<StockAlarmLine[]> searchWarnings();
+
+    Mono<StockAlarmLine[]> searchCriticals();
 }

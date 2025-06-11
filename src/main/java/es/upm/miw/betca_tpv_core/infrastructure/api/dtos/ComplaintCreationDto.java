@@ -32,7 +32,6 @@ public class ComplaintCreationDto {
     public Complaint toComplaint(){
         Complaint complaint = new Complaint();
         BeanUtils.copyProperties(this,complaint);
-        complaint.setState("OPEN");
         complaint.setReply("");
         complaint.setRegistrationDate(LocalDateTime.now());
 

@@ -3,6 +3,7 @@ package es.upm.miw.betca_tpv_core.domain.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintCreationDto;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.ComplaintDto;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
@@ -20,12 +21,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Complaint {
-
     @NotBlank
-    private String id;
+    private String trackingCode;
     @NotBlank
     private String barcode;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") // pattern="dd/MM/yyyy hh:mm" o iso = DateTimeFormat.ISO.TIME
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime registrationDate;
 
     @NotBlank
@@ -36,6 +36,11 @@ public class Complaint {
     @NotBlank
     private String userMobile;
     @NotBlank
-    private String state;
+    private ComplaintState state;
 
+    public ComplaintDto toComplaintDto(){
+        ComplaintDto complaintDto = new ComplaintDto();
+        BeanUtils.copyProperties(this,complaintDto);
+        return complaintDto;
+    }
 }

@@ -1,5 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import es.upm.miw.betca_tpv_core.domain.model.StockAudit;
 import es.upm.miw.betca_tpv_core.infrastructure.api.RestClientTestService;
 import org.junit.jupiter.api.Assertions;
@@ -79,19 +81,30 @@ class StockAuditResourceIT {
                 .returnResult(String.class)
                 .getResponseBody();
 
+        ObjectMapper objectMapper = new ObjectMapper();
         result.subscribe(res -> {
-            this.restClientTestService.loginAdmin(webTestClient)
-                    .put()
-                    .uri(STOCK_AUDIT + STOCK_AUDIT_ID, res)
-                    .exchange()
-                    .expectStatus().isOk()
-                    .expectBody(StockAudit.class)
-                    .value(Assertions::assertNotNull)
-                    .value(stockAudit -> {
-                        assertEquals(res, stockAudit.getId());
-                        assertNull(stockAudit.getCloseDate());
-                        assertNotNull(stockAudit.getUpdateDate());
-                    });
+            try {
+                JsonNode jsonNode = objectMapper.readTree(res);
+                String auditId = jsonNode.get("id").asText();
+
+                this.restClientTestService.loginAdmin(webTestClient)
+                        .put()
+                        .uri(STOCK_AUDIT + STOCK_AUDIT_ID, auditId)
+                        .exchange()
+                        .expectStatus().isOk()
+                        .expectBody(StockAudit.class)
+                        .value(Assertions::assertNotNull)
+                        .value(stockAudit -> {
+                            assertEquals(res, stockAudit.getId());
+                            assertNull(stockAudit.getCloseDate());
+                            assertNotNull(stockAudit.getUpdateDate());
+                        });
+
+            } catch (Exception e) {
+                fail();
+            }
+        }, error -> {
+            fail();
         });
     }
 

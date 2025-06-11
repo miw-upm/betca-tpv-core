@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.api.resources;
 
 import es.upm.miw.betca_tpv_core.domain.model.StockAlarm;
+import es.upm.miw.betca_tpv_core.domain.model.StockAlarmLine;
 import es.upm.miw.betca_tpv_core.domain.services.StockAlarmService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
 import jakarta.validation.Valid;
@@ -15,6 +16,10 @@ public class StockAlarmResource {
 
     public static final String STOCK_ALARMS = "/stock-alarms";
     public static final String STOCK_ALARM_ID = "/{name}";
+    public static final String STOCK_ALARM_LINES = "/lines";
+    public static final String STOCK_ALARM_SEARCH = "/search";
+    public static final String STOCK_ALARM_WARNING = "/warnings";
+    public static final String STOCK_ALARM_CRITICAL = "/criticals";
 
     private final StockAlarmService stockAlarmService;
 
@@ -37,5 +42,26 @@ public class StockAlarmResource {
     public Flux<StockAlarm> findAll() {
         return this.stockAlarmService.findAll()
                 .map(StockAlarm::ofNameDescriptionWarningCritical);
+    }
+
+    @PutMapping(STOCK_ALARM_ID)
+    public Mono<StockAlarm> update(@PathVariable String name, @Valid @RequestBody StockAlarm stockAlarm) {
+        return this.stockAlarmService.update(name, stockAlarm)
+                .map(StockAlarm::ofNameDescriptionWarningCritical);
+    }
+
+    @PutMapping(STOCK_ALARM_ID+STOCK_ALARM_LINES)
+    public Mono<StockAlarm> updateLines(@PathVariable String name, @Valid @RequestBody StockAlarm stockAlarm) {
+        return this.stockAlarmService.updateLines(name, stockAlarm);
+    }
+
+    @GetMapping(STOCK_ALARM_SEARCH+STOCK_ALARM_WARNING)
+    public Mono<StockAlarmLine[]> searchWarnings() {
+        return this.stockAlarmService.searchWarnings();
+    }
+
+    @GetMapping(STOCK_ALARM_SEARCH+STOCK_ALARM_CRITICAL)
+    public Mono<StockAlarmLine[]> searchCriticals() {
+        return this.stockAlarmService.searchCriticals();
     }
 }

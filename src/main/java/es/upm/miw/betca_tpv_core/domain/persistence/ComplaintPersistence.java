@@ -1,8 +1,7 @@
 package es.upm.miw.betca_tpv_core.domain.persistence;
 
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
-import es.upm.miw.betca_tpv_core.domain.model.User;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ComplaintEntity;
+import es.upm.miw.betca_tpv_core.domain.model.ComplaintState;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -13,7 +12,13 @@ public interface ComplaintPersistence {
 
     Flux<Complaint> findByUserMobileNullSafe(String userMobile);
 
-    Mono<Complaint> readById(String id);
+    Mono<Complaint> readByTrackingCode(String id);
 
-    Mono<Complaint> findByUserMobileAndBarcode(String userMobile, String barcode);
+    Mono<Complaint> findByUserMobileAndBarcodeAndState(String userMobile, String barcode, ComplaintState state);
+
+    Mono<Void> delete(Complaint complaint);
+
+    Mono<Complaint> updateAsAdmin(Complaint complaint,String oldBarcode);
+
+    Mono<Complaint> update(Complaint complaint);
 }

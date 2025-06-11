@@ -1,15 +1,18 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
+import es.upm.miw.betca_tpv_core.BaseTestContainerTest;
 import es.upm.miw.betca_tpv_core.TestConfig;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.*;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -39,6 +42,9 @@ class TicketServiceIT {
     @MockBean
     private CustomerPointsService customerPointsService;
 
+    @MockBean
+    private SlackService slackService;
+
     @BeforeEach
     void openCashier() {
         StepVerifier
@@ -48,8 +54,8 @@ class TicketServiceIT {
                 //.willReturn(Mono.just(User.builder().mobile("666666666").firstName("mock").build()))
                 .willAnswer(arguments ->
                         Mono.just(User.builder().mobile(arguments.getArgument(0)).firstName("mock").build()));
+        BDDMockito.doNothing().when(this.slackService).sendMessage(any(),any());
     }
-
 
     @Test
     void tesCreate() {
@@ -111,6 +117,32 @@ class TicketServiceIT {
         StepVerifier
                 .create(this.ticketService.readReceipt("5fa45e863d6e834d642689ac"))
                 .expectNextCount(1)
+                .verifyComplete();
+    }
+
+    @Test
+    void testReadByReference() {
+        AtomicInteger stock = new AtomicInteger();
+        StepVerifier
+                .create(this.articleService.read("8400000000093")).consumeNextWith(article -> stock.set(article.getStock()))
+                .verifyComplete();
+        Shopping shopping1 = Shopping.builder().barcode("8400000000093").amount(1)
+                .discount(ZERO).state(ShoppingState.COMMITTED).build();
+        Shopping shopping2 = Shopping.builder().barcode("8400000000093").amount(2)
+                .discount(BigDecimal.TEN).state(ShoppingState.NOT_COMMITTED).build();
+        Ticket ticket = Ticket.builder().cash(new BigDecimal("200")).card(ZERO).voucher(ZERO)
+                .user(User.builder().mobile("666666004").build()).note("note")
+                .shoppingList(List.of(shopping1, shopping2)).build();
+
+        Ticket ticketTest = this.ticketService.create(ticket).block();
+        assertNotNull(ticketTest);
+        assertNotNull(ticketTest.getId());
+        assertNotNull(ticketTest.getCreationDate());
+        assertNotNull(ticketTest.getReference());
+        assertEquals(2, ticketTest.getShoppingList().size());
+
+        StepVerifier
+                .create(this.ticketService.readByReference(ticketTest.getReference()))
                 .verifyComplete();
     }
 

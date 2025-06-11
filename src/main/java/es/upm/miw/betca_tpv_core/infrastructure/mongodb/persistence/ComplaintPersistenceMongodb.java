@@ -1,17 +1,13 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
-import com.fasterxml.jackson.databind.util.BeanUtil;
-import es.upm.miw.betca_tpv_core.domain.exceptions.ForbiddenException;
+import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
-import es.upm.miw.betca_tpv_core.domain.model.Article;
 import es.upm.miw.betca_tpv_core.domain.model.Complaint;
-import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.persistence.ComplaintPersistence;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ArticleReactive;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.ComplaintReactive;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ArticleEntity;
 import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ComplaintEntity;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.ComplaintState;
+import es.upm.miw.betca_tpv_core.domain.model.ComplaintState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,15 +33,18 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
         ComplaintEntity complaintEntity = new ComplaintEntity();
         BeanUtils.copyProperties(complaint,complaintEntity);
 
-        return this.articleReactive.findByBarcode(complaint.getBarcode())
-                .switchIfEmpty(Mono.error(new NotFoundException("The article does not exist with the barcode provided.")))
-                .map(articleEntity -> {
-                    complaintEntity.setArticle(articleEntity);
-                    complaintEntity.setState(ComplaintState.OPEN);
-                    return complaintEntity;
-                })
-                .flatMap(this.complaintReactive::save)
-                .map(ComplaintEntity::toComplaint);
+        return  this.assertTrackingCodeNotExists(complaintEntity.getTrackingCode())
+                .then(this.articleReactive.findByBarcode(complaint.getBarcode())
+                        .switchIfEmpty(Mono.error(new NotFoundException("The article does not exist with the barcode provided.")))
+                        .map(articleEntity -> {
+                            complaintEntity.setArticle(articleEntity);
+                            complaintEntity.setState(ComplaintState.OPEN);
+                            return complaintEntity;
+                        })
+                        .flatMap(this.complaintReactive::save)
+                        .map(ComplaintEntity::toComplaint)
+                );
+
     }
 
     @Override
@@ -54,21 +53,64 @@ public class ComplaintPersistenceMongodb implements ComplaintPersistence {
     }
 
     @Override
-    public Mono<Complaint> readById(String id) {
-        return complaintReactive.findById(id)
-                .switchIfEmpty(Mono.error(new NotFoundException("Non Existent Complaint id:"+id)))
+    public Mono<Complaint> readByTrackingCode(String trackingCode) {
+        return complaintReactive.findByTrackingCode(trackingCode)
                 .map(ComplaintEntity::toComplaint);
     }
 
     @Override
-    public Mono<Complaint> findByUserMobileAndBarcode(String userMobile, String barcode) {
+    public Mono<Complaint> findByUserMobileAndBarcodeAndState(String userMobile, String barcode,ComplaintState state) {
         return  this.articleReactive.findByBarcode(barcode)
                 .switchIfEmpty(Mono.empty())
                 .flatMap(articleEntity -> {
-                    return this.complaintReactive.findByUserMobileAndArticle(userMobile,articleEntity)
+                    return this.complaintReactive.findByUserMobileAndArticleAndState(userMobile,articleEntity,state)
                             .map(ComplaintEntity::toComplaint);
                 });
 
     }
 
+    @Override
+    public Mono<Void> delete(Complaint complaint) {
+        return this.complaintReactive.findByTrackingCode(complaint.getTrackingCode())
+                .flatMap(this.complaintReactive::delete);
+    }
+
+    @Override
+    public Mono<Complaint> updateAsAdmin(Complaint complaint, String oldBarcode) {
+        return this.complaintReactive.findByTrackingCode(oldBarcode)
+                .flatMap(complaintEntity -> {
+                    BeanUtils.copyProperties(complaint, complaintEntity);
+                    return this.assertTrackingCodeNotExists(complaint.getTrackingCode())
+                            .then(this.articleReactive.findByBarcode(complaint.getBarcode())
+                                    .switchIfEmpty(Mono.error(new NotFoundException("The barcode provided not exists")))
+                                    .doOnNext(complaintEntity::setArticle)
+                            )
+                            .then(this.complaintReactive.save(complaintEntity))
+                            .map(ComplaintEntity::toComplaint);
+                });
+    }
+
+    @Override
+    public Mono<Complaint> update(Complaint complaint) {
+
+        return this.complaintReactive.findByTrackingCode(complaint.getTrackingCode())
+                .flatMap( complaintEntity ->
+                        {   BeanUtils.copyProperties(complaint,complaintEntity);
+                            return this.articleReactive.findByBarcode(complaint.getBarcode())
+                                .switchIfEmpty(Mono.error(new NotFoundException("The barcode provided not exists")))
+                                .flatMap(article -> {
+                                        complaintEntity.setArticle(article);
+                                    return this.complaintReactive.save(complaintEntity).map(ComplaintEntity::toComplaint);
+                                });
+                        }
+                );
+
+    }
+
+
+
+    public Mono<Void> assertTrackingCodeNotExists(String trackingCode){
+        return this.complaintReactive.findByTrackingCode(trackingCode)
+                .flatMap(complaint -> Mono.error(new ConflictException("El nuevo TrackingCode ya existe")));
+    }
 }

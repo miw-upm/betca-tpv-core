@@ -4,6 +4,7 @@ import es.upm.miw.betca_tpv_core.domain.model.CustomerPoints;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
 import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
+import es.upm.miw.betca_tpv_core.domain.persistence.GiftTicketPersistence;
 import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.domain.services.utils.PdfTicketBuilder;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 public class TicketService {
 
     private final TicketPersistence ticketPersistence;
+    private final GiftTicketPersistence giftTicketPersistence;
     private final UserMicroservice userMicroservice;
     private final ArticlePersistence articlePersistence;
     private final CashierService cashierService;
@@ -28,8 +30,9 @@ public class TicketService {
 
     @Autowired
     public TicketService(TicketPersistence ticketPersistence, UserMicroservice userMicroservice, ArticlePersistence articlePersistence,
-                         CashierService cashierService, CustomerPointsService customerPointsService) {
+                         CashierService cashierService, CustomerPointsService customerPointsService, GiftTicketPersistence giftTicketPersistence) {
         this.ticketPersistence = ticketPersistence;
+        this.giftTicketPersistence = giftTicketPersistence;
         this.userMicroservice = userMicroservice;
         this.articlePersistence = articlePersistence;
         this.cashierService = cashierService;
@@ -85,4 +88,17 @@ public class TicketService {
             return Mono.empty();
         }
     }
+
+    public Mono<byte[]> readByReference(String reference) {
+        Mono<Ticket> monoTicket = this.giftTicketPersistence.readTicketByReference(reference);
+
+        return monoTicket.map(ticket ->
+                new PdfTicketBuilder().generateTicket(ticket, new CustomerPoints())
+        );
+    }
+
+    public Mono<Ticket> readByReferenceData(String reference) {
+        return this.giftTicketPersistence.readTicketByReference(reference);
+    }
+
 }

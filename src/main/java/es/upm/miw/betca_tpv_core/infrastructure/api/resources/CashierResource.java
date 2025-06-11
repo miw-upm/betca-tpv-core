@@ -6,6 +6,7 @@ import es.upm.miw.betca_tpv_core.domain.model.CashierClose;
 import es.upm.miw.betca_tpv_core.domain.model.CashierState;
 import es.upm.miw.betca_tpv_core.domain.services.CashierService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.CashMovementDto;
 import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.CashierLastDto;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ public class CashierResource {
     public static final String LAST = "/last";
     public static final String STATE = "/state";
     public static final String CLOSED_BETWEEN = "/closed-between";
+    public static final String CASH_MOVEMENT = "/cash-movement";
 
     private final CashierService cashierService;
 
@@ -55,5 +57,10 @@ public class CashierResource {
     @PatchMapping(value = LAST)
     public Mono<Cashier> closeCashier(@Valid @RequestBody CashierClose cashierClose) {
         return cashierService.close(cashierClose);
+    }
+
+    @PostMapping(value = CASH_MOVEMENT)
+    public Mono<CashierState> addMovement(@Valid @RequestBody CashMovementDto cashMovementDto){
+        return cashierService.addMovement(cashMovementDto);
     }
 }

@@ -5,6 +5,8 @@ import es.upm.miw.betca_tpv_core.domain.model.Cashier;
 import es.upm.miw.betca_tpv_core.domain.model.CashierClose;
 import es.upm.miw.betca_tpv_core.domain.model.CashierState;
 import es.upm.miw.betca_tpv_core.domain.persistence.CashierPersistence;
+import es.upm.miw.betca_tpv_core.domain.services.utils.MovementType;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.CashMovementDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -21,9 +23,13 @@ public class CashierService {
 
     private final CashierPersistence cashierPersistence;
 
+    private final SlackService slackService;  //
+
     @Autowired
-    public CashierService(CashierPersistence cashierPersistence) {
+    public CashierService(CashierPersistence cashierPersistence,
+                          SlackService slackService) {
         this.cashierPersistence = cashierPersistence;
+        this.slackService = slackService;  //
     }
 
 
@@ -65,11 +71,24 @@ public class CashierService {
     public Mono<Cashier> close(CashierClose cashierClose) {
         return this.lastByOpenedAssure(true)
                 .map(lastCashier -> {
+                    // Se ejecuta la lógica de cierre
                     lastCashier.close(cashierClose.getFinalCash(), cashierClose.getFinalCard(), cashierClose.getComment());
                     return lastCashier;
                 })
-                .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier));
+                .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier))
+                .doOnNext(updatedCashier -> {
+                    // Se genera el resumen de cierre usando lostCard para la diferencia de pago con tarjeta
+                    String summary = String.format(
+                            "Resumen de cierre: Efectivo €%s, Diferencia en tarjeta €%s, Comentario: %s",
+                            updatedCashier.getFinalCash(),
+                            updatedCashier.getLostCard(),  // Se utiliza lostCard en lugar de finalCard
+                            updatedCashier.getComment()
+                    );
+                    // Se envía el mensaje a Slack
+                    slackService.sendMessage("info", summary);
+                });
     }
+
 
     Mono<Cashier> addSale(BigDecimal cash, BigDecimal card, BigDecimal voucher) {
         return this.lastByOpenedAssure(true)
@@ -80,4 +99,17 @@ public class CashierService {
                 .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier));
     }
 
+    public Mono<CashierState> addMovement(CashMovementDto movementDto){
+        return this.lastByOpenedAssure(true)
+                .map(lastCashier -> {
+                    if(movementDto.getType() == MovementType.DEPOSIT){
+                        lastCashier.deposit(movementDto.getAmount(), movementDto.getComment());
+                    }else{
+                        lastCashier.withdrawal(movementDto.getAmount(), movementDto.getComment());
+                    }
+                    return lastCashier;
+                })
+                .flatMap(lastCashier -> this.cashierPersistence.update(lastCashier.getId(), lastCashier))
+                .map(CashierState::new);
+    }
 }

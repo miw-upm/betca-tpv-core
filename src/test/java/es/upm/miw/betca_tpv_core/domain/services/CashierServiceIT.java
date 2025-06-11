@@ -1,20 +1,68 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
+import es.upm.miw.betca_tpv_core.BaseTestContainerTest;
 import es.upm.miw.betca_tpv_core.TestConfig;
 import es.upm.miw.betca_tpv_core.domain.exceptions.BadRequestException;
 import es.upm.miw.betca_tpv_core.domain.model.CashierClose;
+import es.upm.miw.betca_tpv_core.domain.services.utils.MovementType;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.CashMovementDto;
+import org.junit.After;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.BDDMockito;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.stream.Stream;
+
+import static org.mockito.ArgumentMatchers.any;
 
 @TestConfig
 class CashierServiceIT {
 
     @Autowired
     private CashierService cashierService;
+
+    @MockBean
+    private SlackService slackService;
+
+    @BeforeEach
+    void setUp () {
+        BDDMockito.doNothing().when(this.slackService).sendMessage(any(),any());
+    }
+
+    private static Stream<Arguments> invalidCashMovementDtoProvider() {
+        return Stream.of(
+                Arguments.of(new CashMovementDto(null, null, null)),
+                Arguments.of(new CashMovementDto(MovementType.WITHDRAWAL, null, null)),
+                Arguments.of(new CashMovementDto(MovementType.DEPOSIT, null, null)),
+                Arguments.of(new CashMovementDto(MovementType.WITHDRAWAL, BigDecimal.valueOf(0), null)),
+                Arguments.of(new CashMovementDto(MovementType.DEPOSIT, BigDecimal.valueOf(0), null)),
+                Arguments.of(new CashMovementDto(MovementType.WITHDRAWAL, BigDecimal.valueOf(-1), null)),
+                Arguments.of(new CashMovementDto(MovementType.DEPOSIT, BigDecimal.valueOf(-1), null)),
+                Arguments.of(new CashMovementDto(MovementType.WITHDRAWAL, BigDecimal.valueOf(1), null)),
+                Arguments.of(new CashMovementDto(MovementType.DEPOSIT, BigDecimal.valueOf(1), null)),
+                Arguments.of(new CashMovementDto(MovementType.WITHDRAWAL, BigDecimal.valueOf(1), "")),
+                Arguments.of(new CashMovementDto(MovementType.DEPOSIT, BigDecimal.valueOf(1), ""))
+        );
+    }
+
+    private static Stream<Arguments> validCashMovementDtoProvider() {
+        return Stream.of(
+                Arguments.of(new CashMovementDto(MovementType.WITHDRAWAL, BigDecimal.TEN, "10e withdrawal")),
+                Arguments.of(new CashMovementDto(MovementType.DEPOSIT, BigDecimal.TEN, "10e deposit"))
+        );
+    }
 
     @Test
     void testCloseBadRequestException() {
@@ -42,11 +90,36 @@ class CashierServiceIT {
         StepVerifier.create(this.cashierService.findAllByClosureDateBetween(LocalDate.of(1970, 1, 1), LocalDate.of(1970, 1, 2)))
                 .expectNextMatches(cashier ->
                         cashier.getClosureDate().isAfter(LocalDate.of(1970, 1, 1).atStartOfDay()) &&
-                        cashier.getClosureDate().isBefore(LocalDate.of(1970, 1, 2).atStartOfDay())
+                                cashier.getClosureDate().isBefore(LocalDate.of(1970, 1, 2).atStartOfDay())
                 ).expectComplete()
                 .verify();
         StepVerifier.create(this.cashierService.findAllByClosureDateBetween(LocalDate.of(1970, 1, 1), LocalDate.of(1971, 1, 1)))
                 .expectNextCount(7)
+                .expectComplete()
+                .verify();
+    }
+
+    @ParameterizedTest()
+    @MethodSource("invalidCashMovementDtoProvider")
+    void testAddMovementsWithNonValidDto(CashMovementDto subject) {
+        StepVerifier.create(this.cashierService.addMovement(subject))
+                .expectError()
+                .verify();
+    }
+
+    @ParameterizedTest
+    @MethodSource("validCashMovementDtoProvider")
+    void testAddMovementsWithValidDto(CashMovementDto subject) {
+        this.cashierService.createOpened()
+                .then(this.cashierService.addMovement(subject))
+                .then(this.cashierService.findLast())
+                .flatMap(lastCashier -> this.cashierService.close(new CashierClose(
+                        lastCashier.getCashSales(),
+                        lastCashier.getCardSales(),
+                        "cashier close for testing"
+                )))
+                .as(StepVerifier::create)
+                .expectNextCount(1)
                 .expectComplete()
                 .verify();
     }
