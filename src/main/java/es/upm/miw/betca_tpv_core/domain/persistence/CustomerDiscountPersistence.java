@@ -16,4 +16,6 @@ public interface CustomerDiscountPersistence {
     Mono<CustomerDiscount> updateCustomerDiscount(String userMobile, CustomerDiscount customerDiscount);
 
     Flux<CustomerDiscount> findAll();
+
+    Mono<Void> deleteByUserMobile(String userMobile);
 }

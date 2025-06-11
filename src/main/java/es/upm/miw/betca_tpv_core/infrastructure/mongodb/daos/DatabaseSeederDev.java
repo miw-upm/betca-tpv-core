@@ -449,13 +449,14 @@ public class DatabaseSeederDev {
 
         User[] customerDiscountUsers = {
                 new User("666666666","david","wu","123@gmail.com", "y111111x","calle techo"),
-                new User("699999999","lily","li","321@gmail.com", "y666666x","calle techo")
+                new User("699999999","lily","li","321@gmail.com", "y666666x","calle techo"),
+                new User("611111111","god","god","delete@gmail.com", "y999999x","calle techo")
         };
 
         CustomerDiscountEntity[] customerDiscountEntities = {
                 new CustomerDiscountEntity(customerDiscountUsers[0],"Vip Customer",LocalDateTime.now(),25,100),
-                new CustomerDiscountEntity(customerDiscountUsers[1],"Vip Customer",LocalDateTime.now(),99,1)
-
+                new CustomerDiscountEntity(customerDiscountUsers[1],"Vip Customer",LocalDateTime.now(),99,1),
+                new CustomerDiscountEntity(customerDiscountUsers[2],"Vip Customer",LocalDateTime.now(),99,1)
         };
         this.customerDiscountDao.saveAll(Arrays.asList(customerDiscountEntities));
         log.warn("        ------- customerDiscounts");

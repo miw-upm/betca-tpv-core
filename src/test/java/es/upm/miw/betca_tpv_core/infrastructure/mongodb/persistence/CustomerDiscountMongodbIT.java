@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.CustomerDiscount;
 import es.upm.miw.betca_tpv_core.domain.model.User;
 import org.junit.jupiter.api.Test;
@@ -62,6 +63,17 @@ public class CustomerDiscountMongodbIT {
                     return true;
                 })
                 .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testDeleteByUserMobile() {
+        StepVerifier
+                .create(this.customerDiscountPersistenceMongodb.deleteByUserMobile("611111111"))
+                .verifyComplete();
+        StepVerifier
+                .create(this.customerDiscountPersistenceMongodb.readByUserMobile("611111111"))
+                .expectError(NotFoundException.class)
                 .verify();
     }
 }

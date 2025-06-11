@@ -32,4 +32,8 @@ public class CustomerDiscountService {
     public Mono<CustomerDiscount> updateCustomerDiscount(String userMobile, CustomerDiscount customerDiscount) {
         return this.customerDiscountPersistence.updateCustomerDiscount(userMobile, customerDiscount);
     }
+
+    public Mono<Void> deleteByUserMobile(String userMobile) {
+        return this.customerDiscountPersistence.deleteByUserMobile(userMobile);
+    }
 }

@@ -58,6 +58,9 @@ public class CustomerDiscountPersistenceMongodb implements CustomerDiscountPersi
         return this.customerDiscountReactive.findAll().map(CustomerDiscountEntity::toCustomerDiscount);
     }
 
-
+    @Override
+    public Mono<Void> deleteByUserMobile(String userMobile) {
+        return this.customerDiscountReactive.deleteByUserMobile(userMobile);
+    }
 
 }

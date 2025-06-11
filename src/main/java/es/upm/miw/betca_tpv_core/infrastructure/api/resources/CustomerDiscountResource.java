@@ -45,4 +45,9 @@
             return this.customerDiscountService.updateCustomerDiscount(userMobile, customerDiscount);
         }
 
+        @DeleteMapping(MOBILE)
+        public Mono<Void> deleteByUserMobile(@PathVariable String userMobile){
+            return this.customerDiscountService.deleteByUserMobile(userMobile);
+        }
+
     }
