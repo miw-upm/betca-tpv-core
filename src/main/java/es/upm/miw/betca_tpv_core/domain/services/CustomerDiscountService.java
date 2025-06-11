@@ -21,8 +21,15 @@ public class CustomerDiscountService {
     public Mono<CustomerDiscount> createCustomerDiscount(CustomerDiscount customerDiscount) {
         return this.customerDiscountPersistence.createCustomerDiscount(customerDiscount);
     }
+    public Mono<CustomerDiscount> readByUserMobile(String userMobile) {
+        return this.customerDiscountPersistence.readByUserMobile(userMobile);
+    }
 
     public Flux<CustomerDiscount> findAll() {
         return this.customerDiscountPersistence.findAll();
+    }
+
+    public Mono<CustomerDiscount> updateCustomerDiscount(String userMobile, CustomerDiscount customerDiscount) {
+        return this.customerDiscountPersistence.updateCustomerDiscount(userMobile, customerDiscount);
     }
 }
