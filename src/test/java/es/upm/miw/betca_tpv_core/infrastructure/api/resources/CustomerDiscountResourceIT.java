@@ -69,4 +69,14 @@ public class CustomerDiscountResourceIT {
                 });
     }
 
+    @Test
+    void testDeleteByUserMobile() {
+        this.restClientTestService.loginAdmin(webTestClient)
+                .delete().uri(CustomerDiscountResource.CUSTOMER_DISCOUNT + CustomerDiscountResource.MOBILE, "666666666")
+                .exchange().expectStatus().isOk();
+        this.restClientTestService.loginAdmin(webTestClient)
+                .get().uri(CustomerDiscountResource.CUSTOMER_DISCOUNT + CustomerDiscountResource.MOBILE, "666666666")
+                .exchange().expectStatus().isNotFound();
+    }
+
 }

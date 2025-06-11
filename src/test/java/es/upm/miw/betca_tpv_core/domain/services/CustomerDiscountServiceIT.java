@@ -1,6 +1,7 @@
 package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
+import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.CustomerDiscount;
 import es.upm.miw.betca_tpv_core.domain.model.User;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import reactor.test.StepVerifier;
 
 import java.time.LocalDateTime;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -60,6 +62,17 @@ public class CustomerDiscountServiceIT {
                     return true;
                 })
                 .expectComplete()
+                .verify();
+    }
+
+    @Test
+    void testDeleteByUserMobile() {
+        StepVerifier
+                .create(this.customerDiscountService.deleteByUserMobile("611111111"))
+                .verifyComplete();
+        StepVerifier
+                .create(this.customerDiscountService.readByUserMobile("611111111"))
+                .expectError(NotFoundException.class)
                 .verify();
     }
 }
