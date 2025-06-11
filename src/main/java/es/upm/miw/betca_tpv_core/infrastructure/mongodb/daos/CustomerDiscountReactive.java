@@ -5,5 +5,5 @@ import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Mono;
 
 public interface CustomerDiscountReactive extends ReactiveMongoRepository<CustomerDiscountEntity, String> {
-    Mono<CustomerDiscountEntity> findByUserMobile(String mobile);
+    Mono<CustomerDiscountEntity> readByUserMobile(String userMobile);
 }

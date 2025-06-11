@@ -81,6 +81,7 @@ public class CustomerDiscount {
         CustomerDiscountDto customerDiscountDto = new CustomerDiscountDto();
         BeanUtils.copyProperties(this, customerDiscountDto);
         customerDiscountDto.setUserMobile(this.user.getMobile());
+        customerDiscountDto.setRegistrationDate(this.registrationDate.toString());
         return customerDiscountDto;
     }
     @Override

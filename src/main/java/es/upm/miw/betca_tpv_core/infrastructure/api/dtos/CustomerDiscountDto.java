@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 public class CustomerDiscountDto {
     private String userMobile;
     private String note;
-    private LocalDateTime registrationDate;
+    private String registrationDate;
     private Integer discount;
     private Integer minimumPurchase;
 
@@ -15,7 +15,7 @@ public class CustomerDiscountDto {
 
     }
 
-    public CustomerDiscountDto(String userMobile, String note, LocalDateTime registrationDate,
+    public CustomerDiscountDto(String userMobile, String note, String registrationDate,
                                Integer discount, Integer minimumPurchase){
         this.userMobile = userMobile;
         this.note = note;
@@ -32,11 +32,11 @@ public class CustomerDiscountDto {
         this.userMobile = userMobile;
     }
 
-    public LocalDateTime getRegistrationDate() {
+    public String getRegistrationDate() {
         return registrationDate;
     }
 
-    public void setRegistrationDate(LocalDateTime registrationDate) {
+    public void setRegistrationDate(String registrationDate) {
         this.registrationDate = registrationDate;
     }
 

@@ -1,4 +1,4 @@
-package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
+package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
 import es.upm.miw.betca_tpv_core.domain.model.CustomerDiscount;
@@ -13,17 +13,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestConfig
-public class CustomerDiscountMongodbIT {
-
+public class CustomerDiscountServiceIT {
     @Autowired
-    private CustomerDiscountPersistenceMongodb customerDiscountPersistenceMongodb;
-
+    private CustomerDiscountService customerDiscountService;
     @Test
     void testCreateCustomerDiscount() {
         User user = new User("666999666", "lilyXiang", "Wuli", "321123@gmail.com", "y88888888x", "calle techo");
         CustomerDiscount customerDiscount = new CustomerDiscount(user, "Vip Customer", LocalDateTime.now(), 25, 100);
         StepVerifier
-                .create(this.customerDiscountPersistenceMongodb.createCustomerDiscount(customerDiscount))
+                .create(this.customerDiscountService.createCustomerDiscount(customerDiscount))
                 .expectNextMatches(dbCustomerDiscount -> {
                     assertNotNull(dbCustomerDiscount.getRegistrationDate());
                     assertEquals(25, dbCustomerDiscount.getDiscount());
@@ -37,7 +35,7 @@ public class CustomerDiscountMongodbIT {
     @Test
     void testReadByUserMobile() {
         StepVerifier
-                .create(this.customerDiscountPersistenceMongodb.readByUserMobile("699999999"))
+                .create(this.customerDiscountService.readByUserMobile("699999999"))
                 .expectNextMatches(customerDiscount -> {
                     assertNotNull(customerDiscount.getRegistrationDate());
                     assertEquals(99, customerDiscount.getDiscount());
@@ -54,7 +52,7 @@ public class CustomerDiscountMongodbIT {
         CustomerDiscount customerDiscount = new CustomerDiscount(user, "Vip Customer", LocalDateTime.now(), 66, 100);
 
         StepVerifier
-                .create(this.customerDiscountPersistenceMongodb.updateCustomerDiscount("666666666",customerDiscount))
+                .create(this.customerDiscountService.updateCustomerDiscount("666666666",customerDiscount))
                 .expectNextMatches(dbCustomerDiscount -> {
                     assertNotNull(dbCustomerDiscount.getRegistrationDate());
                     assertEquals(66, dbCustomerDiscount.getDiscount());
