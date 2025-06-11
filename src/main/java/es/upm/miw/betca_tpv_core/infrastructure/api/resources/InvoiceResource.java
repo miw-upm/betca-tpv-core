@@ -4,7 +4,9 @@ import es.upm.miw.betca_tpv_core.domain.model.Invoice;
 import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.services.InvoiceService;
 import es.upm.miw.betca_tpv_core.infrastructure.api.Rest;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.InvoiceDTO;
 import jakarta.validation.Valid;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -12,6 +14,7 @@ import reactor.core.publisher.Mono;
 
 @Rest
 @RequestMapping(InvoiceResource.INVOICES)
+@Log
 public class InvoiceResource {
     public static final String INVOICES = "/invoices";
     public static final String TICKET_SEARCH = "/ticket-search";
@@ -27,8 +30,9 @@ public class InvoiceResource {
     }
 
     @PostMapping(produces = {"application/json"})
-    public Mono<Invoice> create(@Valid @RequestBody Invoice invoice) {
-        return this.invoiceService.create(invoice);
+    public Mono<Invoice> create( @RequestBody InvoiceDTO invoice,  @RequestHeader("Authorization") String authorizationHeader) {
+        log.info("Create invoice " + invoice.toString());
+        return this.invoiceService.create(invoice, authorizationHeader);
     }
 
     @GetMapping(TICKET_SEARCH)
@@ -42,8 +46,8 @@ public class InvoiceResource {
     }
 
     @GetMapping(value = IDENTITY_ID + RECEIPT, produces = {"application/pdf", "application/json"})
-    public Mono<byte[]> readReceipt(@PathVariable Integer identity) {
-        return this.invoiceService.readReceipt(identity);
+    public Mono<byte[]> readReceipt(@PathVariable Integer identity, @RequestHeader("Authorization") String authorizationHeader) {
+        return this.invoiceService.readReceipt(identity, authorizationHeader);
     }
 
     @GetMapping(MOBILE_SEARCH)
@@ -58,6 +62,6 @@ public class InvoiceResource {
 
     @PatchMapping(IDENTITY_ID)
     public Mono<Invoice> updateUser(@PathVariable Integer identity, @Valid @RequestBody User user) {
-        return this.invoiceService.updateUser(identity, user.getMobile());
+        return this.invoiceService.updateUser(identity, user);
     }
 }

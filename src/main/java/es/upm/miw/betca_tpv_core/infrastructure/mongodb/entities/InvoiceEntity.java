@@ -37,6 +37,11 @@ public class InvoiceEntity {
     private LocalDateTime creationDate;
     private BigDecimal baseTax;
     private BigDecimal taxValue;
+    private UserEntity user;
+
+    public InvoiceEntity(Invoice invoice) {
+        BeanUtils.copyProperties(invoice, this);
+    }
 
     public Invoice toInvoice() {
         Invoice invoice = new Invoice();
@@ -50,6 +55,9 @@ public class InvoiceEntity {
         User user = User.builder()
                 .mobile(userMobile)
                 .build();
+        if(this.getUser() != null) {
+           user = this.getUser().toUser();
+        }
         invoice.setUser(user);
         return invoice;
     }

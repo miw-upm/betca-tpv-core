@@ -44,6 +44,7 @@ public class InvoicePersistenceMongodb implements InvoicePersistence {
                     BeanUtils.copyProperties(invoice, invoiceEntity);
                     invoiceEntity.setUserMobile(invoice.getUser().getMobile());
                     invoiceEntity.setTicketId(invoice.getTicket().getId());
+                    invoiceEntity.setUser(new UserEntity(invoice.getUser()));
                     return invoiceEntity;
                 })
                 .flatMap(this.invoiceReactive::save)
@@ -80,7 +81,7 @@ public class InvoicePersistenceMongodb implements InvoicePersistence {
     public Mono<Invoice> updateUser(Integer identity, User user) {
         return this.invoiceReactive.findByIdentity(identity)
                 .switchIfEmpty(Mono.error(new NotFoundException("Identity not found: " + identity)))
-                .map(invoiceEntity -> {invoiceEntity.setUserMobile(user.getMobile());
+                .map(invoiceEntity -> {invoiceEntity.setUser(new UserEntity(user));
                     return invoiceEntity;
                 })
                 .flatMap(this.invoiceReactive::save)

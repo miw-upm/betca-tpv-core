@@ -83,7 +83,7 @@ public class TicketService {
 
     private Mono<User> readUserByUserMobileNullSafe(User user) {
         if (user != null) {
-            return this.userMicroservice.readByMobile(user.getMobile());
+            return Mono.just(user);
         } else {
             return Mono.empty();
         }

@@ -10,6 +10,8 @@ public interface UserMicroservice {
 
     Mono<User> readByMobile(String mobile);
 
+    Mono<User> readByMobileWithAuthenticate(String mobile, String authenticate);
+
     Flux<User> findUsersNotInList(List<String> mobiles);
 
     Mono<String> test ();

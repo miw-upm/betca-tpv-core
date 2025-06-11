@@ -5,11 +5,13 @@ import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
 import es.upm.miw.betca_tpv_core.domain.model.Invoice;
 import es.upm.miw.betca_tpv_core.domain.model.Shopping;
 import es.upm.miw.betca_tpv_core.domain.model.Ticket;
+import es.upm.miw.betca_tpv_core.domain.model.User;
 import es.upm.miw.betca_tpv_core.domain.persistence.ArticlePersistence;
 import es.upm.miw.betca_tpv_core.domain.persistence.InvoicePersistence;
 import es.upm.miw.betca_tpv_core.domain.persistence.TicketPersistence;
 import es.upm.miw.betca_tpv_core.domain.rest.UserMicroservice;
 import es.upm.miw.betca_tpv_core.domain.services.utils.PdfInvoiceBuilder;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.InvoiceDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -25,13 +27,15 @@ public class InvoiceService {
     private final ArticlePersistence articlePersistence;
     private final TicketPersistence ticketPersistence;
     private final UserMicroservice userMicroservice;
+    private final PdfInvoiceBuilder pdfInvoiceBuilder;
 
     @Autowired
-    public InvoiceService(InvoicePersistence invoicePersistence, ArticlePersistence articlePersistence, TicketPersistence ticketPersistence, UserMicroservice userMicroservice) {
+    public InvoiceService(InvoicePersistence invoicePersistence, ArticlePersistence articlePersistence, TicketPersistence ticketPersistence, UserMicroservice userMicroservice, PdfInvoiceBuilder pdfInvoiceBuilder) {
         this.invoicePersistence = invoicePersistence;
         this.articlePersistence = articlePersistence;
         this.ticketPersistence = ticketPersistence;
         this.userMicroservice = userMicroservice;
+        this.pdfInvoiceBuilder = pdfInvoiceBuilder;
     }
 
     public Mono<Invoice> findByTicketId(String ticketId) {
@@ -56,14 +60,20 @@ public class InvoiceService {
                 .flatMap(exists -> Mono.error(new ConflictException("Invoice already exists in database")));
     }
 
-    public Mono<Invoice> create(Invoice invoice) {
-        return ticketPersistence.readById(invoice.getTicket().getId())
+    public Mono<Invoice> create(InvoiceDTO invoicedto ,String authorization) {
+        var invoice = new Invoice();
+
+        return ticketPersistence.readById(invoicedto.getTicket())
                 .switchIfEmpty(Mono.error(new NotFoundException("Ticket not found")))
-                .flatMap(ticket -> validateExistingInvoice(ticket)
-                                .then(getTotalTaxes(ticket.getShoppingList(), invoice)
-                                        .flatMap(invoice1 -> {invoice1.setCreationDate(LocalDateTime.now());
-                                            return invoicePersistence.create(invoice1);
-                                        })));
+                .flatMap(ticket ->{
+                    invoice.setTicket(ticket);
+                    invoice.setUser(this.userMicroservice.readByMobileWithAuthenticate(invoicedto.getMobile(), authorization).block());
+                    return  validateExistingInvoice(ticket)
+                            .then(getTotalTaxes(ticket.getShoppingList(), invoice)
+                                    .flatMap(invoice1 -> {invoice1.setCreationDate(LocalDateTime.now());
+                                        return invoicePersistence.create(invoice1);
+                                    }));
+                });
     }
 
     public Mono<Invoice> getTotalTaxes(List<Shopping> shoppingList, Invoice invoice) {
@@ -80,16 +90,15 @@ public class InvoiceService {
                 .last();
     }
 
-    public Mono<byte[]> readReceipt (Integer identity){
+    public Mono<byte[]> readReceipt (Integer identity, String authorization){
         return this.invoicePersistence.readByIdentity(identity)
                 .flatMap(invoice -> ticketPersistence.readById(invoice.getTicket().getId())
                         .doOnNext(invoice::setTicket)
                         .thenReturn(invoice))
-                .map(new PdfInvoiceBuilder()::generateInvoice);
+                .map(invoice -> pdfInvoiceBuilder.generateInvoice(invoice, authorization));
     }
 
-    public Mono<Invoice> updateUser(Integer identity, String mobile) {
-        return this.userMicroservice.readByMobile(mobile)
-                .flatMap(user -> invoicePersistence.updateUser(identity, user));
+    public Mono<Invoice> updateUser(Integer identity, User user) {
+        return  invoicePersistence.updateUser(identity, user);
     }
 }

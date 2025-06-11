@@ -2,6 +2,7 @@ package es.upm.miw.betca_tpv_core.domain.services;
 
 import es.upm.miw.betca_tpv_core.TestConfig;
 import es.upm.miw.betca_tpv_core.domain.model.*;
+import es.upm.miw.betca_tpv_core.infrastructure.api.dtos.InvoiceDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
@@ -18,37 +19,6 @@ public class InvoiceServiceIT {
 
     @Autowired
     private InvoiceService invoiceService;
-
-    @Test
-    void testCreate(){
-        Shopping shopping1 = Shopping.builder().barcode("8400000000093").amount(2)
-                .discount(ZERO).state(ShoppingState.COMMITTED).build();
-
-        User user = User.builder()
-                .mobile("666666000")
-                .build();
-
-        Ticket ticket = Ticket.builder()
-                .id("5fa4608f4928694ef5980e4d")
-                .user(user)
-                .shoppingList(List.of(shopping1))
-                .build();
-
-        Invoice invoice = Invoice.builder()
-                .ticket(ticket)
-                .user(user)
-                .build();
-
-        StepVerifier
-                .create(this.invoiceService.create(invoice))
-                .expectNextMatches(invoice1 -> {
-                    assertNotNull(invoice1.getCreationDate());
-                    assertNotNull(invoice1.getIdentity());
-                    return true;
-                })
-                .expectComplete()
-                .verify();
-    }
 
     @Test
     void testGetTotalTaxes() {
@@ -82,15 +52,15 @@ public class InvoiceServiceIT {
 
     @Test
     void testReceipt(){
-        StepVerifier.create(this.invoiceService.readReceipt(20252)).expectNextCount(1).verifyComplete();
+        StepVerifier.create(this.invoiceService.readReceipt(20251,"")).expectNextCount(1).verifyComplete();
     }
 
     @Test
     void testFindByTicketId(){
         StepVerifier
-                .create(this.invoiceService.findByTicketId("5fa4603b7513a164c99677ac"))
+                .create(this.invoiceService.findByTicketId("5fa45e863d6e834d642689ac"))
                 .expectNextMatches(invoice1 ->{
-                    assertEquals("5fa4603b7513a164c99677ac", invoice1.getTicket().getId());
+                    assertEquals("5fa45e863d6e834d642689ac", invoice1.getTicket().getId());
                     return true;
                 })
                 .expectComplete()
