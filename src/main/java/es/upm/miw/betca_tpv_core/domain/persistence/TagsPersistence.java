@@ -7,23 +7,17 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface TagsPersistence {
-    Mono<Tags> create(Tags tag);
+    Mono<Tag> create(Tag tag);
 
-    Mono<Tags> readByName(String name);
+    Mono<Tag> readById(String id);
 
-    Mono<Tags> update(String name, Tags tag);
+    Flux<Tag> findAll();
 
-    Mono<Void> deleteByName(String name);
+    Flux<Tag> findByName(String name);
 
-    Mono<Void> deleteById(String id);
+    Flux<Tag> findByGroup(String group);
 
-    Mono<Tags> findById(String id); // Ajustado para incluir el tipo de retorno
+    Mono<Tag> update(String id, Tag tag);
 
-    Flux<Tags> findByAnyNullField();
-
-    Flux<Tags> findByNameAndGroupAndDescriptionNullSafe(String name, String group, String description);
-
-    Flux<Tags> findByNameLikeAndGroupIsNotNullNullSafe(String name);
-
-    Flux<Tags> findAll();
+    Mono<Void> delete(String id);
 }
