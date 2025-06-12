@@ -16,62 +16,59 @@ import reactor.core.publisher.Mono;
 @Rest
 @RequestMapping(TagsResource.TAGS)
 public class TagsResource {
-    public static final String TAGS = "/tags";
-    public static final String NAME_ID = "/{name}";
+   public static final String TAGS = "/tags";
+    public static final String TAG_ID = "/{id}";
     public static final String SEARCH = "/search";
+    public static final String SEARCH_BY_GROUP = "/search-by-group";
+    public static final String ARTICLES = "/articles";
 
-    private final TagsService tagService;
+    private final TagService tagService;
+    private final ArticleService articleService;
 
     @Autowired
-    public TagsResource(TagsService tagService) {
+    public TagResource(TagService tagService, ArticleService articleService) {
         this.tagService = tagService;
+        this.articleService = articleService;
     }
 
     @PostMapping(produces = {"application/json"})
-    public Mono<Tags> create(@Valid @RequestBody Tags tag) {
+    public Mono<Tag> create(@Valid @RequestBody Tag tag) {
         return this.tagService.create(tag);
     }
 
-    @PreAuthorize("permitAll()")
-    @GetMapping(NAME_ID)
-    public Mono<Tags> read(@PathVariable String name) {
-        return this.tagService.readByName(name);
+    @GetMapping(TAG_ID)
+    public Mono<Tag> read(@PathVariable String id) {
+        return this.tagService.read(id);
     }
 
-    @PutMapping(NAME_ID)
-    public Mono<Tags> update(@PathVariable String name, @Valid @RequestBody Tags tag) {
-        return this.tagService.update(name, tag);
+    @GetMapping
+    public Flux<Tag> findAll() {
+        return this.tagService.findAll();
     }
 
     @GetMapping(SEARCH)
-    public Flux<Tags> search(@RequestParam(required = false) String name) {
-        return this.tagService.findByNameLikeAndGroupIsNotNullNullSafe(name);
-    }
-    @DeleteMapping(NAME_ID)
-    public Mono<Void> delete(@PathVariable String name) {
-        return this.tagService.deleteByName(name);
-    }
-    @DeleteMapping("/{id}")
-    public Mono<Void> deleteById(@PathVariable String id) {
-        return this.tagService.deleteById(id);
+    public Flux<Tag> findByName(@RequestParam String name) {
+        return this.tagService.findByName(name);
     }
 
-
-    @GetMapping(produces = {"application/json"})
-    public Flux<Tags> getAll() {
-        return this.tagService.findAll();
-    }
-    @GetMapping("/{id}")
-    public Mono<Tags> findById(@PathVariable String id) {
-        return this.tagService.findById(id);
+    @GetMapping(SEARCH_BY_GROUP)
+    public Flux<Tag> findByGroup(@RequestParam String group) {
+        return this.tagService.findByGroup(group);
     }
 
-    @PutMapping("/{id}")
-    public Mono<ResponseEntity<Tags>> updateTag(@PathVariable String id, @RequestBody Tags tag) {
-        return tagService.update(id, tag)
-                .map(updatedTag -> ResponseEntity.ok(updatedTag)) // Devuelve 200 OK con el objeto actualizado
-                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build())) // Si no se encuentra el ID, devuelve 404
-                .onErrorResume(e -> Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build())); // Manejo de errores
+    @PutMapping(TAG_ID)
+    public Mono<Tag> update(@PathVariable String id, @Valid @RequestBody Tag tag) {
+        return this.tagService.update(id, tag);
+    }
+
+    @DeleteMapping(TAG_ID)
+    public Mono<Void> delete(@PathVariable String id) {
+        return this.tagService.delete(id);
+    }
+
+    @GetMapping(TAG_ID + ARTICLES)
+    public Flux<Article> findArticlesByTagId(@PathVariable String id) {
+        return this.articleService.findByTag(id);
     }
 
 
