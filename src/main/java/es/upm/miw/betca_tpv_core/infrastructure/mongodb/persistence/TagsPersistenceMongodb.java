@@ -1,11 +1,10 @@
 package es.upm.miw.betca_tpv_core.infrastructure.mongodb.persistence;
 
-import es.upm.miw.betca_tpv_core.domain.exceptions.ConflictException;
 import es.upm.miw.betca_tpv_core.domain.exceptions.NotFoundException;
-import es.upm.miw.betca_tpv_core.domain.model.Tags;
-import es.upm.miw.betca_tpv_core.domain.persistence.TagsPersistence;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.TagsReactive;
-import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.TagsEntity;
+import es.upm.miw.betca_tpv_core.domain.model.Tag;
+import es.upm.miw.betca_tpv_core.domain.persistence.TagPersistence;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.daos.TagReactive;
+import es.upm.miw.betca_tpv_core.infrastructure.mongodb.entities.TagEntity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -13,95 +12,62 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
-public class TagsPersistenceMongodb implements TagsPersistence {
+public class TagPersistenceMongodb implements TagPersistence {
 
-    private final TagsReactive tagsReactive;
+    private final TagReactive tagReactive;
 
     @Autowired
-    public TagsPersistenceMongodb(TagsReactive tagsReactive) {
-        this.tagsReactive = tagsReactive;
+    public TagPersistenceMongodb(TagReactive tagReactive) {
+        this.tagReactive = tagReactive;
     }
 
     @Override
-    public Mono<Tags> create(Tags tag) {
-        return this.assertNameNotExist(tag.getName())
-                .then(Mono.justOrEmpty(tag))
-                .map(TagsEntity::new)
-                .flatMap(this.tagsReactive::save)
-                .map(TagsEntity::toTag);
-    }
-    @Override
-    public Mono<Tags> findById(String id) {
-        return this.tagsReactive.findById(id)
-                .switchIfEmpty(Mono.error(new NotFoundException("Non-existent tag ID: " + id)))
-                .map(TagsEntity::toTag);
+    public Mono<Tag> create(Tag tag) {
+        return this.tagReactive.save(new TagEntity(tag))
+                .map(TagEntity::toTag);
     }
 
     @Override
-    public Mono<Tags> readByName(String name) {
-        return this.tagsReactive.findByName(name)
-                .switchIfEmpty(Mono.error(new NotFoundException("Non existent tag name: " + name)))
-                .map(TagsEntity::toTag);
+    public Mono<Tag> readById(String id) {
+        return this.tagReactive.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non existent tag id: " + id)))
+                .map(TagEntity::toTag);
     }
 
     @Override
-    public Mono<Tags> update(String name, Tags tag) {
-        Mono<TagsEntity> tagsEntityMono;
-        if (!name.equals(tag.getName())) {
-            tagsEntityMono = this.assertNameNotExist(tag.getName())
-                    .then(this.tagsReactive.findByName(name));
-        } else {
-            tagsEntityMono = this.tagsReactive.findByName(name);
-        }
-        return tagsEntityMono
-                .switchIfEmpty(Mono.error(new NotFoundException("Non existent tag name: " + name)))
-                .flatMap(tagsEntity -> {
-                    BeanUtils.copyProperties(tag, tagsEntity);
-                    return this.tagsReactive.save(tagsEntity);
+    public Flux<Tag> findAll() {
+        return this.tagReactive.findAll()
+                .map(TagEntity::toTag);
+    }
+
+    @Override
+    public Flux<Tag> findByName(String name) {
+        return this.tagReactive.findByName(name)
+                .map(TagEntity::toTag);
+    }
+
+    @Override
+    public Flux<Tag> findByGroup(String group) {
+        return this.tagReactive.findByGroup(group)
+                .map(TagEntity::toTag);
+    }
+
+    @Override
+    public Mono<Tag> update(String id, Tag tag) {
+        return this.tagReactive.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non existent tag id: " + id)))
+                .map(tagEntity -> {
+                    BeanUtils.copyProperties(tag, tagEntity);
+                    return tagEntity;
                 })
-                .map(TagsEntity::toTag);
+                .flatMap(this.tagReactive::save)
+                .map(TagEntity::toTag);
     }
 
     @Override
-    public Mono<Void> deleteByName(String name) {
-        return this.tagsReactive.findByName(name)
-                .switchIfEmpty(Mono.error(new NotFoundException("Non existent tag name: " + name)))
-                .flatMap(tagsEntity -> this.tagsReactive.delete(tagsEntity));
-    }
-
-    @Override
-    public Mono<Void> deleteById(String id) {
-        return this.tagsReactive.findById(id)
-                .switchIfEmpty(Mono.error(new NotFoundException("Non-existent tag ID: " + id)))
-                .flatMap(tagsEntity -> this.tagsReactive.delete(tagsEntity));
-    }
-    @Override
-    public Flux<Tags> findByAnyNullField() {
-        return this.tagsReactive.findByGroupIsNull()
-                .map(TagsEntity::toTag);
-    }
-
-    @Override
-    public Flux<Tags> findByNameAndGroupAndDescriptionNullSafe(String name, String group, String description) {
-        return this.tagsReactive.findByNameAndGroupAndDescriptionNullSafe(name, group, description)
-                .map(TagsEntity::toTag);
-    }
-
-    @Override
-    public Flux<Tags> findByNameLikeAndGroupIsNotNullNullSafe(String name) {
-        return this.tagsReactive.findByNameLikeAndGroupIsNotNullNullSafe(name)
-                .map(TagsEntity::toTag);
-    }
-
-    private Mono<Void> assertNameNotExist(String name) {
-        return this.tagsReactive.findByName(name)
-                .flatMap(tagsEntity -> Mono.error(
-                        new ConflictException("Tag name already exists: " + name)
-                ));
-    }
-    @Override
-    public Flux<Tags> findAll() {
-        return this.tagsReactive.findAll()
-                .map(TagsEntity::toTag);
+    public Mono<Void> delete(String id) {
+        return this.tagReactive.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("Non existent tag id: " + id)))
+                .flatMap(tagEntity -> this.tagReactive.delete(tagEntity));
     }
 }
