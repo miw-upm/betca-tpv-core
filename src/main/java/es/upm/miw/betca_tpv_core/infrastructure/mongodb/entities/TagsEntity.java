@@ -15,26 +15,22 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Document(collection = "tags")
 public class TagsEntity {
-    @Id
+   @Id
     private String id;
-
-    @Indexed(unique = true)
+    
+    @Indexed
     private String name;
-
+    
     private String group;
+    
     private String description;
-
-    public TagsEntity(Tags tag) {
+    
+    public TagEntity(Tag tag) {
         BeanUtils.copyProperties(tag, this);
     }
-
-    // ✅ Constructor adicional requerido por tu método create
-    public TagsEntity(String name) {
-        this.name = name;
-    }
-
-    public Tags toTag() {
-        Tags tag = new Tags();
+    
+    public Tag toTag() {
+        Tag tag = new Tag();
         BeanUtils.copyProperties(this, tag);
         return tag;
     }
