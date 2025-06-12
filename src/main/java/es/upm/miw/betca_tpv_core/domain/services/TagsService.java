@@ -13,55 +13,45 @@ import reactor.core.publisher.Mono;
 @Service
 public class TagsService {
 
-    private final TagsPersistence tagsPersistence;
+
+    private final TagPersistence tagPersistence;
 
     @Autowired
-    public TagsService(TagsPersistence tagsPersistence) {
-        this.tagsPersistence = tagsPersistence;
+    public TagService(TagPersistence tagPersistence) {
+        this.tagPersistence = tagPersistence;
     }
 
-    public Mono<Tags> create(Tags tag) {
-        return this.tagsPersistence.create(tag);
+    public Mono<Tag> create(Tag tag) {
+        return this.tagPersistence.create(tag);
     }
 
-    public Mono<Tags> readByName(String name) {
-        return this.tagsPersistence.readByName(name);
+    public Mono<Tag> read(String id) {
+        return this.tagPersistence.readById(id);
     }
 
-    public Mono<Tags> update(String name, Tags tag) {
-        return this.tagsPersistence.readByName(name)
+    public Flux<Tag> findAll() {
+        return this.tagPersistence.findAll();
+    }
+
+    public Flux<Tag> findByName(String name) {
+        return this.tagPersistence.findByName(name);
+    }
+
+    public Flux<Tag> findByGroup(String group) {
+        return this.tagPersistence.findByGroup(group);
+    }
+
+    public Mono<Tag> update(String id, Tag tag) {
+        return this.tagPersistence.readById(id)
                 .map(dataTag -> {
-                    BeanUtils.copyProperties(tag, dataTag, "id");
+                    BeanUtils.copyProperties(tag, dataTag);
                     return dataTag;
-                }).flatMap(dataTag -> this.tagsPersistence.update(name, dataTag));
+                }).flatMap(dataTag -> this.tagPersistence.update(id, dataTag));
     }
 
-    public Mono<Void> deleteByName(String name) {
-        return this.tagsPersistence.deleteByName(name);
+    public Mono<Void> delete(String id) {
+        return this.tagPersistence.delete(id);
     }
 
-    public Flux<Tags> findByAnyNullField() {
-        return this.tagsPersistence.findByAnyNullField();
-    }
 
-    public Flux<Tags> findByNameAndGroupAndDescriptionNullSafe(
-            String name, String group, String description) {
-        return this.tagsPersistence.findByNameAndGroupAndDescriptionNullSafe(
-                name, group, description);
-    }
-
-    public Flux<Tags> findByNameLikeAndGroupIsNotNullNullSafe(String name) {
-        return this.tagsPersistence.findByNameLikeAndGroupIsNotNullNullSafe(name);
-    }
-
-    public Flux<Tags> findAll() {
-        return this.tagsPersistence.findAll();
-    }
-    public Mono<Tags> findById(String id) {
-        return this.tagsPersistence.findById(id);
-    }
-
-    public Mono<Void> deleteById(String id) {
-        return this.tagsPersistence.deleteById(id);
-    }
 }
